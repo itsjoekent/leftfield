@@ -16,11 +16,6 @@ function deconstruct(createElement, level, components, initialData, wrapperCompo
     const componentRenderFunction = components[id] || null;
     const initialProps = initialData[id] || {};
 
-    // TODO: Fix this to account for react components with $$typeof property
-    // if (!!componentRenderFunction && typeof componentRenderFunction !== 'function') {
-    //   throw new Error(`Invalid render function given for component id:${id}`);
-    // }
-
     const childElements =
       !!children && !!children.length
         ? deconstruct(createElement, children, components, initialData, wrapperComponent)

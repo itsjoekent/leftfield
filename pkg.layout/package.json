@@ -1,11 +1,13 @@
 {
-  "name": "pkg.fdr",
+  "name": "pkg.layout",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "npx babel index.js --out-file dist/index.js",
     "test": "jest"
   },
   "devDependencies": {
+    "@babel/cli": "^7.14.5",
     "@babel/core": "^7.14.5",
     "@babel/preset-env": "^7.14.5",
     "@babel/preset-react": "^7.14.5",
