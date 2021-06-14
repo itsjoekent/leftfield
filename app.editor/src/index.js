@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { ThemeProvider } from 'styled-components';
+import { theme } from 'pkg.admin-components';
 import App from '@editor/App';
-import theme from '@editor/theme';
 import '@editor/index.css';
 // import reportWebVitals from './reportWebVitals';
 

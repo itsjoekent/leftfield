@@ -4,10 +4,10 @@ Build Left mono-repo.
 
 ## Project naming structure
 
-`${type}.${politician}`
+`${type}.${name}`
 
 **Project Type Abbreviations**:
 
 - `pkg`: Package
 - `api`: Backend API
-- `www`: Frontend website
+- `app`: Frontend website
