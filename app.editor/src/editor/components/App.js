@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Icons } from 'pkg.admin-components';
 import Workspace from '@editor/components/Workspace';
 import Preview from '@editor/components/Preview';
 
@@ -10,6 +11,7 @@ function App() {
         <h1 style={{ color: 'white' }}>
           left
         </h1>
+        <Icons.SettingFill />
       </LeftSide>
       <RightSide>
         <Preview />
