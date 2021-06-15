@@ -1,7 +1,12 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import render from 'pkg.layout';
 
-function App() {
+function Simulator() {
+  // setup iframe listener
+  // move page structure to state
+  // highlighted element
+
   const RootElement = render(
     React.createElement,
     {
@@ -39,4 +44,11 @@ function App() {
   return RootElement;
 }
 
-export default App;
+export default function renderSimulator() {
+  ReactDOM.render(
+    <React.StrictMode>
+      <Simulator />
+    </React.StrictMode>,
+    document.getElementById('root')
+  );
+}
