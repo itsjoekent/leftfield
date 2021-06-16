@@ -6,3 +6,8 @@ export const Title = styled.h1`
   line-height: 1.1;
 `;
 
+export const LargeMenuTitle = styled.p`
+  ${(props) => props.theme.fonts.main.bold};
+  font-size: 18px;
+  letter-spacing: 2%;
+`;
