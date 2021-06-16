@@ -1,40 +1,51 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Icons } from 'pkg.admin-components';
 import Workspace from '@editor/components/Workspace';
 import Preview from '@editor/components/Preview';
+import PreviewSelector from '@editor/components/PreviewSelector';
 
 function App() {
   return (
-    <Layout>
-      <LeftSide>
-        <h1 style={{ color: 'white' }}>
-          left
-        </h1>
-        <Icons.SettingFill />
-      </LeftSide>
-      <RightSide>
-        <Preview />
-      </RightSide>
-    </Layout>
+    <Page>
+      <SectionLayout>
+        <LeftSide />
+        <RightSide>
+          <PreviewSelector />
+        </RightSide>
+      </SectionLayout>
+      <SectionLayout>
+        <LeftSide>
+          <Workspace />
+        </LeftSide>
+        <RightSide>
+          <Preview />
+        </RightSide>
+      </SectionLayout>
+    </Page>
   );
 }
 
-const Layout = styled.div`
+const Page = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
+  grid-gap: 24px;
   width: 100%;
   height: 100vh;
   padding: 24px;
 `;
 
-const LeftSide = styled.div`
+const SectionLayout = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const LeftSide = styled.section`
   width: calc(33.33% - 12px);
   height: 100%;
 `;
 
-const RightSide = styled.div`
+const RightSide = styled.section`
   width: calc(66.66% - 12px);
   height: 100%;
 `;

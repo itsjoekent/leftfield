@@ -1,24 +1,33 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { withTheme } from 'styled-components';
+import { Icons } from 'pkg.admin-components';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   setMobileDevice,
   setDesktopDevice,
   selectDeviceSizeList
 } from '@editor/features/previewMode';
-
-export default function PreviewSelector() {
+function PreviewSelector(props) {
+  const { theme } = props;
   const { isMobilePreview, isDesktopPreview } = useSelector(selectDeviceSizeList);
   const dispatch = useDispatch();
 
   return (
     <Row>
-      <button onClick={() => dispatch(setMobileDevice())}>
-        mobile
-      </button>
-      <button onClick={() => dispatch(setDesktopDevice())}>
-        desktop
-      </button>
+      <DeviceButton onClick={() => dispatch(setMobileDevice())}>
+        <Icons.MobileLight
+          width={36}
+          height={36}
+          color={isMobilePreview ? theme.colors.mono[100] : theme.colors.mono[500]}
+        />
+      </DeviceButton>
+      <DeviceButton onClick={() => dispatch(setDesktopDevice())}>
+        <Icons.DesktopLight
+          width={36}
+          height={36}
+          color={isDesktopPreview ? theme.colors.mono[100] : theme.colors.mono[500]}
+        />
+      </DeviceButton>
     </Row>
   );
 }
@@ -27,4 +36,30 @@ const Row = styled.div`
   display: flex;
   flex-direction: row;
   gap: 12px;
+  width: fit-content;
 `;
+
+export const DeviceButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  border: none;
+  box-shadow: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+
+  svg path {
+    transition: stroke 0.25s;
+  }
+
+  &:hover {
+    svg path {
+      stroke: ${props => props.theme.colors.mono[300]};
+    }
+  }
+`;
+
+export default withTheme(PreviewSelector);
