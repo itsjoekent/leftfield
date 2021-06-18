@@ -22,7 +22,7 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "postinstall": "rm -rf node_modules/pkg.admin-components/node_modules/react && rm -rf node_modules/pkg.admin-components/node_modules/styled-components"
+    "postinstall": "sh ../.bin/remove-local-peer-deps.sh"
   },
   "eslintConfig": {
     "extends": [
