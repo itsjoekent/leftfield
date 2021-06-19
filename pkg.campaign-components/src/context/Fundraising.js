@@ -1,10 +1,7 @@
 import React from 'react';
 
 export const initialFundraisingState = {
-  baseUrl: '',
-  color: '',
-  backgroundColor: '',
-  appendQuery: '',
+  buildUrl: (input) => input,
 };
 
 export const FundraisingContext = React.createContext(initialFundraisingState);

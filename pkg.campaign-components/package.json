@@ -1,20 +1,24 @@
 {
   "name": "pkg.campaign-components",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "NODE_ENV=production webpack",
+    "start": "NODE_ENV=development webpack --watch"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.14.5",
     "@babel/core": "^7.14.6",
     "@babel/preset-env": "^7.14.5",
     "@babel/preset-react": "^7.14.5",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "raw-loader": "^4.0.2",
     "react": "^17.0.2",
-    "styled-components": "^5.3.0"
+    "react-dom": "^17.0.2",
+    "styled-components": "^5.3.0",
+    "webpack": "^5.39.1",
+    "webpack-cli": "^4.7.2"
   },
   "peerDependencies": {
     "react": "^17.x",

@@ -10,10 +10,6 @@
 
 ## Component Anatomy
 
-- Name
-- Icon
-- Documentation
-
 **Properties**
 Values given to a component that change its content, appearance, etc.
 
