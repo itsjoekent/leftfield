@@ -183,7 +183,7 @@ const ActBlueDonateFormMeta = {
       help: 'This text must be legible.',
       type: COLOR_TYPE,
       required: true,
-      defaultCampaignThemeValue: (campaignTheme) => campaignTheme.colors.black,
+      defaultCampaignThemeValue: ({ campaignTheme }) => campaignTheme.colors.black,
       conditional: ({ properties }) => !!properties[ENABLE_EXPRESS_DONATE_PROPERTY],
     },
     [REFCODE_PROPERTY]: {

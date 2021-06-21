@@ -1,2 +1,2 @@
-export { default as ActBlueDonateForm } from '@cc/components/ActBlueDonateForm';
-export { ActBlueDonateFormMeta } from '@cc/components/ActBlueDonateForm';
+export * as Components from '@cc/components';
+export * as ComponentMeta from '@cc/components/meta';
