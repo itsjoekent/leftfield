@@ -13,14 +13,14 @@ function App() {
           <PreviewSelector />
         </RightSide>
       </SectionLayout>
-      <SectionLayout>
+      <PanelLayout>
         <LeftSide>
           <Workspace />
         </LeftSide>
         <RightSide>
           <Preview />
         </RightSide>
-      </SectionLayout>
+      </PanelLayout>
     </Page>
   );
 }
@@ -38,6 +38,10 @@ const SectionLayout = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+`;
+
+const PanelLayout = styled(SectionLayout)`
+  flex-grow: 1;
 `;
 
 const LeftSide = styled.section`

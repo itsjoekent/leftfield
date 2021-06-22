@@ -104,8 +104,6 @@ export default function ActBlueDonateForm(props) {
   );
 }
 
-export { default as ActBlueDonateFormMeta } from '@cc/components/ActBlueDonateForm';
-
 const ExpressFormSpacing = styled.div`
   display: flex;
   flex-direction: column;
@@ -126,14 +124,14 @@ const Disclaimer = styled.p`
 `;
 
 const columnTypeToNumber = {
-  [TWO_COLUMN_LAYOUT]: [2, 3],
-  [THREE_COLUMN_LAYOUT]: [3, 2],
-  [FOUR_COLUMN_LAYOUT]: [4, 2],
+  [TWO_COLUMN_LAYOUT]: 2,
+  [THREE_COLUMN_LAYOUT]: 3,
+  [FOUR_COLUMN_LAYOUT]: 4,
 };
 
 const FormGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(${get(columnTypeToNumber, `${get(props, `properties.${LAYOUT_PROPERTY}`)}[0]}`)}, 1fr);
+  grid-template-columns: repeat(${(props) => get(columnTypeToNumber, get(props, `properties.${LAYOUT_PROPERTY}`))}, 1fr);
   grid-gap: 8px;
 
   @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
@@ -148,7 +146,7 @@ const WideGrid = styled.div`
 
   @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
     display: ${(props) => props.isMobile ? 'none' : 'grid'};
-    grid-template-columns: repeat(${get(props, `slots.${WIDE_DESKTOP_DONATE_BUTTONS_SLOT}.length`)}, 1fr);
+    grid-template-columns: repeat(${(props) => get(props, `slots.${WIDE_DESKTOP_DONATE_BUTTONS_SLOT}.length`)}, 1fr);
     grid-gap: 12px;
   }
 `;

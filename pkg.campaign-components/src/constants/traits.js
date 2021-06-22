@@ -1,3 +1,5 @@
+export const SECTION_TRAIT = 'SECTION_TRAIT';
+
 export const OPEN_GRID_TRAIT = 'OPEN_GRID_TRAIT';
 
 export const FUNDRAISING_TRAIT = 'FUNDRAISING_TRAIT';

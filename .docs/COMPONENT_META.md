@@ -1,14 +1,30 @@
-# Component Meta Data Structure
+# Component Meta
+
+## Glossary
+
+`component`
+
+`component type`
+
+`instance`
+
+## Data Structure
 
 ```js
 /**
- * @namespace ComponentMeta
+ * @typedef ComponentMeta
  * @property {String} documentation (optional) Markdown formatted string documenting the component options.
  * @property {String} name [required] Short name of the component
  * @property {Array<Property>} properties (optional)
  * @property {String} shortDescription (optional) Longer description of the component
  * @property {Array<Slot>} slots (optional) List of slots this component has
+ * @property {ComponentTag} tag [required] Unique identifier for this component type
  * @property {Array<Trait>} traits (optional) Traits associated with this component
+ */
+
+/**
+ * @typedef ComponentTag
+ * @type {String}
  */
 
 /**
@@ -119,6 +135,7 @@
  * @type {Object}
  * @property {Array<Trait>} include Traits a component must have to be used in this slot
  * @property {Array<Trait>} exclude Traits a component cannot have to be used in this slot
+ * @property {Array<Trait>} oneOf A component must contain one of the given traits to be used in this slot
  */
 
 /**

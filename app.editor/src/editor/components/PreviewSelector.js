@@ -18,14 +18,14 @@ function PreviewSelector(props) {
         <Icons.MobileLight
           width={36}
           height={36}
-          color={isMobilePreview ? theme.colors.mono[100] : theme.colors.mono[500]}
+          color={isMobilePreview ? theme.colors.mono[900] : theme.colors.mono[400]}
         />
       </DeviceButton>
       <DeviceButton onClick={() => dispatch(setDesktopDevice())}>
         <Icons.DesktopLight
           width={36}
           height={36}
-          color={isDesktopPreview ? theme.colors.mono[100] : theme.colors.mono[500]}
+          color={isDesktopPreview ? theme.colors.mono[900] : theme.colors.mono[400]}
         />
       </DeviceButton>
     </Row>
@@ -57,7 +57,7 @@ export const DeviceButton = styled.button`
 
   &:hover {
     svg path {
-      stroke: ${props => props.theme.colors.mono[300]};
+      stroke: ${props => props.theme.colors.mono[700]};
     }
   }
 `;

@@ -39,7 +39,7 @@ const GlobalReset = createGlobalStyle`
     min-height: 100vh;
     text-rendering: optimizeSpeed;
     line-height: 1.5;
-    background-color: ${(props) => props.theme.colors.mono[900]};
+    background-color: ${(props) => props.theme.colors.mono[100]};
   }
 
   /* A elements that don't have a class get default styles */
@@ -67,7 +67,7 @@ const GlobalReset = createGlobalStyle`
     html:focus-within {
     scroll-behavior: auto;
     }
-    
+
     *,
     *::before,
     *::after {

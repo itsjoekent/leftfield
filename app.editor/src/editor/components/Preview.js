@@ -19,7 +19,7 @@ export default function Preview() {
 
 const SectionContainer = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   width: 100%;
   height: 100%;

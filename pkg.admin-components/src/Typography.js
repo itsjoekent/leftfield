@@ -11,3 +11,9 @@ export const LargeMenuTitle = styled.p`
   font-size: 18px;
   letter-spacing: 2%;
 `;
+
+export const LargeLabel = styled.p`
+  ${(props) => props.theme.fonts.main.bold};
+  font-size: 16px;
+  letter-spacing: 2%;
+`;

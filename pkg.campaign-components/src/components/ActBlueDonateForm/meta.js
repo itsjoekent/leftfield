@@ -26,6 +26,8 @@ import {
   DEFAULT_ACTBLUE_REFCODE,
 } from '@cc/constants/settings';
 
+export const TAG = 'ACTBLUE_DONATE_FORM';
+
 export const ONE_BUTTON_LAYOUT = 'One Button';
 export const WIDE_LAYOUT = 'Wide single row';
 export const TWO_COLUMN_LAYOUT = 'Two Columns';
@@ -46,6 +48,7 @@ export const WIDE_MOBILE_DONATE_BUTTONS_SLOT = 'WIDE_MOBILE_DONATE_BUTTONS_SLOT'
 export const WIDE_DESKTOP_DONATE_BUTTONS_SLOT = 'WIDE_DESKTOP_DONATE_BUTTONS_SLOT';
 
 const ActBlueDonateFormMeta = {
+  tag: TAG,
   name: 'ActBlue Donate Form',
   shortDescription: 'Container for ActBlue donate button(s)',
   documentation,

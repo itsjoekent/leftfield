@@ -8,7 +8,7 @@ module.exports = {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
     library: package.name,
-    libraryTarget: 'commonjs',
+    libraryTarget: 'umd',
   },
   plugins: [
     new CleanWebpackPlugin(),
