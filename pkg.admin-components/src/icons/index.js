@@ -1,4 +1,3 @@
-export { default as 3dBoxLight } from './3dBoxLight';
 export { default as AddFill } from './AddFill';
 export { default as AddRingLight } from './AddRingLight';
 export { default as AddRoundFill } from './AddRoundFill';
@@ -106,6 +105,7 @@ export { default as CreditCardFill } from './CreditCardFill';
 export { default as CreditCardLight } from './CreditCardLight';
 export { default as CriticalFill } from './CriticalFill';
 export { default as CriticalLight } from './CriticalLight';
+export { default as CubeLight } from './CubeLight';
 export { default as DatabaseLight } from './DatabaseLight';
 export { default as DateFill } from './DateFill';
 export { default as DateRangeFill } from './DateRangeFill';
