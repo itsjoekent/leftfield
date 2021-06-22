@@ -18,7 +18,7 @@ function Icon(props) {
 <circle cx="12" cy="12" r="9.5" stroke={color} stroke-linecap="round"/>
 <circle cx="9" cy="10" r="1" fill={color} stroke={color} stroke-linecap="round"/>
 <circle cx="15" cy="10" r="1" fill={color} stroke={color} stroke-linecap="round"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M8.62889 15C8.34911 15 8.20922 15 8.13459 15.1068C8.05996 15.2136 8.10323 15.3318 8.18977 15.5683C8.70589 16.9788 10.2167 18 12 18C13.7834 18 15.2941 16.9788 15.8102 15.5683C15.8968 15.3318 15.9401 15.2136 15.8654 15.1068C15.7908 15 15.6509 15 15.3711 15H8.62889Z" fill={color}/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M8.62886 15C8.34908 15 8.20919 15 8.13456 15.1068C8.05993 15.2136 8.1032 15.3318 8.18974 15.5683C8.70586 16.9788 10.2166 18 12 18C13.7833 18 15.2941 16.9788 15.8102 15.5683C15.8968 15.3318 15.94 15.2136 15.8654 15.1068C15.7908 15 15.6509 15 15.3711 15H8.62886Z" fill={color}/>
 </svg>
   );
 }

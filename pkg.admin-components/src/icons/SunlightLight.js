@@ -19,11 +19,11 @@ function Icon(props) {
 <path d="M12 8V4" stroke={color}/>
 <path d="M12 20V16" stroke={color}/>
 <path d="M9.17157 9.17157L6.34314 6.34314" stroke={color}/>
-<path d="M17.6569 17.6568L14.8284 14.8284" stroke={color}/>
+<path d="M17.6569 17.6569L14.8284 14.8284" stroke={color}/>
 <path d="M16 12L20 12" stroke={color}/>
 <path d="M4 12L8 12" stroke={color}/>
 <path d="M14.8284 9.17157L17.6569 6.34314" stroke={color}/>
-<path d="M6.34314 17.6568L9.17157 14.8284" stroke={color}/>
+<path d="M6.34314 17.6569L9.17157 14.8284" stroke={color}/>
 </svg>
   );
 }

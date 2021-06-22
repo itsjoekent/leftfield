@@ -17,7 +17,7 @@ function Icon(props) {
     <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="12" cy="12" r="7" stroke={color}/>
 <circle cx="12" cy="12" r="2" fill={color} stroke={color}/>
-<path d="M7.05025 7.05025L4.00005 4.00029M16.9497 7.05025L20 4.00029M20 20.0003L16.9497 16.9497M4.00005 20.0003L7.05025 16.9497" stroke={color} stroke-linecap="round"/>
+<path d="M7.05026 7.05026L4.00006 4.00031M16.9498 7.05026L20.0001 4.00031M20.0001 20.0003L16.9498 16.9498M4.00006 20.0003L7.05026 16.9498" stroke={color} stroke-linecap="round"/>
 </svg>
   );
 }

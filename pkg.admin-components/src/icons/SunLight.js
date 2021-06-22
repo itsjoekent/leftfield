@@ -18,12 +18,12 @@ function Icon(props) {
 <circle cx="12" cy="12" r="3.5" stroke={color}/>
 <path d="M12 5V3" stroke={color} stroke-linecap="round"/>
 <path d="M12 21V19" stroke={color} stroke-linecap="round"/>
-<path d="M16.9497 7.0502L18.364 5.63599" stroke={color} stroke-linecap="round"/>
-<path d="M5.63605 18.3639L7.05026 16.9497" stroke={color} stroke-linecap="round"/>
+<path d="M16.9497 7.05026L18.364 5.63605" stroke={color} stroke-linecap="round"/>
+<path d="M5.63602 18.364L7.05023 16.9497" stroke={color} stroke-linecap="round"/>
 <path d="M19 12L21 12" stroke={color} stroke-linecap="round"/>
 <path d="M3 12L5 12" stroke={color} stroke-linecap="round"/>
-<path d="M16.9497 16.9498L18.364 18.364" stroke={color} stroke-linecap="round"/>
-<path d="M5.63605 5.63608L7.05026 7.05029" stroke={color} stroke-linecap="round"/>
+<path d="M16.9497 16.9497L18.364 18.364" stroke={color} stroke-linecap="round"/>
+<path d="M5.63602 5.63605L7.05023 7.05026" stroke={color} stroke-linecap="round"/>
 </svg>
   );
 }
