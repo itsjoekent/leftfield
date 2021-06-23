@@ -21,7 +21,7 @@ function capitalizeFirstLetter(string) {
   const names = [];
 
   for (const iconFile of iconFiles) {
-    if (!(iconFile.includes('_fill') || iconFile.includes('_light'))) {
+    if (iconFile.includes('duotone')) {
       await fsAsync.rm(path.join(__dirname, `raw/${iconFile}`));
       continue;
     }
@@ -48,9 +48,9 @@ function capitalizeFirstLetter(string) {
     const name = capitalizeFirstLetter(camelize(iconFile.replace('.svg', '').replace(/-/g, ' ').replace(/_/g, ' ').replace('Property1=', '').replace('Property 1=', '')));
     names.push(name);
 
-    await fsAsync.writeFile(path.join(__dirname, '../src/Icons', `${name}.js`), output);
+    await fsAsync.writeFile(path.join(__dirname, '../src/icons', `${name.toLowerCase()}.js`), output);
   }
 
-  const indexFile = names.map(name => `export { default as ${name} } from './${name}';`).join('\n');
-  await fsAsync.writeFile(path.join(__dirname, '../src/Icons/index.js'), indexFile);
+  const indexFile = names.map(name => `export { default as ${name} } from './${name.toLowerCase()}';`).join('\n');
+  await fsAsync.writeFile(path.join(__dirname, '../src/icons/index.js'), indexFile);
 })();

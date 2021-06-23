@@ -15,15 +15,15 @@ function Icon(props) {
 
   return (
     <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="12" cy="12" r="3.5" stroke={color}/>
-<path d="M12 5V3" stroke={color} stroke-linecap="round"/>
-<path d="M12 21V19" stroke={color} stroke-linecap="round"/>
-<path d="M16.9497 7.05026L18.364 5.63605" stroke={color} stroke-linecap="round"/>
-<path d="M5.63602 18.364L7.05023 16.9497" stroke={color} stroke-linecap="round"/>
-<path d="M19 12L21 12" stroke={color} stroke-linecap="round"/>
-<path d="M3 12L5 12" stroke={color} stroke-linecap="round"/>
-<path d="M16.9497 16.9497L18.364 18.364" stroke={color} stroke-linecap="round"/>
-<path d="M5.63602 5.63605L7.05023 7.05026" stroke={color} stroke-linecap="round"/>
+<circle cx="12" cy="12" r="4" stroke={color} stroke-width="2"/>
+<path d="M12 8V4" stroke={color} stroke-width="2"/>
+<path d="M12 20V16" stroke={color} stroke-width="2"/>
+<path d="M9.17157 9.17157L6.34314 6.34314" stroke={color} stroke-width="2"/>
+<path d="M17.6569 17.6569L14.8284 14.8284" stroke={color} stroke-width="2"/>
+<path d="M16 12L20 12" stroke={color} stroke-width="2"/>
+<path d="M4 12L8 12" stroke={color} stroke-width="2"/>
+<path d="M14.8284 9.17157L17.6569 6.34314" stroke={color} stroke-width="2"/>
+<path d="M6.34314 17.6569L9.17157 14.8284" stroke={color} stroke-width="2"/>
 </svg>
   );
 }

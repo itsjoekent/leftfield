@@ -13,7 +13,7 @@ function App() {
           <PreviewSelector />
         </RightSide>
       </SectionLayout>
-      <PanelLayout>
+      <PanelLayout as="main">
         <LeftSide>
           <Workspace />
         </LeftSide>
