@@ -7,7 +7,7 @@ import {
   SECTION_TRAIT,
 } from '@cc/constants/traits';
 
-export const TAG = 'ROOT';
+export const TAG = 'Root';
 
 export const SECTIONS_SLOT = 'SECTIONS_SLOT';
 
@@ -23,7 +23,7 @@ const RootMeta = {
     {
       id: SECTIONS_SLOT,
       label: 'Page Sections',
-      list: true,
+      isList: true,
       layout: {
         [FILLS_CONTAINER_WIDE]: true,
         [GROWS_VERTICALLY]: true,

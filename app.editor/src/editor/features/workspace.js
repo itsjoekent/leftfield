@@ -1,19 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+export const PROPERTIES_TAB = 'PROPERTIES_TAB';
+export const SLOTS_TAB = 'SLOTS_TAB';
+export const DOCUMENTATION_TAB = 'DOCUMENTATION_TAB';
+export const FEEDBACK_TAB = 'FEEDBACK_TAB';
+
 export const workspaceSlice = createSlice({
   name: 'workspace',
   initialState: {
-    focusedComponentId: null,
-    activePageId: null,
-    layout: [],
-    pages: {},
-    siteSettings: {},
+    activeComponentId: '1',
+    activePageId: 'test',
+    tab: PROPERTIES_TAB,
   },
   reducers: {
-    setActivePage: (pageId) => {
-
+    setTab: (state, action) => {
+      state.tab = action.payload;
     },
-    setIsEditingPageTitle: (isEditingPageTitle) => {
+    setActivePageId: (pageId) => {
 
     },
     setIsPageDrawerOpen: (isPageDrawerOpen) => {
@@ -22,20 +25,33 @@ export const workspaceSlice = createSlice({
     setIsSettingsMenuOpen: (isSettingsMenuOpen) => {
 
     },
-    setFocusedComponent: (componentId) => {
+    setActiveComponentId: (componentId) => {
 
     },
-    navigateBackToLastFocusedComponent: () => {
+    navigateBackToLastActiveComponent: () => {
 
     },
     setIsComponentTreeOpen: (isComponentTreeOpen) => {
 
     },
-    setIsEditingFocusedComponentName: (isEditingComponentName) => {
-
-    },
-    updateFocusedComponentName: (name) => {
-
-    },
   },
 });
+
+export const {
+  setActivePageId,
+  setTab,
+} = workspaceSlice.actions;
+
+export default workspaceSlice.reducer;
+
+export function selectActiveComponentId(state) {
+  return state.workspace.activeComponentId;
+}
+
+export function selectActivePageId(state) {
+  return state.workspace.activePageId;
+}
+
+export function selectTab(state) {
+  return state.workspace.tab;
+}

@@ -1,2 +1,2 @@
-export { default as ActBlueDonateFormMeta } from '@cc/components/ActBlueDonateForm/meta';
-export { default as RootMeta } from '@cc/components/Root/meta';
+export { default as ActBlueDonateForm } from '@cc/components/ActBlueDonateForm/meta';
+export { default as Root } from '@cc/components/Root/meta';

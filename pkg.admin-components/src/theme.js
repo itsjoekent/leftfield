@@ -44,12 +44,12 @@ const theme = {
       'light': css`
         font-family: frank-new,sans-serif;
         font-weight: 300;
-        font-style: normal;        
+        font-style: normal;
       `,
       'regular': css`
         font-family: frank-new,sans-serif;
         font-weight: 400;
-        font-style: normal;      
+        font-style: normal;
       `,
       'regularItalic': css`
         font-family: frank-new,sans-serif;
@@ -59,7 +59,7 @@ const theme = {
       'medium': css`
         font-family: frank-new,sans-serif;
         font-weight: 500;
-        font-style: normal;      
+        font-style: normal;
       `,
       'bold': css`
         font-family: frank-new,sans-serif;
@@ -69,14 +69,20 @@ const theme = {
       'boldItalic': css`
         font-family: frank-new,sans-serif;
         font-weight: 700;
-        font-style: italic;        
+        font-style: italic;
       `,
       'extraBold': css`
         font-family: frank-new,sans-serif;
         font-weight: 800;
-        font-style: normal;      
+        font-style: normal;
       `,
     },
+  },
+  rounded: {
+    default: '2px',
+  },
+  shadow: {
+    light: 'box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);',
   },
 };
 

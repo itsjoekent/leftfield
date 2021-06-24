@@ -103,7 +103,7 @@
  * @property {String} id [required] Unique machine name for this slot
  * @property {String} label [required] Human readable name for this slot
  * @property {Object} layout (optional) Description of how this layout behaves
- * @property {Boolean} list [required] Mark if this slot accepts multiple child components
+ * @property {Boolean} isList [required] Mark if this slot accepts multiple child components
  * @property {Number} max (optional) Limit how many components can be added to this slot
  * @property {Number} min (optional) Require a certain amount of components to be added to this slot
  */

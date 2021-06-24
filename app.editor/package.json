@@ -8,7 +8,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "lodash.get": "^4.4.2",
+    "lodash": "^4.17.21",
     "pkg.admin-components": "file:../pkg.admin-components",
     "pkg.campaign-components": "file:../pkg.campaign-components",
     "pkg.layout": "file:../pkg.layout",

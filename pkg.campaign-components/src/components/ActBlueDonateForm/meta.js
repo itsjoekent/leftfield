@@ -1,4 +1,4 @@
-import get from 'lodash.get';
+import { get } from 'lodash';
 import documentation from '@cc/components/ActBlueDonateForm/docs.md';
 import makeValidationError from '@cc/utils/makeValidationError';
 import {
@@ -26,7 +26,7 @@ import {
   DEFAULT_ACTBLUE_REFCODE,
 } from '@cc/constants/settings';
 
-export const TAG = 'ACTBLUE_DONATE_FORM';
+export const TAG = 'ActBlueDonateForm';
 
 export const ONE_BUTTON_LAYOUT = 'One Button';
 export const WIDE_LAYOUT = 'Wide single row';
@@ -67,7 +67,7 @@ const ActBlueDonateFormMeta = {
     {
       id: DONATE_BUTTONS_SLOT,
       label: 'Donate Buttons',
-      list: true,
+      isList: true,
       conditional: ({ properties }) => properties.layout !== ONE_BUTTON_LAYOUT,
       constraints: [
         { include: [DONATE_BUTTON_TRAIT] },
@@ -97,7 +97,7 @@ const ActBlueDonateFormMeta = {
     {
       id: DONATE_BUTTON_SLOT,
       label: 'Donate Button',
-      list: false,
+      isList: false,
       conditional: ({ properties }) => properties.layout === ONE_BUTTON_LAYOUT,
       constraints: [
         { include: [DONATE_BUTTON_TRAIT] },
@@ -110,7 +110,7 @@ const ActBlueDonateFormMeta = {
       id: WIDE_MOBILE_DONATE_BUTTONS_SLOT,
       label: 'Wide Layout Mobile Buttons',
       help: 'These buttons only render on mobile devices',
-      list: true,
+      isList: true,
       min: 1,
       max: 4,
       conditional: ({ properties }) => properties.layout === WIDE_LAYOUT,
@@ -126,7 +126,7 @@ const ActBlueDonateFormMeta = {
       id: WIDE_DESKTOP_DONATE_BUTTONS_SLOT,
       label: 'Wide Layout Desktop Buttons',
       help: 'These buttons only render on large devices',
-      list: true,
+      isList: true,
       min: 1,
       max: 8,
       conditional: ({ properties }) => properties.layout === WIDE_LAYOUT,

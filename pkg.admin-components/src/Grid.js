@@ -1,15 +1,17 @@
 import styled, { css } from 'styled-components';
 
-const common = css`
-  ${({ justify }) => !!justify && css`justify-content: ${justify};`}
-  ${({ align }) => !!align && css`align-items: ${align};`}
-  ${({ gridGap }) => !!gridGap && css`grid-gap: ${gridGap};`}
+const Grid = styled.div`
+  display: grid;
+
+  ${({ columns }) => !!columns && css`grid-template-columns: ${columns};`}
+  ${({ rows }) => !!rows && css`grid-template-rows: ${rows};`}
+
+  ${({ gap }) => !!gap && css`grid-gap: ${gap};`}
+  ${({ rowGap }) => !!rowGap && css`grid-row-gap: ${rowGap};`}
+  ${({ columnGap }) => !!columnGap && css`grid-column-gap: ${columnGap};`}
 
   ${({ fullHeight }) => !!fullHeight && css`height: 100%;`}
   ${({ fullWidth }) => !!fullWidth && css`width: 100%;`}
-
-  ${({ overflowX }) => !!overflowX && css`overflow-x: ${overflowX}`};
-  ${({ overflowY }) => !!overflowY && css`overflow-y: ${overflowY}`};
 
   ${({ flexGrow }) => !!flexGrow && css`flex-grow: 1;`}
 
@@ -24,14 +26,4 @@ const common = css`
   `}
 `;
 
-export const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  ${common}
-`;
-
-export const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  ${common}
-`;
+export default Grid;

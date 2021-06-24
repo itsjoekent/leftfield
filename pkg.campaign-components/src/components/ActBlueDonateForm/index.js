@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-import get from 'lodash.get';
+import { get } from 'lodash';
 import {
   ONE_BUTTON_LAYOUT,
   WIDE_LAYOUT,

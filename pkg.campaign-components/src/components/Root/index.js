@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import get from 'lodash.get';
+import { get } from 'lodash';
 import { SECTIONS_SLOT } from '@cc/components/Root/meta';
 
 export default function Root(props) {
