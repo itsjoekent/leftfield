@@ -44,12 +44,16 @@ export function IconButton(props) {
       setIsHovering(false);
     }
 
-    buttonRef.current.addEventListener('mouseenter', onMouseEnter);
-    buttonRef.current.addEventListener('mouseleave', onMouseLeave);
+    if (buttonRef.current) {
+      buttonRef.current.addEventListener('mouseenter', onMouseEnter);
+      buttonRef.current.addEventListener('mouseleave', onMouseLeave);  
+    }
 
     return () => {
-      buttonRef.current.removeEventListener('mouseenter', onMouseEnter);
-      buttonRef.current.removeEventListener('mouseleave', onMouseLeave);
+      if (buttonRef.current) {
+        buttonRef.current.removeEventListener('mouseenter', onMouseEnter);
+        buttonRef.current.removeEventListener('mouseleave', onMouseLeave);
+      }
     };
   }, [
     hoverColor,

@@ -66,12 +66,17 @@ const Container = styled(Flex.Row)`
   height: fit-content;
   background-color: ${(props) => props.theme.colors.mono[100]};
   border-radius: ${(props) => props.theme.rounded.default};
-  cursor: move;
+  cursor: grab;
   ${(props) => props.theme.shadow.light}
 
   ${(props) => props.isDragging && css`
     box-shadow: none;
+    cursor: grabbing;
   `}
+
+  &:hover {
+    background-color: ${(props) => props.theme.colors.mono[200]};
+  }
 `;
 
 const Label = styled.p`
