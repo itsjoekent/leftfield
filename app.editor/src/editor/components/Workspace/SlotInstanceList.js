@@ -1,6 +1,5 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { useDrop } from 'react-dnd'
 import { useSelector } from 'react-redux';
 import { Flex } from 'pkg.admin-components';
 import WorkspaceInstanceCard from '@editor/components/Workspace/InstanceCard';
@@ -20,31 +19,8 @@ export default function SlotInstanceList(props) {
   const slotComponents = useSelector(selectComponentSlotMapped(activePageId, activeComponentId, slotId));
   const totalComponentsInSlot = slotComponents.length;
 
-  // todo: delete this / this component?
-  const [{ isOver }, dropRef] = useDrop(() => ({
-    accept: [COMPONENT_TYPE, COMPONENT_INSTANCE],
-    drop: () => ({
-      pageId: activePageId,
-      componentId: activeComponentId,
-      slotId,
-      slotPlacementOrder: totalComponentsInSlot,
-    }),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
-  }), [
-    activePageId,
-    activeComponentId,
-    slotId,
-    totalComponentsInSlot,
-  ]);
-
   return (
-    <Container
-      ref={dropRef}
-      gridGap="12px"
-      isOver={false}
-    >
+    <Container gridGap="12px">
       {slotComponents.map((component) => (
         <WorkspaceInstanceCard
           key={component.id}
