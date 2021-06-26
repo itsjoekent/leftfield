@@ -43,13 +43,15 @@ export default function SlotList(props) {
   ) : totalComponentsInSlot < 1;
 
   return (
-    <Container padding="12px" gridGap="12px">
-      <Counter>{counterCopy}</Counter>
-      {!!totalComponentsInSlot && (
-        <WorkspaceSlotInstanceList slotId={slotId} />
-      )}
+    <Container>
+      <WorkspaceSlotInstanceList slotId={slotId} />
       {hasEmptyChannel && (
-        <Flex.Row fullWidth justify="space-between" align="center">
+        <Flex.Row
+          fullWidth
+          justify="space-between"
+          align="center"
+          padding="12px"
+        >
           <AddButton
             gridGap="6px"
             align="center"
@@ -59,7 +61,6 @@ export default function SlotList(props) {
                 pageId: activePageId,
                 parentComponentId: activeComponentId,
                 slotId,
-                slotPlacementOrder: slotComponents.length,
               },
             }))}
           >
@@ -80,12 +81,6 @@ export default function SlotList(props) {
 const Container = styled(Flex.Column)`
   background-color: ${(props) => props.theme.colors.mono[300]};
   border-radius: ${(props) => props.theme.rounded.default};
-`;
-
-const Counter = styled.p`
-  ${(props) => props.theme.fonts.main.light};
-  font-size: 11px;
-  color: ${(props) => props.theme.colors.mono[900]};
 `;
 
 const AddButton = styled(Flex.Row)`

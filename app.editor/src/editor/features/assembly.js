@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import { get, set } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import { ComponentMeta } from 'pkg.campaign-components';
@@ -28,23 +27,40 @@ export const assemblySlice = createSlice({
     templates: {},
   },
   reducers: {
-    addChildComponent: (state, action) => {
+    buildComponent: (state, action) => {
       const {
+        componentId,
         componentTag,
         pageId,
-        parentComponentId,
-        slotId,
-        slotPlacementOrder,
       } = action.payload;
 
       const insert = {
-        id: uuid(),
+        id: componentId,
         tag: componentTag,
         name: ComponentMeta[componentTag].name,
       };
 
       set(state, `pages.${pageId}.components.${insert.id}`, insert);
-      set(state, `pages.${pageId}.components.${parentComponentId}.slots.${slotId}[${slotPlacementOrder}]`, insert.id);
+    },
+    addChildComponentInstance: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        parentComponentId,
+        slotId,
+        slotPlacementOrder,
+      } = action.payload;
+
+      const path = `pages.${pageId}.components.${parentComponentId}.slots.${slotId}`;
+
+      const finalSlotPlacementOrder = isNaN(slotPlacementOrder)
+        ? get(state, `${path}.length`, 0)
+        : slotPlacementOrder
+
+      const children = get(state, path, []);
+      children.splice(finalSlotPlacementOrder, 0, componentId);
+
+      set(state, path, children);
     },
     reorderChildComponentInstance: (state, action) => {
       const {
@@ -58,15 +74,32 @@ export const assemblySlice = createSlice({
       const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
       const children = get(state, path, []);
 
-      children.splice(fromIndex, 1, children.splice(toIndex, 1, children[fromIndex])[0]);
-      set(path, children);
+      const [targetInstanceId] = children.splice(fromIndex, 1);
+      children.splice(toIndex, 0, targetInstanceId);
+      set(state, path, children);
+    },
+    removeChildComponentInstance: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        slotId,
+        targetIndex,
+      } = action.payload;
+
+      const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
+      const children = get(state, path, []);
+
+      children.splice(targetIndex, 1);
+      set(state, path, children);
     },
   },
 });
 
 export const {
-  addChildComponent,
+  buildComponent,
+  addChildComponentInstance,
   reorderChildComponentInstance,
+  removeChildComponentInstance,
 } = assemblySlice.actions;
 
 export default assemblySlice.reducer;

@@ -1,41 +1,38 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { get } from 'lodash';
-import { useDispatch, useSelector } from 'react-redux';
-import { Flex, Icons, useAdminTheme } from 'pkg.admin-components';
-import { COMPONENT_INSTANCE } from '@editor/constants/DragTypes';
-import {
-  selectComponent,
-  selectComponentSlot,
-  reorderChildComponentInstance,
-} from '@editor/features/assembly';
+import { useSelector } from 'react-redux';
+import { Draggable } from 'react-beautiful-dnd';
+import { Flex, Icons } from 'pkg.admin-components';
+import { selectComponent } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
 export default function InstanceCard(props) {
-  const { componentId, slotId } = props;
+  const { componentId, index } = props;
 
   const { activeComponentId, activePageId } = useActiveWorkspaceComponent();
   const component = useSelector(selectComponent(activePageId, componentId));
 
-  const slotComponents = useSelector(selectComponentSlot(activePageId, activeComponentId, slotId));
-  const instanceIndex = slotComponents.findIndex((compare) => compare === componentId);
-
-  const theme = useAdminTheme();
-  const dispatch = useDispatch();
-
   return (
-    <Container
-      paddingVertical="6px"
-      paddingHorizontal="12px"
-      gridGap="4px"
-      align="center"
-      justify="space-between"
-      isDragging={isDragging}
-    >
-      <Flex.Row flexGrow overflowX="hidden">
-        <Label>{get(component, 'name')}</Label>
-      </Flex.Row>
-    </Container>
+    <Draggable draggableId={componentId} index={index}>
+      {(provided, snapshot) => (
+        <Container
+          paddingVertical="6px"
+          paddingHorizontal="12px"
+          gridGap="4px"
+          align="center"
+          justify="space-between"
+          isDragging={snapshot.isDragging}
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          <Flex.Row flexGrow overflowX="hidden">
+            <Label>{get(component, 'name')}</Label>
+          </Flex.Row>
+        </Container>
+      )}
+    </Draggable>
   );
 }
 
@@ -48,12 +45,6 @@ const Container = styled(Flex.Row)`
 
   ${(props) => props.isDragging && css`
     box-shadow: none;
-    opacity: 0;
-    cursor: grabbing;
-
-    ${Label}, ${Flex.Row} {
-      cursor: grabbing;
-    }
   `}
 
   &:hover {

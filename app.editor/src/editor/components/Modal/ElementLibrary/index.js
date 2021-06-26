@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { v4 as uuid } from 'uuid';
 import { useDispatch } from 'react-redux';
 import { Flex, Grid } from 'pkg.admin-components';
 import { ComponentMeta } from 'pkg.campaign-components';
@@ -7,7 +8,7 @@ import ModalDefaultLayout from '@editor/components/Modal/DefaultLayout';
 import SearchBar from '@editor/components/Modal/ElementLibrary/SearchBar';
 import TraitPill from '@editor/components/Modal/ElementLibrary/TraitPill';
 import ComponentCard from '@editor/components/Modal/ElementLibrary/ComponentCard';
-import { addChildComponent } from '@editor/features/assembly';
+import { addChildComponentInstance, buildComponent } from '@editor/features/assembly';
 import { closeModal } from '@editor/features/modal';
 
 const featuredTraits = [
@@ -33,12 +34,19 @@ export default function ElementLibraryModal(props) {
   const dispatch = useDispatch();
 
   function addComponent(meta) {
-    dispatch(addChildComponent({
+    const componentId = uuid();
+
+    dispatch(buildComponent({
+      pageId,
+      componentId,
       componentTag: meta.tag,
+    }));
+
+    dispatch(addChildComponentInstance({
+      componentId,
       pageId,
       parentComponentId,
       slotId,
-      slotPlacementOrder,
     }));
 
     dispatch(closeModal());
@@ -67,7 +75,12 @@ export default function ElementLibraryModal(props) {
             ))}
           </Flex.Row>
         </Flex.Column>
-        <ComponentsColumn fullWidth paddingHorizontal="24px" gridGap="12px" overflowY="scroll">
+        <ComponentsColumn
+          fullWidth
+          paddingHorizontal="24px"
+          gridGap="12px"
+          overflowY="scroll"
+        >
           <ComponentsGroupTitle>Recent</ComponentsGroupTitle>
           <Grid fullWidth columns="1fr 1fr" gap="12px">
             {recentComponents.map((meta) => (
@@ -83,46 +96,6 @@ export default function ElementLibraryModal(props) {
     </ModalDefaultLayout>
   );
 }
-
-//   return (
-//     <ModalDefaultLayout
-//       width="600px"
-//       title="Element Library"
-//     >
-//       <ModalContainer fullWidth padding="24px" gridGap="32px">
-//         <Flex.Column fullWidth gridGap="12px">
-//           <SearchBar />
-//           <Flex.Row fullWidth gridGap="6px" overflowX="scroll">
-//             {featuredTraits.map((item) => (
-//               <TraitPill
-//                 key={item.trait}
-//                 label={item.label}
-//                 trait={item.trait}
-//                 isSelected={selectedTraits[item.trait]}
-//                 setIsSelected={() => setSelectedTraits((state) => ({
-//                   ...state,
-//                   [item.trait]: !selectedTraits[item.trait],
-//                 }))}
-//               />
-//             ))}
-//           </Flex.Row>
-//         </Flex.Column>
-//         <ComponentsColumn fullWidth gridGap="12px">
-//           <ComponentsGroupTitle>Recent</ComponentsGroupTitle>
-//           <Grid fullWidth columns="1fr 1fr">
-//             {recentComponents.map((meta) => (
-//               <ComponentCard
-//                 key={meta.tag}
-//                 componentMeta={meta}
-//                 onClick={() => {}}
-//               />
-//             ))}
-//           </Grid>
-//         </ComponentsColumn>
-//       </ModalContainer>
-//     </ModalDefaultLayout>
-//   );
-// }
 
 const ModalContainer = styled(Flex.Column)`
   background-color: ${(props) => props.theme.colors.mono[100]};

@@ -23,10 +23,11 @@ import {
 
 export default function Workspace(props) {
   const theme = useAdminTheme();
-  const { activeComponentMeta } = useActiveWorkspaceComponent();
   const tab = useSelector(selectTab);
 
   const dispatch = useDispatch();
+
+  const { activeComponentMeta } = useActiveWorkspaceComponent();
 
   const activeComponentHasProperties = !!Object.keys(get(activeComponentMeta, 'properties', {})).length;
   const activeComponentHasSlots = !!get(activeComponentMeta, 'slots', []).length;
@@ -61,88 +62,86 @@ export default function Workspace(props) {
   }
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <WorkspaceContainer fullWidth fullHeight as="article">
-        <WorkspacePageNavigation />
-        <WorkspaceComponentToolbar />
-        <InnerWorkspaceContainer flexGrow justifyContent="space-between" gridGap="36px">
-          <Flex.Column fullHeight gridGap="12px">
-            {activeComponentHasProperties && (
-              <Buttons.IconButton
-                aria-label="Edit component properties"
-                onClick={() => dispatch(setTab(PROPERTIES_TAB))}
-                color={iconButtonColor(PROPERTIES_TAB)}
-                hoverColor={theme.colors.mono[500]}
-                IconComponent={Icons.SettingFill}
-                tooltipProps={{
-                  message: 'Properties',
-                  point: 'left',
-                }}
-              />
-            )}
-            {activeComponentHasSlots && (
-              <Buttons.IconButton
-                aria-label="Edit component slots"
-                onClick={() => dispatch(setTab(SLOTS_TAB))}
-                color={iconButtonColor(SLOTS_TAB)}
-                hoverColor={theme.colors.mono[500]}
-                IconComponent={Icons.MenuAlt}
-                tooltipProps={{
-                  message: 'Slots',
-                  point: 'left',
-                }}
-              />
-            )}
-            {activeComponentHasDocumentation && (
-              <Buttons.IconButton
-                aria-label="Read component documentation"
-                onClick={() => dispatch(setTab(DOCUMENTATION_TAB))}
-                color={iconButtonColor(DOCUMENTATION_TAB)}
-                hoverColor={theme.colors.mono[500]}
-                IconComponent={Icons.QuestionFill}
-                tooltipProps={{
-                  message: 'Documentation',
-                  point: 'left',
-                }}
-              />
-            )}
+    <WorkspaceContainer fullWidth fullHeight as="article">
+      <WorkspacePageNavigation />
+      <WorkspaceComponentToolbar />
+      <InnerWorkspaceContainer flexGrow justifyContent="space-between" gridGap="36px">
+        <Flex.Column fullHeight gridGap="12px">
+          {activeComponentHasProperties && (
             <Buttons.IconButton
-              aria-label="Submit component feedback or bugs"
-              onClick={() => dispatch(setTab(FEEDBACK_TAB))}
-              color={iconButtonColor(FEEDBACK_TAB)}
+              aria-label="Edit component properties"
+              onClick={() => dispatch(setTab(PROPERTIES_TAB))}
+              color={iconButtonColor(PROPERTIES_TAB)}
               hoverColor={theme.colors.mono[500]}
-              IconComponent={Icons.Bug}
+              IconComponent={Icons.SettingFill}
               tooltipProps={{
-                message: 'Feedback',
+                message: 'Properties',
                 point: 'left',
               }}
             />
-          </Flex.Column>
-          <Flex.Column overflowY="scroll" gridGap="32px" fullWidth>
-            {isActiveTab(PROPERTIES_TAB) && (
-              <WorkspaceSection name="Properties">
-                <WorkspacePropertiesSection />
-              </WorkspaceSection>
-            )}
-            {isActiveTab(SLOTS_TAB) && (
-              <WorkspaceSection name="Slots">
-                <WorkspaceSlotsSection />
-              </WorkspaceSection>
-            )}
-            {isActiveTab(DOCUMENTATION_TAB) && (
-              <WorkspaceSection name="Documentation">
-                <WorkspaceDocumentationSection />
-              </WorkspaceSection>
-            )}
-            {isActiveTab(FEEDBACK_TAB) && (
-              <WorkspaceSection name="Feedback">
-                <WorkspaceFeedbackSection />
-              </WorkspaceSection>
-            )}
-          </Flex.Column>
-        </InnerWorkspaceContainer>
-      </WorkspaceContainer>
-    </DndProvider>
+          )}
+          {activeComponentHasSlots && (
+            <Buttons.IconButton
+              aria-label="Edit component slots"
+              onClick={() => dispatch(setTab(SLOTS_TAB))}
+              color={iconButtonColor(SLOTS_TAB)}
+              hoverColor={theme.colors.mono[500]}
+              IconComponent={Icons.MenuAlt}
+              tooltipProps={{
+                message: 'Slots',
+                point: 'left',
+              }}
+            />
+          )}
+          {activeComponentHasDocumentation && (
+            <Buttons.IconButton
+              aria-label="Read component documentation"
+              onClick={() => dispatch(setTab(DOCUMENTATION_TAB))}
+              color={iconButtonColor(DOCUMENTATION_TAB)}
+              hoverColor={theme.colors.mono[500]}
+              IconComponent={Icons.QuestionFill}
+              tooltipProps={{
+                message: 'Documentation',
+                point: 'left',
+              }}
+            />
+          )}
+          <Buttons.IconButton
+            aria-label="Submit component feedback or bugs"
+            onClick={() => dispatch(setTab(FEEDBACK_TAB))}
+            color={iconButtonColor(FEEDBACK_TAB)}
+            hoverColor={theme.colors.mono[500]}
+            IconComponent={Icons.Bug}
+            tooltipProps={{
+              message: 'Feedback',
+              point: 'left',
+            }}
+          />
+        </Flex.Column>
+        <Flex.Column overflowY="scroll" gridGap="32px" fullWidth>
+          {isActiveTab(PROPERTIES_TAB) && (
+            <WorkspaceSection name="Properties">
+              <WorkspacePropertiesSection />
+            </WorkspaceSection>
+          )}
+          {isActiveTab(SLOTS_TAB) && (
+            <WorkspaceSection name="Slots">
+              <WorkspaceSlotsSection />
+            </WorkspaceSection>
+          )}
+          {isActiveTab(DOCUMENTATION_TAB) && (
+            <WorkspaceSection name="Documentation">
+              <WorkspaceDocumentationSection />
+            </WorkspaceSection>
+          )}
+          {isActiveTab(FEEDBACK_TAB) && (
+            <WorkspaceSection name="Feedback">
+              <WorkspaceFeedbackSection />
+            </WorkspaceSection>
+          )}
+        </Flex.Column>
+      </InnerWorkspaceContainer>
+    </WorkspaceContainer>
   );
 }
 
