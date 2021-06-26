@@ -57,7 +57,7 @@ export default function ElementLibraryModal(props) {
       width="600px"
       title="Element Library"
     >
-      <ModalContainer fullWidth>
+      <ModalContainer fullWidth bg={(colors) => colors.mono[100]}>
         <Flex.Column fullWidth padding="24px" gridGap="12px">
           <SearchBar />
           <Flex.Row fullWidth gridGap="6px" overflowX="scroll">
@@ -98,7 +98,6 @@ export default function ElementLibraryModal(props) {
 }
 
 const ModalContainer = styled(Flex.Column)`
-  background-color: ${(props) => props.theme.colors.mono[100]};
   border-bottom-right-radius: ${(props) => props.theme.rounded.default};
   border-bottom-left-radius: ${(props) => props.theme.rounded.default};
 `;

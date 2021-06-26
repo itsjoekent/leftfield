@@ -27,7 +27,7 @@ export default function SlotInstanceList(props) {
           paddingHorizontal="12px"
           gridGap="12px"
           ref={provided.innerRef}
-          isOver={snapshot.isDraggingOver}
+          bg={(colors) => snapshot.isDraggingOver ? colors.purple[100] : colors.mono[300]}
           {...provided.droppableProps}
         >
           {slotComponents.map((component, index) => (
@@ -48,8 +48,4 @@ const Container = styled(Flex.Column)`
   min-height: 12px;
   border-top-left-radius: ${(props) => props.theme.rounded.default};
   border-top-right-radius: ${(props) => props.theme.rounded.default};
-
-  ${(props) => props.isOver && css`
-    background-color: ${(props) => props.theme.colors.purple[100]};
-  `}
 `;

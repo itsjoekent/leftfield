@@ -43,7 +43,10 @@ export default function SlotList(props) {
   ) : totalComponentsInSlot < 1;
 
   return (
-    <Container>
+    <Flex.Column
+      bg={(colors) => colors.mono[300]}
+      rounded={(radius) => radius.default}
+    >
       <WorkspaceSlotInstanceList slotId={slotId} />
       {hasEmptyChannel && (
         <Flex.Row
@@ -74,14 +77,9 @@ export default function SlotList(props) {
           />
         </Flex.Row>
       )}
-    </Container>
+    </Flex.Column>
   );
 }
-
-const Container = styled(Flex.Column)`
-  background-color: ${(props) => props.theme.colors.mono[300]};
-  border-radius: ${(props) => props.theme.rounded.default};
-`;
 
 const AddButton = styled(Flex.Row)`
   ${(props) => props.theme.fonts.main.regular};

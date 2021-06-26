@@ -81,10 +81,21 @@ export default function Workspace(props) {
   }
 
   return (
-    <WorkspaceContainer fullWidth fullHeight as="article">
+    <Flex.Column
+      fullWidth
+      fullHeight
+      as="article"
+      position="relative"
+      shadow={(shadow) => shadow.light}
+      bg={(colors) => colors.mono[100]}
+    >
       <WorkspacePageNavigation />
       <WorkspaceComponentToolbar />
-      <InnerWorkspaceContainer flexGrow justifyContent="space-between" gridGap="36px">
+      <InnerWorkspaceContainer
+        flexGrow
+        justifyContent="space-between"
+        gridGap="36px"
+      >
         <Flex.Column fullHeight gridGap="12px">
           {activeComponentHasProperties && (
             <Buttons.IconButton
@@ -160,15 +171,9 @@ export default function Workspace(props) {
           )}
         </Flex.Column>
       </InnerWorkspaceContainer>
-    </WorkspaceContainer>
+    </Flex.Column>
   );
 }
-
-const WorkspaceContainer = styled(Flex.Column)`
-  position: relative;
-  background-color: ${(props) => props.theme.colors.mono[100]};
-  ${(props) => props.theme.shadow.light}
-`;
 
 const InnerWorkspaceContainer = styled(Flex.Row)`
   padding: 12px;

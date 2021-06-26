@@ -15,20 +15,21 @@ export default function FieldLabel(props) {
 
   return (
     <Flex.Row hasInfo={hasInfo} justify="space-between" align="center">
-      <LabelRow flexGrow gridGap="4px" align="center">
+      <Flex.Row
+        flexGrow
+        gridGap="4px"
+        align="center"
+        overflowX="hidden"
+      >
         <LabelCopy htmlFor={labelFor || ''}>{labelCopy}</LabelCopy>
         <HintCopy>{isRequired ? '(required)' : '(optional)'}</HintCopy>
-      </LabelRow>
+      </Flex.Row>
       {hasInfo && (
         <Icons.InfoLight color={theme.colors.mono[400]} />
       )}
     </Flex.Row>
   );
 }
-
-const LabelRow = styled(Flex.Row)`
-  overflow: hidden;
-`;
 
 const LabelCopy = styled.label`
   ${(props) => props.theme.fonts.main.bold};

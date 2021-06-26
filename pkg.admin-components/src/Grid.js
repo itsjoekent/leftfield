@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import generics from './generics';
 
 const Grid = styled.div`
   display: grid;
@@ -10,20 +11,7 @@ const Grid = styled.div`
   ${({ rowGap }) => !!rowGap && css`grid-row-gap: ${rowGap};`}
   ${({ columnGap }) => !!columnGap && css`grid-column-gap: ${columnGap};`}
 
-  ${({ fullHeight }) => !!fullHeight && css`height: 100%;`}
-  ${({ fullWidth }) => !!fullWidth && css`width: 100%;`}
-
-  ${({ flexGrow }) => !!flexGrow && css`flex-grow: 1;`}
-
-  ${({ padding }) => !!padding && css`padding: ${padding};`}
-  ${({ paddingVertical }) => !!paddingVertical && css`
-    padding-top: ${paddingVertical};
-    padding-bottom: ${paddingVertical};
-  `}
-  ${({ paddingHorizontal }) => !!paddingHorizontal && css`
-    padding-left: ${paddingHorizontal};
-    padding-right: ${paddingHorizontal};
-  `}
+  ${generics}
 `;
 
 export default Grid;

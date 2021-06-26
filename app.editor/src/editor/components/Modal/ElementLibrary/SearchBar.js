@@ -10,10 +10,12 @@ export default function SearchBar(props) {
 
   return (
     <Container
-      isFocused={isFocused}
       align="center"
       gridGap="12px"
       padding="12px"
+      shadow={(shadow) => isFocused && shadow.light}
+      bg={(colors) => colors.mono[props.isFocused ? 100 : 200]}
+      rounded={(radius) => radius.default}
     >
       <Flex.Row align="center" gridGap="6px" flexGrow>
         <Icons.Search color={theme.colors.mono[500]} />
@@ -37,10 +39,6 @@ export default function SearchBar(props) {
 }
 
 const Container = styled(Flex.Row)`
-  background-color: ${(props) => props.theme.colors.mono[props.isFocused ? 100 : 200]};
-  border-radius: ${(props) => props.theme.rounded.default};
-  ${(props) => props.isFocused && props.theme.shadow.light};
-
   transition: all ${(props) => props.theme.animation.defaultTransition};
   transition-property: background-color, box-shadow;
 `;

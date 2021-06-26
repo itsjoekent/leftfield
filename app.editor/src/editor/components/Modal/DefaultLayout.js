@@ -38,7 +38,12 @@ export default function DefaultLayout(props) {
 
   return (
     <Backdrop>
-      <ModalContainer ref={modalRef} width={width} role="dialog" aria-labelledby="modal-title">
+      <ModalContainer
+        ref={modalRef}
+        width={width} 
+        role="dialog"
+        aria-labelledby="modal-title"
+      >
         <TitleRow justify="center" align="center" padding="6px">
           <Title id="modal-title">{title}</Title>
           <CloseButton
