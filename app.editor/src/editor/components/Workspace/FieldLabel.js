@@ -16,7 +16,7 @@ export default function FieldLabel(props) {
   return (
     <Flex.Row hasInfo={hasInfo} justify="space-between" align="center">
       <LabelRow flexGrow gridGap="4px" align="center">
-        <LabelCopy htmlFor={labelFor}>{labelCopy}</LabelCopy>
+        <LabelCopy htmlFor={labelFor || ''}>{labelCopy}</LabelCopy>
         <HintCopy>{isRequired ? '(required)' : '(optional)'}</HintCopy>
       </LabelRow>
       {hasInfo && (

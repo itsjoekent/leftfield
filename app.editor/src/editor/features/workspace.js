@@ -16,31 +16,37 @@ export const workspaceSlice = createSlice({
     setTab: (state, action) => {
       state.tab = action.payload;
     },
-    setActivePageId: (pageId) => {
-
+    setActivePageId: (state, action) => {
+      state.activePageId = action.payload;
     },
-    setIsPageDrawerOpen: (isPageDrawerOpen) => {
-
+    setActiveComponentId: (state, action) => {
+      state.activeComponentId = action.payload;
     },
-    setIsSettingsMenuOpen: (isSettingsMenuOpen) => {
-
-    },
-    setActiveComponentId: (componentId) => {
-
-    },
-    navigateBackToLastActiveComponent: () => {
-
-    },
-    setIsComponentTreeOpen: (isComponentTreeOpen) => {
-
-    },
+    // setIsPageDrawerOpen: (isPageDrawerOpen) => {
+    //
+    // },
+    // setIsSettingsMenuOpen: (isSettingsMenuOpen) => {
+    //
+    // },
+    // setActiveComponentId: (componentId) => {
+    //
+    // },
+    // navigateBackToLastActiveComponent: () => {
+    //
+    // },
+    // setIsComponentTreeOpen: (isComponentTreeOpen) => {
+    //
+    // },
   },
 });
 
 export const {
   setActivePageId,
+  setActiveComponentId,
   setTab,
 } = workspaceSlice.actions;
+
+console.log(workspaceSlice.actions);
 
 export default workspaceSlice.reducer;
 

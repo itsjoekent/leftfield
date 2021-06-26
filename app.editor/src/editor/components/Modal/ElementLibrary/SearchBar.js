@@ -29,8 +29,8 @@ export default function SearchBar(props) {
       </Flex.Row>
       <Buttons.IconButton
         IconComponent={Icons.Filter}
-        color={theme.colors.mono[500]}
-        hoverColor={theme.colors.mono[700]}
+        color={(theme) => theme.colors.mono[500]}
+        hoverColor={(theme) => theme.colors.mono[700]}
       />
     </Container>
   );

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { Buttons, Flex, Icons, useAdminTheme } from 'pkg.admin-components';
+import { Buttons, Flex, Icons } from 'pkg.admin-components';
 import WorkspaceComponentToolbar from '@editor/components/Workspace/ComponentToolbar';
 import WorkspaceDocumentationSection from '@editor/components/Workspace/DocumentationSection';
 import WorkspaceFeedbackSection from '@editor/components/Workspace/FeedbackSection';
@@ -10,7 +10,6 @@ import WorkspacePageNavigation from '@editor/components/Workspace/PageNavigation
 import WorkspacePropertiesSection from '@editor/components/Workspace/PropertiesSection';
 import WorkspaceSection from '@editor/components/Workspace/Section';
 import WorkspaceSlotsSection from '@editor/components/Workspace/SlotsSection';
-import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import {
   PROPERTIES_TAB,
   SLOTS_TAB,
@@ -20,14 +19,22 @@ import {
   selectTab,
   setTab,
 } from '@editor/features/workspace';
+import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
+import usePrevious from '@editor/hooks/usePrevious';
 
 export default function Workspace(props) {
-  const theme = useAdminTheme();
   const tab = useSelector(selectTab);
 
   const dispatch = useDispatch();
 
-  const { activeComponentMeta } = useActiveWorkspaceComponent();
+  const {
+    activeComponentMeta,
+    activeComponentId,
+    activePageId,
+  } = useActiveWorkspaceComponent();
+
+  const previousActiveComponentId = usePrevious(activeComponentId);
+  const previousActivePageId = usePrevious(activePageId);
 
   const activeComponentHasProperties = !!Object.keys(get(activeComponentMeta, 'properties', {})).length;
   const activeComponentHasSlots = !!get(activeComponentMeta, 'slots', []).length;
@@ -41,7 +48,11 @@ export default function Workspace(props) {
       [FEEDBACK_TAB]: true,
     };
 
-    if (!tabAvailability[tab]) {
+    if (
+      (!tabAvailability[tab])
+      || (previousActiveComponentId !== activeComponentId)
+      || (previousActivePageId !== activePageId)
+    ) {
       const nextIndex = Object.values(tabAvailability).findIndex((isAvailable) => !!isAvailable);
       dispatch(setTab(Object.keys(tabAvailability)[nextIndex]));
     }
@@ -51,6 +62,10 @@ export default function Workspace(props) {
     activeComponentHasProperties,
     activeComponentHasSlots,
     activeComponentHasDocumentation,
+    activeComponentId,
+    activePageId,
+    previousActiveComponentId,
+    previousActivePageId,
   ]);
 
   function isActiveTab(key) {
@@ -58,7 +73,11 @@ export default function Workspace(props) {
   }
 
   function iconButtonColor(key) {
-    return theme.colors.mono[isActiveTab(key) ? 700 : 300];
+    function _iconButtonColor(theme) {
+      return theme.colors.mono[isActiveTab(key) ? 700 : 300];
+    }
+
+    return _iconButtonColor;
   }
 
   return (
@@ -72,7 +91,7 @@ export default function Workspace(props) {
               aria-label="Edit component properties"
               onClick={() => dispatch(setTab(PROPERTIES_TAB))}
               color={iconButtonColor(PROPERTIES_TAB)}
-              hoverColor={theme.colors.mono[500]}
+              hoverColor={(theme) => theme.colors.mono[500]}
               IconComponent={Icons.SettingFill}
               tooltipProps={{
                 message: 'Properties',
@@ -85,7 +104,7 @@ export default function Workspace(props) {
               aria-label="Edit component slots"
               onClick={() => dispatch(setTab(SLOTS_TAB))}
               color={iconButtonColor(SLOTS_TAB)}
-              hoverColor={theme.colors.mono[500]}
+              hoverColor={(theme) => theme.colors.mono[500]}
               IconComponent={Icons.MenuAlt}
               tooltipProps={{
                 message: 'Slots',
@@ -98,7 +117,7 @@ export default function Workspace(props) {
               aria-label="Read component documentation"
               onClick={() => dispatch(setTab(DOCUMENTATION_TAB))}
               color={iconButtonColor(DOCUMENTATION_TAB)}
-              hoverColor={theme.colors.mono[500]}
+              hoverColor={(theme) => theme.colors.mono[500]}
               IconComponent={Icons.QuestionFill}
               tooltipProps={{
                 message: 'Documentation',
@@ -110,7 +129,7 @@ export default function Workspace(props) {
             aria-label="Submit component feedback or bugs"
             onClick={() => dispatch(setTab(FEEDBACK_TAB))}
             color={iconButtonColor(FEEDBACK_TAB)}
-            hoverColor={theme.colors.mono[500]}
+            hoverColor={(theme) => theme.colors.mono[500]}
             IconComponent={Icons.Bug}
             tooltipProps={{
               message: 'Feedback',

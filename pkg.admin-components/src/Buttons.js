@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import useAdminTheme from './useAdminTheme';
 
 const IconButtonWrapper = styled.button`
   display: flex;
@@ -28,6 +29,8 @@ export function IconButton(props) {
     ...rest
   } = props;
 
+  const theme = useAdminTheme();
+
   const buttonRef = React.useRef(null);
   const [isHovering, setIsHovering] = React.useState(false);
 
@@ -46,7 +49,7 @@ export function IconButton(props) {
 
     if (buttonRef.current) {
       buttonRef.current.addEventListener('mouseenter', onMouseEnter);
-      buttonRef.current.addEventListener('mouseleave', onMouseLeave);  
+      buttonRef.current.addEventListener('mouseleave', onMouseLeave);
     }
 
     return () => {
@@ -59,7 +62,7 @@ export function IconButton(props) {
     hoverColor,
   ]);
 
-  const iconColor = isHovering && hoverColor ? hoverColor : color;
+  const iconColor = isHovering && hoverColor ? hoverColor(theme) : color(theme);
 
   return (
     <IconButtonWrapper ref={buttonRef} {...rest}>

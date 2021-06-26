@@ -12,6 +12,7 @@ function PreviewSelector(props) {
   const { isMobilePreview, isDesktopPreview } = useSelector(selectDeviceSizeList);
   const dispatch = useDispatch();
 
+  // TODO: Refactor to IconButton ?
   return (
     <Row>
       <DeviceButton onClick={() => dispatch(setMobileDevice())}>

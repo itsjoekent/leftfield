@@ -9,8 +9,8 @@ import { selectComponentSlot } from '@editor/features/assembly';
 import { setModal, ELEMENT_LIBRARY } from '@editor/features/modal';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
-// drop area
-// red bg if doesn't have min
+// TODO:
+// validations / red bg if doesn't have min
 
 export default function SlotList(props) {
   const { slotId } = props;
@@ -69,8 +69,8 @@ export default function SlotList(props) {
           </AddButton>
           <Buttons.IconButton
             IconComponent={Icons.DeskAlt}
-            color={theme.colors.mono[600]}
-            hoverColor={theme.colors.mono[900]}
+            color={(theme) => theme.colors.mono[600]}
+            hoverColor={(theme) => theme.colors.mono[900]}
           />
         </Flex.Row>
       )}
