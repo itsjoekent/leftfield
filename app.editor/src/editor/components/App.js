@@ -1,27 +1,31 @@
 import React from 'react';
 import styled from 'styled-components';
+import Modal from '@editor/components/Modal';
 import Workspace from '@editor/components/Workspace';
 import Preview from '@editor/components/Preview';
 import PreviewSelector from '@editor/components/PreviewSelector';
 
 function App() {
   return (
-    <Page>
-      <SectionLayout>
-        <LeftSide />
-        <RightSide>
-          <PreviewSelector />
-        </RightSide>
-      </SectionLayout>
-      <PanelLayout as="main">
-        <LeftSide>
-          <Workspace />
-        </LeftSide>
-        <RightSide>
-          <Preview />
-        </RightSide>
-      </PanelLayout>
-    </Page>
+    <React.Fragment>
+      <Page>
+        <SectionLayout>
+          <LeftSide />
+          <RightSide>
+            <PreviewSelector />
+          </RightSide>
+        </SectionLayout>
+        <PanelLayout as="main">
+          <LeftSide>
+            <Workspace />
+          </LeftSide>
+          <RightSide>
+            <Preview />
+          </RightSide>
+        </PanelLayout>
+      </Page>
+      <Modal />
+    </React.Fragment>
   );
 }
 
@@ -55,4 +59,3 @@ const RightSide = styled.section`
 `;
 
 export default App;
-

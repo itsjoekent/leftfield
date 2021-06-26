@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { find, get } from 'lodash';
-import { Flex } from 'pkg.admin-components';
-import WorkspaceSlotDropper from '@editor/components/Workspace/SlotDropper';
+import { Buttons, Flex, Icons, useAdminTheme } from 'pkg.admin-components';
 import WorkspaceSlotInstanceList from '@editor/components/Workspace/SlotInstanceList';
 import { COMPONENT_TYPE } from '@editor/constants/DragTypes';
 import { selectComponentSlot } from '@editor/features/assembly';
+import { setModal, ELEMENT_LIBRARY } from '@editor/features/modal';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
 // drop area
@@ -14,6 +14,9 @@ import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceCompone
 
 export default function SlotList(props) {
   const { slotId } = props;
+
+  const theme = useAdminTheme();
+  const dispatch = useDispatch();
 
   const {
     activePageId,
@@ -46,7 +49,29 @@ export default function SlotList(props) {
         <WorkspaceSlotInstanceList slotId={slotId} />
       )}
       {hasEmptyChannel && (
-        <WorkspaceSlotDropper slotId={slotId} />
+        <Flex.Row fullWidth justify="space-between" align="center">
+          <AddButton
+            gridGap="6px"
+            align="center"
+            onClick={() => dispatch(setModal({
+              type: ELEMENT_LIBRARY,
+              props: {
+                pageId: activePageId,
+                parentComponentId: activeComponentId,
+                slotId,
+                slotPlacementOrder: slotComponents.length,
+              },
+            }))}
+          >
+            <Icons.AddRound color={theme.colors.mono[600]} />
+            Add new component
+          </AddButton>
+          <Buttons.IconButton
+            IconComponent={Icons.DeskAlt}
+            color={theme.colors.mono[600]}
+            hoverColor={theme.colors.mono[900]}
+          />
+        </Flex.Row>
       )}
     </Container>
   );
@@ -61,4 +86,27 @@ const Counter = styled.p`
   ${(props) => props.theme.fonts.main.light};
   font-size: 11px;
   color: ${(props) => props.theme.colors.mono[900]};
+`;
+
+const AddButton = styled(Flex.Row)`
+  ${(props) => props.theme.fonts.main.regular};
+  font-size: 14px;
+  color: ${(props) => props.theme.colors.mono[600]};
+  transition: 0.4s color;
+
+  cursor: pointer;
+  border: none;
+  background: none;
+
+  svg path {
+    transition: 0.4s stroke;
+  }
+
+  &:hover {
+    color: ${(props) => props.theme.colors.mono[900]};
+
+    svg path {
+      stroke: ${(props) => props.theme.colors.mono[900]};
+    }
+  }
 `;

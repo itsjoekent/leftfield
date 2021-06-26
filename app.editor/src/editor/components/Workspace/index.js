@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { Buttons, Flex, Icons, useAdminTheme } from 'pkg.admin-components';
-import WorkspaceComponentLibrary from '@editor/components/Workspace/ComponentLibrary';
 import WorkspaceComponentToolbar from '@editor/components/Workspace/ComponentToolbar';
 import WorkspaceDocumentationSection from '@editor/components/Workspace/DocumentationSection';
 import WorkspaceFeedbackSection from '@editor/components/Workspace/FeedbackSection';
@@ -144,7 +143,6 @@ export default function Workspace(props) {
             )}
           </Flex.Column>
         </InnerWorkspaceContainer>
-        <WorkspaceComponentLibrary />
       </WorkspaceContainer>
     </DndProvider>
   );

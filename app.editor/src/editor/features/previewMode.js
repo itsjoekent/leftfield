@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export const MOBILE_DEVICE = 'MOBILE_DEVICE';
 export const DESKTOP_DEVICE = 'DESKTOP_DEVICE';
 
-export const previewModeSlide = createSlice({
+export const previewModeSlice = createSlice({
   name: 'previewMode',
   initialState: {
     deviceSize: DESKTOP_DEVICE,
@@ -37,6 +37,6 @@ export function selectDeviceSizeList(state) {
   };
 }
 
-export const { setMobileDevice, setDesktopDevice } = previewModeSlide.actions;
+export const { setMobileDevice, setDesktopDevice } = previewModeSlice.actions;
 
-export default previewModeSlide.reducer;
+export default previewModeSlice.reducer;

@@ -40,7 +40,7 @@ export const assemblySlice = createSlice({
       const insert = {
         id: uuid(),
         tag: componentTag,
-        name: `${componentTag} ${Date.now()}`,
+        name: ComponentMeta[componentTag].name,
       };
 
       set(state, `pages.${pageId}.components.${insert.id}`, insert);

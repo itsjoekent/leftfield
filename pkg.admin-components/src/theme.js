@@ -1,6 +1,9 @@
 import { css } from 'styled-components';
 
 const theme = {
+  animation: {
+    defaultTransition: '0.4s',
+  },
   colors: {
     mono: {
       '900': '#151516',
@@ -80,9 +83,14 @@ const theme = {
   },
   rounded: {
     default: '2px',
+    extra: '4px',
   },
   shadow: {
     light: 'box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);',
+  },
+  zIndex: {
+    modal: 100,
+    tooltip: 1000,
   },
 };
 

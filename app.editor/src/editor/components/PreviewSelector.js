@@ -52,7 +52,7 @@ export const DeviceButton = styled.button`
   cursor: pointer;
 
   svg path {
-    transition: stroke 0.25s;
+    transition: stroke 0.4s;
   }
 
   &:hover {
