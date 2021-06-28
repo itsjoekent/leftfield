@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Flex, Icons, useAdminTheme } from 'pkg.admin-components';
+import {
+  Flex,
+  Icons,
+  useAdminTheme,
+} from 'pkg.admin-components';
 
 export default function FieldLabel(props) {
   const {

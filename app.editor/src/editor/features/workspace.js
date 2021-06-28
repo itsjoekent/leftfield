@@ -46,8 +46,6 @@ export const {
   setTab,
 } = workspaceSlice.actions;
 
-console.log(workspaceSlice.actions);
-
 export default workspaceSlice.reducer;
 
 export function selectActiveComponentId(state) {

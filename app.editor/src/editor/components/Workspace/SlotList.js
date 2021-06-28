@@ -2,7 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { find, get } from 'lodash';
-import { Buttons, Flex, Icons, useAdminTheme } from 'pkg.admin-components';
+import {
+  Buttons,
+  Flex, Icons,
+  Tooltip,
+  useAdminTheme,
+} from 'pkg.admin-components';
 import WorkspaceSlotInstanceList from '@editor/components/Workspace/SlotInstanceList';
 import { COMPONENT_TYPE } from '@editor/constants/DragTypes';
 import { selectComponentSlot } from '@editor/features/assembly';
@@ -56,6 +61,7 @@ export default function SlotList(props) {
           padding="12px"
         >
           <AddButton
+            as="button"
             gridGap="6px"
             align="center"
             onClick={() => dispatch(setModal({
@@ -70,11 +76,14 @@ export default function SlotList(props) {
             <Icons.AddRound color={theme.colors.mono[600]} />
             Add new component
           </AddButton>
-          <Buttons.IconButton
-            IconComponent={Icons.DeskAlt}
-            color={(theme) => theme.colors.mono[600]}
-            hoverColor={(theme) => theme.colors.mono[900]}
-          />
+          <Tooltip copy="Paste component" point={Tooltip.RIGHT}>
+            <Buttons.IconButton
+              IconComponent={Icons.DeskAlt}
+              color={(theme) => theme.colors.mono[600]}
+              hoverColor={(theme) => theme.colors.mono[900]}
+              aria-label="Paste component"
+            />
+          </Tooltip>
         </Flex.Row>
       )}
     </Flex.Column>
@@ -90,6 +99,8 @@ const AddButton = styled(Flex.Row)`
   cursor: pointer;
   border: none;
   background: none;
+  padding: 0;
+  margin: 0;
 
   svg path {
     transition: 0.4s stroke;

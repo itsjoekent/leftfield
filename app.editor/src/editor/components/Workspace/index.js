@@ -2,7 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { Buttons, Flex, Icons } from 'pkg.admin-components';
+import {
+  Buttons,
+  Flex,
+  Icons,
+  Tooltip,
+} from 'pkg.admin-components';
 import WorkspaceComponentToolbar from '@editor/components/Workspace/ComponentToolbar';
 import WorkspaceDocumentationSection from '@editor/components/Workspace/DocumentationSection';
 import WorkspaceFeedbackSection from '@editor/components/Workspace/FeedbackSection';
@@ -98,55 +103,63 @@ export default function Workspace(props) {
       >
         <Flex.Column fullHeight gridGap="12px">
           {activeComponentHasProperties && (
-            <Buttons.IconButton
-              aria-label="Edit component properties"
-              onClick={() => dispatch(setTab(PROPERTIES_TAB))}
-              color={iconButtonColor(PROPERTIES_TAB)}
-              hoverColor={(theme) => theme.colors.mono[500]}
-              IconComponent={Icons.SettingFill}
-              tooltipProps={{
-                message: 'Properties',
-                point: 'left',
-              }}
-            />
+            <Tooltip copy="Edit properties" point={Tooltip.LEFT}>
+              <Buttons.IconButton
+                aria-label="Edit component properties"
+                onClick={() => dispatch(setTab(PROPERTIES_TAB))}
+                color={iconButtonColor(PROPERTIES_TAB)}
+                hoverColor={(theme) => theme.colors.mono[500]}
+                IconComponent={Icons.SettingFill}
+                tooltipProps={{
+                  message: 'Properties',
+                  point: 'left',
+                }}
+              />
+            </Tooltip>
           )}
           {activeComponentHasSlots && (
-            <Buttons.IconButton
-              aria-label="Edit component slots"
-              onClick={() => dispatch(setTab(SLOTS_TAB))}
-              color={iconButtonColor(SLOTS_TAB)}
-              hoverColor={(theme) => theme.colors.mono[500]}
-              IconComponent={Icons.MenuAlt}
-              tooltipProps={{
-                message: 'Slots',
-                point: 'left',
-              }}
-            />
+            <Tooltip copy="Edit slots" point={Tooltip.LEFT}>
+              <Buttons.IconButton
+                aria-label="Edit component slots"
+                onClick={() => dispatch(setTab(SLOTS_TAB))}
+                color={iconButtonColor(SLOTS_TAB)}
+                hoverColor={(theme) => theme.colors.mono[500]}
+                IconComponent={Icons.MenuAlt}
+                tooltipProps={{
+                  message: 'Slots',
+                  point: 'left',
+                }}
+              />
+            </Tooltip>
           )}
           {activeComponentHasDocumentation && (
+            <Tooltip copy="Documentation" point={Tooltip.LEFT}>
+              <Buttons.IconButton
+                aria-label="Component documentation"
+                onClick={() => dispatch(setTab(DOCUMENTATION_TAB))}
+                color={iconButtonColor(DOCUMENTATION_TAB)}
+                hoverColor={(theme) => theme.colors.mono[500]}
+                IconComponent={Icons.QuestionFill}
+                tooltipProps={{
+                  message: 'Documentation',
+                  point: 'left',
+                }}
+              />
+            </Tooltip>
+          )}
+          <Tooltip copy="Submit feedback or bugs" point={Tooltip.LEFT}>
             <Buttons.IconButton
-              aria-label="Read component documentation"
-              onClick={() => dispatch(setTab(DOCUMENTATION_TAB))}
-              color={iconButtonColor(DOCUMENTATION_TAB)}
+              aria-label="Submit feedback or bugs"
+              onClick={() => dispatch(setTab(FEEDBACK_TAB))}
+              color={iconButtonColor(FEEDBACK_TAB)}
               hoverColor={(theme) => theme.colors.mono[500]}
-              IconComponent={Icons.QuestionFill}
+              IconComponent={Icons.Bug}
               tooltipProps={{
-                message: 'Documentation',
+                message: 'Feedback',
                 point: 'left',
               }}
             />
-          )}
-          <Buttons.IconButton
-            aria-label="Submit component feedback or bugs"
-            onClick={() => dispatch(setTab(FEEDBACK_TAB))}
-            color={iconButtonColor(FEEDBACK_TAB)}
-            hoverColor={(theme) => theme.colors.mono[500]}
-            IconComponent={Icons.Bug}
-            tooltipProps={{
-              message: 'Feedback',
-              point: 'left',
-            }}
-          />
+          </Tooltip>
         </Flex.Column>
         <Flex.Column overflowY="scroll" gridGap="32px" fullWidth>
           {isActiveTab(PROPERTIES_TAB) && (

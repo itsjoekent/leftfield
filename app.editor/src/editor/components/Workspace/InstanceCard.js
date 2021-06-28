@@ -3,7 +3,12 @@ import styled, { css } from 'styled-components';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { Draggable } from 'react-beautiful-dnd';
-import { Buttons, Flex, Icons } from 'pkg.admin-components';
+import {
+  Buttons,
+  Flex,
+  Icons,
+  Tooltip,
+} from 'pkg.admin-components';
 import { selectComponent } from '@editor/features/assembly';
 import { setActiveComponentId } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -34,37 +39,47 @@ export default function InstanceCard(props) {
             <Label>{get(component, 'name')}</Label>
           </Flex.Row>
           <IconRow align="center" gridGap="6px">
-            <Buttons.IconButton
-              IconComponent={Icons.SettingAltLine}
-              color={(theme) => theme.colors.mono[500]}
-              hoverColor={(theme) => theme.colors.purple[600]}
-              onClick={() => dispatch(setActiveComponentId(componentId))}
-              aria-label="Edit component"
-            />
-            <Buttons.IconButton
-              IconComponent={Icons.Copy}
-              color={(theme) => theme.colors.mono[500]}
-              hoverColor={(theme) => theme.colors.mono[900]}
-              aria-label="Copy component"
-            />
-            <Buttons.IconButton
-              IconComponent={Icons.DeskAlt}
-              color={(theme) => theme.colors.mono[500]}
-              hoverColor={(theme) => theme.colors.mono[900]}
-              aria-label="Paste component"
-            />
-            <Buttons.IconButton
-              IconComponent={Icons.CopyAlt}
-              color={(theme) => theme.colors.mono[500]}
-              hoverColor={(theme) => theme.colors.mono[900]}
-              aria-label="Duplicate component"
-            />
-            <Buttons.IconButton
-              IconComponent={Icons.Trash}
-              color={(theme) => theme.colors.mono[500]}
-              hoverColor={(theme) => theme.colors.red[600]}
-              aria-label="Remove component"
-            />
+            <Tooltip copy="Edit component" point={Tooltip.UP}>
+              <Buttons.IconButton
+                IconComponent={Icons.TransferLongTop}
+                color={(theme) => theme.colors.mono[500]}
+                hoverColor={(theme) => theme.colors.purple[600]}
+                onClick={() => dispatch(setActiveComponentId(componentId))}
+                aria-label="Edit component"
+              />
+            </Tooltip>
+            <Tooltip copy="Copy component" point={Tooltip.UP}>
+              <Buttons.IconButton
+                IconComponent={Icons.Copy}
+                color={(theme) => theme.colors.mono[500]}
+                hoverColor={(theme) => theme.colors.mono[900]}
+                aria-label="Copy component"
+              />
+            </Tooltip>
+            <Tooltip copy="Paste component" point={Tooltip.UP}>
+              <Buttons.IconButton
+                IconComponent={Icons.DeskAlt}
+                color={(theme) => theme.colors.mono[500]}
+                hoverColor={(theme) => theme.colors.mono[900]}
+                aria-label="Paste component"
+              />
+            </Tooltip>
+            <Tooltip copy="Duplicate component" point={Tooltip.UP_RIGHT_ALIGNED}>
+              <Buttons.IconButton
+                IconComponent={Icons.CopyAlt}
+                color={(theme) => theme.colors.mono[500]}
+                hoverColor={(theme) => theme.colors.mono[900]}
+                aria-label="Duplicate component"
+              />
+            </Tooltip>
+            <Tooltip copy="Remove component" point={Tooltip.UP_RIGHT_ALIGNED}>
+              <Buttons.IconButton
+                IconComponent={Icons.Trash}
+                color={(theme) => theme.colors.mono[500]}
+                hoverColor={(theme) => theme.colors.red[600]}
+                aria-label="Remove component"
+              />
+            </Tooltip>
           </IconRow>
         </Container>
       )}

@@ -6,4 +6,5 @@ export * as Buttons from './Buttons';
 export * as Flex from './Flex';
 export { default as Grid } from './Grid';
 export * as Icons from './icons';
+export { default as Tooltip } from './Tooltip';
 export * as Typography from './Typography';
