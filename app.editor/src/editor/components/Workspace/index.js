@@ -108,7 +108,7 @@ export default function Workspace(props) {
                 aria-label="Edit component properties"
                 onClick={() => dispatch(setTab(PROPERTIES_TAB))}
                 color={iconButtonColor(PROPERTIES_TAB)}
-                hoverColor={(theme) => theme.colors.mono[500]}
+                hoverColor={(colors) => colors.mono[500]}
                 IconComponent={Icons.SettingFill}
                 tooltipProps={{
                   message: 'Properties',
