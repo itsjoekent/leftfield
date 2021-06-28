@@ -1,6 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Buttons, Flex, Icons, useAdminTheme } from 'pkg.admin-components';
+import {
+  Buttons,
+  Flex,
+  Icons,
+  Tooltip,
+  useAdminTheme,
+} from 'pkg.admin-components';
 
 export default function SearchBar(props) {
   const theme = useAdminTheme();
@@ -29,11 +35,14 @@ export default function SearchBar(props) {
           onBlur={() => setIsFocused(false)}
         />
       </Flex.Row>
-      <Buttons.IconButton
-        IconComponent={Icons.Filter}
-        color={(theme) => theme.colors.mono[500]}
-        hoverColor={(theme) => theme.colors.mono[700]}
-      />
+      <Tooltip copy="Search filters" point={Tooltip.UP}>
+        <Buttons.IconButton
+          IconComponent={Icons.Filter}
+          color={(theme) => theme.colors.mono[500]}
+          hoverColor={(theme) => theme.colors.mono[700]}
+          aria-label="Search filters"
+        />
+      </Tooltip>
     </Container>
   );
 }
