@@ -9,7 +9,6 @@ import {
   useAdminTheme,
 } from 'pkg.admin-components';
 import WorkspaceSlotInstanceList from '@editor/components/Workspace/SlotInstanceList';
-import { COMPONENT_TYPE } from '@editor/constants/DragTypes';
 import { selectComponentSlot } from '@editor/features/assembly';
 import { setModal, ELEMENT_LIBRARY } from '@editor/features/modal';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -31,17 +30,11 @@ export default function SlotList(props) {
 
   const slotMeta = find(get(activeComponentMeta, 'slots', []), { id: slotId });
   const isList = get(slotMeta, 'isList', false);
-  const minListSize = get(slotMeta, 'min', 0);
+  // const minListSize = get(slotMeta, 'min', 0);
   const maxListSize = get(slotMeta, 'max', 0);
 
   const slotComponents = useSelector(selectComponentSlot(activePageId, activeComponentId, slotId));
-
   const totalComponentsInSlot = slotComponents.length;
-  const plural = totalComponentsInSlot !== 1 ? 's' : '';
-
-  const counterCopy = get(slotMeta, 'isList', false) ? (
-    maxListSize ? `${totalComponentsInSlot}/${maxListSize} component${plural} used` : `${totalComponentsInSlot} component${plural}`
-  ) : `${totalComponentsInSlot}/1 components used`;
 
   const hasEmptyChannel = isList ? (
     maxListSize ? totalComponentsInSlot < maxListSize : true

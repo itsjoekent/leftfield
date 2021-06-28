@@ -16,7 +16,7 @@ import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceCompone
 export default function InstanceCard(props) {
   const { componentId, index } = props;
 
-  const { activeComponentId, activePageId } = useActiveWorkspaceComponent();
+  const { activePageId } = useActiveWorkspaceComponent();
   const component = useSelector(selectComponent(activePageId, componentId));
 
   const dispatch = useDispatch();

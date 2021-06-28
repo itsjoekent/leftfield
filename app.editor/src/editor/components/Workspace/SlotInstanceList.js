@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Droppable } from 'react-beautiful-dnd';
 import { Flex } from 'pkg.admin-components';
@@ -13,11 +13,9 @@ export default function SlotInstanceList(props) {
   const {
     activePageId,
     activeComponentId,
-    activeComponentMeta,
   } = useActiveWorkspaceComponent();
 
   const slotComponents = useSelector(selectComponentSlotMapped(activePageId, activeComponentId, slotId));
-  const totalComponentsInSlot = slotComponents.length;
 
   return (
     <Droppable droppableId={slotId}>
@@ -26,6 +24,7 @@ export default function SlotInstanceList(props) {
           paddingVertical="12px"
           paddingHorizontal="12px"
           gridGap="12px"
+          minHeight="12px"
           ref={provided.innerRef}
           bg={(colors) => snapshot.isDraggingOver ? colors.purple[100] : colors.mono[300]}
           {...provided.droppableProps}
@@ -45,7 +44,6 @@ export default function SlotInstanceList(props) {
 }
 
 const Container = styled(Flex.Column)`
-  min-height: 12px;
   border-top-left-radius: ${(props) => props.theme.rounded.default};
   border-top-right-radius: ${(props) => props.theme.rounded.default};
 `;
