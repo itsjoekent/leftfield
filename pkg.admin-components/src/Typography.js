@@ -1,19 +1,24 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import {
+  colors,
+  overflow,
+  padding,
+  size,
+} from './generics';
 
-export const Title = styled.h1`
-  ${(props) => props.theme.fonts.main.extraBold};
-  font-size: 48px;
-  line-height: 1.1;
+const Typography = styled.p`
+  ${(props) => props.fontStyle && props.theme.fonts[props.fontFamily || 'main'][props.fontStyle]}
+  ${(props) => props.fontSize && css`font-size: ${props.fontSize};`}
+  ${(props) => props.letterSpacing && css`letter-spacing: ${props.letterSpacing};`}
+
+  ${(props) => props.textDecoration && css`text-decoration: ${props.textDecoration};`}
+  ${(props) => props.textOverflow && css`text-overflow: ${props.textOverflow};`}
+  ${(props) => props.whiteSpace && css`white-space: ${props.whiteSpace};`}
+
+  ${colors}
+  ${overflow}
+  ${padding}
+  ${size}
 `;
 
-export const LargeMenuTitle = styled.p`
-  ${(props) => props.theme.fonts.main.bold};
-  font-size: 18px;
-  letter-spacing: 2%;
-`;
-
-export const Label = styled.p`
-  ${(props) => props.theme.fonts.main.bold};
-  font-size: 16px;
-  letter-spacing: 2%;
-`;
+export default Typography;

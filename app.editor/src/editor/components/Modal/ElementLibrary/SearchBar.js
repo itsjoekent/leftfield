@@ -38,8 +38,8 @@ export default function SearchBar(props) {
       <Tooltip copy="Search filters" point={Tooltip.UP}>
         <Buttons.IconButton
           IconComponent={Icons.Filter}
-          color={(theme) => theme.colors.mono[500]}
-          hoverColor={(theme) => theme.colors.mono[700]}
+          color={(colors) => colors.mono[500]}
+          hoverColor={(colors) => colors.mono[700]}
           aria-label="Search filters"
         />
       </Tooltip>

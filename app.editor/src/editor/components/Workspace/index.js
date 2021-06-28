@@ -78,8 +78,8 @@ export default function Workspace(props) {
   }
 
   function iconButtonColor(key) {
-    function _iconButtonColor(theme) {
-      return theme.colors.mono[isActiveTab(key) ? 700 : 300];
+    function _iconButtonColor(colors) {
+      return colors.mono[isActiveTab(key) ? 700 : 300];
     }
 
     return _iconButtonColor;
@@ -123,7 +123,7 @@ export default function Workspace(props) {
                 aria-label="Edit component slots"
                 onClick={() => dispatch(setTab(SLOTS_TAB))}
                 color={iconButtonColor(SLOTS_TAB)}
-                hoverColor={(theme) => theme.colors.mono[500]}
+                hoverColor={(colors) => colors.mono[500]}
                 IconComponent={Icons.MenuAlt}
                 tooltipProps={{
                   message: 'Slots',
@@ -138,7 +138,7 @@ export default function Workspace(props) {
                 aria-label="Component documentation"
                 onClick={() => dispatch(setTab(DOCUMENTATION_TAB))}
                 color={iconButtonColor(DOCUMENTATION_TAB)}
-                hoverColor={(theme) => theme.colors.mono[500]}
+                hoverColor={(colors) => colors.mono[500]}
                 IconComponent={Icons.QuestionFill}
                 tooltipProps={{
                   message: 'Documentation',
@@ -152,7 +152,7 @@ export default function Workspace(props) {
               aria-label="Submit feedback or bugs"
               onClick={() => dispatch(setTab(FEEDBACK_TAB))}
               color={iconButtonColor(FEEDBACK_TAB)}
-              hoverColor={(theme) => theme.colors.mono[500]}
+              hoverColor={(colors) => colors.mono[500]}
               IconComponent={Icons.Bug}
               tooltipProps={{
                 message: 'Feedback',

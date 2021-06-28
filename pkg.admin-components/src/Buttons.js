@@ -62,7 +62,7 @@ export function IconButton(props) {
     hoverColor,
   ]);
 
-  const iconColor = isHovering && hoverColor ? hoverColor(theme) : color(theme);
+  const iconColor = isHovering && hoverColor ? hoverColor(theme.colors) : color(theme.colors);
 
   return (
     <IconButtonWrapper ref={buttonRef} {...rest}>

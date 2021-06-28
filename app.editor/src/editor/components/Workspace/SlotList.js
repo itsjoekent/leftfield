@@ -79,8 +79,8 @@ export default function SlotList(props) {
           <Tooltip copy="Paste component" point={Tooltip.RIGHT}>
             <Buttons.IconButton
               IconComponent={Icons.DeskAlt}
-              color={(theme) => theme.colors.mono[600]}
-              hoverColor={(theme) => theme.colors.mono[900]}
+              color={(colors) => colors.mono[600]}
+              hoverColor={(colors) => colors.mono[900]}
               aria-label="Paste component"
             />
           </Tooltip>

@@ -24,7 +24,6 @@ export default function ElementLibraryModal(props) {
     pageId,
     parentComponentId,
     slotId,
-    slotPlacementOrder,
   } = props;
 
   const [selectedTraits, setSelectedTraits] = React.useState(

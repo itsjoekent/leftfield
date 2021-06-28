@@ -128,6 +128,15 @@ export function selectComponentTag(pageId, componentId) {
   return _selectComponentTag;
 }
 
+export function selectComponentName(pageId, componentId) {
+  function _selectComponentName(state) {
+    console.log(state)
+    return get(selectComponent(pageId, componentId)(state), 'name', null);
+  }
+
+  return _selectComponentName;
+}
+
 export function selectComponentSlots(pageId, componentId) {
   function _selectComponentSlots(state) {
     return get(selectComponent(pageId, componentId)(state), 'slots', {});

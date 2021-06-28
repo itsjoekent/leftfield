@@ -11,8 +11,8 @@ import {
 export default function useActiveWorkspaceComponent() {
   const activePageId = useSelector(selectActivePageId);
   const activeComponentId = useSelector(selectActiveComponentId);
-
   const activeComponentTag = useSelector(selectComponentTag(activePageId, activeComponentId));
+
   const activeComponentMeta = ComponentMeta[activeComponentTag];
 
   return {

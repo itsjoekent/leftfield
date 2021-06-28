@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Typography } from 'pkg.admin-components';
 import App from '@editor/components/App';
 import useMediaQuery from '@editor/hooks/useMediaQuery';
 
@@ -10,9 +9,9 @@ function Entrypoint() {
   if (isMobile) {
     return (
       <CenteredLayout>
-        <Typography.Title>
+        <Title>
           Sorry! The editor isn't mobile friendly right now.
-        </Typography.Title>
+        </Title>
       </CenteredLayout>
     );
   }
@@ -22,6 +21,12 @@ function Entrypoint() {
   );
 }
 
+const Title = styled.h1`
+  ${(props) => props.theme.fonts.main.extraBold};
+  font-size: 48px;
+  line-height: 1.1;
+`;
+
 const CenteredLayout = styled.div`
   display: flex;
   flex-direction: column;
@@ -30,7 +35,7 @@ const CenteredLayout = styled.div`
   height: 100vh;
   text-align: center;
 
-  ${Typography.Title} {
+  ${Title} {
     color: ${(props) => props.theme.colors.mono[100]};
   }
 `;

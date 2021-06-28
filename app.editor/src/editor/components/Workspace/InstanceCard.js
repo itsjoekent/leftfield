@@ -42,8 +42,8 @@ export default function InstanceCard(props) {
             <Tooltip copy="Edit component" point={Tooltip.UP}>
               <Buttons.IconButton
                 IconComponent={Icons.TransferLongTop}
-                color={(theme) => theme.colors.mono[500]}
-                hoverColor={(theme) => theme.colors.purple[600]}
+                color={(colors) => colors.mono[500]}
+                hoverColor={(colors) => colors.purple[600]}
                 onClick={() => dispatch(setActiveComponentId(componentId))}
                 aria-label="Edit component"
               />
@@ -51,32 +51,32 @@ export default function InstanceCard(props) {
             <Tooltip copy="Copy component" point={Tooltip.UP}>
               <Buttons.IconButton
                 IconComponent={Icons.Copy}
-                color={(theme) => theme.colors.mono[500]}
-                hoverColor={(theme) => theme.colors.mono[900]}
+                color={(colors) => colors.mono[500]}
+                hoverColor={(colors) => colors.mono[900]}
                 aria-label="Copy component"
               />
             </Tooltip>
             <Tooltip copy="Paste component" point={Tooltip.UP}>
               <Buttons.IconButton
                 IconComponent={Icons.DeskAlt}
-                color={(theme) => theme.colors.mono[500]}
-                hoverColor={(theme) => theme.colors.mono[900]}
+                color={(colors) => colors.mono[500]}
+                hoverColor={(colors) => colors.mono[900]}
                 aria-label="Paste component"
               />
             </Tooltip>
             <Tooltip copy="Duplicate component" point={Tooltip.UP_RIGHT_ALIGNED}>
               <Buttons.IconButton
                 IconComponent={Icons.CopyAlt}
-                color={(theme) => theme.colors.mono[500]}
-                hoverColor={(theme) => theme.colors.mono[900]}
+                color={(colors) => colors.mono[500]}
+                hoverColor={(colors) => colors.mono[900]}
                 aria-label="Duplicate component"
               />
             </Tooltip>
             <Tooltip copy="Remove component" point={Tooltip.UP_RIGHT_ALIGNED}>
               <Buttons.IconButton
                 IconComponent={Icons.Trash}
-                color={(theme) => theme.colors.mono[500]}
-                hoverColor={(theme) => theme.colors.red[600]}
+                color={(colors) => colors.mono[500]}
+                hoverColor={(colors) => colors.red[600]}
                 aria-label="Remove component"
               />
             </Tooltip>

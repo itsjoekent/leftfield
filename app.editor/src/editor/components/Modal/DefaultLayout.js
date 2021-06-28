@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { Flex, Icons } from 'pkg.admin-components';
 import { closeModal } from '@editor/features/modal';
@@ -15,32 +15,36 @@ export default function DefaultLayout(props) {
   const modalRef = React.useRef(null);
 
   React.useEffect(() => {
+    const modalElement = modalRef.current;
+
     function handleClickOutside(event) {
-      if (!modalRef.current) {
+      if (!modalElement) {
         return;
       }
 
-      if (!modalRef.current.contains(event.target)) {
+      if (!modalElement.contains(event.target)) {
         dispatch(closeModal());
       }
     }
 
-    if (modalRef.current) {
+    if (modalElement) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      if (modalRef.current) {
+      if (modalElement) {
         document.removeEventListener('mousedown', handleClickOutside);
       }
     };
-  }, []);
+  }, [
+    dispatch,
+  ]);
 
   return (
     <Backdrop>
       <ModalContainer
         ref={modalRef}
-        width={width} 
+        width={width}
         role="dialog"
         aria-labelledby="modal-title"
       >

@@ -10,8 +10,9 @@ export const colors = css`
 `;
 
 export const overflow = css`
-  ${({ overflowX }) => !!overflowX && css`overflow-x: ${overflowX}`};
-  ${({ overflowY }) => !!overflowY && css`overflow-y: ${overflowY}`};
+  ${({ overflow }) => !!overflow && css`overflow: ${overflow};`}
+  ${({ overflowX }) => !!overflowX && css`overflow-x: ${overflowX};`}
+  ${({ overflowY }) => !!overflowY && css`overflow-y: ${overflowY};`}
 `;
 
 export const padding = css`
@@ -24,10 +25,22 @@ export const padding = css`
     padding-left: ${paddingHorizontal};
     padding-right: ${paddingHorizontal};
   `}
+  ${({ paddingTop }) => !!paddingTop && css`
+    padding-top: ${paddingTop};
+  `}
+  ${({ paddingBottom }) => !!paddingBottom && css`
+    padding-bottom: ${paddingBottom};
+  `}
+  ${({ paddingLeft }) => !!paddingLeft && css`
+    padding-left: ${paddingLeft};
+  `}
+  ${({ paddingRight }) => !!paddingRight && css`
+    padding-right: ${paddingRight};
+  `}
 `;
 
 export const position = css`
-  ${({ position }) => !!position && css`position: ${position}`};
+  ${({ position }) => !!position && css`position: ${position};`}
 `;
 
 export const shadow = css`
@@ -42,6 +55,9 @@ export const size = css`
 
   ${({ fitHeight }) => !!fitHeight && css`height: fit-content;`}
   ${({ fitWidth }) => !!fitWidth && css`width: fit-content;`}
+
+  ${({ minWidth }) => !!minWidth && css`min-width: ${minWidth};`}
+  ${({ minHeight }) => !!minHeight && css`min-height: ${minHeight};`}
 `;
 
 const all = css`

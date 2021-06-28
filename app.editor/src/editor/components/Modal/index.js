@@ -28,7 +28,10 @@ export default function Modal() {
         }));
       }
     })();
-  }, [modalType]);
+  }, [
+    modalComponents,
+    modalType,
+  ]);
 
   const ModalComponent = modalComponents[modalType];
   const hasModalComponent = !!ModalComponent;
