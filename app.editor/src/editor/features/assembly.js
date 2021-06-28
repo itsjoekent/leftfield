@@ -130,7 +130,6 @@ export function selectComponentTag(pageId, componentId) {
 
 export function selectComponentName(pageId, componentId) {
   function _selectComponentName(state) {
-    console.log(state)
     return get(selectComponent(pageId, componentId)(state), 'name', null);
   }
 
