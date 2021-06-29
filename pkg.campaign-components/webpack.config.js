@@ -4,15 +4,10 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
-  output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'dist'),
-    library: package.name,
-    libraryTarget: 'umd',
+  externals: {
+    'react': 'react',
+    'styled-components': 'styled-components',
   },
-  plugins: [
-    new CleanWebpackPlugin(),
-  ],
   module: {
     rules: [
      {
@@ -36,6 +31,15 @@ module.exports = {
       },
     ],
   },
+  output: {
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'dist'),
+    library: package.name,
+    libraryTarget: 'umd',
+  },
+  plugins: [
+    new CleanWebpackPlugin(),
+  ],
   resolve: {
     alias: {
       '@cc': path.resolve(__dirname, 'src/'),

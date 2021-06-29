@@ -141,7 +141,7 @@ const FormGrid = styled.div`
 
 const WideGrid = styled.div`
   display: ${(props) => props.isMobile ? 'grid' : 'none'};
-  grid-template-columns: repeat(${get(props, `slots.${WIDE_MOBILE_DONATE_BUTTONS_SLOT}.length`)}, 1fr);
+  grid-template-columns: repeat(${(props) => get(props, `slots.${WIDE_MOBILE_DONATE_BUTTONS_SLOT}.length`)}, 1fr);
   grid-gap: 8px;
 
   @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {

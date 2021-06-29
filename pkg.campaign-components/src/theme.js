@@ -1,7 +1,13 @@
 const theme = {
-  campaign: null,
-  properties: null,
-  slots: null,
+  // These are defaults that are replaced at runtime
+  campaign: {
+    fonts: {
+      main: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+    },
+    fontWeights: {
+      light: 200,
+    },
+  },
 
   deviceBreakpoints: {
     mobileSmall: '320px',
@@ -25,6 +31,10 @@ const theme = {
       normal: '12px',
     },
   },
+
+  // Provided within some components
+  properties: null,
+  slots: null,
 };
 
 export default theme;

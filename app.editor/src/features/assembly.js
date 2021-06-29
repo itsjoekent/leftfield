@@ -104,9 +104,17 @@ export const {
 
 export default assemblySlice.reducer;
 
+export function selectPage(pageId) {
+  function _selectPage(state) {
+    return get(state, `assembly.pages.${pageId}`);
+  }
+
+  return _selectPage;
+}
+
 export function selectPageComponents(pageId) {
   function _selectPageComponents(state) {
-    return get(state, `assembly.pages.${pageId}.components`, null);
+    return get(selectPage(pageId)(state), 'components', null);
   }
 
   return _selectPageComponents;

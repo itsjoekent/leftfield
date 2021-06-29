@@ -12,7 +12,7 @@
 function construct(
   createElement,
   page,
-  targetElementId,
+  targetComponentId,
   wrapperComponentRender = null,
   key = null,
 ) {
@@ -20,9 +20,7 @@ function construct(
     render,
     slots,
     properties,
-  } = page.components.find(
-    (component) => component.id === targetElementId
-  );
+  } = page.components[targetComponentId];
 
   const renderedSlots = Object
     .keys(slots || {})
@@ -38,7 +36,7 @@ function construct(
     }), {});
 
   const props = {
-    properties,
+    properties: properties || {},
     slots: renderedSlots,
   };
 
@@ -77,7 +75,7 @@ function construct(
  * @param {Function} [wrapperComponent=null] Optional component to wrap every parent component.
  * @returns Virtual dom element
  */
-export default function render(
+export default function builder(
   createElement,
   page,
   wrapperComponentRender = null,
@@ -97,7 +95,7 @@ export default function render(
   return construct(
     createElement,
     page,
-    page.rootElementId,
+    page.rootComponentId,
     wrapperComponentRender,
   );
 }
