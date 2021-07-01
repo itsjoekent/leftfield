@@ -4,7 +4,7 @@ import {
   overflow,
   padding,
   size,
-} from './generics';
+} from '@ac/generics';
 
 const Typography = styled.p`
   ${(props) => props.fontStyle && props.theme.fonts[props.fontFamily || 'main'][props.fontStyle]}

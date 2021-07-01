@@ -15,11 +15,11 @@ function Icon(props) {
 
   return (
     <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill={color}/>
-<path d="M12 5V3" stroke={color} stroke-width="2" stroke-linecap="round"/>
-<path d="M19 12L21 12" stroke={color} stroke-width="2" stroke-linecap="round"/>
-<path d="M12 21L12 19" stroke={color} stroke-width="2" stroke-linecap="round"/>
-<path d="M3 12H5" stroke={color} stroke-width="2" stroke-linecap="round"/>
+<path fillRule="evenodd" clipRule="evenodd" d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill={color}/>
+<path d="M12 5V3" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+<path d="M19 12L21 12" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+<path d="M12 21L12 19" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+<path d="M3 12H5" stroke={color} strokeWidth="2" strokeLinecap="round"/>
 </svg>
   );
 }

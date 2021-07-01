@@ -16,7 +16,7 @@ function Icon(props) {
   return (
     <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12 11L12.7071 10.2929L12 9.58579L11.2929 10.2929L12 11ZM18.7071 16.2929L12.7071 10.2929L11.2929 11.7071L17.2929 17.7071L18.7071 16.2929ZM11.2929 10.2929L5.29289 16.2929L6.70711 17.7071L12.7071 11.7071L11.2929 10.2929Z" fill={color}/>
-<path d="M7 6L17 6" stroke={color} stroke-width="2"/>
+<path d="M7 6L17 6" stroke={color} strokeWidth="2"/>
 </svg>
   );
 }

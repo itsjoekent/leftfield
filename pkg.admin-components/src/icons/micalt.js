@@ -15,12 +15,12 @@ function Icon(props) {
 
   return (
     <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="6" y="3" width="12" height="16" rx="6" stroke={color} stroke-width="2" stroke-linejoin="round"/>
-<path d="M12 22V19" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M10 13H7" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M18 13H16" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M10 9H7" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M18 9H16" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="6" y="3" width="12" height="16" rx="6" stroke={color} strokeWidth="2" strokeLinejoin="round"/>
+<path d="M12 22V19" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M10 13H7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M18 13H16" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M10 9H7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M18 9H16" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
   );
 }

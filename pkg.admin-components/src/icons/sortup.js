@@ -15,10 +15,10 @@ function Icon(props) {
 
   return (
     <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M5 17H13" stroke={color} stroke-width="2" stroke-linecap="round"/>
-<path d="M5 12H11" stroke={color} stroke-width="2" stroke-linecap="round"/>
-<path d="M5 7H9" stroke={color} stroke-width="2" stroke-linecap="round"/>
-<path d="M19 6L22 9M19 6L16 9M19 6L19 18" stroke={color} stroke-width="2"/>
+<path d="M5 17H13" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+<path d="M5 12H11" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+<path d="M5 7H9" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+<path d="M19 6L22 9M19 6L16 9M19 6L19 18" stroke={color} strokeWidth="2"/>
 </svg>
   );
 }

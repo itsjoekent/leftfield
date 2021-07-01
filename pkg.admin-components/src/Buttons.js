@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import useAdminTheme from './useAdminTheme';
+import useAdminTheme from '@ac/useAdminTheme';
 
 const IconButtonWrapper = styled.button`
   display: flex;

@@ -11,6 +11,7 @@
     "lodash": "^4.17.21",
     "pkg.admin-components": "file:../pkg.admin-components",
     "pkg.campaign-components": "file:../pkg.campaign-components",
+    "pkg.form-wizard": "file:../pkg.form-wizard",
     "pkg.layout": "file:../pkg.layout",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",

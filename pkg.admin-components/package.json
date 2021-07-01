@@ -3,19 +3,22 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "start": "npx babel src --out-dir dist --watch",
-    "build": "npx babel src --out-dir dist",
+    "start": "NODE_ENV=development webpack --watch",
+    "build": "NODE_ENV=development webpack",
+    "build:prod": "NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.14.5",
     "@babel/core": "^7.14.5",
     "@babel/preset-env": "^7.14.5",
     "@babel/preset-react": "^7.14.5",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
     "react": "^17.0.2",
-    "styled-components": "^5.3.0"
+    "styled-components": "^5.3.0",
+    "webpack": "^5.41.1",
+    "webpack-cli": "^4.7.2"
   },
   "peerDependencies": {
     "react": "^17.x",

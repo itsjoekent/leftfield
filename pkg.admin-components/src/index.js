@@ -1,10 +1,10 @@
-export { default as theme } from './theme';
-export { default as GlobalReset } from './GlobalReset';
-export { default as useAdminTheme } from './useAdminTheme';
+export { default as theme } from '@ac/theme';
+export { default as GlobalReset } from '@ac/GlobalReset';
+export { default as useAdminTheme } from '@ac/useAdminTheme';
 
-export * as Buttons from './Buttons';
-export * as Flex from './Flex';
-export { default as Grid } from './Grid';
-export * as Icons from './icons';
-export { default as Tooltip } from './Tooltip';
-export { default as Typography } from './Typography';
+export * as Buttons from '@ac/Buttons';
+export * as Flex from '@ac/Flex';
+export { default as Grid } from '@ac/Grid';
+export * as Icons from '@ac/icons';
+export { default as Tooltip } from '@ac/Tooltip';
+export { default as Typography } from '@ac/Typography';

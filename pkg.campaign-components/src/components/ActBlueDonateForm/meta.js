@@ -139,8 +139,9 @@ const ActBlueDonateFormMeta = {
       },
     },
   ],
-  properties: {
-    [LAYOUT_PROPERTY]: {
+  properties: [
+    {
+      id: LAYOUT_PROPERTY,
       label: 'Form Layout',
       type: SELECT_TYPE,
       required: true,
@@ -164,24 +165,28 @@ const ActBlueDonateFormMeta = {
         return TWO_COLUMN_LAYOUT;
       },
     },
-    [ACTBLUE_FORM_PROPERTY]: {
+    {
       ...DEFAULT_ACTBLUE_DONATION_FORM.field,
+      id: ACTBLUE_FORM_PROPERTY,
       inheritFromSetting: DEFAULT_ACTBLUE_DONATION_FORM.key,
       required: true,
     },
-    [ENABLE_EXPRESS_DONATE_PROPERTY]: {
+    {
+      id: ENABLE_EXPRESS_DONATE_PROPERTY,
       label: 'Enable ActBlue Express',
       help: 'This will make donations 1-click for donors with card details saved to ActBlue. A small disclaimer will be added below your donation buttons.',
       type: TOGGLE_TYPE,
       defaultValue: false,
       conditional: ({ properties }) => properties[LAYOUT_PROPERTY] !== ONE_BUTTON_LAYOUT,
     },
-    [EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY]: {
+    {
       ...ACTBLUE_EXPRESS_DISCLAIMER_COPY.field,
+      id: EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY,
       inheritFromSetting: ACTBLUE_EXPRESS_DISCLAIMER_COPY.key,
       required: true,
     },
-    [EXPRESS_DONATE_TEXT_COLOR_PROPERTY]: {
+    {
+      id: EXPRESS_DONATE_TEXT_COLOR_PROPERTY,
       label: 'Express Donate Legal Disclaimer Text Color',
       help: 'This text must be legible.',
       type: COLOR_TYPE,
@@ -189,15 +194,17 @@ const ActBlueDonateFormMeta = {
       defaultCampaignThemeValue: ({ campaignTheme }) => campaignTheme.colors.black,
       conditional: ({ properties }) => !!properties[ENABLE_EXPRESS_DONATE_PROPERTY],
     },
-    [REFCODE_PROPERTY]: {
+    {
       ...DEFAULT_ACTBLUE_REFCODE.field,
+      id: REFCODE_PROPERTY,
       inheritFromSetting: DEFAULT_ACTBLUE_REFCODE.key,
     },
-    [CARRY_TRACKING_SOURCE_PROPERTY]: {
+    {
       ...ACTBLUE_REFCODE_CARRY_ADS_SOURCE.field,
+      id: CARRY_TRACKING_SOURCE_PROPERTY,
       inheritFromSetting: ACTBLUE_REFCODE_CARRY_ADS_SOURCE.key,
     },
-  },
+  ],
 };
 
 export default ActBlueDonateFormMeta;

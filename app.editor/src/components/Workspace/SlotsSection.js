@@ -2,9 +2,8 @@ import React from 'react';
 import { get } from 'lodash';
 import { useDispatch } from 'react-redux';
 import { DragDropContext } from 'react-beautiful-dnd';
+import { Flex } from 'pkg.admin-components';
 import WorkspaceFieldLabel from '@editor/components/Workspace/FieldLabel';
-import WorkspaceFieldList from '@editor/components/Workspace/FieldList';
-import WorkspaceFieldGroup from '@editor/components/Workspace/FieldGroup';
 import WorkspaceSlotList from '@editor/components/Workspace/SlotList';
 import {
   addChildComponentInstance,
@@ -70,19 +69,20 @@ export default function WorkspaceSlotsSection() {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <WorkspaceFieldList>
+      <Flex.Column gridGap="16px">
         {slots.map((slot) => (
-          <WorkspaceFieldGroup key={slot.id}>
+          <Flex.Column gridGap="6px" key={slot.id}>
             <WorkspaceFieldLabel
-              labelCopy={slot.label}
-              labelFor={false}
+              labelProps={{
+                children: slot.label,
+              }}
               isRequired={false}
               help={slot.help}
             />
             <WorkspaceSlotList slotId={slot.id} />
-          </WorkspaceFieldGroup>
+          </Flex.Column>
         ))}
-      </WorkspaceFieldList>
+      </Flex.Column>
     </DragDropContext>
   );
 }

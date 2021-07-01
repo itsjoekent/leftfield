@@ -42,7 +42,13 @@ function capitalizeFirstLetter(string) {
       .replace(/"#FFFFFF"/g, '{color}')
       .replace(/"#ffffff"/g, '{color}')
       .replace(/"white"/g, '{color}')
-      .replace(/"#CCD2E3"/g, '{color}').trim();
+      .replace(/"#CCD2E3"/g, '{color}')
+      .replace(/stroke-width/g, 'strokeWidth')
+      .replace(/stroke-linecap/g, 'strokeLinecap')
+      .replace(/stroke-linejoin/g, 'strokeLinejoin')
+      .replace(/fill-rule/g, 'fillRule')
+      .replace(/clip-rule/g, 'clipRule')
+      .trim();
 
     const output = `${componentTemplate}`.replace('/** SVG **/', transformedSvg);
     const name = capitalizeFirstLetter(camelize(iconFile.replace('.svg', '').replace(/-/g, ' ').replace(/_/g, ' ').replace('Property1=', '').replace('Property 1=', '')));

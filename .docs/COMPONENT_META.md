@@ -40,7 +40,7 @@
  * @property {String} inheritFromSetting (optional) Set the default value of this property based on a site setting value
  * @property {String} label [required] Human readable name for this property
  * @property {Boolean} required (optional) Indicate if this property is required
- * @property {Boolean} translatable (optional) Indicate if this property should have multiple language fields
+ * @property {Boolean} isTranslatable (optional) Indicate if this property should have multiple language fields
  * @property {PropertyType} type [required] Property value type
  */
 

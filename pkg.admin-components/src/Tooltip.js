@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { css, keyframes } from 'styled-components';
-import useAdminTheme from './useAdminTheme';
+import useAdminTheme from '@ac/useAdminTheme';
 
 const UP = 'UP';
 const UP_LEFT_ALIGNED = 'UP_LEFT_ALIGNED';

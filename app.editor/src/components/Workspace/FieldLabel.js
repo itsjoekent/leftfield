@@ -1,51 +1,55 @@
 import React from 'react';
-import styled from 'styled-components';
 import {
   Flex,
-  Icons,
-  useAdminTheme,
+  Typography,
 } from 'pkg.admin-components';
 
 export default function FieldLabel(props) {
   const {
-    labelCopy,
-    labelFor,
+    labelProps,
     isRequired,
     help,
   } = props;
 
-  const theme = useAdminTheme();
-  const hasInfo = !!help;
-
   return (
-    <Flex.Row hasInfo={hasInfo} justify="space-between" align="center">
+    <Flex.Column fullWidth gridGap="2px">
       <Flex.Row
         flexGrow
         gridGap="4px"
         align="center"
         overflowX="hidden"
       >
-        <LabelCopy htmlFor={labelFor || ''}>{labelCopy}</LabelCopy>
-        <HintCopy>{isRequired ? '(required)' : '(optional)'}</HintCopy>
+        <Typography
+          as="label"
+          fontStyle="bold"
+          fontSize="14px"
+          letterSpacing="2%"
+          fg={(colors) => colors.mono[700]}
+          textOverflow="ellipsis"
+          whiteSpace="nowrap"
+          overflow="hidden"
+          {...labelProps}
+        />
+        <Typography
+          as="span"
+          fontStyle="light"
+          fontSize="14px"
+          letterSpacing="2%"
+          fg={(colors) => colors.mono[500]}
+        >
+          {isRequired ? '(required)' : '(optional)'}
+        </Typography>
       </Flex.Row>
-      {hasInfo && (
-        <Icons.InfoLight color={theme.colors.mono[400]} />
+      {!!help && (
+        <Typography
+          as="p"
+          fontStyle="thin"
+          fontSize="12px"
+          fg={(colors) => colors.mono[600]}
+        >
+          {help}
+        </Typography>
       )}
-    </Flex.Row>
+    </Flex.Column>
   );
 }
-
-const LabelCopy = styled.label`
-  ${(props) => props.theme.fonts.main.bold};
-  font-size: 14px;
-  letter-spacing: 2%;
-  color: ${(props) => props.theme.colors.mono[700]};
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-`;
-
-const HintCopy = styled.span`
-  ${(props) => props.theme.fonts.main.light};
-  color: ${(props) => props.theme.colors.mono[400]};
-`;

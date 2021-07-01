@@ -1,6 +1,7 @@
 import makeValidationError from '@cc/utils/makeValidationError';
 import {
   US_ENGLISH_LANG,
+  MX_SPANISH_LANG,
 } from '@cc/constants/languages';
 import {
   SHORT_TEXT_TYPE,
@@ -23,7 +24,7 @@ export const ACTBLUE_EXPRESS_DISCLAIMER_COPY = {
   field: {
     label: 'ActBlue Express Disclaimer',
     help: 'You must warn donors when using 1-click donate functionality',
-    translatable: true,
+    isTranslatable: true,
     type: SHORT_TEXT_TYPE,
     defaultValue: {
       [US_ENGLISH_LANG]: `If you've saved your information with ActBlue Express, your donation will go through immediately.`,
@@ -37,7 +38,10 @@ export const DEFAULT_ACTBLUE_DONATION_FORM = {
     label: 'ActBlue Form',
     help: 'Eg: "https://secure.actblue.com/donate/your-donation-page"',
     type: URL_TYPE,
-    translatable: true,
+    isTranslatable: true,
+    defaultValue: {
+      [US_ENGLISH_LANG]: 'https://secure.actblue.com/donate/your-donation-page',
+    },
     customValidation: ({ input }) => {
       if (!input.startsWith('https://secure.actblue.com/donate/')) {
         return makeValidationError('Invalid ActBlue donation form. Must start with "https://secure.actblue.com/donate/"');
@@ -62,3 +66,16 @@ export const DEFAULT_ACTBLUE_REFCODE = {
   },
 }
 
+export const LANGUAGES = {
+  key: 'LANGUAGES',
+  field: {
+    label: 'Languages',
+    defaultValue: [US_ENGLISH_LANG],
+    type: SHORT_TEXT_TYPE,
+    isList: true,
+    options: [
+      US_ENGLISH_LANG,
+      MX_SPANISH_LANG,
+    ],
+  },
+};

@@ -1,6 +1,11 @@
 import { get, set } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
-import { ComponentMeta } from 'pkg.campaign-components';
+import { ComponentMeta, SiteSettings } from 'pkg.campaign-components';
+
+const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
+  ...acc,
+  [key]: get(SiteSettings[key], `field.defaultValue`),
+}), {});
 
 export const assemblySlice = createSlice({
   name: 'assembly',
@@ -23,8 +28,8 @@ export const assemblySlice = createSlice({
         rootComponentId: '1',
       },
     },
-    siteSettings: {},
-    templates: {},
+    siteSettings: defaultSettings,
+    templates: [],
   },
   reducers: {
     buildComponent: (state, action) => {
@@ -61,6 +66,7 @@ export const assemblySlice = createSlice({
       children.splice(finalSlotPlacementOrder, 0, componentId);
 
       set(state, path, children);
+      set(state, `pages.${pageId}.components.${componentId}.childOf`, parentComponentId);
     },
     reorderChildComponentInstance: (state, action) => {
       const {
@@ -89,8 +95,33 @@ export const assemblySlice = createSlice({
       const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
       const children = get(state, path, []);
 
+      const targetComponentId = children[targetIndex];
+
       children.splice(targetIndex, 1);
       set(state, path, children);
+
+      delete state[`pages.${pageId}.components.${targetComponentId}`];
+    },
+    setComponentInstancePropertyValue: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        propertyId,
+        value,
+      } = action.payload;
+
+      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value`, value);
+    },
+    setComponentInstancePropertyStorage: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        propertyId,
+        key,
+        value,
+      } = action.payload;
+
+      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.storage.${key}`, value);
     },
   },
 });
@@ -100,9 +131,15 @@ export const {
   addChildComponentInstance,
   reorderChildComponentInstance,
   removeChildComponentInstance,
+  setComponentInstancePropertyValue,
+  setComponentInstancePropertyStorage,
 } = assemblySlice.actions;
 
 export default assemblySlice.reducer;
+
+export function selectSiteSettings(state) {
+  return get(state, 'assembly.siteSettings', {});
+}
 
 export function selectPage(pageId) {
   function _selectPage(state) {
@@ -110,6 +147,22 @@ export function selectPage(pageId) {
   }
 
   return _selectPage;
+}
+
+export function selectPageSettings(pageId) {
+  function _selectPageSettings(state) {
+    return get(selectPage(pageId)(state), 'settings', {});
+  }
+
+  return _selectPageSettings;
+}
+
+export function selectPageTemplateId(pageId) {
+  function _selectPageTemplateId(state) {
+    return get(selectPage(pageId)(state), 'templatedFrom', null);
+  }
+
+  return _selectPageTemplateId;
 }
 
 export function selectPageComponents(pageId) {
@@ -167,4 +220,28 @@ export function selectComponentSlotMapped(pageId, componentId, slotId) {
   }
 
   return _selectComponentSlotMapped;
+}
+
+export function selectComponentProperties(pageId, componentId) {
+  function _selectComponentProperties(state) {
+    return get(selectComponent(pageId, componentId)(state), 'properties', {});
+  }
+
+  return _selectComponentProperties;
+}
+
+export function selectComponentPropertyValue(pageId, componentId, propertyId) {
+  function _selectComponentPropertyValue(state) {
+    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.value`, null);
+  }
+
+  return _selectComponentPropertyValue;
+}
+
+export function selectComponentPropertyStorage(pageId, componentId, propertyId, key) {
+  function _selectComponentPropertyStorage(state) {
+    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.storage.${key}`, null);
+  }
+
+  return _selectComponentPropertyStorage;
 }

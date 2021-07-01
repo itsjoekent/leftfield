@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import generics from './generics';
+import generics from '@ac/generics';
 
 const Grid = styled.div`
   display: grid;

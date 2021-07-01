@@ -2,11 +2,22 @@ import { css } from 'styled-components';
 
 export const border = css`
   ${({ rounded, theme }) => !!rounded && css`border-radius: ${rounded(theme.rounded)};`}
+  ${({ borderWidth, borderColor, theme }) => !!borderWidth && !!borderColor && css`border: ${borderWidth} solid ${borderColor(theme.colors)};`}
 `;
 
 export const colors = css`
   ${({ fg, theme }) => !!fg && css`color: ${fg(theme.colors)};`}
   ${({ bg, theme }) => !!bg && css`background-color: ${bg(theme.colors)};`}
+  ${({ hoverFg, theme }) => !!hoverFg && css`
+    &:hover {
+      color: ${hoverFg(theme.colors)};
+    }`
+  }
+  ${({ hoverBg, theme }) => !!hoverBg && css`
+    &:hover {
+      background-color: ${hoverBg(theme.colors)};
+    }
+  `}
 `;
 
 export const overflow = css`
