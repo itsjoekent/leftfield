@@ -10,10 +10,11 @@ export default function FormProvider(props) {
     hasAutoSave = initialFormContextValue.hasAutoSave,
     onFormSubmit = initialFormContextValue.onFormSubmit,
     onFieldSave = initialFormContextValue.onFieldSave,
+    apiRef = null,
   } = props;
 
   function formReducer(state, action) {
-    const next = produce(state, action(state));
+    const next = produce(state, (draft) => action(draft));
     return next;
   }
 
@@ -21,6 +22,19 @@ export default function FormProvider(props) {
     formReducer,
     initialFormContextValue,
   );
+
+  React.useEffect(() => {
+    if (apiRef) {
+      apiRef.current = {
+        dispatch,
+        getFormState: () => form,
+      };
+    }
+  }, [
+    apiRef,
+    dispatch,
+    form,
+  ]);
 
   const contextValue = {
     ...form,

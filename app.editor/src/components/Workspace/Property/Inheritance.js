@@ -13,12 +13,14 @@ import {
   selectComponentPropertyStorage,
   selectPageTemplateId,
   setComponentInstancePropertyStorage,
+  setComponentInstancePropertyValue,
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useGetSetting from '@editor/hooks/useGetSetting';
+import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export default function PropertyInheritance(props) {
-  const { property } = props;
+  const { language, property } = props;
 
   const propertyId = get(property, 'id');
   const isTranslatable = get(property, 'isTranslatable', false);
@@ -35,13 +37,15 @@ export default function PropertyInheritance(props) {
     activeComponentId,
     propertyId,
     'inheritedFrom',
+    language,
   ));
 
   const getSetting = useGetSetting(activePageId);
   const inheritFromSetting = get(property, 'inheritFromSetting', null);
 
   function isSettingDefined(level) {
-    return getSetting(level, inheritFromSetting, null) !== null;
+    const setting = getSetting(level, inheritFromSetting, null);
+    return (isTranslatable ? pullTranslatedValue(setting, language) : setting) !== null;
   }
 
   // TODO: Deep link to the setting menu
@@ -56,7 +60,7 @@ export default function PropertyInheritance(props) {
           Inherited from{' '}
           <Typography
             as="a"
-            fontStyle="medium"
+            fontStyle="regular"
             fontSize="12px"
             fg={(colors) => colors.blue[400]}
             hoverFg={(colors) => colors.blue[700]}
@@ -72,12 +76,20 @@ export default function PropertyInheritance(props) {
     return function _onClick(event) {
       event.preventDefault();
 
+      dispatch(setComponentInstancePropertyValue({
+        pageId: activePageId,
+        componentId: activeComponentId,
+        propertyId,
+        value: null,
+      }));
+
       dispatch(setComponentInstancePropertyStorage({
         pageId: activePageId,
         componentId: activeComponentId,
         propertyId,
         key: 'inheritedFrom',
         value: value,
+        language,
       }));
     }
   }

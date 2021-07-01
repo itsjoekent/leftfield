@@ -43,9 +43,9 @@ export default function FieldLabel(props) {
       {!!help && (
         <Typography
           as="p"
-          fontStyle="thin"
+          fontStyle="light"
           fontSize="12px"
-          fg={(colors) => colors.mono[600]}
+          fg={(colors) => colors.mono[500]}
         >
           {help}
         </Typography>

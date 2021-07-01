@@ -174,7 +174,7 @@ const ActBlueDonateFormMeta = {
     {
       id: ENABLE_EXPRESS_DONATE_PROPERTY,
       label: 'Enable ActBlue Express',
-      help: 'This will make donations 1-click for donors with card details saved to ActBlue. A small disclaimer will be added below your donation buttons.',
+      help: 'This will make donations 1-click for donors with card details saved to ActBlue, a small disclaimer will be added below your donation buttons',
       type: TOGGLE_TYPE,
       defaultValue: false,
       conditional: ({ properties }) => properties[LAYOUT_PROPERTY] !== ONE_BUTTON_LAYOUT,
@@ -188,7 +188,7 @@ const ActBlueDonateFormMeta = {
     {
       id: EXPRESS_DONATE_TEXT_COLOR_PROPERTY,
       label: 'Express Donate Legal Disclaimer Text Color',
-      help: 'This text must be legible.',
+      help: 'This text must have high contrast with the background of the form',
       type: COLOR_TYPE,
       required: true,
       defaultCampaignThemeValue: ({ campaignTheme }) => campaignTheme.colors.black,

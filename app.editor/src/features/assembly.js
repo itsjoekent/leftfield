@@ -1,6 +1,6 @@
 import { get, set } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
-import { ComponentMeta, SiteSettings } from 'pkg.campaign-components';
+import { ComponentMeta, Languages, SiteSettings } from 'pkg.campaign-components';
 
 const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
   ...acc,
@@ -28,7 +28,10 @@ export const assemblySlice = createSlice({
         rootComponentId: '1',
       },
     },
-    siteSettings: defaultSettings,
+    siteSettings: {
+      ...defaultSettings,
+      LANGUAGES: ['en-US', 'es-MX'],
+    },
     templates: [],
   },
   reducers: {
@@ -67,6 +70,7 @@ export const assemblySlice = createSlice({
 
       set(state, path, children);
       set(state, `pages.${pageId}.components.${componentId}.childOf`, parentComponentId);
+      set(state, `pages.${pageId}.components.${componentId}.withinSlot`, slotId);
     },
     reorderChildComponentInstance: (state, action) => {
       const {
@@ -119,9 +123,10 @@ export const assemblySlice = createSlice({
         propertyId,
         key,
         value,
+        language = Languages.US_ENGLISH_LANG,
       } = action.payload;
 
-      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.storage.${key}`, value);
+      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.storage.${key}.${language}`, value);
     },
   },
 });
@@ -197,6 +202,22 @@ export function selectComponentName(pageId, componentId) {
   return _selectComponentName;
 }
 
+export function selectComponentsParentComponentId(pageId, componentId) {
+  function _selectComponentsParentComponentId(state) {
+    return get(selectComponent(pageId, componentId)(state), 'childOf', null);
+  }
+
+  return _selectComponentsParentComponentId;
+}
+
+export function selectComponentsParentComponentSlotId(pageId, componentId) {
+  function _selectComponentsParentComponentSlotId(state) {
+    return get(selectComponent(pageId, componentId)(state), 'withinSlot', null);
+  }
+
+  return _selectComponentsParentComponentSlotId;
+}
+
 export function selectComponentSlots(pageId, componentId) {
   function _selectComponentSlots(state) {
     return get(selectComponent(pageId, componentId)(state), 'slots', {});
@@ -238,9 +259,9 @@ export function selectComponentPropertyValue(pageId, componentId, propertyId) {
   return _selectComponentPropertyValue;
 }
 
-export function selectComponentPropertyStorage(pageId, componentId, propertyId, key) {
+export function selectComponentPropertyStorage(pageId, componentId, propertyId, key, language = Languages.US_ENGLISH_LANG) {
   function _selectComponentPropertyStorage(state) {
-    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.storage.${key}`, null);
+    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.storage.${key}.${language}`, null);
   }
 
   return _selectComponentPropertyStorage;

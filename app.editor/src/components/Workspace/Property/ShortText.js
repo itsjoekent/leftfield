@@ -1,9 +1,12 @@
 import React from 'react';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
+import { useFormField } from 'pkg.form-wizard';
+import { Languages } from 'pkg.campaign-components';
 import {
   Buttons,
   Icons,
+  Inputs,
   Flex,
   Tooltip,
   Typography,
@@ -15,13 +18,10 @@ import {
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useGetSetting from '@editor/hooks/useGetSetting';
+import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export default function ShortText(props) {
-  const {
-    inputProps,
-    property,
-  } = props;
-
+  const { fieldId, language, property } = props;
   const propertyId = get(property, 'id');
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
@@ -32,9 +32,21 @@ export default function ShortText(props) {
     activeComponentId,
     propertyId,
     'inheritedFrom',
+    language,
   ));
 
   const dispatch = useDispatch();
+
+  const field = useFormField(fieldId);
+
+  if (!field) {
+    return null;
+  }
+
+  const {
+    inputProps,
+    inputStylingProps,
+  } = field;
 
   if (!!inheritedFrom) {
     return (
@@ -43,6 +55,7 @@ export default function ShortText(props) {
         justify="space-between"
         align="center"
         padding="6px"
+        gridGap="6px"
         rounded={(radius) => radius.default}
         borderWidth="1px"
         borderColor={(colors) => colors.mono[300]}
@@ -52,8 +65,14 @@ export default function ShortText(props) {
           fontStyle="regular"
           fontSize="16px"
           fg={(colors) => colors.mono[800]}
+          whiteSpace="nowrap"
+          overflowX="scroll"
         >
-          {getSetting(inheritedFrom, get(property, 'inheritFromSetting'))}
+          {pullTranslatedValue(
+            getSetting(inheritedFrom, get(property, 'inheritFromSetting')),
+            language,
+            '',
+          )}
         </Typography>
         <Tooltip copy="Remove settings reference" point={Tooltip.UP_RIGHT_ALIGNED}>
           <Buttons.IconButton
@@ -66,6 +85,7 @@ export default function ShortText(props) {
                 propertyId,
                 key: 'inheritedFrom',
                 value: null,
+                language,
               }));
 
               dispatch(setComponentInstancePropertyValue({
@@ -85,7 +105,15 @@ export default function ShortText(props) {
     );
   }
 
+  const finalInputProps = {
+    ...inputProps,
+  };
+
+  if (language !== Languages.US_ENGLISH_LANG) {
+    finalInputProps['aria-labelledby'] = `${propertyId}-${Languages.US_ENGLISH_LANG}`;
+  }
+
   return (
-    <input {...inputProps} />
+    <Inputs.DefaultText {...finalInputProps} {...inputStylingProps} />
   );
 }
