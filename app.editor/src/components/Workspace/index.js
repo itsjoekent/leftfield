@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from 'styled-components';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -96,10 +95,12 @@ export default function Workspace(props) {
     >
       <WorkspacePageNavigation />
       <WorkspaceComponentToolbar />
-      <InnerWorkspaceContainer
+      <Flex.Row
         flexGrow
         justifyContent="space-between"
         gridGap="36px"
+        padding="12px"
+        overflowY="scroll"
       >
         <Flex.Column fullHeight gridGap="12px">
           {activeComponentHasProperties && (
@@ -183,12 +184,7 @@ export default function Workspace(props) {
             </WorkspaceSection>
           )}
         </Flex.Column>
-      </InnerWorkspaceContainer>
+      </Flex.Row>
     </Flex.Column>
   );
 }
-
-const InnerWorkspaceContainer = styled(Flex.Row)`
-  padding: 12px;
-  padding-bottom: 0;
-`;

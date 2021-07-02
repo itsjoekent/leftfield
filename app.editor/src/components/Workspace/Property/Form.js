@@ -25,13 +25,13 @@ export default function PropertiesForm() {
 
   const propertyMeta = get(activeComponentMeta, 'properties', []);
 
-  const dynamicPropertyEvaluation = useDynamicPropertyEvaluation();
+  const dynamicPropertyEvaluation = useDynamicPropertyEvaluation(activePageId, activeComponentId);
   const languages = useSiteLanguages();
 
   const apiRef = React.useRef(null);
   const dispatch = useDispatch();
 
-  const fields = propertyMeta.reduce((acc, property) => {
+  const { fields, fieldProperties } = propertyMeta.reduce((acc, property) => {
     const isTranslatable = get(property, 'isTranslatable', false);
     const hasConditional = !!get(property, 'conditional', null);
 
@@ -67,11 +67,20 @@ export default function PropertiesForm() {
       });
     }
 
-    return [
-      ...acc,
-      ...append,
-    ];
-  }, []);
+    return {
+      fields: [
+        ...acc.fields,
+        ...append,
+      ],
+      fieldProperties: [
+        ...acc.fieldProperties,
+        property,
+      ],
+    };
+  }, {
+    fields: [],
+    fieldProperties: [],
+  });
 
   React.useEffect(() => {
     if (!apiRef.current || !fields.length) {
@@ -82,10 +91,6 @@ export default function PropertiesForm() {
     const formState = getFormState();
 
     fields.forEach((field) => {
-      if (typeof formState.values[field.id] !== 'undefined') {
-        return;
-      }
-
       const propertyId = get(field, 'attributes.propertyId');
       const language = get(field, 'attributes.language');
 
@@ -94,11 +99,14 @@ export default function PropertiesForm() {
         && (componentProperties[propertyId] !== null)
       ) {
         const propertyValue = get(componentProperties, `${propertyId}.value`);
+        const translatedValue = pullTranslatedValue(propertyValue, language) || '';
 
-        formDispatch(formActions.setValue(
-          field.id,
-          pullTranslatedValue(propertyValue, language) || '',
-        ));
+        if (formState.values[field.id] !== translatedValue) {
+          formDispatch(formActions.setValue(
+            field.id,
+            translatedValue,
+          ));
+        }
       }
     });
   }, [
@@ -128,8 +136,8 @@ export default function PropertiesForm() {
       onFieldSave={onFieldSave}
     >
       {(formProps) => (
-        <Flex.Column gridGap="16px" as="form" {...formProps}>
-          {propertyMeta.map((property) => (
+        <Flex.Column gridGap="24px" as="form" {...formProps}>
+          {fieldProperties.map((property) => (
             <WorkspacePropertyFormField
               key={property.id}
               property={property}

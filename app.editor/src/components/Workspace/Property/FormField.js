@@ -1,10 +1,11 @@
 import React from 'react';
 import { get } from 'lodash';
 import { Flex, Typography } from 'pkg.admin-components';
-import { Languages } from 'pkg.campaign-components';
+import { Languages, PropertyTypes } from 'pkg.campaign-components';
 import WorkspacePropertyInheritance from '@editor/components/Workspace/Property/Inheritance';
 import WorkspacePropertyLabel from '@editor/components/Workspace/Property/Label';
 import WorkspacePropertyShortText from '@editor/components/Workspace/Property/ShortText';
+import WorkspacePropertyToggle from '@editor/components/Workspace/Property/Toggle';
 import useSiteLanguages from '@editor/hooks/useSiteLanguages';
 
 function FormFieldInner(props) {
@@ -17,11 +18,33 @@ function FormFieldInner(props) {
 
   return (
     <Flex.Column gridGap="2px">
-      <WorkspacePropertyShortText
-        fieldId={fieldId}
-        language={language}
-        property={property}
-      />
+      {(() => {
+        switch (get(property, 'type')) {
+          case PropertyTypes.SHORT_TEXT_TYPE: return (
+            <WorkspacePropertyShortText
+              fieldId={fieldId}
+              language={language}
+              property={property}
+            />
+          );
+
+          case PropertyTypes.TOGGLE_TYPE: return (
+            <WorkspacePropertyToggle
+              fieldId={fieldId}
+              language={language}
+              property={property}
+            />
+          );
+
+          default: return (
+            <WorkspacePropertyShortText
+              fieldId={fieldId}
+              language={language}
+              property={property}
+            />
+          );
+        }
+      })()}
       {(() => {
         const hasInheritance = !!get(property, 'inheritFromSetting', null);
 

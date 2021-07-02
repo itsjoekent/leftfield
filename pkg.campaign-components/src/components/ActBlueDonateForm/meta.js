@@ -6,6 +6,7 @@ import {
   SELECT_TYPE,
   TOGGLE_TYPE,
 } from '@cc/constants/property-types';
+import { US_ENGLISH_LANG } from '@cc/constants/languages';
 import {
   FILLS_CONTAINER_WIDE,
   FITS_CONTENT,
@@ -177,13 +178,14 @@ const ActBlueDonateFormMeta = {
       help: 'This will make donations 1-click for donors with card details saved to ActBlue, a small disclaimer will be added below your donation buttons',
       type: TOGGLE_TYPE,
       defaultValue: false,
-      conditional: ({ properties }) => properties[LAYOUT_PROPERTY] !== ONE_BUTTON_LAYOUT,
+      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`, null) !== ONE_BUTTON_LAYOUT,
     },
     {
       ...ACTBLUE_EXPRESS_DISCLAIMER_COPY.field,
       id: EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY,
       inheritFromSetting: ACTBLUE_EXPRESS_DISCLAIMER_COPY.key,
       required: true,
+      conditional: ({ properties }) => !!get(properties, `${ENABLE_EXPRESS_DONATE_PROPERTY}.value.${US_ENGLISH_LANG}`, false),
     },
     {
       id: EXPRESS_DONATE_TEXT_COLOR_PROPERTY,
@@ -192,7 +194,7 @@ const ActBlueDonateFormMeta = {
       type: COLOR_TYPE,
       required: true,
       defaultCampaignThemeValue: ({ campaignTheme }) => campaignTheme.colors.black,
-      conditional: ({ properties }) => !!properties[ENABLE_EXPRESS_DONATE_PROPERTY],
+      conditional: ({ properties }) => !!get(properties, `${ENABLE_EXPRESS_DONATE_PROPERTY}.value.${US_ENGLISH_LANG}`, false),
     },
     {
       ...DEFAULT_ACTBLUE_REFCODE.field,

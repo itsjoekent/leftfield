@@ -23,3 +23,6 @@ export const DefaultText = styled(Text)`
 
   ${generics}
 `;
+
+export { default as Checklist } from '@ac/inputs/Checklist';
+export { default as Toggle } from '@ac/inputs/Toggle';

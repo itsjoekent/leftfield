@@ -46,6 +46,7 @@ const SectionLayout = styled.div`
 
 const PanelLayout = styled(SectionLayout)`
   flex-grow: 1;
+  min-height: 0;
 `;
 
 const LeftSide = styled.section`

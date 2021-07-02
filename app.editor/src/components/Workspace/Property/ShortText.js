@@ -1,30 +1,18 @@
 import React from 'react';
 import { get } from 'lodash';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useFormField } from 'pkg.form-wizard';
 import { Languages } from 'pkg.campaign-components';
-import {
-  Buttons,
-  Icons,
-  Inputs,
-  Flex,
-  Tooltip,
-  Typography,
-} from 'pkg.admin-components';
-import {
-  selectComponentPropertyStorage,
-  setComponentInstancePropertyStorage,
-} from '@editor/features/assembly';
+import { Inputs } from 'pkg.admin-components';
+import { selectComponentPropertyStorage } from '@editor/features/assembly';
+import WorkspacePropertyInheritanceTextValue from '@editor/components/Workspace/Property/InheritanceTextValue';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
-import useGetSetting from '@editor/hooks/useGetSetting';
-import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export default function ShortText(props) {
   const { fieldId, language, property } = props;
   const propertyId = get(property, 'id');
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
-  const getSetting = useGetSetting(activePageId);
 
   const inheritedFrom = useSelector(selectComponentPropertyStorage(
     activePageId,
@@ -33,8 +21,6 @@ export default function ShortText(props) {
     'inheritedFrom',
     language,
   ));
-
-  const dispatch = useDispatch();
 
   const field = useFormField(fieldId);
 
@@ -50,56 +36,13 @@ export default function ShortText(props) {
 
   if (!!inheritedFrom) {
     return (
-      <Flex.Row
-        fullWidth
-        justify="space-between"
-        align="center"
-        padding="6px"
-        gridGap="6px"
-        rounded={(radius) => radius.default}
-        borderWidth="1px"
-        borderColor={(colors) => colors.mono[300]}
-        bg={(colors) => colors.mono[200]}
-      >
-        <Typography
-          fontStyle="regular"
-          fontSize="16px"
-          fg={(colors) => colors.mono[800]}
-          whiteSpace="nowrap"
-          overflowX="scroll"
-        >
-          {pullTranslatedValue(
-            getSetting(inheritedFrom, get(property, 'inheritFromSetting')),
-            language,
-            '',
-          )}
-        </Typography>
-        <Tooltip copy="Remove settings reference" point={Tooltip.UP_RIGHT_ALIGNED}>
-          <Buttons.IconButton
-            onClick={() => {
-              const value = pullTranslatedValue(
-                getSetting(inheritedFrom, get(property, 'inheritFromSetting')),
-                language,
-              );
-
-              dispatch(setComponentInstancePropertyStorage({
-                pageId: activePageId,
-                componentId: activeComponentId,
-                propertyId,
-                key: 'inheritedFrom',
-                value: null,
-                language,
-              }));
-
-              setFieldValue(value);
-            }}
-            IconComponent={Icons.RemoveFill}
-            color={(colors) => colors.mono[500]}
-            hoverColor={(colors) => colors.mono[900]}
-            aria-label="Remove settings reference"
-          />
-        </Tooltip>
-      </Flex.Row>
+      <WorkspacePropertyInheritanceTextValue
+        inheritedFrom={inheritedFrom}
+        inheritFromSetting={get(property, 'inheritFromSetting')}
+        language={language}
+        propertyId={propertyId}
+        setFieldValue={setFieldValue}
+      />
     );
   }
 

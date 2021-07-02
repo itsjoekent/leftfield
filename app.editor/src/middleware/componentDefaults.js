@@ -134,8 +134,6 @@ const componentDefaults = store => next => action => {
     }
   });
 
-  console.log(store.getState())
-
   return result;
 }
 
