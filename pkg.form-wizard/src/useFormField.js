@@ -12,7 +12,6 @@ export default function useFormField(fieldId) {
     values,
     isFocused,
     validations,
-    hasAutoSave,
     dispatch,
     onFieldSave,
   } = useFormContext();
@@ -27,11 +26,24 @@ export default function useFormField(fieldId) {
   const inputHtmlId = `${formName}-${fieldId}-input`;
   const labelHtmlId = `${formName}-${fieldId}-label`;
 
+  function setValueWrapper(value) {
+    dispatch(setValue(fieldId, value));
+
+    if (onFieldSave) {
+      onFieldSave(fieldId, value);
+    }
+  }
+
+  function onChange(event) {
+    const { target: { value } } = event;
+    setValueWrapper(value);
+  }
+
   const inputProps = {
     id: inputHtmlId,
     'aria-labelledby': labelHtmlId,
     value,
-    onChange: (event) => dispatch(setValue(fieldId, event.target.value)),
+    onChange,
     onFocus: () => dispatch(setIsFocused(fieldId, true)),
     onBlur: () => dispatch(setIsFocused(fieldId, false)),
   };
@@ -52,5 +64,6 @@ export default function useFormField(fieldId) {
     labelProps,
     field,
     value,
+    setFieldValue: setValueWrapper,
   };
 }

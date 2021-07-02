@@ -7,7 +7,6 @@ export default function FormProvider(props) {
     name = initialFormContextValue.formName,
     children: formRenderFunction,
     fields = initialFormContextValue.fields,
-    hasAutoSave = initialFormContextValue.hasAutoSave,
     onFormSubmit = initialFormContextValue.onFormSubmit,
     onFieldSave = initialFormContextValue.onFieldSave,
     apiRef = null,
@@ -41,7 +40,6 @@ export default function FormProvider(props) {
     formName: name,
     fields,
     dispatch,
-    hasAutoSave,
     onFormSubmit,
     onFieldSave,
   };

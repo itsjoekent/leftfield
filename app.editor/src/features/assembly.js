@@ -112,9 +112,10 @@ export const assemblySlice = createSlice({
         componentId,
         propertyId,
         value,
+        language = Languages.US_ENGLISH_LANG,
       } = action.payload;
 
-      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value`, value);
+      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value.${language}`, value);
     },
     setComponentInstancePropertyStorage: (state, action) => {
       const {
@@ -251,9 +252,9 @@ export function selectComponentProperties(pageId, componentId) {
   return _selectComponentProperties;
 }
 
-export function selectComponentPropertyValue(pageId, componentId, propertyId) {
+export function selectComponentPropertyValue(pageId, componentId, propertyId, language = Languages.US_ENGLISH_LANG) {
   function _selectComponentPropertyValue(state) {
-    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.value`, null);
+    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.value.${language}`, null);
   }
 
   return _selectComponentPropertyValue;

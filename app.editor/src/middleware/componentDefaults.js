@@ -116,7 +116,8 @@ const componentDefaults = store => next => action => {
         pageId,
         componentId,
         propertyId,
-        value: dynamicDefaultValue({ slot }),
+        value: pullTranslatedValue(dynamicDefaultValue({ slot })),
+        language: Languages.US_ENGLISH_LANG,
       }));
 
       return;
@@ -127,7 +128,8 @@ const componentDefaults = store => next => action => {
         pageId,
         componentId,
         propertyId,
-        value: defaultValue,
+        value: pullTranslatedValue(defaultValue),
+        language: Languages.US_ENGLISH_LANG,
       }));
     }
   });

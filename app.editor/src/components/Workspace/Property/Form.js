@@ -1,10 +1,14 @@
 import React from 'react';
-import { get } from 'lodash';
-import { useSelector } from 'react-redux';
+import { find, get } from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
 import { Flex } from 'pkg.admin-components';
+import { Languages } from 'pkg.campaign-components';
 import { FormWizardProvider, formActions } from 'pkg.form-wizard';
 import WorkspacePropertyFormField from '@editor/components/Workspace/Property/FormField';
-import { selectComponentProperties } from '@editor/features/assembly';
+import {
+  selectComponentProperties,
+  setComponentInstancePropertyValue,
+} from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useDynamicPropertyEvaluation from '@editor/hooks/useDynamicPropertyEvaluation';
 import useSiteLanguages from '@editor/hooks/useSiteLanguages';
@@ -25,6 +29,7 @@ export default function PropertiesForm() {
   const languages = useSiteLanguages();
 
   const apiRef = React.useRef(null);
+  const dispatch = useDispatch();
 
   const fields = propertyMeta.reduce((acc, property) => {
     const isTranslatable = get(property, 'isTranslatable', false);
@@ -46,6 +51,7 @@ export default function PropertiesForm() {
         label: property.label,
         attributes: {
           propertyId: property.id,
+          language: Languages.US_ENGLISH_LANG,
         },
       });
     } else {
@@ -89,17 +95,10 @@ export default function PropertiesForm() {
       ) {
         const propertyValue = get(componentProperties, `${propertyId}.value`);
 
-        if (language) {
-          formDispatch(formActions.setValue(
-            field.id,
-            pullTranslatedValue(propertyValue, language) || '',
-          ));
-        } else {
-          formDispatch(formActions.setValue(
-            field.id,
-            propertyValue || '',
-          ));
-        }
+        formDispatch(formActions.setValue(
+          field.id,
+          pullTranslatedValue(propertyValue, language) || '',
+        ));
       }
     });
   }, [
@@ -107,11 +106,26 @@ export default function PropertiesForm() {
     componentProperties,
   ]);
 
+  function onFieldSave(fieldId, value) {
+    const field = find(fields, { id: fieldId });
+    const propertyId = get(field, 'attributes.propertyId');
+    const language = get(field, 'attributes.language');
+
+    dispatch(setComponentInstancePropertyValue({
+      pageId: activePageId,
+      componentId: activeComponentId,
+      propertyId,
+      value,
+      language,
+    }));
+  }
+
   return (
     <FormWizardProvider
       name={`component-${activeComponentId}-properties`}
       fields={fields}
       apiRef={apiRef}
+      onFieldSave={onFieldSave}
     >
       {(formProps) => (
         <Flex.Column gridGap="16px" as="form" {...formProps}>

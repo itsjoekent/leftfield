@@ -14,7 +14,6 @@ import {
 import {
   selectComponentPropertyStorage,
   setComponentInstancePropertyStorage,
-  setComponentInstancePropertyValue,
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useGetSetting from '@editor/hooks/useGetSetting';
@@ -46,6 +45,7 @@ export default function ShortText(props) {
   const {
     inputProps,
     inputStylingProps,
+    setFieldValue,
   } = field;
 
   if (!!inheritedFrom) {
@@ -77,7 +77,10 @@ export default function ShortText(props) {
         <Tooltip copy="Remove settings reference" point={Tooltip.UP_RIGHT_ALIGNED}>
           <Buttons.IconButton
             onClick={() => {
-              const value = getSetting(inheritedFrom, get(property, 'inheritFromSetting'));
+              const value = pullTranslatedValue(
+                getSetting(inheritedFrom, get(property, 'inheritFromSetting')),
+                language,
+              );
 
               dispatch(setComponentInstancePropertyStorage({
                 pageId: activePageId,
@@ -88,12 +91,7 @@ export default function ShortText(props) {
                 language,
               }));
 
-              dispatch(setComponentInstancePropertyValue({
-                pageId: activePageId,
-                componentId: activeComponentId,
-                propertyId,
-                value,
-              }));
+              setFieldValue(value);
             }}
             IconComponent={Icons.RemoveFill}
             color={(colors) => colors.mono[500]}
