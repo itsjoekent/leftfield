@@ -6,18 +6,15 @@ import { Languages } from 'pkg.campaign-components';
 import { Inputs } from 'pkg.admin-components';
 import { selectComponentPropertyStorage } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
-import useGetSetting from '@editor/hooks/useGetSetting';
-import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
+import useDynamicEvaluation from '@editor/hooks/useDynamicEvaluation';
 
-export default function ShortText(props) {
+export default function Checklist(props) {
   const { fieldId, language, property } = props;
-
   const propertyId = get(property, 'id');
-  const inheritFromSetting = get(property, 'inheritFromSetting', null);
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
 
-  const getSetting = useGetSetting(activePageId);
+  const { evaluateDynamicPropertyAttribute } = useDynamicEvaluation(activePageId, activeComponentId);
 
   const inheritedFrom = useSelector(selectComponentPropertyStorage(
     activePageId,
@@ -34,26 +31,23 @@ export default function ShortText(props) {
   }
 
   const {
-    inputProps,
-    inputStylingProps,
+    setFieldValue,
+    value,
   } = field;
 
-  const finalInputProps = {
-    ...inputProps,
-    'aria-labelledby': `${propertyId}-${Languages.US_ENGLISH_LANG}`,
-  };
+  const hasDynamicOptions = !!get(property, 'dynamicOptions');
+  const dynamicOptions = hasDynamicOptions ? evaluateDynamicPropertyAttribute(property, 'dynamicOptions') : [];
 
-  if (!!inheritedFrom) {
-    const value = pullTranslatedValue(
-      getSetting(inheritedFrom, inheritFromSetting),
-      language,
-    );
-
-    finalInputProps['disabled'] = true;
-    finalInputProps['value'] = value;
-  }
+  const options = get(property, 'options') || dynamicOptions || [];
 
   return (
-    <Inputs.DefaultText {...finalInputProps} {...inputStylingProps} />
+    <Inputs.Checklist
+      fieldId={fieldId}
+      labelledBy={`${propertyId}-${Languages.US_ENGLISH_LANG}`}
+      value={value}
+      options={options}
+      setValue={setFieldValue}
+      isDisabled={!!inheritedFrom}
+    />
   );
 }

@@ -30,7 +30,12 @@ export const assemblySlice = createSlice({
     },
     siteSettings: {
       ...defaultSettings,
-      LANGUAGES: ['en-US', 'es-MX'],
+      LANGUAGES: {
+        [Languages.US_ENGLISH_LANG]: [
+          Languages.US_ENGLISH_LANG,
+          Languages.MX_SPANISH_LANG,
+        ],
+      },
     },
     templates: [],
   },
@@ -129,6 +134,16 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.storage.${key}.${language}`, value);
     },
+    wipePropertyValue: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        propertyId,
+      } = action.payload;
+
+      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value`, {});
+      console.log(state);
+    },
   },
 });
 
@@ -139,6 +154,7 @@ export const {
   removeChildComponentInstance,
   setComponentInstancePropertyValue,
   setComponentInstancePropertyStorage,
+  wipePropertyValue,
 } = assemblySlice.actions;
 
 export default assemblySlice.reducer;

@@ -2,7 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { Flex, Typography } from 'pkg.admin-components';
+import { useFormField } from 'pkg.form-wizard';
+import {
+  Buttons,
+  Flex,
+  Icons,
+  Tooltip,
+  Typography,
+} from 'pkg.admin-components';
 import {
   SITE_SETTINGS,
   TEMPLATE_SETTINGS,
@@ -20,12 +27,13 @@ import useGetSetting from '@editor/hooks/useGetSetting';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export default function PropertyInheritance(props) {
-  const { language, property } = props;
+  const { language, property, fieldId } = props;
 
   const propertyId = get(property, 'id');
   const isTranslatable = get(property, 'isTranslatable', false);
 
   const dispatch = useDispatch();
+  const { setFieldValue } = useFormField(fieldId);
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
 
@@ -51,7 +59,36 @@ export default function PropertyInheritance(props) {
   // TODO: Deep link to the setting menu
   if (!!inheritedFrom) {
     return (
-      <Flex.Row align="center">
+      <Flex.Row align="center" gridGap="2px" paddingRight="12px">
+        <Tooltip copy="Remove settings reference" point={Tooltip.UP_LEFT_ALIGNED}>
+          <Buttons.IconButton
+            onClick={(event) => {
+              event.preventDefault();
+
+              const value = pullTranslatedValue(
+                getSetting(inheritedFrom, inheritFromSetting),
+                language,
+              );
+
+              setFieldValue(value);
+
+              dispatch(setComponentInstancePropertyStorage({
+                pageId: activePageId,
+                componentId: activeComponentId,
+                propertyId,
+                key: 'inheritedFrom',
+                value: null,
+                language,
+              }));
+            }}
+            IconComponent={Icons.RemoveFill}
+            width={18}
+            height={18}
+            color={(colors) => colors.mono[500]}
+            hoverColor={(colors) => colors.mono[900]}
+            aria-label="Remove settings reference"
+          />
+        </Tooltip>
         <Typography
           fontStyle="light"
           fontSize="12px"

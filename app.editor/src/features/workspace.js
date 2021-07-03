@@ -11,6 +11,8 @@ export const workspaceSlice = createSlice({
     activeComponentId: '1',
     activePageId: 'test',
     tab: PROPERTIES_TAB,
+    visibleProperties: [],
+    visibleSlots: [],
   },
   reducers: {
     setTab: (state, action) => {
@@ -21,6 +23,12 @@ export const workspaceSlice = createSlice({
     },
     setActiveComponentId: (state, action) => {
       state.activeComponentId = action.payload;
+    },
+    setVisibleProperties: (state, action) => {
+      state.visibleProperties = action.payload.visibleProperties;
+    },
+    setVisibleSlots: (state, action) => {
+      state.visibleSlots = action.payload.visibleSlots;
     },
     // setIsPageDrawerOpen: (isPageDrawerOpen) => {
     //
@@ -44,6 +52,8 @@ export const {
   setActivePageId,
   setActiveComponentId,
   setTab,
+  setVisibleProperties,
+  setVisibleSlots,
 } = workspaceSlice.actions;
 
 export default workspaceSlice.reducer;
@@ -58,4 +68,8 @@ export function selectActivePageId(state) {
 
 export function selectTab(state) {
   return state.workspace.tab;
+}
+
+export function selectVisibleProperties(state) {
+  return state.workspace.visibleProperties;
 }

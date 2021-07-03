@@ -1,7 +1,9 @@
 import React from 'react';
+import styled from 'styled-components';
 import { get } from 'lodash';
 import { Flex, Typography } from 'pkg.admin-components';
 import { Languages, PropertyTypes } from 'pkg.campaign-components';
+import WorkspacePropertyChecklist from '@editor/components/Workspace/Property/Checklist';
 import WorkspacePropertyInheritance from '@editor/components/Workspace/Property/Inheritance';
 import WorkspacePropertyLabel from '@editor/components/Workspace/Property/Label';
 import WorkspacePropertyShortText from '@editor/components/Workspace/Property/ShortText';
@@ -17,7 +19,7 @@ function FormFieldInner(props) {
   } = props;
 
   return (
-    <Flex.Column gridGap="2px">
+    <FormFieldInnerContainer gridGap="4px">
       {(() => {
         switch (get(property, 'type')) {
           case PropertyTypes.SHORT_TEXT_TYPE: return (
@@ -30,6 +32,14 @@ function FormFieldInner(props) {
 
           case PropertyTypes.TOGGLE_TYPE: return (
             <WorkspacePropertyToggle
+              fieldId={fieldId}
+              language={language}
+              property={property}
+            />
+          );
+
+          case PropertyTypes.CHECKLIST_TYPE: return (
+            <WorkspacePropertyChecklist
               fieldId={fieldId}
               language={language}
               property={property}
@@ -71,6 +81,7 @@ function FormFieldInner(props) {
               <WorkspacePropertyInheritance
                 property={property}
                 language={language}
+                fieldId={fieldId}
               />
             )}
             {isTranslatable && (
@@ -92,18 +103,21 @@ function FormFieldInner(props) {
           </Flex.Row>
         );
       })()}
-    </Flex.Column>
+    </FormFieldInnerContainer>
   );
 }
+
+const FormFieldInnerContainer = styled(Flex.Column)`
+  &:not(:last-child):not(:first-child) {
+    margin-bottom: 6px;
+  }
+`;
 
 export default function FormField(props) {
   const { property } = props;
 
   const isTranslatable = !!get(property, 'isTranslatable', false);
-
-  const primaryFieldId = isTranslatable
-    ? `${property.id}-${Languages.US_ENGLISH_LANG}`
-    : property.id;
+  const primaryFieldId = `${property.id}-${Languages.US_ENGLISH_LANG}`
 
   const languages = useSiteLanguages();
 

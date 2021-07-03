@@ -14,7 +14,9 @@ export const ACTBLUE_REFCODE_CARRY_ADS_SOURCE = {
   field: {
     label: 'Convert source & subsource to ActBlue refcodes',
     help: 'If visitors arrive at your website with a source or subsource UTM parameter, they will be added to your ActBlue url as refcode & refcode2',
-    defaultValue: false,
+    defaultValue: {
+      [US_ENGLISH_LANG]: false,
+    },
     type: TOGGLE_TYPE,
   },
 };
@@ -61,7 +63,9 @@ export const DEFAULT_ACTBLUE_REFCODE = {
   field: {
     label: 'Default ActBlue Refcode',
     help: 'ActBlue refcodes are custom URL parameters that help you track where donations are coming from.',
-    defaultValue: 'web',
+    defaultValue: {
+      [US_ENGLISH_LANG]: 'web',
+    },
     type: SHORT_TEXT_TYPE,
   },
 }
@@ -70,7 +74,9 @@ export const LANGUAGES = {
   key: 'LANGUAGES',
   field: {
     label: 'Languages',
-    defaultValue: [US_ENGLISH_LANG],
+    defaultValue: {
+      [US_ENGLISH_LANG]: [US_ENGLISH_LANG],
+    },
     type: SHORT_TEXT_TYPE,
     isList: true,
     options: [

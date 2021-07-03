@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { find, get } from 'lodash';
 import { useSelector } from 'react-redux';
 import { ComponentMeta } from 'pkg.campaign-components';
 import {
@@ -8,12 +8,12 @@ import {
   selectComponentTag,
 } from '@editor/features/assembly';
 
-export default function useDynamicPropertyEvaluation(pageId, componentId) {
+export default function useDynamicEvaluation(pageId, componentId) {
   const parentComponentId = useSelector(selectComponentsParentComponentId(pageId, componentId));
   const parentComponentTag = useSelector(selectComponentTag(pageId, parentComponentId));
-  const parentComponentSlotId = useSelector(selectComponentsParentComponentSlotId(pageId, parentComponentId));
+  const parentComponentSlotId = useSelector(selectComponentsParentComponentSlotId(pageId, componentId));
 
-  const slot = get(ComponentMeta[parentComponentTag], `slots.${parentComponentSlotId}`, null);
+  const slot = find(get(ComponentMeta[parentComponentTag], 'slots'), { id: parentComponentSlotId }) || null;
 
   const properties = useSelector(selectComponentProperties(pageId, componentId));
 
@@ -22,9 +22,16 @@ export default function useDynamicPropertyEvaluation(pageId, componentId) {
     slot,
   };
 
-  function evaluateDynamicPropertyAttribute(property, keys) {
-    return keys.map((key) => property[key](data));
+  function evaluateDynamicPropertyAttribute(property, key) {
+    return property[key](data);
   }
 
-  return evaluateDynamicPropertyAttribute;
+  function evaluateDynamicSlot(slot, key) {
+    return slot[key](data);
+  }
+
+  return {
+    evaluateDynamicPropertyAttribute,
+    evaluateDynamicSlot,
+  };
 }

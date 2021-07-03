@@ -11,6 +11,7 @@ import {
   removeChildComponentInstance,
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
+import useDynamicEvaluation from '@editor/hooks/useDynamicEvaluation';
 
 export default function WorkspaceSlotsSection() {
   const dispatch = useDispatch();
@@ -21,7 +22,17 @@ export default function WorkspaceSlotsSection() {
     activeComponentMeta,
   } = useActiveWorkspaceComponent();
 
+  const { evaluateDynamicSlot } = useDynamicEvaluation(activePageId, activeComponentId);
+
   const slots = get(activeComponentMeta, 'slots', []);
+  const visibleSlots = slots.filter((slot) => {
+    const conditional = get(slot, 'conditional', null);
+    if (!conditional) {
+      return true;
+    }
+
+    return evaluateDynamicSlot(slot, 'conditional');
+  });
 
   function onDragEnd(result) {
     const {
@@ -70,7 +81,7 @@ export default function WorkspaceSlotsSection() {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Flex.Column gridGap="16px">
-        {slots.map((slot) => (
+        {visibleSlots.map((slot) => (
           <Flex.Column gridGap="6px" key={slot.id}>
             <WorkspaceFieldLabel
               labelProps={{

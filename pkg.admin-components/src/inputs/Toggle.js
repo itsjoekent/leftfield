@@ -81,16 +81,12 @@ const Half = styled.span`
   font-family: ${(props) => props.theme.fonts.main.medium};
   font-size: 16px;
 
-  box-shadow: none;
-
   transition: all ${(props) => props.theme.animation.defaultTransition};
-  transition-property: color, background-color, box-shadow;
-
+  transition-property: color, background-color;
 
   ${(props) => props.active && css`
     color: ${(props) => props.styleFunctions.onColorText(props.theme.colors)};
     background-color: ${(props) => props.styleFunctions.onColorBg(props.theme.colors)};
-    box-shadow: ${(props) => props.theme.shadow.light};
   `}
 
   ${(props) => !props.active && !props.isDisabled && css`

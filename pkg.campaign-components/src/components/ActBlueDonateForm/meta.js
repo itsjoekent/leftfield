@@ -1,9 +1,9 @@
-import { get } from 'lodash';
+import get from 'lodash.get';
 import documentation from '@cc/components/ActBlueDonateForm/docs.md';
 import makeValidationError from '@cc/utils/makeValidationError';
 import {
   COLOR_TYPE,
-  SELECT_TYPE,
+  CHECKLIST_TYPE,
   TOGGLE_TYPE,
 } from '@cc/constants/property-types';
 import { US_ENGLISH_LANG } from '@cc/constants/languages';
@@ -29,11 +29,30 @@ import {
 
 export const TAG = 'ActBlueDonateForm';
 
-export const ONE_BUTTON_LAYOUT = 'One Button';
-export const WIDE_LAYOUT = 'Wide single row';
-export const TWO_COLUMN_LAYOUT = 'Two Columns';
-export const THREE_COLUMN_LAYOUT = 'Three columns';
-export const FOUR_COLUMN_LAYOUT = 'Four columns';
+export const ONE_BUTTON_LAYOUT = {
+  key: 'ONE_BUTTON_LAYOUT',
+  label: 'One Button',
+};
+
+export const WIDE_LAYOUT = {
+  key: 'WIDE_LAYOUT',
+  label: 'Wide single row',
+};
+
+export const TWO_COLUMN_LAYOUT = {
+  key: 'TWO_COLUMN_LAYOUT',
+  label: 'Two Columns',
+};
+
+export const THREE_COLUMN_LAYOUT = {
+  key: 'THREE_COLUMN_LAYOUT',
+  label: 'Three columns',
+};
+
+export const FOUR_COLUMN_LAYOUT = {
+  key: 'FOUR_COLUMN_LAYOUT',
+  label: 'Four columns',
+};
 
 export const LAYOUT_PROPERTY = 'LAYOUT_PROPERTY';
 export const ACTBLUE_FORM_PROPERTY = 'ACTBLUE_FORM_PROPERTY';
@@ -61,7 +80,7 @@ const ActBlueDonateFormMeta = {
   placementConstraints: [
     {
       include: [OPEN_GRID_TRAIT],
-      conditional: ({ properties }) => properties.layout !== ONE_BUTTON_LAYOUT,
+      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) !== ONE_BUTTON_LAYOUT.key,
     },
   ],
   slots: [
@@ -69,7 +88,7 @@ const ActBlueDonateFormMeta = {
       id: DONATE_BUTTONS_SLOT,
       label: 'Donate Buttons',
       isList: true,
-      conditional: ({ properties }) => properties.layout !== ONE_BUTTON_LAYOUT,
+      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) !== ONE_BUTTON_LAYOUT.key,
       constraints: [
         { include: [DONATE_BUTTON_TRAIT] },
       ],
@@ -78,15 +97,17 @@ const ActBlueDonateFormMeta = {
         [GROWS_VERTICALLY]: true,
       },
       customValidation: ({ properties, children }) => {
+        const layout = get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`);
+
         if (
-          [TWO_COLUMN_LAYOUT, THREE_COLUMN_LAYOUT].includes(properties[LAYOUT_PROPERTY])
+          [TWO_COLUMN_LAYOUT.key, THREE_COLUMN_LAYOUT.key].includes(layout)
           && children.length !== 6
         ) {
           return makeValidationError('Must have 6 buttons');
         }
 
         if (
-          properties[LAYOUT_PROPERTY] === FOUR_COLUMN_LAYOUT
+          layout === FOUR_COLUMN_LAYOUT.key
           && children.length !== 8
         ) {
           return makeValidationError('Must have 8 buttons');
@@ -99,7 +120,7 @@ const ActBlueDonateFormMeta = {
       id: DONATE_BUTTON_SLOT,
       label: 'Donate Button',
       isList: false,
-      conditional: ({ properties }) => properties.layout === ONE_BUTTON_LAYOUT,
+      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) === ONE_BUTTON_LAYOUT.key,
       constraints: [
         { include: [DONATE_BUTTON_TRAIT] },
       ],
@@ -114,7 +135,7 @@ const ActBlueDonateFormMeta = {
       isList: true,
       min: 1,
       max: 4,
-      conditional: ({ properties }) => properties.layout === WIDE_LAYOUT,
+      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) === WIDE_LAYOUT.key,
       constraints: [
         { include: [DONATE_BUTTON_TRAIT] },
       ],
@@ -130,7 +151,7 @@ const ActBlueDonateFormMeta = {
       isList: true,
       min: 1,
       max: 8,
-      conditional: ({ properties }) => properties.layout === WIDE_LAYOUT,
+      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) === WIDE_LAYOUT.key,
       constraints: [
         { include: [DONATE_BUTTON_TRAIT] },
       ],
@@ -144,7 +165,7 @@ const ActBlueDonateFormMeta = {
     {
       id: LAYOUT_PROPERTY,
       label: 'Form Layout',
-      type: SELECT_TYPE,
+      type: CHECKLIST_TYPE,
       required: true,
       dynamicOptions: ({ slot }) => {
         if (get(slot, `layout.${FULL_SCREEN_WIDTH}`)) {
@@ -160,10 +181,14 @@ const ActBlueDonateFormMeta = {
       },
       dynamicDefaultValue: ({ slot }) => {
         if (get(slot, `layout.${FULL_SCREEN_WIDTH}`)) {
-          return WIDE_LAYOUT;
+          return {
+            [US_ENGLISH_LANG]: WIDE_LAYOUT.key,
+          };
         }
 
-        return TWO_COLUMN_LAYOUT;
+        return {
+          [US_ENGLISH_LANG]: TWO_COLUMN_LAYOUT.key,
+        };
       },
     },
     {
@@ -177,8 +202,10 @@ const ActBlueDonateFormMeta = {
       label: 'Enable ActBlue Express',
       help: 'This will make donations 1-click for donors with card details saved to ActBlue, a small disclaimer will be added below your donation buttons',
       type: TOGGLE_TYPE,
-      defaultValue: false,
-      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`, null) !== ONE_BUTTON_LAYOUT,
+      defaultValue: {
+        [US_ENGLISH_LANG]: false,
+      },
+      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`, null) !== ONE_BUTTON_LAYOUT.key,
     },
     {
       ...ACTBLUE_EXPRESS_DISCLAIMER_COPY.field,
