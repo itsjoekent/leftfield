@@ -17,11 +17,16 @@ import {
   removeChildComponentInstance,
   setComponentInstancePropertyValue,
   setComponentInstancePropertyStorage,
+  wipePropertyValue,
+  wipePropertyStorage,
+  wipeSlot,
 
   selectComponentProperties,
+  selectComponentPropertyStorage,
   selectComponentTag,
   selectComponentsParentComponentId,
   selectComponentsParentComponentSlotId,
+  selectComponentSlot,
   selectPageSettings,
   selectPageTemplateId,
   selectSiteSettings,
@@ -49,14 +54,20 @@ const TRIGGERS = [
   setActivePageId.toString(),
 ];
 
+let initialized = false;
+
 const parliamentarian = store => next => action => {
   const result = next(action);
 
-  if (
-    !TRIGGERS.includes(action.type)
-    || !!get(action, `payload.__parliamentarian`, false)
-  ) {
+  const shouldRun = TRIGGERS.includes(action.type)
+    && get(action, `payload.__parliamentarian`, false) === false;
+
+  if (!!initialized && !shouldRun) {
     return result;
+  }
+
+  if (!initialized) {
+    initialized = true;
   }
 
   const state = store.getState();
@@ -86,7 +97,7 @@ const parliamentarian = store => next => action => {
   const templateSettings = selectPageSettings(selectPageTemplateId(pageId)(state))(state);
   const pageSettings = selectPageSettings(pageId)(state);
 
-  // STEP 1.
+  // STEP 1
   // Determine visible & hidden properties.
 
   const {
@@ -126,7 +137,7 @@ const parliamentarian = store => next => action => {
 
   dispatches.push(setVisibleProperties({ visibleProperties }));
 
-  // STEP 2.
+  // STEP 2
   // Set default values for all visible properties.
 
   const appliedDefaults = {};
@@ -230,6 +241,102 @@ const parliamentarian = store => next => action => {
     }
   });
 
+  // STEP 3
+  // Remove values & storage from hidden properties.
+
+  hiddenProperties.forEach((property) => {
+    const propertyId = property.id;
+
+    const hasValue = !!Object.keys(
+      get(componentPropertyValues, `${propertyId}.value`, {})
+    ).length;
+
+    if (hasValue) {
+      dispatches.push(wipePropertyValue({
+        pageId,
+        componentId,
+        propertyId,
+      }));
+    }
+
+    const hasStorage = !!Object.keys(
+      selectComponentPropertyStorage(pageId, componentId, propertyId)(state)
+    ).length;
+
+    if (hasStorage) {
+      dispatches.push(wipePropertyStorage({
+        pageId,
+        componentId,
+        propertyId,
+      }));
+    }
+  });
+
+  // STEP 4
+  // Validate visible property values.
+
+  // STEP 5
+  // Determine visible & hidden slots.
+
+  const {
+    visibleSlots,
+    hiddenSlots,
+  } = get(componentMeta, 'slots', []).reduce((acc, slot) => {
+    const conditional = get(slot, 'conditional', null);
+
+    if (!conditional) {
+      return {
+        ...acc,
+        visibleSlots: [
+          ...acc.visibleSlots,
+          slot,
+        ],
+      };
+    }
+
+    const result = conditional({
+      properties: componentPropertyValues,
+      slot: parentComponentSlotMeta,
+    });
+
+    const appendTo = !!result ? 'visibleSlots' : 'hiddenSlots';
+
+    return {
+      ...acc,
+      [appendTo]: [
+        ...acc[appendTo],
+        slot,
+      ],
+    };
+  }, {
+    visibleSlots: [],
+    hiddenSlots: [],
+  });
+
+  dispatches.push(setVisibleSlots({ visibleSlots }));
+
+  // STEP 6
+  // Remove children from hidden slots.
+
+  hiddenSlots.forEach((slot) => {
+    const slotId = get(slot, 'id');
+    const hasChildren = !!selectComponentSlot(pageId, componentId, slotId)(state).length;
+
+    if (hasChildren) {
+      dispatches.push(wipeSlot({
+        pageId,
+        componentId,
+        slotId,
+      }));
+    }
+  });
+
+  // STEP 7
+  // Validate visible slots.
+
+  // STEP 8
+  // Commit work to store.
+
   batch(() => dispatches.forEach((action) => {
     store.dispatch({
       ...action,
@@ -240,17 +347,14 @@ const parliamentarian = store => next => action => {
     });
   }));
 
+  // STEP 9
+  // Update page preview data
+
   console.log({
-    visibleProperties,
-    hiddenProperties,
+    visibleSlots,
+    hiddenSlots,
     state: store.getState(),
   });
-
-  // determine what properties, slots, to show to UI, compute all dynamic* keys
-  // set default property values & setting links
-  // remove property values & setting links from properties no longer available
-  // remove children from slots no longer available
-  // validate all property values, slots
 
   return result;
 }

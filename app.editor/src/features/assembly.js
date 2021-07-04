@@ -109,7 +109,9 @@ export const assemblySlice = createSlice({
       children.splice(targetIndex, 1);
       set(state, path, children);
 
-      delete state[`pages.${pageId}.components.${targetComponentId}`];
+      if (get(state, `pages.${pageId}.components.${targetComponentId}`)) {
+        delete state.pages[pageId].components[targetComponentId];
+      }
     },
     setComponentInstancePropertyValue: (state, action) => {
       const {
@@ -142,7 +144,32 @@ export const assemblySlice = createSlice({
       } = action.payload;
 
       set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value`, {});
-      console.log(state);
+    },
+    wipePropertyStorage: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        propertyId,
+      } = action.payload;
+
+      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.storage`, {});
+    },
+    wipeSlot: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        slotId,
+      } = action.payload;
+
+      const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
+
+      get(state, path, []).forEach((childId) => {
+        if (get(state, `pages.${pageId}.components.${childId}`)) {
+          delete state.pages[pageId].components[childId];
+        }
+      });
+
+      set(state, path, []);
     },
   },
 });
@@ -155,6 +182,8 @@ export const {
   setComponentInstancePropertyValue,
   setComponentInstancePropertyStorage,
   wipePropertyValue,
+  wipePropertyStorage,
+  wipeSlot,
 } = assemblySlice.actions;
 
 export default assemblySlice.reducer;
@@ -276,10 +305,18 @@ export function selectComponentPropertyValue(pageId, componentId, propertyId, la
   return _selectComponentPropertyValue;
 }
 
-export function selectComponentPropertyStorage(pageId, componentId, propertyId, key, language = Languages.US_ENGLISH_LANG) {
+export function selectComponentPropertyStorage(pageId, componentId, propertyId) {
   function _selectComponentPropertyStorage(state) {
-    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.storage.${key}.${language}`, null);
+    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.storage`, {});
   }
 
   return _selectComponentPropertyStorage;
+}
+
+export function selectComponentPropertyStorageValue(pageId, componentId, propertyId, key, language = Languages.US_ENGLISH_LANG) {
+  function _selectComponentPropertyStorageValue(state) {
+    return get(selectComponentPropertyStorage(pageId, componentId, propertyId)(state), `${key}.${language}`, null);
+  }
+
+  return _selectComponentPropertyStorageValue;
 }

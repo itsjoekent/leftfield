@@ -17,7 +17,7 @@ import {
   SETTING_LABELS,
 } from '@editor/constants/inheritance';
 import {
-  selectComponentPropertyStorage,
+  selectComponentPropertyStorageValue,
   selectPageTemplateId,
   setComponentInstancePropertyStorage,
   setComponentInstancePropertyValue,
@@ -40,7 +40,7 @@ export default function PropertyInheritance(props) {
   const templatedFrom = useSelector(selectPageTemplateId(activePageId));
   const hasTemplate = !!templatedFrom;
 
-  const inheritedFrom = useSelector(selectComponentPropertyStorage(
+  const inheritedFrom = useSelector(selectComponentPropertyStorageValue(
     activePageId,
     activeComponentId,
     propertyId,

@@ -1,6 +1,5 @@
 import React from 'react';
-import { get } from 'lodash';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { Flex } from 'pkg.admin-components';
 import WorkspaceFieldLabel from '@editor/components/Workspace/FieldLabel';
@@ -10,8 +9,8 @@ import {
   reorderChildComponentInstance,
   removeChildComponentInstance,
 } from '@editor/features/assembly';
+import { selectVisibleSlots } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
-import useDynamicEvaluation from '@editor/hooks/useDynamicEvaluation';
 
 export default function WorkspaceSlotsSection() {
   const dispatch = useDispatch();
@@ -19,20 +18,9 @@ export default function WorkspaceSlotsSection() {
   const {
     activePageId,
     activeComponentId,
-    activeComponentMeta,
   } = useActiveWorkspaceComponent();
 
-  const { evaluateDynamicSlot } = useDynamicEvaluation(activePageId, activeComponentId);
-
-  const slots = get(activeComponentMeta, 'slots', []);
-  const visibleSlots = slots.filter((slot) => {
-    const conditional = get(slot, 'conditional', null);
-    if (!conditional) {
-      return true;
-    }
-
-    return evaluateDynamicSlot(slot, 'conditional');
-  });
+  const visibleSlots = useSelector(selectVisibleSlots);
 
   function onDragEnd(result) {
     const {

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useFormField } from 'pkg.form-wizard';
 import { Languages } from 'pkg.campaign-components';
 import { Inputs } from 'pkg.admin-components';
-import { selectComponentPropertyStorage } from '@editor/features/assembly';
+import { selectComponentPropertyStorageValue } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useGetSetting from '@editor/hooks/useGetSetting';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
@@ -19,7 +19,7 @@ export default function ShortText(props) {
 
   const getSetting = useGetSetting(activePageId);
 
-  const inheritedFrom = useSelector(selectComponentPropertyStorage(
+  const inheritedFrom = useSelector(selectComponentPropertyStorageValue(
     activePageId,
     activeComponentId,
     propertyId,

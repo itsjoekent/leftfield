@@ -73,3 +73,7 @@ export function selectTab(state) {
 export function selectVisibleProperties(state) {
   return state.workspace.visibleProperties;
 }
+
+export function selectVisibleSlots(state) {
+  return state.workspace.visibleSlots;
+}

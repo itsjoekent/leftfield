@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { css, useTheme } from 'styled-components';
 import DoneIcon from '@ac/icons/done';
-import { Column } from '@ac/Flex';
+import Grid from '@ac/Grid';
 import Typography from '@ac/Typography';
 
 export default function Checklist(props) {
@@ -37,15 +37,18 @@ export default function Checklist(props) {
   //   console.log(event);
   // }
 
+  // TODO: Grid of column
+  // TODO: Handle text overflow
   return (
-    <Column
+    <Grid
       role="listbox"
       aria-labelledby={labelledBy}
       aria-activedescendant={activeOption ? `${fieldId}-${value}` : ''}
       // tabIndex="0"
       // onKeyDown={onKeyDown}
       // onFocus={onFocus}
-      gridGap="6px"
+      gap="6px"
+      columns="1fr 1fr"
       fullWidth
     >
       {options.map((option) => {
@@ -77,7 +80,7 @@ export default function Checklist(props) {
           </Option>
         );
       })}
-    </Column>
+    </Grid>
   );
 }
 
