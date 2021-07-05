@@ -56,23 +56,13 @@ const TRIGGERS = [
 
 let initialized = false;
 
-const parliamentarian = store => next => action => {
-  const result = next(action);
-
-  const shouldRun = TRIGGERS.includes(action.type)
-    && get(action, `payload.__parliamentarian`, false) === false;
-
-  if (!!initialized && !shouldRun) {
-    return result;
-  }
-
-  if (!initialized) {
-    initialized = true;
-  }
-
-  const state = store.getState();
-  const dispatches = [];
-
+function runParliamentarian(
+  queueDispatch,
+  state,
+  pageId,
+  componentId,
+  updateWorkspace = true,
+) {
   const siteSettings = selectSiteSettings(state);
 
   const languages = get(
@@ -81,8 +71,6 @@ const parliamentarian = store => next => action => {
     [Languages.US_ENGLISH_LANG],
   );
 
-  const pageId = selectActivePageId(state);
-  const componentId = selectActiveComponentId(state);
   const componentTag = selectComponentTag(pageId, componentId)(state);
   const componentPropertyValues = selectComponentProperties(pageId, componentId)(state);
 
@@ -135,7 +123,9 @@ const parliamentarian = store => next => action => {
     hiddenProperties: [],
   });
 
-  dispatches.push(setVisibleProperties({ visibleProperties }));
+  if (!!updateWorkspace) {
+    queueDispatch(setVisibleProperties({ visibleProperties }));
+  }
 
   // STEP 2
   // Set default values for all visible properties.
@@ -177,7 +167,7 @@ const parliamentarian = store => next => action => {
         const inheritanceLevel = get(settingMatch(language), '[1]', null);
 
         if (!!inheritanceLevel && !hasSetDefault(language)) {
-          dispatches.push(setComponentInstancePropertyStorage({
+          queueDispatch(setComponentInstancePropertyStorage({
             pageId,
             componentId,
             propertyId: property.id,
@@ -205,7 +195,7 @@ const parliamentarian = store => next => action => {
         const translatedValue = pullTranslatedValue(dynamicValue, language);
 
         if (getPropertyValue(language) !== translatedValue) {
-          dispatches.push(setComponentInstancePropertyValue({
+          queueDispatch(setComponentInstancePropertyValue({
             pageId,
             componentId,
             propertyId,
@@ -229,7 +219,7 @@ const parliamentarian = store => next => action => {
         const translatedValue = pullTranslatedValue(defaultValue, language);
 
         if (getPropertyValue(language) !== translatedValue) {
-          dispatches.push(setComponentInstancePropertyValue({
+          queueDispatch(setComponentInstancePropertyValue({
             pageId,
             componentId,
             propertyId,
@@ -252,7 +242,7 @@ const parliamentarian = store => next => action => {
     ).length;
 
     if (hasValue) {
-      dispatches.push(wipePropertyValue({
+      queueDispatch(wipePropertyValue({
         pageId,
         componentId,
         propertyId,
@@ -264,7 +254,7 @@ const parliamentarian = store => next => action => {
     ).length;
 
     if (hasStorage) {
-      dispatches.push(wipePropertyStorage({
+      queueDispatch(wipePropertyStorage({
         pageId,
         componentId,
         propertyId,
@@ -313,7 +303,9 @@ const parliamentarian = store => next => action => {
     hiddenSlots: [],
   });
 
-  dispatches.push(setVisibleSlots({ visibleSlots }));
+  if (!!updateWorkspace) {
+    queueDispatch(setVisibleSlots({ visibleSlots }));
+  }
 
   // STEP 6
   // Remove children from hidden slots.
@@ -323,7 +315,7 @@ const parliamentarian = store => next => action => {
     const hasChildren = !!selectComponentSlot(pageId, componentId, slotId)(state).length;
 
     if (hasChildren) {
-      dispatches.push(wipeSlot({
+      queueDispatch(wipeSlot({
         pageId,
         componentId,
         slotId,
@@ -333,9 +325,46 @@ const parliamentarian = store => next => action => {
 
   // STEP 7
   // Validate visible slots.
+}
 
-  // STEP 8
-  // Commit work to store.
+const parliamentarian = store => next => action => {
+  const result = next(action);
+
+  const shouldRun = TRIGGERS.includes(action.type)
+    && get(action, `payload.__parliamentarian`, false) === false;
+
+  if (!!initialized && !shouldRun) {
+    return result;
+  }
+
+  if (!initialized) {
+    initialized = true;
+  }
+
+  const state = store.getState();
+  const dispatches = [];
+  const queueDispatch = (action) => dispatches.push(action);
+
+  const pageId = selectActivePageId(state);
+  const componentId = selectActiveComponentId(state);
+
+  runParliamentarian(
+    queueDispatch,
+    state,
+    pageId,
+    componentId,
+    true,
+  );
+
+  if (action.type === addChildComponentInstance.toString()) {
+    runParliamentarian(
+      queueDispatch,
+      state,
+      pageId,
+      action.payload.componentId,
+      false,
+    );
+  }
 
   batch(() => dispatches.forEach((action) => {
     store.dispatch({
@@ -347,14 +376,7 @@ const parliamentarian = store => next => action => {
     });
   }));
 
-  // STEP 9
-  // Update page preview data
-
-  console.log({
-    visibleSlots,
-    hiddenSlots,
-    state: store.getState(),
-  });
+  console.log('parliamentarian => ', store.getState());
 
   return result;
 }

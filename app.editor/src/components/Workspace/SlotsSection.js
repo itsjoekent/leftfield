@@ -1,4 +1,5 @@
 import React from 'react';
+import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { Flex } from 'pkg.admin-components';
@@ -75,7 +76,7 @@ export default function WorkspaceSlotsSection() {
               labelProps={{
                 children: slot.label,
               }}
-              isRequired={false}
+              isRequired={get(slot, 'required', false)}
               help={slot.help}
             />
             <WorkspaceSlotList slotId={slot.id} />

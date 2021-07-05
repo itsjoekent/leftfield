@@ -17,6 +17,7 @@ const featuredTraits = [
 
 const recentComponents = [
   ComponentMeta.ActBlueDonateForm,
+  ComponentMeta.DonateButton,
 ];
 
 export default function ElementLibraryModal(props) {

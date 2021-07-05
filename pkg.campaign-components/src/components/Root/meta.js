@@ -23,6 +23,7 @@ const RootMeta = {
     {
       id: SECTIONS_SLOT,
       label: 'Page Sections',
+      required: true,
       isList: true,
       layout: {
         [FILLS_CONTAINER_WIDE]: true,

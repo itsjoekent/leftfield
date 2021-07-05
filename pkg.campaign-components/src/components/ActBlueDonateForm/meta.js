@@ -87,6 +87,7 @@ const ActBlueDonateFormMeta = {
     {
       id: DONATE_BUTTONS_SLOT,
       label: 'Donate Buttons',
+      required: true,
       isList: true,
       conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) !== ONE_BUTTON_LAYOUT.key,
       constraints: [
@@ -119,6 +120,7 @@ const ActBlueDonateFormMeta = {
     {
       id: DONATE_BUTTON_SLOT,
       label: 'Donate Button',
+      required: true,
       isList: false,
       conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) === ONE_BUTTON_LAYOUT.key,
       constraints: [
@@ -133,6 +135,7 @@ const ActBlueDonateFormMeta = {
       label: 'Wide Layout Mobile Buttons',
       help: 'These buttons only render on mobile devices',
       isList: true,
+      required: true,
       min: 1,
       max: 4,
       conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) === WIDE_LAYOUT.key,
@@ -148,6 +151,7 @@ const ActBlueDonateFormMeta = {
       id: WIDE_DESKTOP_DONATE_BUTTONS_SLOT,
       label: 'Wide Layout Desktop Buttons',
       help: 'These buttons only render on large devices',
+      required: true,
       isList: true,
       min: 1,
       max: 8,
