@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import {
   colors,
+  cursor,
   overflow,
   padding,
   size,
@@ -16,6 +17,7 @@ const Typography = styled.p`
   ${(props) => props.whiteSpace && css`white-space: ${props.whiteSpace};`}
 
   ${colors}
+  ${cursor}
   ${overflow}
   ${padding}
   ${size}

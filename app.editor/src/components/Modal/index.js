@@ -55,6 +55,6 @@ const fadeIn = keyframes`
 
 const FadeWrapper = styled.div`
   ${(props) => props.hasModalComponent && css`
-    animation: ${fadeIn} 0.15s forwards ease-in;
+    animation: ${fadeIn} ${(props) => props.theme.animation.defaultTransition} forwards ease-in;
   `}
 `;

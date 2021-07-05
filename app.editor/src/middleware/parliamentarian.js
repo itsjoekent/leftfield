@@ -36,12 +36,16 @@ import {
   setActivePageId,
   setVisibleProperties,
   setVisibleSlots,
+  navigateToPastComponent,
+  navigateToFutureComponent,
 
   selectActivePageId,
   selectActiveComponentId,
 } from '@editor/features/workspace';
 import isDefined from '@editor/utils/isDefined';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
+
+export const PARLIAMENTARIAN_ESCAPE_KEY = '__parliamentarian';
 
 const TRIGGERS = [
   addChildComponentInstance.toString(),
@@ -51,6 +55,8 @@ const TRIGGERS = [
   setComponentInstancePropertyValue.toString(),
   setComponentInstancePropertyStorage.toString(),
   setActiveComponentId.toString(),
+  navigateToPastComponent.toString(),
+  navigateToFutureComponent.toString(),
   setActivePageId.toString(),
 ];
 
@@ -331,7 +337,7 @@ const parliamentarian = store => next => action => {
   const result = next(action);
 
   const shouldRun = TRIGGERS.includes(action.type)
-    && get(action, `payload.__parliamentarian`, false) === false;
+    && get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false) === false;
 
   if (!!initialized && !shouldRun) {
     return result;
@@ -371,7 +377,7 @@ const parliamentarian = store => next => action => {
       ...action,
       payload: {
         ...action.payload,
-        __parliamentarian: true,
+        [PARLIAMENTARIAN_ESCAPE_KEY]: true,
       },
     });
   }));

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Buttons,
   Flex,
@@ -8,11 +8,33 @@ import {
   Typography,
 } from 'pkg.admin-components';
 import { selectComponentName } from '@editor/features/assembly';
+import {
+  selectIsComponentTreeOpen,
+  selectHasPastComponents,
+  selectHasFutureComponents,
+  setIsComponentTreeOpen,
+  navigateToPastComponent,
+  navigateToFutureComponent,
+} from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
 export default function WorkspaceComponentToolbar() {
-  const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
-  const activeComponentName = useSelector(selectComponentName(activePageId, activeComponentId));
+  const {
+    activePageId,
+    activeComponentId,
+  } = useActiveWorkspaceComponent();
+
+  const activeComponentName = useSelector(
+    selectComponentName(activePageId, activeComponentId)
+  );
+
+  const isComponentTreeOpen = useSelector(selectIsComponentTreeOpen);
+  const componentTreeLabel = `${isComponentTreeOpen ? 'Close' : 'Open'} Component tree`;
+
+  const canNavigateBackwards = useSelector(selectHasPastComponents);
+  const canNavigateForwards = useSelector(selectHasFutureComponents);
+
+  const dispatch = useDispatch();
 
   return (
     <Flex.Row
@@ -26,25 +48,30 @@ export default function WorkspaceComponentToolbar() {
         <Tooltip copy="Go back" point={Tooltip.UP_LEFT_ALIGNED}>
           <Buttons.IconButton
             IconComponent={Icons.ArrowLeft}
-            color={(colors) => colors.purple[500]}
-            hoverColor={(colors) => colors.purple[800]}
+            color={(colors) => colors.purple[canNavigateBackwards ? 500 : 200]}
+            hoverColor={(colors) => colors.purple[canNavigateBackwards ? 800 : 200]}
             aria-label="Go back"
+            disabled={!canNavigateBackwards}
+            onClick={() => canNavigateBackwards && dispatch(navigateToPastComponent())}
           />
         </Tooltip>
         <Tooltip copy="Go forward" point={Tooltip.UP_LEFT_ALIGNED}>
           <Buttons.IconButton
             IconComponent={Icons.ArrowRight}
-            color={(colors) => colors.purple[500]}
-            hoverColor={(colors) => colors.purple[800]}
+            color={(colors) => colors.purple[canNavigateForwards ? 500 : 200]}
+            hoverColor={(colors) => colors.purple[canNavigateForwards ? 800 : 200]}
             aria-label="Go forward"
+            disabled={!canNavigateForwards}
+            onClick={() => canNavigateForwards && dispatch(navigateToFutureComponent())}
           />
         </Tooltip>
-        <Tooltip copy="Component tree" point={Tooltip.UP_LEFT_ALIGNED}>
+        <Tooltip copy={componentTreeLabel} point={Tooltip.UP_LEFT_ALIGNED}>
           <Buttons.IconButton
             IconComponent={Icons.Layers}
             color={(colors) => colors.purple[500]}
             hoverColor={(colors) => colors.purple[800]}
-            aria-label="Open component tree"
+            aria-label={componentTreeLabel}
+            onClick={() => dispatch(setIsComponentTreeOpen(!isComponentTreeOpen))}
           />
         </Tooltip>
         <Typography

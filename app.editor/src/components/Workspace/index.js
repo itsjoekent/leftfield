@@ -8,6 +8,7 @@ import {
   Tooltip,
 } from 'pkg.admin-components';
 import WorkspaceComponentToolbar from '@editor/components/Workspace/ComponentToolbar';
+import WorkspaceComponentTree from '@editor/components/Workspace/ComponentTree';
 import WorkspaceDocumentationSection from '@editor/components/Workspace/DocumentationSection';
 import WorkspaceFeedbackSection from '@editor/components/Workspace/FeedbackSection';
 import WorkspacePageNavigation from '@editor/components/Workspace/PageNavigation';
@@ -20,6 +21,7 @@ import {
   DOCUMENTATION_TAB,
   FEEDBACK_TAB,
 
+  selectIsComponentTreeOpen,
   selectTab,
   setTab,
 } from '@editor/features/workspace';
@@ -36,6 +38,8 @@ export default function Workspace(props) {
     activeComponentId,
     activePageId,
   } = useActiveWorkspaceComponent();
+
+  const isComponentTreeOpen = useSelector(selectIsComponentTreeOpen);
 
   const previousActiveComponentId = usePrevious(activeComponentId);
   const previousActivePageId = usePrevious(activePageId);
@@ -57,7 +61,9 @@ export default function Workspace(props) {
       || (previousActiveComponentId !== activeComponentId)
       || (previousActivePageId !== activePageId)
     ) {
-      const nextIndex = Object.values(tabAvailability).findIndex((isAvailable) => !!isAvailable);
+      const nextIndex = Object.values(tabAvailability)
+        .findIndex((isAvailable) => !!isAvailable);
+
       dispatch(setTab(Object.keys(tabAvailability)[nextIndex]));
     }
   }, [
@@ -95,96 +101,85 @@ export default function Workspace(props) {
     >
       <WorkspacePageNavigation />
       <WorkspaceComponentToolbar />
-      <Flex.Row
-        flexGrow
-        justifyContent="space-between"
-        gridGap="36px"
-        padding="12px"
-        overflowY="scroll"
-      >
-        <Flex.Column fullHeight gridGap="12px">
-          {activeComponentHasProperties && (
-            <Tooltip copy="Edit properties" point={Tooltip.LEFT}>
+      {isComponentTreeOpen && (
+        <WorkspaceComponentTree />
+      )}
+      {!isComponentTreeOpen && (
+        <Flex.Row
+          flexGrow
+          justifyContent="space-between"
+          gridGap="36px"
+          padding="12px"
+          overflowY="scroll"
+        >
+          <Flex.Column fullHeight gridGap="12px">
+            {activeComponentHasProperties && (
+              <Tooltip copy="Edit properties" point={Tooltip.LEFT}>
+                <Buttons.IconButton
+                  aria-label="Edit component properties"
+                  onClick={() => dispatch(setTab(PROPERTIES_TAB))}
+                  color={iconButtonColor(PROPERTIES_TAB)}
+                  hoverColor={(colors) => colors.mono[500]}
+                  IconComponent={Icons.SettingFill}
+                />
+              </Tooltip>
+            )}
+            {activeComponentHasSlots && (
+              <Tooltip copy="Edit slots" point={Tooltip.LEFT}>
+                <Buttons.IconButton
+                  aria-label="Edit component slots"
+                  onClick={() => dispatch(setTab(SLOTS_TAB))}
+                  color={iconButtonColor(SLOTS_TAB)}
+                  hoverColor={(colors) => colors.mono[500]}
+                  IconComponent={Icons.MenuAlt}
+                />
+              </Tooltip>
+            )}
+            {activeComponentHasDocumentation && (
+              <Tooltip copy="Documentation" point={Tooltip.LEFT}>
+                <Buttons.IconButton
+                  aria-label="Component documentation"
+                  onClick={() => dispatch(setTab(DOCUMENTATION_TAB))}
+                  color={iconButtonColor(DOCUMENTATION_TAB)}
+                  hoverColor={(colors) => colors.mono[500]}
+                  IconComponent={Icons.QuestionFill}
+                />
+              </Tooltip>
+            )}
+            <Tooltip copy="Submit feedback or bugs" point={Tooltip.LEFT}>
               <Buttons.IconButton
-                aria-label="Edit component properties"
-                onClick={() => dispatch(setTab(PROPERTIES_TAB))}
-                color={iconButtonColor(PROPERTIES_TAB)}
+                aria-label="Submit feedback or bugs"
+                onClick={() => dispatch(setTab(FEEDBACK_TAB))}
+                color={iconButtonColor(FEEDBACK_TAB)}
                 hoverColor={(colors) => colors.mono[500]}
-                IconComponent={Icons.SettingFill}
-                tooltipProps={{
-                  message: 'Properties',
-                  point: 'left',
-                }}
+                IconComponent={Icons.Bug}
               />
             </Tooltip>
-          )}
-          {activeComponentHasSlots && (
-            <Tooltip copy="Edit slots" point={Tooltip.LEFT}>
-              <Buttons.IconButton
-                aria-label="Edit component slots"
-                onClick={() => dispatch(setTab(SLOTS_TAB))}
-                color={iconButtonColor(SLOTS_TAB)}
-                hoverColor={(colors) => colors.mono[500]}
-                IconComponent={Icons.MenuAlt}
-                tooltipProps={{
-                  message: 'Slots',
-                  point: 'left',
-                }}
-              />
-            </Tooltip>
-          )}
-          {activeComponentHasDocumentation && (
-            <Tooltip copy="Documentation" point={Tooltip.LEFT}>
-              <Buttons.IconButton
-                aria-label="Component documentation"
-                onClick={() => dispatch(setTab(DOCUMENTATION_TAB))}
-                color={iconButtonColor(DOCUMENTATION_TAB)}
-                hoverColor={(colors) => colors.mono[500]}
-                IconComponent={Icons.QuestionFill}
-                tooltipProps={{
-                  message: 'Documentation',
-                  point: 'left',
-                }}
-              />
-            </Tooltip>
-          )}
-          <Tooltip copy="Submit feedback or bugs" point={Tooltip.LEFT}>
-            <Buttons.IconButton
-              aria-label="Submit feedback or bugs"
-              onClick={() => dispatch(setTab(FEEDBACK_TAB))}
-              color={iconButtonColor(FEEDBACK_TAB)}
-              hoverColor={(colors) => colors.mono[500]}
-              IconComponent={Icons.Bug}
-              tooltipProps={{
-                message: 'Feedback',
-                point: 'left',
-              }}
-            />
-          </Tooltip>
-        </Flex.Column>
-        <Flex.Column overflowY="scroll" gridGap="32px" fullWidth>
-          {isActiveTab(PROPERTIES_TAB) && (
-            <WorkspaceSection name="Properties">
-              <WorkspacePropertiesSection />
-            </WorkspaceSection>
-          )}
-          {isActiveTab(SLOTS_TAB) && (
-            <WorkspaceSection name="Slots">
-              <WorkspaceSlotsSection />
-            </WorkspaceSection>
-          )}
-          {isActiveTab(DOCUMENTATION_TAB) && (
-            <WorkspaceSection name="Documentation">
-              <WorkspaceDocumentationSection />
-            </WorkspaceSection>
-          )}
-          {isActiveTab(FEEDBACK_TAB) && (
-            <WorkspaceSection name="Feedback">
-              <WorkspaceFeedbackSection />
-            </WorkspaceSection>
-          )}
-        </Flex.Column>
-      </Flex.Row>
+          </Flex.Column>
+          <Flex.Column overflowY="scroll" gridGap="32px" fullWidth>
+            {isActiveTab(PROPERTIES_TAB) && (
+              <WorkspaceSection name="Properties">
+                <WorkspacePropertiesSection />
+              </WorkspaceSection>
+            )}
+            {isActiveTab(SLOTS_TAB) && (
+              <WorkspaceSection name="Slots">
+                <WorkspaceSlotsSection />
+              </WorkspaceSection>
+            )}
+            {isActiveTab(DOCUMENTATION_TAB) && (
+              <WorkspaceSection name="Documentation">
+                <WorkspaceDocumentationSection />
+              </WorkspaceSection>
+            )}
+            {isActiveTab(FEEDBACK_TAB) && (
+              <WorkspaceSection name="Feedback">
+                <WorkspaceFeedbackSection />
+              </WorkspaceSection>
+            )}
+          </Flex.Column>
+        </Flex.Row>
+      )}
     </Flex.Column>
   );
 }

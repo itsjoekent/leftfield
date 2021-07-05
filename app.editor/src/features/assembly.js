@@ -23,6 +23,7 @@ export const assemblySlice = createSlice({
             },
           },
         },
+        name: 'Test page',
         settings: {},
         templatedFrom: null,
         rootComponentId: '1',
@@ -214,6 +215,22 @@ export function selectPageTemplateId(pageId) {
   }
 
   return _selectPageTemplateId;
+}
+
+export function selectPageName(pageId) {
+  function _selectPageName(state) {
+    return get(selectPage(pageId)(state), 'name', null);
+  }
+
+  return _selectPageName;
+}
+
+export function selectPageRootComponentId(pageId) {
+  function _selectPageRootComponentId(state) {
+    return get(selectPage(pageId)(state), 'rootComponentId', null);
+  }
+
+  return _selectPageRootComponentId;
 }
 
 export function selectPageComponents(pageId) {

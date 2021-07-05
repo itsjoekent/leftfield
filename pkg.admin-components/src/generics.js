@@ -20,6 +20,34 @@ export const colors = css`
   `}
 `;
 
+export const cursor = css`
+  ${({ cursor }) => !!cursor && css`cursor: ${cursor};`}
+`;
+
+export const margin = css`
+  ${({ margin }) => !!margin && css`margin: ${margin};`}
+  ${({ marginVertical }) => !!marginVertical && css`
+    margin-top: ${marginVertical};
+    margin-bottom: ${marginVertical};
+  `}
+  ${({ marginHorizontal }) => !!marginHorizontal && css`
+    margin-left: ${marginHorizontal};
+    margin-right: ${marginHorizontal};
+  `}
+  ${({ marginTop }) => !!marginTop && css`
+    margin-top: ${marginTop};
+  `}
+  ${({ marginBottom }) => !!marginBottom && css`
+    margin-bottom: ${marginBottom};
+  `}
+  ${({ marginLeft }) => !!marginLeft && css`
+    margin-left: ${marginLeft};
+  `}
+  ${({ marginRight }) => !!marginRight && css`
+    margin-right: ${marginRight};
+  `}
+`;
+
 export const overflow = css`
   ${({ overflow }) => !!overflow && css`overflow: ${overflow};`}
   ${({ overflowX }) => !!overflowX && css`overflow-x: ${overflowX};`}
@@ -74,6 +102,8 @@ export const size = css`
 const all = css`
   ${border}
   ${colors}
+  ${cursor}
+  ${margin}
   ${overflow}
   ${padding}
   ${position}

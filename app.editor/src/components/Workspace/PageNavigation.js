@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import {
   Buttons,
   Flex,
@@ -6,8 +7,13 @@ import {
   Tooltip,
   Typography,
 } from 'pkg.admin-components';
+import { selectPageName } from '@editor/features/assembly';
+import { selectActivePageId } from '@editor/features/workspace';
 
 export default function WorkspacePageNavigation() {
+  const activePageId = useSelector(selectActivePageId);
+  const pageName = useSelector(selectPageName(activePageId));
+
   return (
     <Flex.Row
       fullWidth
@@ -36,7 +42,7 @@ export default function WorkspacePageNavigation() {
             textOverflow="ellipsis"
             whiteSpace="nowrap"
           >
-            Homepage
+            {pageName}
           </Typography>
           <Tooltip copy="Edit page title" point={Tooltip.UP}>
             <Buttons.IconButton
