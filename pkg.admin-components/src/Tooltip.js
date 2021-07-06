@@ -29,6 +29,7 @@ export default function Tooltip(props) {
       return;
     }
 
+    let cancel = false;
     let timeoutId = null;
 
     function clearTimeout() {
@@ -38,12 +39,19 @@ export default function Tooltip(props) {
     }
 
     function onMouseEnter() {
-      setTimeout(() => setIsHovering(true), delay);
+      timeoutId = setTimeout(() => {
+        if (!cancel) {
+          setIsHovering(true);
+        }
+      }, delay);
     }
 
     function onMouseLeave() {
       clearTimeout();
-      setIsHovering(false);
+
+      if (!cancel) {
+        setIsHovering(false);
+      }
     }
 
     if (containerRef.current) {
@@ -52,6 +60,7 @@ export default function Tooltip(props) {
     }
 
     return () => {
+      cancel = true;
       clearTimeout();
 
       if (containerRef.current) {

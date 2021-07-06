@@ -3,6 +3,7 @@ import { find, get, set } from 'lodash';
 import {
   ComponentMeta,
   Languages,
+  Responsive,
   SiteSettings,
 } from 'pkg.campaign-components';
 import {
@@ -17,12 +18,16 @@ import {
   removeChildComponentInstance,
   setComponentInstancePropertyValue,
   setComponentInstancePropertyStorage,
+  setComponentInstanceStyle,
+  setComponentInstanceCustomStyle,
+  setComponentInstanceThemeStyle,
   wipePropertyValue,
   wipePropertyStorage,
   wipeSlot,
 
   selectComponentProperties,
   selectComponentPropertyStorage,
+  selectComponentStyles,
   selectComponentTag,
   selectComponentsParentComponentId,
   selectComponentsParentComponentSlotId,
@@ -30,12 +35,15 @@ import {
   selectPageSettings,
   selectPageTemplateId,
   selectSiteSettings,
+  selectCampaignTheme,
 } from '@editor/features/assembly';
 import {
   setActiveComponentId,
   setActivePageId,
   setVisibleProperties,
   setVisibleSlots,
+  setVisibleStyles,
+
   navigateToPastComponent,
   navigateToFutureComponent,
 
@@ -54,6 +62,8 @@ const TRIGGERS = [
   removeChildComponentInstance.toString(),
   setComponentInstancePropertyValue.toString(),
   setComponentInstancePropertyStorage.toString(),
+  setComponentInstanceCustomStyle.toString(),
+  setComponentInstanceThemeStyle.toString(),
   setActiveComponentId.toString(),
   navigateToPastComponent.toString(),
   navigateToFutureComponent.toString(),
@@ -70,6 +80,7 @@ function runParliamentarian(
   updateWorkspace = true,
 ) {
   const siteSettings = selectSiteSettings(state);
+  const campaignTheme = selectCampaignTheme(state);
 
   const languages = get(
     siteSettings,
@@ -79,6 +90,7 @@ function runParliamentarian(
 
   const componentTag = selectComponentTag(pageId, componentId)(state);
   const componentPropertyValues = selectComponentProperties(pageId, componentId)(state);
+  const componentStyleValues = selectComponentStyles(pageId, componentId)(state);
 
   const componentMeta = ComponentMeta[componentTag];
   const componentProperties = get(componentMeta, 'properties', []);
@@ -91,8 +103,8 @@ function runParliamentarian(
   const templateSettings = selectPageSettings(selectPageTemplateId(pageId)(state))(state);
   const pageSettings = selectPageSettings(pageId)(state);
 
-  // STEP 1
-  // Determine visible & hidden properties.
+  // @NOTE
+  // Step: Determine visible & hidden properties.
 
   const {
     visibleProperties,
@@ -133,10 +145,10 @@ function runParliamentarian(
     queueDispatch(setVisibleProperties({ visibleProperties }));
   }
 
-  // STEP 2
-  // Set default values for all visible properties.
+  // @NOTE
+  // Step: Set default values for all visible properties.
 
-  const appliedDefaults = {};
+  const appliedPropertyDefaults = {};
 
   visibleProperties.forEach((property) => {
     const propertyId = property.id;
@@ -147,7 +159,7 @@ function runParliamentarian(
 
     const getPropertyValue = (language) => get(componentPropertyValues, `${propertyId}.value.${language}`);
     const getStorageValue = (storageKey, language) => get(componentPropertyValues, `${propertyId}.storage.${storageKey}.${language}`);
-    const hasSetDefault = (language) => !!get(appliedDefaults, `${propertyId}.${language}`, false)
+    const hasSetDefault = (language) => !!get(appliedPropertyDefaults, `${propertyId}.${language}`, false)
       || !!(inheritFromSetting && isDefined(getStorageValue('inheritedFrom', language)))
       || isDefined(getPropertyValue(language));
 
@@ -182,7 +194,7 @@ function runParliamentarian(
             language,
           }));
 
-          set(appliedDefaults, `${propertyId}.${language}`, true);
+          set(appliedPropertyDefaults, `${propertyId}.${language}`, true);
         }
       });
     }
@@ -209,7 +221,7 @@ function runParliamentarian(
             language,
           }));
 
-          set(appliedDefaults, `${propertyId}.${language}`, true);
+          set(appliedPropertyDefaults, `${propertyId}.${language}`, true);
         }
       });
 
@@ -237,8 +249,8 @@ function runParliamentarian(
     }
   });
 
-  // STEP 3
-  // Remove values & storage from hidden properties.
+  // @NOTE
+  // Step: Remove values & storage from hidden properties.
 
   hiddenProperties.forEach((property) => {
     const propertyId = property.id;
@@ -268,11 +280,97 @@ function runParliamentarian(
     }
   });
 
-  // STEP 4
-  // Validate visible property values.
+  // @NOTE
+  // Step: Validate visible property values.
+  // TODO: ...
 
-  // STEP 5
-  // Determine visible & hidden slots.
+  // @NOTE
+  // Step: Determine visible & hidden styles.
+
+  const {
+    visibleStyles,
+    hiddenStyles,
+  } = get(componentMeta, 'styles', []).reduce((acc, style) => {
+    const conditional = get(style, 'conditional', null);
+
+    if (!conditional) {
+      return {
+        ...acc,
+        visibleStyles: [
+          ...acc.visibleStyles,
+          style,
+        ],
+      };
+    }
+
+    const result = conditional({
+      properties: componentPropertyValues,
+      slot: parentComponentSlotMeta,
+    });
+
+    const appendTo = !!result ? 'visibleStyles' : 'hiddenStyles';
+
+    return {
+      ...acc,
+      [appendTo]: [
+        ...acc[appendTo],
+        style,
+      ],
+    };
+  }, {
+    visibleStyles: [],
+    hiddenStyles: [],
+  });
+
+  if (!!updateWorkspace) {
+    queueDispatch(setVisibleStyles({ visibleStyles }));
+  }
+
+  // @NOTE
+  // Step: Set default values for all visible styles.
+
+  visibleStyles.forEach((style) => {
+    const styleId = style.id;
+
+    get(style, 'attributes', []).forEach((attribute) => {
+      const attributeId = attribute.id;
+
+      const notResponsive = get(attribute, 'notResponsive', false);
+      const defaultValue = get(attribute, 'defaultValue', null);
+      const dynamicDefaultThemeValue = get(attribute, 'dynamicDefaultThemeValue', null);
+
+      const hasSetDefault = (device) => isDefined(get(componentStyleValues, `${styleId}.${attributeId}.${device}.inheritFromTheme`))
+        || isDefined(get(componentStyleValues, `${styleId}.${attributeId}.${device}.custom`));
+
+      const attributeValue = dynamicDefaultThemeValue
+        ? dynamicDefaultThemeValue({ campaignTheme })
+        : defaultValue;
+
+      Object.keys(Responsive).forEach((deviceKey) => {
+        const device = Responsive[deviceKey];
+
+        if (notResponsive && device !== Responsive.MOBILE_DEVICE) {
+          return;
+        }
+
+        const value = attributeValue[device] || attributeValue[Responsive.MOBILE_DEVICE];
+
+        if (!hasSetDefault(deviceKey)) {
+          queueDispatch(setComponentInstanceStyle({
+            pageId,
+            componentId,
+            styleId,
+            attributeId,
+            device,
+            value,
+          }));
+        }
+      });
+    });
+  });
+
+  // @NOTE
+  // Step: Determine visible & hidden slots.
 
   const {
     visibleSlots,
@@ -313,8 +411,8 @@ function runParliamentarian(
     queueDispatch(setVisibleSlots({ visibleSlots }));
   }
 
-  // STEP 6
-  // Remove children from hidden slots.
+  // @NOTE
+  // Step: Remove children from hidden slots.
 
   hiddenSlots.forEach((slot) => {
     const slotId = get(slot, 'id');
@@ -329,8 +427,9 @@ function runParliamentarian(
     }
   });
 
-  // STEP 7
-  // Validate visible slots.
+  // @NOTE
+  // Step: Validate visible slots.
+  // TODO...
 }
 
 const parliamentarian = store => next => action => {

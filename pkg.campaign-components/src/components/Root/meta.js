@@ -34,6 +34,13 @@ const RootMeta = {
       ],
     },
   ],
+  // styles: [
+  //   {
+  //     id: ROOT_STYLE,
+  //     label: 'Grid Style',
+  //     type: SIMPLE_LAYOUT_STYLE_TYPE,
+  //   },
+  // ],
 };
 
 export default RootMeta;

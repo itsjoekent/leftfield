@@ -12,11 +12,12 @@ import WorkspaceComponentTree from '@editor/components/Workspace/ComponentTree';
 import WorkspaceDocumentationSection from '@editor/components/Workspace/DocumentationSection';
 import WorkspaceFeedbackSection from '@editor/components/Workspace/FeedbackSection';
 import WorkspacePageNavigation from '@editor/components/Workspace/PageNavigation';
-import WorkspacePropertiesSection from '@editor/components/Workspace/PropertiesSection';
+import WorkspacePropertiesForm from '@editor/components/Workspace/Property/Form';
 import WorkspaceSection from '@editor/components/Workspace/Section';
 import WorkspaceSlotsSection from '@editor/components/Workspace/SlotsSection';
 import {
   PROPERTIES_TAB,
+  STYLES_TAB,
   SLOTS_TAB,
   DOCUMENTATION_TAB,
   FEEDBACK_TAB,
@@ -24,6 +25,10 @@ import {
   selectIsComponentTreeOpen,
   selectTab,
   setTab,
+
+  selectVisibleProperties,
+  selectVisibleSlots,
+  selectVisibleStyles,
 } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import usePrevious from '@editor/hooks/usePrevious';
@@ -44,16 +49,23 @@ export default function Workspace(props) {
   const previousActiveComponentId = usePrevious(activeComponentId);
   const previousActivePageId = usePrevious(activePageId);
 
-  const activeComponentHasProperties = !!Object.keys(get(activeComponentMeta, 'properties', {})).length;
-  const activeComponentHasSlots = !!get(activeComponentMeta, 'slots', []).length;
+  const visibleProperties = useSelector(selectVisibleProperties);
+  const activeComponentHasProperties = !!visibleProperties.length;
+
+  const visibleStyles = useSelector(selectVisibleStyles);
+  const activeComponentHasStyles = !!visibleStyles.length;
+
+  const visibleSlots = useSelector(selectVisibleSlots);
+  const activeComponentHasSlots = !!visibleSlots.length;
+
   const activeComponentHasDocumentation = !!get(activeComponentMeta, 'documentation', '').length;
 
   React.useEffect(() => {
     const tabAvailability = {
       [PROPERTIES_TAB]: activeComponentHasProperties,
+      [STYLES_TAB]: activeComponentHasStyles,
       [SLOTS_TAB]: activeComponentHasSlots,
       [DOCUMENTATION_TAB]: activeComponentHasDocumentation,
-      [FEEDBACK_TAB]: true,
     };
 
     if (
@@ -70,6 +82,7 @@ export default function Workspace(props) {
     dispatch,
     tab,
     activeComponentHasProperties,
+    activeComponentHasStyles,
     activeComponentHasSlots,
     activeComponentHasDocumentation,
     activeComponentId,
@@ -124,6 +137,17 @@ export default function Workspace(props) {
                 />
               </Tooltip>
             )}
+            {activeComponentHasStyles && (
+              <Tooltip copy="Edit styles" point={Tooltip.LEFT}>
+                <Buttons.IconButton
+                  aria-label="Edit component styles"
+                  onClick={() => dispatch(setTab(STYLES_TAB))}
+                  color={iconButtonColor(STYLES_TAB)}
+                  hoverColor={(colors) => colors.mono[500]}
+                  IconComponent={Icons.DimondAltFill}
+                />
+              </Tooltip>
+            )}
             {activeComponentHasSlots && (
               <Tooltip copy="Edit slots" point={Tooltip.LEFT}>
                 <Buttons.IconButton
@@ -159,7 +183,12 @@ export default function Workspace(props) {
           <Flex.Column overflowY="scroll" gridGap="32px" fullWidth>
             {isActiveTab(PROPERTIES_TAB) && (
               <WorkspaceSection name="Properties">
-                <WorkspacePropertiesSection />
+                <WorkspacePropertiesForm />
+              </WorkspaceSection>
+            )}
+            {isActiveTab(STYLES_TAB) && (
+              <WorkspaceSection name="Styles">
+                {null}
               </WorkspaceSection>
             )}
             {isActiveTab(SLOTS_TAB) && (

@@ -1,6 +1,6 @@
 import { get, set } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
-import { ComponentMeta, Languages, SiteSettings } from 'pkg.campaign-components';
+import { ComponentMeta, Languages, SiteSettings, theme } from 'pkg.campaign-components';
 
 const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
   ...acc,
@@ -39,6 +39,7 @@ export const assemblySlice = createSlice({
       },
     },
     templates: [],
+    theme: theme.campaign,
   },
   reducers: {
     buildComponent: (state, action) => {
@@ -137,6 +138,42 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.storage.${key}.${language}`, value);
     },
+    setComponentInstanceStyle: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        styleId,
+        attributeId,
+        device,
+        value,
+      } = action.payload;
+
+      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, value);
+    },
+    setComponentInstanceCustomStyle: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        styleId,
+        attributeId,
+        device,
+        value,
+      } = action.payload;
+
+      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, { custom: value });
+    },
+    setComponentInstanceThemeStyle: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        styleId,
+        attributeId,
+        device,
+        value,
+      } = action.payload;
+
+      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, { inheritFromTheme: value });
+    },
     wipePropertyValue: (state, action) => {
       const {
         pageId,
@@ -182,6 +219,9 @@ export const {
   removeChildComponentInstance,
   setComponentInstancePropertyValue,
   setComponentInstancePropertyStorage,
+  setComponentInstanceStyle,
+  setComponentInstanceCustomStyle,
+  setComponentInstanceThemeStyle,
   wipePropertyValue,
   wipePropertyStorage,
   wipeSlot,
@@ -191,6 +231,10 @@ export default assemblySlice.reducer;
 
 export function selectSiteSettings(state) {
   return get(state, 'assembly.siteSettings', {});
+}
+
+export function selectCampaignTheme(state) {
+  return get(state, 'assembly.theme', {});
 }
 
 export function selectPage(pageId) {
@@ -336,4 +380,12 @@ export function selectComponentPropertyStorageValue(pageId, componentId, propert
   }
 
   return _selectComponentPropertyStorageValue;
+}
+
+export function selectComponentStyles(pageId, componentId) {
+  function _selectComponentStyles(state) {
+    return get(selectComponent(pageId, componentId)(state), 'styles', {});
+  }
+
+  return _selectComponentStyles;
 }

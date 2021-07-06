@@ -17,9 +17,10 @@ function construct(
   key = null,
 ) {
   const {
+    properties,
     render,
     slots,
-    properties,
+    styles,
   } = page.components[targetComponentId];
 
   const renderedSlots = Object
@@ -38,6 +39,7 @@ function construct(
   const props = {
     properties: properties || {},
     slots: renderedSlots,
+    styles: styles || {},
   };
 
   if (wrapperComponentRender) {

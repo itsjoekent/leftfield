@@ -76,6 +76,7 @@ export default function ComponentTreeBranch(props) {
           </Typography>
           {slots[slotMeta.id].map((childId) => (
             <ComponentTreeBranch
+              key={childId}
               componentId={childId}
               indent={indent + 6}
             />

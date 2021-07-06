@@ -1,11 +1,59 @@
+export const DEFAULT_FONT_FAMILY = 'main';
+
 const theme = {
-  // These are defaults that are replaced at runtime
+  // These are defaults that are updated at runtime
   campaign: {
+    colors: {
+      'blue': {
+        label: 'Blue',
+        type: 'solid',
+        value: '#1e90ff',
+      },
+      'red': {
+        label: 'Red',
+        type: 'solid',
+        value: '#ff1e20',
+      },
+      'black': {
+        label: 'Black',
+        type: 'solid',
+        value: '#00050a',
+      },
+      'white': {
+        label: 'White',
+        type: 'solid',
+        value: '#ffffff',
+      },
+    },
     fonts: {
-      main: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+      [DEFAULT_FONT_FAMILY]: {
+        label: 'Helvetica',
+        value: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+      },
     },
     fontWeights: {
-      light: 200,
+      [DEFAULT_FONT_FAMILY]: {
+        light: {
+          label: 'Light',
+          value: 200,
+        },
+        normal: {
+          label: 'Normal',
+          value: 400,
+        },
+        medium: {
+          label: 'Medium',
+          value: 600,
+        },
+        bold: {
+          label: 'Bold',
+          value: 700,
+        },
+        extraBold: {
+          label: 'Extra Bold',
+          value: 900,
+        },
+      },
     },
   },
 

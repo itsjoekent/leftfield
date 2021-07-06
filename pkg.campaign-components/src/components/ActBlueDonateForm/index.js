@@ -8,6 +8,8 @@ import {
   THREE_COLUMN_LAYOUT,
   FOUR_COLUMN_LAYOUT,
 
+  DISCLAIMER_TEXT_STYLE,
+
   LAYOUT_PROPERTY,
   ACTBLUE_FORM_PROPERTY,
   ENABLE_EXPRESS_DONATE_PROPERTY,
@@ -23,6 +25,7 @@ import {
 } from '@cc/components/ActBlueDonateForm/meta';
 import { initialFundraisingState, FundraisingContext } from '@cc/context/Fundraising';
 import useLanguage from '@cc/hooks/useLanguage';
+import TextStyle from '@cc/styles/text';
 import getPropertyValue from '@cc/utils/getPropertyValue';
 import makeActBlueLink from '@cc/utils/makeActBlueLink';
 import mapSourceToRefcode from '@cc/utils/makeActBlueLink';
@@ -31,6 +34,7 @@ export default function ActBlueDonateForm(props) {
   const {
     properties,
     slots,
+    styles,
   } = props;
 
   const language = useLanguage();
@@ -70,6 +74,7 @@ export default function ActBlueDonateForm(props) {
     ...theme,
     properties,
     slots,
+    styles,
     language,
   });
 
@@ -124,16 +129,12 @@ const ExpressFormSpacing = styled.div`
 `;
 
 const Disclaimer = styled.p`
-  font-family: ${(props) => get(props, 'theme.campaign.fonts.main')};
-  font-size: ${(props) => props.theme.fontSizes.legal.small};
-  font-weight: ${(props) => get(props, 'theme.campaign.fontWeights.light')};
-  text-align: center;
-  color: ${(props) => getPropertyValue(props.theme.properties, EXPRESS_DONATE_TEXT_COLOR_PROPERTY) || 'black'};
-  line-height: 1;
+  ${(props) => TextStyle.styling({
+    campaignTheme: props.theme.campaign,
+    styles: get(props, `theme.styles.${DISCLAIMER_TEXT_STYLE}`, {}),
+  })}
 
-  @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
-    font-size: ${(props) => props.theme.fontSizes.legal.normal};
-  }
+  text-align: center;
 `;
 
 const columnTypeToNumber = {

@@ -1,10 +1,10 @@
+export const CHECKLIST_TYPE = 'CHECKLIST_TYPE';
+
 export const COLOR_TYPE = 'COLOR_TYPE';
 
-export const FONT_FAMILY_TYPE = 'FONT_FAMILY_TYPE';
+export const NUMBER_RANGE_TYPE = 'NUMBER_RANGE_TYPE';
 
 export const SELECT_TYPE = 'SELECT_TYPE';
-
-export const CHECKLIST_TYPE = 'CHECKLIST_TYPE';
 
 export const SHORT_TEXT_TYPE = 'SHORT_TEXT_TYPE';
 

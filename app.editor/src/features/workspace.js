@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const PROPERTIES_TAB = 'PROPERTIES_TAB';
+export const STYLES_TAB = 'STYLES_TAB';
 export const SLOTS_TAB = 'SLOTS_TAB';
 export const DOCUMENTATION_TAB = 'DOCUMENTATION_TAB';
 export const FEEDBACK_TAB = 'FEEDBACK_TAB';
@@ -17,6 +18,7 @@ export const workspaceSlice = createSlice({
     tab: PROPERTIES_TAB,
     visibleProperties: [],
     visibleSlots: [],
+    visibleStyles: [],
   },
   reducers: {
     setTab: (state, action) => {
@@ -60,6 +62,9 @@ export const workspaceSlice = createSlice({
     setVisibleSlots: (state, action) => {
       state.visibleSlots = action.payload.visibleSlots;
     },
+    setVisibleStyles: (state, action) => {
+      state.visibleStyles = action.payload.visibleStyles;
+    },
   },
 });
 
@@ -73,6 +78,7 @@ export const {
   setTab,
   setVisibleProperties,
   setVisibleSlots,
+  setVisibleStyles,
 } = workspaceSlice.actions;
 
 export default workspaceSlice.reducer;
@@ -111,4 +117,8 @@ export function selectVisibleProperties(state) {
 
 export function selectVisibleSlots(state) {
   return state.workspace.visibleSlots;
+}
+
+export function selectVisibleStyles(state) {
+  return state.workspace.visibleStyles;
 }
