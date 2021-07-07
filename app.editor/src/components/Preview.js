@@ -10,8 +10,11 @@ import useGetSetting from '@editor/hooks/useGetSetting';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export default function Preview() {
-  const { isMobilePreview } = useSelector(selectDeviceSizeList);
-  const DeviceContainer = isMobilePreview ? MobileContainer : DesktopContainer;
+  const {
+    isDesktopPreview,
+    isMobilePreview,
+    isTabletPreview,
+  } = useSelector(selectDeviceSizeList);
 
   const iframeRef = React.useRef(null);
 
@@ -90,7 +93,11 @@ export default function Preview() {
 
   return (
     <SectionContainer>
-      <DeviceContainer>
+      <DeviceContainer
+        isDesktopPreview={isDesktopPreview}
+        isMobilePreview={isMobilePreview}
+        isTabletPreview={isTabletPreview}
+      >
         <Frame ref={iframeRef} src="http://localhost:5001/" />
       </DeviceContainer>
     </SectionContainer>
@@ -105,21 +112,30 @@ const SectionContainer = styled.div`
   height: 100%;
 `;
 
-const deviceContainerShared = css`
-  border: 2px solid ${(props) => props.theme.colors.mono[200]};
-`;
+const DeviceContainer = styled.div`
+  border-radius: ${(props) => props.theme.rounded.default};
+  ${(props) => props.theme.shadow.light}
 
-const DesktopContainer = styled.div`
-  width: 100%;
-  height: 66%;
-  min-height: 960px;
-  ${deviceContainerShared}
-`;
+  transition: all ${(props) => props.theme.animation.defaultTransition};
+  transition-property: width, height;
 
-const MobileContainer = styled.div`
-  width: 375px;
-  height: 667px;
-  ${deviceContainerShared}
+  ${(props) => props.isMobilePreview && css`
+    width: 375px;
+    height: 667px;
+  `}
+
+  ${(props) => props.isDesktopPreview && css`
+    width: 100%;
+    height: 66%;
+    min-height: 960px;
+  `}
+
+  ${(props) => props.isTabletPreview && css`
+    width: 100%;
+    height: 100%;
+    max-width: 768px;
+    max-height: 1024px;
+  `}
 `;
 
 const Frame = styled.iframe`

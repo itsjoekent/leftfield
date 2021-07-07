@@ -13,6 +13,7 @@ import WorkspaceDocumentationSection from '@editor/components/Workspace/Document
 import WorkspaceFeedbackSection from '@editor/components/Workspace/FeedbackSection';
 import WorkspacePageNavigation from '@editor/components/Workspace/PageNavigation';
 import WorkspacePropertiesForm from '@editor/components/Workspace/Property/Form';
+import WorkspaceStyleForm from '@editor/components/Workspace/Style/Form';
 import WorkspaceSection from '@editor/components/Workspace/Section';
 import WorkspaceSlotsSection from '@editor/components/Workspace/SlotsSection';
 import {
@@ -188,7 +189,11 @@ export default function Workspace(props) {
             )}
             {isActiveTab(STYLES_TAB) && (
               <WorkspaceSection name="Styles">
-                {null}
+                <Flex.Column gridGap="12px">
+                  {visibleStyles.map((style) => (
+                    <WorkspaceStyleForm key={style.id} styleData={style} />
+                  ))}
+                </Flex.Column>
               </WorkspaceSection>
             )}
             {isActiveTab(SLOTS_TAB) && (

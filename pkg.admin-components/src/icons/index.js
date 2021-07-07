@@ -572,6 +572,8 @@ export { default as Sun } from './sun';
 export { default as SunLight } from './sunlight';
 export { default as Sunlight } from './sunlight';
 export { default as SunlightLight } from './sunlightlight';
+export { default as Tablet } from './tablet';
+export { default as TabletLight } from './tabletlight';
 export { default as Target } from './target';
 export { default as TargetFill } from './targetfill';
 export { default as TargetLight } from './targetlight';

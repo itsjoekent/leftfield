@@ -108,7 +108,7 @@ const TextStyle = {
     font-size: ${getStyleValue(styles, FONT_SIZE_ATTRIBUTE)}px;
     font-weight: ${getStyleValue(
       styles,
-      FONT_FAMILY_ATTRIBUTE,
+      FONT_WEIGHT_ATTRIBUTE,
       campaignTheme,
       `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
     )};

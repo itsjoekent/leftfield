@@ -1,66 +1,58 @@
 import React from 'react';
-import styled, { withTheme } from 'styled-components';
-import { Icons } from 'pkg.admin-components';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  setMobileDevice,
+  Buttons,
+  Icons,
+  Flex,
+  Tooltip,
+} from 'pkg.admin-components';
+import {
   setDesktopDevice,
-  selectDeviceSizeList
+  setMobileDevice,
+  setTabletDevice,
+  selectDeviceSizeList,
 } from '@editor/features/previewMode';
+
 function PreviewSelector(props) {
-  const { theme } = props;
-  const { isMobilePreview, isDesktopPreview } = useSelector(selectDeviceSizeList);
+  const {
+    isDesktopPreview,
+    isMobilePreview,
+    isTabletPreview,
+  } = useSelector(selectDeviceSizeList);
+
   const dispatch = useDispatch();
 
-  // TODO: Refactor to IconButton ?
   return (
-    <Row>
-      <DeviceButton onClick={() => dispatch(setMobileDevice())}>
-        <Icons.MobileLight
-          width={36}
-          height={36}
-          color={isMobilePreview ? theme.colors.mono[900] : theme.colors.mono[400]}
+    <Flex.Row align="center" gridGap="12px">
+      <Tooltip copy="Mobile preview" point={Tooltip.UP}>
+        <Buttons.IconButton
+          IconComponent={Icons.Mobile}
+          color={(colors) => isMobilePreview ? colors.mono[900] : colors.mono[400]}
+          hoverColor={(colors) => colors.blue[500]}
+          aria-label="Switch to mobile preview"
+          onClick={() => dispatch(setMobileDevice())}
         />
-      </DeviceButton>
-      <DeviceButton onClick={() => dispatch(setDesktopDevice())}>
-        <Icons.DesktopLight
-          width={36}
-          height={36}
-          color={isDesktopPreview ? theme.colors.mono[900] : theme.colors.mono[400]}
+      </Tooltip>
+      <Tooltip copy="Tablet preview" point={Tooltip.UP}>
+        <Buttons.IconButton
+          IconComponent={Icons.Tablet}
+          color={(colors) => isTabletPreview ? colors.mono[900] : colors.mono[400]}
+          hoverColor={(colors) => colors.blue[500]}
+          aria-label="Switch to tablet preview"
+          onClick={() => dispatch(setTabletDevice())}
         />
-      </DeviceButton>
-    </Row>
+      </Tooltip>
+      <Tooltip copy="Desktop preview" point={Tooltip.UP}>
+        <Buttons.IconButton
+          IconComponent={Icons.Desktop}
+          color={(colors) => isDesktopPreview ? colors.mono[900] : colors.mono[400]}
+          hoverColor={(colors) => colors.blue[500]}
+          aria-label="Switch to desktop preview"
+          onClick={() => dispatch(setDesktopDevice())}
+        />
+      </Tooltip>
+    </Flex.Row>
   );
 }
 
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  width: fit-content;
-`;
-
-export const DeviceButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: fit-content;
-  border: none;
-  box-shadow: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
-
-  svg path {
-    transition: stroke 0.4s;
-  }
-
-  &:hover {
-    svg path {
-      stroke: ${props => props.theme.colors.mono[700]};
-    }
-  }
-`;
-
-export default withTheme(PreviewSelector);
+export default PreviewSelector;
