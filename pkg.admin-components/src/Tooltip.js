@@ -167,6 +167,7 @@ const Container = styled.div`
   &:after {
     content: "";
     position: absolute;
+    z-index: ${(props) => props.theme.zIndex.tooltip};
     display: none;
 
     ${(props) => (() => {

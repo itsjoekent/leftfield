@@ -62,7 +62,7 @@ const TextStyle = {
       type: SELECT_TYPE,
       optionsFromTheme: ({ campaignTheme, styles }) => getThemeLabels(
         campaignTheme,
-        `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`
+        `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
       ),
       dynamicDefaultThemeValue: ({ campaignTheme }) => ({
         [MOBILE_DEVICE]: {

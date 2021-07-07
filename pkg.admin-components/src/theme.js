@@ -100,7 +100,7 @@ const theme = {
   },
   zIndex: {
     modal: 100,
-    tooltip: 1000,
+    tooltip: 1000000,
   },
 };
 

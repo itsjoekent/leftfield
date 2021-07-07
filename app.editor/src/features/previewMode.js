@@ -4,7 +4,7 @@ import { Responsive } from 'pkg.campaign-components';
 export const previewModeSlice = createSlice({
   name: 'previewMode',
   initialState: {
-    deviceSize: Responsive.DESKTOP_DEVICE,
+    deviceSize: Responsive.MOBILE_DEVICE,
   },
   reducers: {
     setDesktopDevice: (state) => {

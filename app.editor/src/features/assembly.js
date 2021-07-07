@@ -1,6 +1,12 @@
 import { get, set } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
-import { ComponentMeta, Languages, SiteSettings, theme } from 'pkg.campaign-components';
+import {
+  ComponentMeta,
+  Languages,
+  Responsive,
+  SiteSettings,
+  theme,
+} from 'pkg.campaign-components';
 
 const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
   ...acc,
@@ -115,6 +121,17 @@ export const assemblySlice = createSlice({
         delete state.pages[pageId].components[targetComponentId];
       }
     },
+    resetComponentInstanceStyleAttribute: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        styleId,
+        attributeId,
+        device,
+      } = action.payload;
+
+      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, {});
+    },
     setComponentInstancePropertyValue: (state, action) => {
       const {
         pageId,
@@ -217,6 +234,7 @@ export const {
   addChildComponentInstance,
   reorderChildComponentInstance,
   removeChildComponentInstance,
+  resetComponentInstanceStyleAttribute,
   setComponentInstancePropertyValue,
   setComponentInstancePropertyStorage,
   setComponentInstanceStyle,
@@ -388,4 +406,63 @@ export function selectComponentStyles(pageId, componentId) {
   }
 
   return _selectComponentStyles;
+}
+
+export function selectComponentStyleAttribute(pageId, componentId, styleId, attributeId) {
+  function _selectComponentStyleAttribute(state) {
+    return get(selectComponentStyles(pageId, componentId)(state), `${styleId}.${attributeId}`, {});
+  }
+
+  return _selectComponentStyleAttribute;
+}
+
+export function selectComponentStyleAttributeForDevice(pageId, componentId, styleId, attributeId, device) {
+  function _selectComponentStyleAttributeForDevice(state) {
+    return get(selectComponentStyleAttribute(pageId, componentId, styleId, attributeId)(state), device, {});
+  }
+
+  return _selectComponentStyleAttributeForDevice;
+}
+
+export function selectComponentStyleAttributeForDeviceCascading(pageId, componentId, styleId, attributeId, device) {
+  function _selectComponentStyleAttributeForDeviceCascading(state) {
+    const firstAttempt = selectComponentStyleAttributeForDevice(
+      pageId,
+      componentId,
+      styleId,
+      attributeId,
+      device,
+    )(state);
+
+    if (!!Object.keys(firstAttempt).length) {
+      return firstAttempt;
+    }
+
+    const cascading = {
+      [Responsive.DESKTOP_DEVICE]: [
+        Responsive.TABLET_DEVICE,
+        Responsive.MOBILE_DEVICE,
+      ],
+      [Responsive.MOBILE_DEVICE]: [],
+      [Responsive.TABLET_DEVICE]: [Responsive.MOBILE_DEVICE],
+    };
+
+    return cascading[device].reduce((acc, cascadingDevice) => {
+      if (!!Object.keys(acc).length) return acc;
+
+      const nthAttempt = selectComponentStyleAttributeForDevice(
+        pageId,
+        componentId,
+        styleId,
+        attributeId,
+        cascadingDevice,
+      )(state);
+
+      return !!Object.keys(nthAttempt).length
+        ? { ...nthAttempt, cascadedFrom: cascadingDevice }
+        : acc;
+    }, {}) || {};
+  }
+
+  return _selectComponentStyleAttributeForDeviceCascading;
 }

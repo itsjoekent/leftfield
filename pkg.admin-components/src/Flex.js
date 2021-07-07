@@ -5,6 +5,7 @@ const common = css`
   ${({ justify }) => !!justify && css`justify-content: ${justify};`}
   ${({ align }) => !!align && css`align-items: ${align};`}
   ${({ gridGap }) => !!gridGap && css`grid-gap: ${gridGap};`}
+  ${({ wrap }) => !!wrap && css`flex-wrap: ${wrap};`}
 
   ${generics}
 `;

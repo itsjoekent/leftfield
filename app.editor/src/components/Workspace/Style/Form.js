@@ -8,19 +8,21 @@ import {
   Tooltip,
   Typography,
 } from 'pkg.admin-components';
+import WorkspaceStyleAttribute from '@editor/components/Workspace/Style/Attribute';
+import WorkspaceStyleLabel from '@editor/components/Workspace/Style/Label';
 import {
   setDesktopDevice,
   setMobileDevice,
   setTabletDevice,
   selectDeviceSizeList,
 } from '@editor/features/previewMode';
-import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
 export default function StyleForm(props) {
   const { styleData } = props;
 
+  const styleId = get(styleData, 'id');
   const label = get(styleData, 'label', '');
-  const notResponsive = get(styleData, 'notResponsive', false);
+  const attributes = get(styleData, 'attributes', []);
 
   const dispatch = useDispatch();
 
@@ -64,7 +66,7 @@ export default function StyleForm(props) {
               <Buttons.IconButton
                 IconComponent={Icons.Mobile}
                 color={(colors) => isMobilePreview ? colors.mono[900] : colors.mono[400]}
-                hoverColor={(colors) => colors.blue[500]}
+                hoverColor={(colors) => colors.mono[700]}
                 aria-label="Switch to mobile preview"
                 onClick={() => dispatch(setMobileDevice())}
               />
@@ -73,7 +75,7 @@ export default function StyleForm(props) {
               <Buttons.IconButton
                 IconComponent={Icons.Tablet}
                 color={(colors) => isTabletPreview ? colors.mono[900] : colors.mono[400]}
-                hoverColor={(colors) => colors.blue[500]}
+                hoverColor={(colors) => colors.mono[700]}
                 aria-label="Switch to tablet preview"
                 onClick={() => dispatch(setTabletDevice())}
               />
@@ -82,7 +84,7 @@ export default function StyleForm(props) {
               <Buttons.IconButton
                 IconComponent={Icons.Desktop}
                 color={(colors) => isDesktopPreview ? colors.mono[900] : colors.mono[400]}
-                hoverColor={(colors) => colors.blue[500]}
+                hoverColor={(colors) => colors.mono[700]}
                 aria-label="Switch to desktop preview"
                 onClick={() => dispatch(setDesktopDevice())}
               />
@@ -90,6 +92,20 @@ export default function StyleForm(props) {
           </Flex.Row>
         </Flex.Row>
         {/* TODO: help text */}
+      </Flex.Column>
+      <Flex.Column gridGap="24px">
+        {attributes.map((attribute) => (
+          <Flex.Column key={get(attribute, 'id')} gridGap="6px">
+            <WorkspaceStyleLabel
+              styleId={styleId}
+              attribute={attribute}
+            />
+            <WorkspaceStyleAttribute
+              styleId={styleId}
+              attribute={attribute}
+            />
+          </Flex.Column>
+        ))}
       </Flex.Column>
     </Flex.Column>
   );

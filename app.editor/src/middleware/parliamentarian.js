@@ -346,16 +346,14 @@ function runParliamentarian(
         ? dynamicDefaultThemeValue({ campaignTheme })
         : defaultValue;
 
-      Object.keys(Responsive).forEach((deviceKey) => {
-        const device = Responsive[deviceKey];
-
+      Object.keys(attributeValue || {}).forEach((device) => {
         if (notResponsive && device !== Responsive.MOBILE_DEVICE) {
           return;
         }
 
-        const value = attributeValue[device] || attributeValue[Responsive.MOBILE_DEVICE];
+        const value = attributeValue[device];
 
-        if (!hasSetDefault(deviceKey)) {
+        if (!hasSetDefault(device)) {
           queueDispatch(setComponentInstanceStyle({
             pageId,
             componentId,
