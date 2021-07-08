@@ -3,6 +3,11 @@ import { css } from 'styled-components';
 export const border = css`
   ${({ rounded, theme }) => !!rounded && css`border-radius: ${rounded(theme.rounded)};`}
   ${({ borderWidth, borderColor, theme }) => !!borderWidth && !!borderColor && css`border: ${borderWidth} solid ${borderColor(theme.colors)};`}
+  ${({ hoverBorderColor, theme }) => !!hoverBorderColor && css`
+    &:hover {
+      border-color: ${hoverBorderColor(theme.colors)};
+    }
+  `}
 `;
 
 export const colors = css`
@@ -84,6 +89,11 @@ export const position = css`
 
 export const shadow = css`
   ${({ shadow, theme }) => !!shadow && shadow(theme.shadow)}
+  ${({ hoverShadow, theme }) => !!hoverShadow && css`
+    &:hover {
+      shadow: ${hoverShadow(theme.shadow)};
+    }
+  `}
 `;
 
 export const size = css`

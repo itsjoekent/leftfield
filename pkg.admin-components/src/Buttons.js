@@ -1,6 +1,70 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import Typography from '@ac/Typography';
+import generics from '@ac/generics';
 import useAdminTheme from '@ac/useAdminTheme';
+import useIsHovering from '@ac/useIsHovering';
+
+const StandardButtonWrapper = styled.button`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  cursor: pointer;
+
+  transition: all ${(props) => props.theme.animation.defaultTransition};
+  transition-property: border, background, box-shadow;
+
+  ${Typography} {
+    transition: color ${(props) => props.theme.animation.defaultTransition};
+  }
+
+  svg * {
+    transition: all ${(props) => props.theme.animation.defaultTransition};
+    transition-property: stroke, fill;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  ${({ gridGap }) => !!gridGap && css`grid-gap: ${gridGap};`}
+  ${generics}
+`;
+
+export function Standard(props) {
+  const {
+    children,
+    IconComponent,
+    iconSize,
+    iconColor,
+    iconHoverColor,
+    ...rest
+  } = props;
+
+  const theme = useAdminTheme();
+
+  const buttonRef = React.useRef(null);
+  const isHovering = useIsHovering(buttonRef);
+
+  const finalIconColor = !!IconComponent && isHovering
+    ? (iconHoverColor && iconHoverColor(theme.colors))
+    : (iconColor && iconColor(theme.colors));
+
+  return (
+    <StandardButtonWrapper ref={buttonRef} {...rest}>
+      {!!IconComponent && (
+        <IconComponent
+          width={iconSize}
+          height={iconSize}
+          color={finalIconColor}
+        />
+      )}
+      {children}
+    </StandardButtonWrapper>
+  );
+}
 
 const IconButtonWrapper = styled.button`
   display: flex;
@@ -18,6 +82,7 @@ const IconButtonWrapper = styled.button`
   }
 `;
 
+// TODO: rename to "Icon"
 export function IconButton(props) {
   const {
     IconComponent,
@@ -32,41 +97,19 @@ export function IconButton(props) {
   const theme = useAdminTheme();
 
   const buttonRef = React.useRef(null);
-  const [isHovering, setIsHovering] = React.useState(false);
+  const isHovering = useIsHovering(buttonRef);
 
-  React.useEffect(() => {
-    if (!buttonRef.current || !hoverColor) {
-      return;
-    }
-
-    function onMouseEnter() {
-      setIsHovering(true);
-    }
-
-    function onMouseLeave() {
-      setIsHovering(false);
-    }
-
-    if (buttonRef.current) {
-      buttonRef.current.addEventListener('mouseenter', onMouseEnter);
-      buttonRef.current.addEventListener('mouseleave', onMouseLeave);
-    }
-
-    return () => {
-      if (buttonRef.current) {
-        buttonRef.current.removeEventListener('mouseenter', onMouseEnter);
-        buttonRef.current.removeEventListener('mouseleave', onMouseLeave);
-      }
-    };
-  }, [
-    hoverColor,
-  ]);
-
-  const iconColor = isHovering && hoverColor ? hoverColor(theme.colors) : color(theme.colors);
+  const iconColor = !!(isHovering && hoverColor)
+    ? hoverColor(theme.colors)
+    : color(theme.colors);
 
   return (
     <IconButtonWrapper ref={buttonRef} {...rest}>
-      <IconComponent width={width} height={height} color={iconColor} />
+      <IconComponent
+        width={width}
+        height={height}
+        color={iconColor}
+      />
     </IconButtonWrapper>
   );
 }

@@ -40,18 +40,18 @@ export default function ActBlueDonateForm(props) {
   const language = useLanguage();
 
   function buildUrl(amount) {
-    const baseUrl = get(properties, ACTBLUE_FORM_PROPERTY, '');
+    const baseUrl = getPropertyValue(properties, ACTBLUE_FORM_PROPERTY, language);
     let params = {};
 
-    if (!!get(properties, ENABLE_EXPRESS_DONATE_PROPERTY)) {
+    if (!!getPropertyValue(properties, ENABLE_EXPRESS_DONATE_PROPERTY)) {
       params['express_lane'] = 'true';
     }
 
-    if (!!get(properties, REFCODE_PROPERTY, null)) {
-      params['refcode'] = get(properties, REFCODE_PROPERTY);
+    if (!!getPropertyValue(properties, REFCODE_PROPERTY, null)) {
+      params['refcode'] = getPropertyValue(properties, REFCODE_PROPERTY);
     }
 
-    if (!!get(properties, CARRY_TRACKING_SOURCE_PROPERTY)) {
+    if (!!getPropertyValue(properties, CARRY_TRACKING_SOURCE_PROPERTY)) {
       params = {
         ...params,
         ...mapSourceToRefcode(),
@@ -78,7 +78,7 @@ export default function ActBlueDonateForm(props) {
     language,
   });
 
-  if (get(properties, LAYOUT_PROPERTY) === ONE_BUTTON_LAYOUT) {
+  if (getPropertyValue(properties, LAYOUT_PROPERTY) === ONE_BUTTON_LAYOUT) {
     return (
       <FundraisingContext.Provider value={fundraisingState}>
         {get(slots, DONATE_BUTTON_SLOT, null)}
@@ -87,7 +87,7 @@ export default function ActBlueDonateForm(props) {
   }
 
   // TODO: express disclaimer
-  if (get(properties, LAYOUT_PROPERTY) === WIDE_LAYOUT) {
+  if (getPropertyValue(properties, LAYOUT_PROPERTY) === WIDE_LAYOUT) {
     <ThemeProvider theme={localTheme}>
       <FundraisingContext.Provider value={fundraisingState}>
         <WideGrid isMobile>

@@ -117,7 +117,7 @@ const TextStyle = {
 
     @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
       ${applyStyleIf(
-        getStyleValue(styles, FONT_SIZE_ATTRIBUTE, TABLET_DEVICE),
+        getStyleValue(styles, FONT_SIZE_ATTRIBUTE, null, null, TABLET_DEVICE),
         (styleValue) => css`font-size: ${styleValue}px;`,
       )}
       ${applyStyleIf(

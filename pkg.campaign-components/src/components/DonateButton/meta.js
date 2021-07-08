@@ -7,11 +7,15 @@ import {
   DONATE_FORM_TRAIT,
   DONATE_BUTTON_TRAIT,
 } from '@cc/constants/traits';
+import TextStyle, { FONT_SIZE_ATTRIBUTE } from '@cc/styles/text';
 
 export const TAG = 'DonateButton';
 
 export const AMOUNT_PROPERTY = 'AMOUNT_PROPERTY';
 export const LABEL_PROPERTY = 'LABEL_PROPERTY';
+
+export const BUTTON_TEXT_STYLE = 'BUTTON_TEXT_STYLE';
+export const BUTTON_HOVER_TEXT_STYLE = 'BUTTON_HOVER_TEXT_STYLE';
 
 const DonateButtonMeta = {
   tag: TAG,
@@ -47,39 +51,19 @@ const DonateButtonMeta = {
       },
     },
   ],
+  styles: [
+    {
+      id: BUTTON_TEXT_STYLE,
+      label: 'Button Text Style',
+      type: TextStyle.key,
+      attributes: TextStyle.attributes({
+        [FONT_SIZE_ATTRIBUTE]: {
+          incrementBy: 2,
+          max: 52,
+        },
+      }),
+    },
+  ],
 };
 
 export default DonateButtonMeta;
-
-    // textColor: {
-    //   label: 'Button Text Color',
-    //   type: COLOR_TYPE,
-    //   required: true,
-    //   inheritFromSetting: DEFAULT_DONATE_BUTTON_TEXT_COLOR.key,
-    // },
-    // textColorOnHover: {
-    //   label: 'Button Text Color',
-    //   type: COLOR_TYPE,
-    //   required: true,
-    //   inheritFromSetting: DEFAULT_DONATE_BUTTON_TEXT_COLOR_ON_HOVER.key,
-    // },
-    // backgroundColor: {
-    //   label: 'Button Background Color',
-    //   type: COLOR_TYPE,
-    //   required: true,
-    //   inheritFromSetting: DEFAULT_DONATE_BUTTON_BACKGROUND_COLOR.key,
-    // },
-    // backgroundColorOnHover: {
-    //   label: 'Button Background Color',
-    //   type: COLOR_TYPE,
-    //   required: true,
-    //   inheritFromSetting: DEFAULT_DONATE_BUTTON_BACKGROUND_COLOR_ON_HOVER.key,
-    // },
-    // borderColor: {
-    //   label: 'Border Color',
-    //   type: COLOR_TYPE,
-    // },
-    // borderColorOnHover
-    // borderWidth
-
-    // Should this be some common shared button configuration?

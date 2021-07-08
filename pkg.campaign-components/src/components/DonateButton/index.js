@@ -4,13 +4,17 @@ import get from 'lodash.get';
 import {
   AMOUNT_PROPERTY,
   LABEL_PROPERTY,
+
+  BUTTON_TEXT_STYLE,
+  BUTTON_HOVER_TEXT_STYLE,
 } from '@cc/components/DonateButton/meta';
 import { FundraisingContext } from '@cc/context/Fundraising';
 import useLanguage from '@cc/hooks/useLanguage';
+import TextStyle from '@cc/styles/text';
 import getPropertyValue from '@cc/utils/getPropertyValue';
 
 export default function DonateButton(props) {
-  const { properties } = props;
+  const { properties, styles } = props;
 
   const language = useLanguage();
   const { buildUrl } = React.useContext(FundraisingContext);
@@ -21,8 +25,7 @@ export default function DonateButton(props) {
   return (
     <Button
       href={href}
-      properties={properties}
-      language={language}
+      styles={styles}
     >
       {label}
     </Button>
@@ -30,5 +33,14 @@ export default function DonateButton(props) {
 }
 
 const Button = styled.a`
+  text-decoration: none;
 
+  ${(props) => TextStyle.styling({
+    campaignTheme: props.theme.campaign,
+    styles: get(props, `styles.${BUTTON_TEXT_STYLE}`, {}),
+  })}
+
+  &:hover {
+    cursor: pointer;
+  }
 `;

@@ -47,7 +47,7 @@ export default function NumberRange(props) {
       styleId,
       attributeId,
       device: targetDevice,
-      value,
+      value: parseFloat(value),
     }));
   }
 

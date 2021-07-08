@@ -27,6 +27,7 @@ export const {
 
 export default previewModeSlice.reducer;
 
+// TODO: Rename to "selectPreviewDeviceSize"
 export function selectDeviceSize(state) {
   return state.previewMode.deviceSize;
 }
