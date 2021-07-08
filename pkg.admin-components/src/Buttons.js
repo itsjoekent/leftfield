@@ -5,20 +5,28 @@ import generics from '@ac/generics';
 import useAdminTheme from '@ac/useAdminTheme';
 import useIsHovering from '@ac/useIsHovering';
 
-const StandardButtonWrapper = styled.button`
+const OutlineButtonWrapper = styled.button`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   width: fit-content;
   cursor: pointer;
+  border-radius: ${(props) => props.theme.rounded.extra};
 
   transition: all ${(props) => props.theme.animation.defaultTransition};
   transition-property: border, background, box-shadow;
 
   ${Typography} {
     transition: color ${(props) => props.theme.animation.defaultTransition};
+    ${({ borderColor, theme }) => !!borderColor && css`color: ${borderColor(theme.colors)};`}
   }
+
+  ${({ hoverBorderColor, theme }) => !!hoverBorderColor && css`
+    &:hover ${Typography} {
+      color: ${hoverBorderColor(theme.colors)};
+    }
+  `}
 
   svg * {
     transition: all ${(props) => props.theme.animation.defaultTransition};
@@ -33,13 +41,11 @@ const StandardButtonWrapper = styled.button`
   ${generics}
 `;
 
-export function Standard(props) {
+export function Outline(props) {
   const {
     children,
     IconComponent,
     iconSize,
-    iconColor,
-    iconHoverColor,
     ...rest
   } = props;
 
@@ -48,12 +54,15 @@ export function Standard(props) {
   const buttonRef = React.useRef(null);
   const isHovering = useIsHovering(buttonRef);
 
+  const iconColor = rest.borderColor;
+  const iconHoverColor = rest.hoverBorderColor;
+
   const finalIconColor = !!IconComponent && isHovering
     ? (iconHoverColor && iconHoverColor(theme.colors))
     : (iconColor && iconColor(theme.colors));
 
   return (
-    <StandardButtonWrapper ref={buttonRef} {...rest}>
+    <OutlineButtonWrapper ref={buttonRef} {...rest}>
       {!!IconComponent && (
         <IconComponent
           width={iconSize}
@@ -62,7 +71,7 @@ export function Standard(props) {
         />
       )}
       {children}
-    </StandardButtonWrapper>
+    </OutlineButtonWrapper>
   );
 }
 

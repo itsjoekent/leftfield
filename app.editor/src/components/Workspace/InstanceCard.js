@@ -8,6 +8,7 @@ import {
   Flex,
   Icons,
   Tooltip,
+  Typography,
 } from 'pkg.admin-components';
 import { selectComponent } from '@editor/features/assembly';
 import { setActiveComponentId } from '@editor/features/workspace';
@@ -39,15 +40,25 @@ export default function InstanceCard(props) {
             <Label>{get(component, 'name')}</Label>
           </Flex.Row>
           <IconRow align="center" gridGap="6px">
-            <Tooltip copy="Edit component" point={Tooltip.UP}>
-              <Buttons.IconButton
-                IconComponent={Icons.TransferLongTop}
-                color={(colors) => colors.mono[500]}
-                hoverColor={(colors) => colors.purple[600]}
-                onClick={() => dispatch(setActiveComponentId(componentId))}
-                aria-label="Edit component"
-              />
-            </Tooltip>
+            <Buttons.Outline
+              paddingVertical="2px"
+              paddingHorizontal="4px"
+              bg={(colors) => colors.mono[100]}
+              borderWidth="1px"
+              borderColor={(colors) => colors.mono[500]}
+              hoverBorderColor={(colors) => colors.purple[500]}
+              gridGap="4px"
+              IconComponent={Icons.EditFill}
+              iconSize={16}
+              onClick={() => dispatch(setActiveComponentId(componentId))}
+            >
+              <Typography
+                fontStyle="medium"
+                fontSize="16px"
+              >
+                Edit
+              </Typography>
+            </Buttons.Outline>
             <Tooltip copy="Copy component" point={Tooltip.UP}>
               <Buttons.IconButton
                 IconComponent={Icons.Copy}

@@ -35,7 +35,7 @@ const DonateButtonMeta = {
     {
       id: AMOUNT_PROPERTY,
       label: 'Donate Amount',
-      help: 'Numerical amount, other, or leave empty. This value is used in the donate form URL.',
+      help: 'Numerical amount, other, or leave empty. This value is used in the donate form URL to pre-select a button on the donation page.',
       type: SHORT_TEXT_TYPE,
       defaultValue: {
         [US_ENGLISH_LANG]: '5',

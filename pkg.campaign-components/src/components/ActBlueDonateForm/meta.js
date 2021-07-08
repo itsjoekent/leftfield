@@ -60,7 +60,6 @@ export const LAYOUT_PROPERTY = 'LAYOUT_PROPERTY';
 export const ACTBLUE_FORM_PROPERTY = 'ACTBLUE_FORM_PROPERTY';
 export const ENABLE_EXPRESS_DONATE_PROPERTY = 'ENABLE_EXPRESS_DONATE_PROPERTY';
 export const EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY = 'EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY';
-export const EXPRESS_DONATE_TEXT_COLOR_PROPERTY = 'EXPRESS_DONATE_TEXT_COLOR_PROPERTY';
 export const REFCODE_PROPERTY = 'REFCODE_PROPERTY';
 export const CARRY_TRACKING_SOURCE_PROPERTY = 'CARRY_TRACKING_SOURCE_PROPERTY';
 
@@ -133,15 +132,6 @@ const ActBlueDonateFormMeta = {
       id: EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY,
       inheritFromSetting: ACTBLUE_EXPRESS_DISCLAIMER_COPY.key,
       required: true,
-      conditional: ({ properties }) => !!get(properties, `${ENABLE_EXPRESS_DONATE_PROPERTY}.value.${US_ENGLISH_LANG}`, false),
-    },
-    {
-      id: EXPRESS_DONATE_TEXT_COLOR_PROPERTY,
-      label: 'Express Donate Legal Disclaimer Text Color',
-      help: 'This text must have high contrast with the background of the form',
-      type: COLOR_TYPE,
-      required: true,
-      defaultCampaignThemeValue: ({ campaignTheme }) => campaignTheme.colors.black,
       conditional: ({ properties }) => !!get(properties, `${ENABLE_EXPRESS_DONATE_PROPERTY}.value.${US_ENGLISH_LANG}`, false),
     },
     {

@@ -9,6 +9,7 @@ import {
   Flex,
   Icons,
   Tooltip,
+  Typography,
 } from 'pkg.admin-components';
 import {
   selectCampaignTheme,
@@ -105,29 +106,31 @@ export default function ColorPicker(props) {
     }));
   }
 
+  const customColorButtonLabel = localCustomColor ? 'Edit custom color' : 'Add custom color';
+
   return (
-    <Flex.Row
-      align="center"
-      gridGap="6px"
-      wrap="wrap"
-    >
-      {Object.keys(get(campaignTheme, 'colors')).map((colorId) => (
-        <Tooltip
-          key={colorId}
-          copy={get(campaignTheme, `colors.${colorId}.label`)}
-          point={Tooltip.UP}
-        >
-          <ColorButton
-            aria-label={`Use ${get(campaignTheme, `colors.${colorId}.label`)}`}
-            isSelected={get(attributeValue, 'inheritFromTheme') === colorId}
-            colorValue={get(campaignTheme, `colors.${colorId}.value`, '#FFF')}
-            onClick={() => onThemeClick(colorId)}
+    <Flex.Column gridGap="12px">
+      <Flex.Row
+        align="center"
+        gridGap="6px"
+        wrap="wrap"
+      >
+        {Object.keys(get(campaignTheme, 'colors')).map((colorId) => (
+          <Tooltip
+            key={colorId}
+            copy={get(campaignTheme, `colors.${colorId}.label`)}
+            point={Tooltip.UP}
           >
-            <Swatch colorValue={get(campaignTheme, `colors.${colorId}.value`, '#FFF')} />
-          </ColorButton>
-        </Tooltip>
-      ))}
-      <Flex.Row align="center" gridGap="6px" position="relative">
+            <ColorButton
+              aria-label={`Use ${get(campaignTheme, `colors.${colorId}.label`)}`}
+              isSelected={get(attributeValue, 'inheritFromTheme') === colorId}
+              colorValue={get(campaignTheme, `colors.${colorId}.value`, '#FFF')}
+              onClick={() => onThemeClick(colorId)}
+            >
+              <Swatch colorValue={get(campaignTheme, `colors.${colorId}.value`, '#FFF')} />
+            </ColorButton>
+          </Tooltip>
+        ))}
         {!!localCustomColor && (
           <Tooltip copy="Custom Color" point={Tooltip.UP}>
             <ColorButton
@@ -140,6 +143,26 @@ export default function ColorPicker(props) {
             </ColorButton>
           </Tooltip>
         )}
+      </Flex.Row>
+      <Flex.Column position="relative" fitContent>
+        <Buttons.Outline
+          paddingVertical="2px"
+          paddingHorizontal="4px"
+          bg={(colors) => colors.mono[200]}
+          borderWidth="1px"
+          borderColor={(colors) => colors.mono[600]}
+          hoverBorderColor={(colors) => colors.mono[900]}
+          gridGap="2px"
+          IconComponent={!!localCustomColor ? Icons.EditFill : Icons.AddSquareFill}
+          onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
+        >
+          <Typography
+            fontStyle="regular"
+            fontSize="14px"
+          >
+            {customColorButtonLabel}
+          </Typography>
+        </Buttons.Outline>
         {isColorPickerOpen && (
           <ColorPickerWrapper ref={colorPickerRef}>
             <ChromePicker
@@ -152,22 +175,8 @@ export default function ColorPicker(props) {
             />
           </ColorPickerWrapper>
         )}
-        <Tooltip
-          copy={!!localCustomColor ? 'Edit custom color' : 'Add custom color'}
-          point={Tooltip.UP}
-        >
-          <Buttons.IconButton
-            IconComponent={!!localCustomColor ? Icons.EditFill : Icons.AddSquareFill}
-            width={24}
-            height={24}
-            color={(colors) => colors.mono[500]}
-            hoverColor={(colors) => colors.blue[700]}
-            aria-label={localCustomColor ? 'Edit custom color' : 'Add custom color'}
-            onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
-          />
-        </Tooltip>
-      </Flex.Row>
-    </Flex.Row>
+      </Flex.Column>
+    </Flex.Column>
   );
 }
 
@@ -214,7 +223,8 @@ const Swatch = styled.span`
 const ColorPickerWrapper = styled.div`
   position: absolute;
   z-index: 1;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 36px;
+  left: 0;
+  ${'' /* left: 50%;
+  transform: translateX(-50%); */}
 `;

@@ -64,7 +64,7 @@ export default function NumberRange(props) {
       <ValueColumn>
         <Typography
           fontStyle="regular"
-          fontSize="12px"
+          fontSize="14px"
           fg={(colors) => colors.mono[700]}
         >
           {customValue}

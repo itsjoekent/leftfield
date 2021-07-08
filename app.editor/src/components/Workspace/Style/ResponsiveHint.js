@@ -58,19 +58,16 @@ export default function ResponsiveHint(props) {
 
   if (canReset) {
     return (
-      <Buttons.Standard
+      <Buttons.Outline
         paddingVertical="2px"
         paddingHorizontal="4px"
         bg={(colors) => colors.mono[200]}
         borderWidth="1px"
         borderColor={(colors) => colors.mono[500]}
-        hoverBorderColor={(colors) => colors.mono[700]}
-        rounded={(radius) => radius.default}
+        hoverBorderColor={(colors) => colors.red[300]}
         gridGap="2px"
         IconComponent={Icons.TrashLight}
         iconSize={16}
-        iconColor={(colors) => colors.mono[500]}
-        iconHoverColor={(colors) => colors.mono[700]}
         onClick={() => dispatch(resetComponentInstanceStyleAttribute({
           pageId: activePageId,
           componentId: activeComponentId,
@@ -82,12 +79,10 @@ export default function ResponsiveHint(props) {
         <Typography
           fontStyle="regular"
           fontSize="12px"
-          fg={(colors) => colors.mono[500]}
-          hoverFg={(colors) => colors.mono[700]}
         >
           Remove {responsiveLabels[device]} override
         </Typography>
-      </Buttons.Standard>
+      </Buttons.Outline>
     );
   }
 
