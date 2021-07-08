@@ -17,6 +17,7 @@ export default function StyleForm(props) {
   const styleId = get(styleData, 'id');
   const label = get(styleData, 'label', '');
   const help = get(styleData, 'help', null);
+  const type = get(styleData, 'type', null);
   const attributes = get(styleData, 'attributes', []);
 
   return (
@@ -33,30 +34,32 @@ export default function StyleForm(props) {
           >
             {label}
           </Typography>
-          <Flex.Row align="center" gridGap="6px">
-            <Tooltip copy="Import existing style" point={Tooltip.UP_RIGHT_ALIGNED}>
-              <Buttons.IconButton
-                IconComponent={Icons.Import}
-                width={20}
-                height={20}
-                color={(colors) => colors.mono[500]}
-                hoverColor={(colors) => colors.mono[700]}
-                aria-label="Import existing style"
-                onClick={() => {}}
-              />
-            </Tooltip>
-            <Tooltip copy="Export this style" point={Tooltip.UP_RIGHT_ALIGNED}>
-              <Buttons.IconButton
-                IconComponent={Icons.Export}
-                width={20}
-                height={20}
-                color={(colors) => colors.mono[500]}
-                hoverColor={(colors) => colors.mono[700]}
-                aria-label="Export this style"
-                onClick={() => {}}
-              />
-            </Tooltip>
-          </Flex.Row>
+          {!!type && (
+            <Flex.Row align="center" gridGap="6px">
+              <Tooltip copy="Import existing style" point={Tooltip.UP_RIGHT_ALIGNED}>
+                <Buttons.IconButton
+                  IconComponent={Icons.Import}
+                  width={20}
+                  height={20}
+                  color={(colors) => colors.mono[500]}
+                  hoverColor={(colors) => colors.mono[700]}
+                  aria-label="Import existing style"
+                  onClick={() => {}}
+                />
+              </Tooltip>
+              <Tooltip copy="Export this style" point={Tooltip.UP_RIGHT_ALIGNED}>
+                <Buttons.IconButton
+                  IconComponent={Icons.Export}
+                  width={20}
+                  height={20}
+                  color={(colors) => colors.mono[500]}
+                  hoverColor={(colors) => colors.mono[700]}
+                  aria-label="Export this style"
+                  onClick={() => {}}
+                />
+              </Tooltip>
+            </Flex.Row>
+          )}
         </Flex.Row>
         {!!help && (
           <Typography

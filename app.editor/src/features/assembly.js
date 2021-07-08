@@ -1,5 +1,6 @@
 import { get, set } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
+import { v4 as uuid } from 'uuid';
 import {
   ComponentMeta,
   Languages,
@@ -12,6 +13,29 @@ const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
   ...acc,
   [key]: get(SiteSettings[key], `field.defaultValue`),
 }), {});
+
+function _addChildComponentInstance(state, action) {
+  const {
+    pageId,
+    componentId,
+    parentComponentId,
+    slotId,
+    slotPlacementOrder,
+  } = action.payload;
+
+  const path = `pages.${pageId}.components.${parentComponentId}.slots.${slotId}`;
+
+  const finalSlotPlacementOrder = isNaN(slotPlacementOrder)
+    ? get(state, `${path}.length`, 0)
+    : slotPlacementOrder
+
+  const children = get(state, path, []);
+  children.splice(finalSlotPlacementOrder, 0, componentId);
+
+  set(state, path, children);
+  set(state, `pages.${pageId}.components.${componentId}.childOf`, parentComponentId);
+  set(state, `pages.${pageId}.components.${componentId}.withinSlot`, slotId);
+}
 
 export const assemblySlice = createSlice({
   name: 'assembly',
@@ -48,6 +72,7 @@ export const assemblySlice = createSlice({
     theme: theme.campaign,
   },
   reducers: {
+    addChildComponentInstance: _addChildComponentInstance,
     buildComponent: (state, action) => {
       const {
         componentId,
@@ -63,27 +88,28 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${insert.id}`, insert);
     },
-    addChildComponentInstance: (state, action) => {
+    duplicateComponent: (state, action) => {
       const {
         pageId,
         componentId,
-        parentComponentId,
-        slotId,
-        slotPlacementOrder,
       } = action.payload;
 
-      const path = `pages.${pageId}.components.${parentComponentId}.slots.${slotId}`;
+      const originalComponent = get(state, `pages.${pageId}.components.${componentId}`);
+      const duplicatedComponent = {
+        ...originalComponent,
+        id: uuid(),
+      };
 
-      const finalSlotPlacementOrder = isNaN(slotPlacementOrder)
-        ? get(state, `${path}.length`, 0)
-        : slotPlacementOrder
+      set(state, `pages.${pageId}.components.${duplicatedComponent.id}`, duplicatedComponent);
 
-      const children = get(state, path, []);
-      children.splice(finalSlotPlacementOrder, 0, componentId);
-
-      set(state, path, children);
-      set(state, `pages.${pageId}.components.${componentId}.childOf`, parentComponentId);
-      set(state, `pages.${pageId}.components.${componentId}.withinSlot`, slotId);
+      _addChildComponentInstance(state, {
+        payload: {
+          pageId,
+          componentId: duplicatedComponent.id,
+          parentComponentId: get(originalComponent, 'childOf'),
+          slotId: get(originalComponent, 'withinSlot'),
+        },
+      });
     },
     reorderChildComponentInstance: (state, action) => {
       const {
@@ -230,8 +256,9 @@ export const assemblySlice = createSlice({
 });
 
 export const {
-  buildComponent,
   addChildComponentInstance,
+  buildComponent,
+  duplicateComponent,
   reorderChildComponentInstance,
   removeChildComponentInstance,
   resetComponentInstanceStyleAttribute,

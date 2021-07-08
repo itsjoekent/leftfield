@@ -34,7 +34,7 @@ const TextStyle = {
       label: 'Font size',
       type: NUMBER_RANGE_TYPE,
       min: 10,
-      max: 120,
+      max: 128,
       incrementBy: 1,
       defaultValue: {
         [MOBILE_DEVICE]: {

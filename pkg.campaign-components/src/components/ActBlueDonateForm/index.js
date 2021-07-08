@@ -3,12 +3,10 @@ import styled, { ThemeProvider } from 'styled-components';
 import get from 'lodash.get';
 import {
   ONE_BUTTON_LAYOUT,
-  WIDE_LAYOUT,
-  TWO_COLUMN_LAYOUT,
-  THREE_COLUMN_LAYOUT,
-  FOUR_COLUMN_LAYOUT,
+  MULTI_BUTTON_LAYOUT,
 
   DISCLAIMER_TEXT_STYLE,
+  GRID_STYLE,
 
   LAYOUT_PROPERTY,
   ACTBLUE_FORM_PROPERTY,
@@ -24,6 +22,8 @@ import {
 } from '@cc/components/ActBlueDonateForm/meta';
 import { initialFundraisingState, FundraisingContext } from '@cc/context/Fundraising';
 import useLanguage from '@cc/hooks/useLanguage';
+import BoxStyle from '@cc/styles/box';
+import GridStyle from '@cc/styles/grid';
 import TextStyle from '@cc/styles/text';
 import getPropertyValue from '@cc/utils/getPropertyValue';
 import makeActBlueLink from '@cc/utils/makeActBlueLink';
@@ -85,20 +85,6 @@ export default function ActBlueDonateForm(props) {
     );
   }
 
-  // TODO: express disclaimer
-  if (getPropertyValue(properties, LAYOUT_PROPERTY) === WIDE_LAYOUT) {
-    <ThemeProvider theme={localTheme}>
-      <FundraisingContext.Provider value={fundraisingState}>
-        <WideGrid isMobile>
-          {get(slots, WIDE_MOBILE_DONATE_BUTTONS_SLOT, null)}
-        </WideGrid>
-        <WideGrid>
-          {get(slots, WIDE_DESKTOP_DONATE_BUTTONS_SLOT, null)}
-        </WideGrid>
-      </FundraisingContext.Provider>
-    </ThemeProvider>
-  }
-
   return (
     <ThemeProvider theme={localTheme}>
       <FundraisingContext.Provider value={fundraisingState}>
@@ -124,7 +110,7 @@ export default function ActBlueDonateForm(props) {
 const ExpressFormSpacing = styled.div`
   display: flex;
   flex-direction: column;
-  grid-gap: ${(props) => getPropertyValue(props.theme.properties, LAYOUT_PROPERTY) === WIDE_LAYOUT ? '6px' : '16px'}
+  grid-gap: 16px;
 `;
 
 const Disclaimer = styled.p`
@@ -136,30 +122,13 @@ const Disclaimer = styled.p`
   text-align: center;
 `;
 
-const columnTypeToNumber = {
-  [TWO_COLUMN_LAYOUT.key]: 2,
-  [THREE_COLUMN_LAYOUT.key]: 3,
-  [FOUR_COLUMN_LAYOUT.key]: 4,
-};
-
 const FormGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(${(props) => get(columnTypeToNumber, getPropertyValue(props.theme.properties, LAYOUT_PROPERTY))}, 1fr);
-  grid-gap: 8px;
+  ${(props) => GridStyle.styling({
+    styles: get(props, `theme.styles.${GRID_STYLE}`, {}),
+  })}
 
-  @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
-    grid-gap: 12px;
-  }
-`;
-
-const WideGrid = styled.div`
-  display: ${(props) => props.isMobile ? 'grid' : 'none'};
-  grid-template-columns: repeat(${(props) => get(props, `slots.${WIDE_MOBILE_DONATE_BUTTONS_SLOT}.length`)}, 1fr);
-  grid-gap: 8px;
-
-  @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
-    display: ${(props) => props.isMobile ? 'none' : 'grid'};
-    grid-template-columns: repeat(${(props) => get(props, `slots.${WIDE_DESKTOP_DONATE_BUTTONS_SLOT}.length`)}, 1fr);
-    grid-gap: 12px;
-  }
+  ${(props) => BoxStyle.styling({
+    campaignTheme: props.theme.campaign,
+    styles: get(props, `theme.styles.${GRID_STYLE}`, {}),
+  })}
 `;

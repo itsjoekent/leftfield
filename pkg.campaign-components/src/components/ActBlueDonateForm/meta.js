@@ -27,33 +27,21 @@ import {
   DEFAULT_ACTBLUE_DONATION_FORM,
   DEFAULT_ACTBLUE_REFCODE,
 } from '@cc/constants/settings';
+import BoxStyle from '@cc/styles/box';
+import GridStyle from '@cc/styles/grid';
 import TextStyle, { FONT_SIZE_ATTRIBUTE } from '@cc/styles/text';
+import getPropertyValue from '@cc/utils/getPropertyValue';
 
 export const TAG = 'ActBlueDonateForm';
 
 export const ONE_BUTTON_LAYOUT = {
-  key: 'ONE_BUTTON_LAYOUT',
+  value: 'ONE_BUTTON_LAYOUT',
   label: 'One Button',
 };
 
-export const WIDE_LAYOUT = {
-  key: 'WIDE_LAYOUT',
-  label: 'Wide single row',
-};
-
-export const TWO_COLUMN_LAYOUT = {
-  key: 'TWO_COLUMN_LAYOUT',
-  label: 'Two Columns',
-};
-
-export const THREE_COLUMN_LAYOUT = {
-  key: 'THREE_COLUMN_LAYOUT',
-  label: 'Three columns',
-};
-
-export const FOUR_COLUMN_LAYOUT = {
-  key: 'FOUR_COLUMN_LAYOUT',
-  label: 'Four columns',
+export const MULTI_BUTTON_LAYOUT = {
+  value: 'MULTI_BUTTON_LAYOUT',
+  label: 'Multiple Buttons',
 };
 
 export const LAYOUT_PROPERTY = 'LAYOUT_PROPERTY';
@@ -63,12 +51,13 @@ export const EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY = 'EXPRESS_DONATE_DISCLAIME
 export const REFCODE_PROPERTY = 'REFCODE_PROPERTY';
 export const CARRY_TRACKING_SOURCE_PROPERTY = 'CARRY_TRACKING_SOURCE_PROPERTY';
 
-export const DISCLAIMER_TEXT_STYLE = 'DISCLAIMER_TEXT_STYLE';
-
 export const DONATE_BUTTON_SLOT = 'DONATE_BUTTON_SLOT';
 export const DONATE_BUTTONS_SLOT = 'DONATE_BUTTONS_SLOT';
 export const WIDE_MOBILE_DONATE_BUTTONS_SLOT = 'WIDE_MOBILE_DONATE_BUTTONS_SLOT';
 export const WIDE_DESKTOP_DONATE_BUTTONS_SLOT = 'WIDE_DESKTOP_DONATE_BUTTONS_SLOT';
+
+export const DISCLAIMER_TEXT_STYLE = 'DISCLAIMER_TEXT_STYLE';
+export const GRID_STYLE = 'GRID_STYLE';
 
 const ActBlueDonateFormMeta = {
   tag: TAG,
@@ -77,8 +66,10 @@ const ActBlueDonateFormMeta = {
   documentation,
   placementConstraints: [
     {
-      include: [OPEN_GRID_TRAIT],
-      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) !== ONE_BUTTON_LAYOUT.key,
+      includeLayout: [
+        { key: GROWS_VERTICALLY, mustBe: true },
+      ],
+      conditional: ({ properties }) => getPropertyValue(properties, LAYOUT_PROPERTY) === MULTI_BUTTON_LAYOUT.value,
     },
   ],
   properties: [
@@ -87,27 +78,19 @@ const ActBlueDonateFormMeta = {
       label: 'Form Layout',
       type: CHECKLIST_TYPE,
       required: true,
-      dynamicOptions: ({ slot }) => {
-        if (get(slot, `layout.${FULL_SCREEN_WIDTH}`)) {
-          return [ONE_BUTTON_LAYOUT, WIDE_LAYOUT];
-        }
-
-        return [
-          ONE_BUTTON_LAYOUT,
-          TWO_COLUMN_LAYOUT,
-          THREE_COLUMN_LAYOUT,
-          FOUR_COLUMN_LAYOUT,
-        ];
-      },
+      options: [
+        ONE_BUTTON_LAYOUT,
+        MULTI_BUTTON_LAYOUT,
+      ],
       dynamicDefaultValue: ({ slot }) => {
-        if (get(slot, `layout.${FULL_SCREEN_WIDTH}`)) {
+        if (get(slot, `layout.${GROWS_VERTICALLY}`)) {
           return {
-            [US_ENGLISH_LANG]: WIDE_LAYOUT.key,
+            [US_ENGLISH_LANG]: MULTI_BUTTON_LAYOUT.value,
           };
         }
 
         return {
-          [US_ENGLISH_LANG]: TWO_COLUMN_LAYOUT.key,
+          [US_ENGLISH_LANG]: ONE_BUTTON_LAYOUT.value,
         };
       },
     },
@@ -125,14 +108,14 @@ const ActBlueDonateFormMeta = {
       defaultValue: {
         [US_ENGLISH_LANG]: false,
       },
-      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`, null) !== ONE_BUTTON_LAYOUT.key,
+      conditional: ({ properties }) => getPropertyValue(properties, LAYOUT_PROPERTY) === MULTI_BUTTON_LAYOUT.value,
     },
     {
       ...ACTBLUE_EXPRESS_DISCLAIMER_COPY.field,
       id: EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY,
       inheritFromSetting: ACTBLUE_EXPRESS_DISCLAIMER_COPY.key,
       required: true,
-      conditional: ({ properties }) => !!get(properties, `${ENABLE_EXPRESS_DONATE_PROPERTY}.value.${US_ENGLISH_LANG}`, false),
+      conditional: ({ properties }) => !!getPropertyValue(properties, ENABLE_EXPRESS_DONATE_PROPERTY),
     },
     {
       ...DEFAULT_ACTBLUE_REFCODE.field,
@@ -151,32 +134,13 @@ const ActBlueDonateFormMeta = {
       label: 'Donate Buttons',
       required: true,
       isList: true,
-      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) !== ONE_BUTTON_LAYOUT.key,
+      conditional: ({ properties }) => getPropertyValue(properties, LAYOUT_PROPERTY) === MULTI_BUTTON_LAYOUT.value,
       constraints: [
-        { include: [DONATE_BUTTON_TRAIT] },
+        { includeTrait: [DONATE_BUTTON_TRAIT] },
       ],
       layout: {
         [FILLS_CONTAINER_WIDE]: true,
         [GROWS_VERTICALLY]: true,
-      },
-      customValidation: ({ properties, children }) => {
-        const layout = get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`);
-
-        if (
-          [TWO_COLUMN_LAYOUT.key, THREE_COLUMN_LAYOUT.key].includes(layout)
-          && children.length !== 6
-        ) {
-          return makeValidationError('Must have 6 buttons');
-        }
-
-        if (
-          layout === FOUR_COLUMN_LAYOUT.key
-          && children.length !== 8
-        ) {
-          return makeValidationError('Must have 8 buttons');
-        }
-
-        return true;
       },
     },
     {
@@ -184,7 +148,7 @@ const ActBlueDonateFormMeta = {
       label: 'Donate Button',
       required: true,
       isList: false,
-      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) === ONE_BUTTON_LAYOUT.key,
+      conditional: ({ properties }) => getPropertyValue(properties, LAYOUT_PROPERTY) === ONE_BUTTON_LAYOUT.value,
       constraints: [
         { include: [DONATE_BUTTON_TRAIT] },
       ],
@@ -192,46 +156,22 @@ const ActBlueDonateFormMeta = {
         [FITS_CONTENT]: true,
       },
     },
-    {
-      id: WIDE_MOBILE_DONATE_BUTTONS_SLOT,
-      label: 'Wide Layout Mobile Buttons',
-      help: 'These buttons only render on mobile devices',
-      isList: true,
-      required: true,
-      min: 1,
-      max: 4,
-      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) === WIDE_LAYOUT.key,
-      constraints: [
-        { include: [DONATE_BUTTON_TRAIT] },
-      ],
-      layout: {
-        [FILLS_CONTAINER_WIDE]: true,
-        [GROWS_VERTICALLY]: false,
-      },
-    },
-    {
-      id: WIDE_DESKTOP_DONATE_BUTTONS_SLOT,
-      label: 'Wide Layout Desktop Buttons',
-      help: 'These buttons only render on large devices',
-      required: true,
-      isList: true,
-      min: 1,
-      max: 8,
-      conditional: ({ properties }) => get(properties, `${LAYOUT_PROPERTY}.value.${US_ENGLISH_LANG}`) === WIDE_LAYOUT.key,
-      constraints: [
-        { include: [DONATE_BUTTON_TRAIT] },
-      ],
-      layout: {
-        [FILLS_CONTAINER_WIDE]: true,
-        [GROWS_VERTICALLY]: false,
-      },
-    },
   ],
   styles: [
+    {
+      id: GRID_STYLE,
+      label: 'Grid Style',
+      attributes: [
+        ...GridStyle.attributes(),
+        ...BoxStyle.attributes(),
+      ],
+      conditional: ({ properties }) => getPropertyValue(properties, LAYOUT_PROPERTY) === MULTI_BUTTON_LAYOUT.value,
+    },
     {
       id: DISCLAIMER_TEXT_STYLE,
       label: 'Disclaimer Text Style',
       type: TextStyle.key,
+      // TODO: Add attribute for top margin
       attributes: TextStyle.attributes({
         [FONT_SIZE_ATTRIBUTE]: {
           defaultValue: {
@@ -241,7 +181,7 @@ const ActBlueDonateFormMeta = {
           },
         },
       }),
-      conditional: ({ properties }) => !!get(properties, `${ENABLE_EXPRESS_DONATE_PROPERTY}.value.${US_ENGLISH_LANG}`),
+      conditional: ({ properties }) => !!getPropertyValue(properties, ENABLE_EXPRESS_DONATE_PROPERTY),
     },
   ],
   traits: [

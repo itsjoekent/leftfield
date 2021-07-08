@@ -27,12 +27,19 @@ export function getDarkestCampaignThemeColor(campaignTheme) {
   return sortedColors[0];
 }
 
-export function getHighestSaturatedCampaignThemeColor(campaignTheme) {
+export function getBrightestCampaignThemeColor(campaignTheme) {
   const sortedColors = Object.keys(campaignTheme.colors).sort((left, right) => {
-    const { saturation: leftSaturation } = parseToHsl(getThemeValue(campaignTheme, `colors.${left}`));
-    const { saturation: rightSaturation } = parseToHsl(getThemeValue(campaignTheme, `colors.${right}`));
+    const {
+      saturation: leftSaturation,
+      lightness: leftLightness,
+    } = parseToHsl(getThemeValue(campaignTheme, `colors.${left}`));
 
-    return leftSaturation - rightSaturation;
+    const {
+      saturation: rightSaturation,
+      lightness: rightLightness,
+    } = parseToHsl(getThemeValue(campaignTheme, `colors.${right}`));
+
+    return (rightSaturation + rightLightness) - (leftSaturation + leftLightness);
   });
 
   return sortedColors[0];
@@ -43,5 +50,6 @@ export function getReadableThemeColor(campaignTheme, backgroundColor) {
     backgroundColor,
     getLightestCampaignThemeColor(campaignTheme),
     getDarkestCampaignThemeColor(campaignTheme),
+    false,
   );
 }

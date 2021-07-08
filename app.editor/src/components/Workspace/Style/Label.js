@@ -5,6 +5,8 @@ import { Flex, Typography } from 'pkg.admin-components';
 export default function Label(props) {
   const { styleId, attribute } = props;
 
+  const help = get(attribute, 'help');
+
   return (
     <Flex.Column gridGap="2px">
       <Typography
@@ -16,7 +18,15 @@ export default function Label(props) {
       >
         {get(attribute, 'label', '')}
       </Typography>
-      {/* TODO: help text */}
+      {!!help && (
+        <Typography
+          fontStyle="thin"
+          fontSize="12px"
+          fg={(colors) => colors.mono[600]}
+        >
+          {help}
+        </Typography>
+      )}
     </Flex.Column>
   );
 }

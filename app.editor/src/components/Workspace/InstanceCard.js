@@ -10,7 +10,10 @@ import {
   Tooltip,
   Typography,
 } from 'pkg.admin-components';
-import { selectComponent } from '@editor/features/assembly';
+import {
+  duplicateComponent,
+  selectComponent,
+} from '@editor/features/assembly';
 import { setActiveComponentId } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
@@ -81,6 +84,10 @@ export default function InstanceCard(props) {
                 color={(colors) => colors.mono[500]}
                 hoverColor={(colors) => colors.mono[900]}
                 aria-label="Duplicate component"
+                onClick={() => dispatch(duplicateComponent({
+                  pageId: activePageId,
+                  componentId,
+                }))}
               />
             </Tooltip>
             <Tooltip copy="Remove component" point={Tooltip.UP_RIGHT_ALIGNED}>

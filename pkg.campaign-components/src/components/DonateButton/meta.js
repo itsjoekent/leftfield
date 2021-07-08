@@ -7,15 +7,14 @@ import {
   DONATE_FORM_TRAIT,
   DONATE_BUTTON_TRAIT,
 } from '@cc/constants/traits';
-import TextStyle, { FONT_SIZE_ATTRIBUTE } from '@cc/styles/text';
+import ButtonStyle from '@cc/styles/button';
 
 export const TAG = 'DonateButton';
 
 export const AMOUNT_PROPERTY = 'AMOUNT_PROPERTY';
 export const LABEL_PROPERTY = 'LABEL_PROPERTY';
 
-export const BUTTON_TEXT_STYLE = 'BUTTON_TEXT_STYLE';
-export const BUTTON_HOVER_TEXT_STYLE = 'BUTTON_HOVER_TEXT_STYLE';
+export const BUTTON_STYLE = 'BUTTON_STYLE';
 
 const DonateButtonMeta = {
   tag: TAG,
@@ -53,15 +52,10 @@ const DonateButtonMeta = {
   ],
   styles: [
     {
-      id: BUTTON_TEXT_STYLE,
+      id: BUTTON_STYLE,
       label: 'Button Text Style',
-      type: TextStyle.key,
-      attributes: TextStyle.attributes({
-        [FONT_SIZE_ATTRIBUTE]: {
-          incrementBy: 2,
-          max: 52,
-        },
-      }),
+      type: ButtonStyle.key,
+      attributes: ButtonStyle.attributes(),
     },
   ],
 };

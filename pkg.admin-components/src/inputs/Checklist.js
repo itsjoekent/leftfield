@@ -52,17 +52,17 @@ export default function Checklist(props) {
       fullWidth
     >
       {options.map((option) => {
-        const isSelected = value === option.key;
+        const isSelected = value === option.value;
 
         return (
           <Option
-            key={option.key}
+            key={option.value}
             id={`${fieldId}-${value}`}
             role="option"
             aria-selected={`${isSelected}`}
             isSelected={isSelected}
             isDisabled={false}
-            onClick={() => setValue(option.key)}
+            onClick={() => setValue(option.value)}
           >
             <DoneIcon
               color={isSelected ? theme.colors.mono[900] : theme.colors.mono[100]}
@@ -70,7 +70,7 @@ export default function Checklist(props) {
               height={16}
             />
             <Typography
-              id={`${fieldId}-${option.key}`}
+              id={`${fieldId}-${option.value}`}
               fontStyle="regular"
               fontSize="18px"
               fg={(colors) => isSelected ? colors.mono[900] : colors.mono[500]}

@@ -14,6 +14,7 @@ import {
 import {
   selectCampaignTheme,
   selectComponentStyleAttributeForDeviceCascading,
+  setComponentInstanceStyle,
   setComponentInstanceCustomStyle,
   setComponentInstanceThemeStyle,
 } from '@editor/features/assembly';
@@ -84,7 +85,23 @@ export default function ColorPicker(props) {
     isColorPickerOpen,
   ]);
 
+  function resetColor() {
+    dispatch(setComponentInstanceStyle({
+      pageId: activePageId,
+      componentId: activeComponentId,
+      styleId,
+      attributeId,
+      device: targetDevice,
+      value: {},
+    }));
+  }
+
   function onThemeClick(colorId) {
+    if (get(attributeValue, 'inheritFromTheme') === colorId) {
+      resetColor();
+      return;
+    }
+
     dispatch(setComponentInstanceThemeStyle({
       pageId: activePageId,
       componentId: activeComponentId,
@@ -137,7 +154,14 @@ export default function ColorPicker(props) {
               aria-label={`Use custom color`}
               isSelected={isCustom}
               colorValue={localCustomColor}
-              onClick={() => setCustomColor(localCustomColor)}
+              onClick={() => {
+                if (isCustom) {
+                  resetColor();
+                  return;
+                }
+
+                setCustomColor(localCustomColor);
+              }}
             >
               <Swatch colorValue={localCustomColor} />
             </ColorButton>
