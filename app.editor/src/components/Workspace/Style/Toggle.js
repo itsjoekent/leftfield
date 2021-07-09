@@ -1,7 +1,7 @@
 import React from 'react';
 import { get } from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
-import { Flex, Inputs, Typography } from 'pkg.admin-components';
+import { Inputs } from 'pkg.admin-components';
 import { Responsive } from 'pkg.campaign-components';
 import {
   selectComponentStyleAttributeForDeviceCascading,

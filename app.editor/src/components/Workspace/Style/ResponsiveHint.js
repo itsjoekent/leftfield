@@ -48,11 +48,15 @@ export default function ResponsiveHint(props) {
     targetDevice,
   ));
 
+  const hasValue = !!get(attributeValue, 'inheritFromTheme', null)
+    || !!get(attributeValue, 'custom', null);
+
   const cascadedFrom = get(attributeValue, 'cascadedFrom', null);
   const isCascading = !!cascadedFrom
     || (notResponsive && device !== Responsive.MOBILE_DEVICE);
 
-  const canReset = !isCascading
+  const canReset = !!hasValue
+    && !isCascading
     && !notResponsive
     && device !== Responsive.MOBILE_DEVICE;
 
