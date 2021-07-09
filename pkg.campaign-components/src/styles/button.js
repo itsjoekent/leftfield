@@ -37,6 +37,8 @@ export const HOVER_TEXT_COLOR_ATTRIBUTE = 'HOVER_TEXT_COLOR_ATTRIBUTE';
 export const FOCUS_OUTLINE_COLOR_ATTRIBUTE = 'FOCUS_OUTLINE_COLOR_ATTRIBUTE';
 export const FOCUS_OUTLINE_WIDTH_ATTRIBUTE = 'FOCUS_OUTLINE_WIDTH_ATTRIBUTE';
 
+export const TRANSITION_ATTRIBUTE = 'TRANSITION_ATTRIBUTE';
+
 const ButtonStyle = {
   key: KEY,
   attributes: (textOverrides, boxOverrides) => ([
@@ -133,7 +135,21 @@ const ButtonStyle = {
         },
       },
     },
-    // TODO: Hover transition
+    {
+      id: TRANSITION_ATTRIBUTE,
+      label: 'Hover/Focus Transition',
+      help: 'When the button changes on hover (or focus), this defines how long it takes to transition from one color to another',
+      type: NUMBER_RANGE_TYPE,
+      notResponsive: true,
+      min: 0,
+      max: 10,
+      incrementBy: 1,
+      defaultValue: {
+        [MOBILE_DEVICE]: {
+          custom: 4,
+        },
+      },
+    },
     ...DisplayStyle.attributes(),
   ]),
   styling: ({ campaignTheme, styles }) => css`
@@ -161,6 +177,9 @@ const ButtonStyle = {
     text-align: center;
     cursor: pointer;
 
+    transition: all ${getStyleValue(styles, TRANSITION_ATTRIBUTE) / 10}s;
+    transition-property: background-color, border, box-shadow, color;
+
     &:hover, &:active {
       ${applyStyleIf(
         getStyleValue(styles, HOVER_BACKGROUND_COLOR_ATTRIBUTE, campaignTheme, 'colors'),
@@ -170,6 +189,11 @@ const ButtonStyle = {
       ${applyStyleIf(
         getStyleValue(styles, HOVER_BORDER_COLOR_ATTRIBUTE, campaignTheme, 'colors'),
         (styleValue) => css`border-color: ${styleValue};`,
+      )}
+
+      ${applyStyleIf(
+        getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, campaignTheme, 'colors'),
+        (styleValue) => css`color: ${styleValue};`,
       )}
 
       ${applyStyleIf(

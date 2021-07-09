@@ -10,7 +10,7 @@ import {
   MOBILE_DEVICE,
   TABLET_DEVICE,
 } from '@cc/constants/responsive';
-import applyStyleIf from '@cc/utils/applyStyleIf';
+import applyStyleIf, { notZero } from '@cc/utils/applyStyleIf';
 import { getDarkestCampaignThemeColor } from '@cc/utils/campaignThemeColorSelectors';
 import getStyleValue from '@cc/utils/getStyleValue';
 import getThemeLabels from '@cc/utils/getThemeLabels';
@@ -134,6 +134,7 @@ const TextStyle = {
       ${applyStyleIf(
         getStyleValue(styles, FONT_SIZE_ATTRIBUTE, null, null, TABLET_DEVICE),
         (styleValue) => css`font-size: ${styleValue}px;`,
+        notZero,
       )}
       ${applyStyleIf(
         getStyleValue(
@@ -148,6 +149,7 @@ const TextStyle = {
       ${applyStyleIf(
         getStyleValue(styles, LETTER_SPACING_ATTRIBUTE, null, null, TABLET_DEVICE),
         (styleValue) => css`letter-spacing: ${styleValue}px;`,
+        notZero,
       )}
       ${applyStyleIf(
         getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE, null, null, TABLET_DEVICE),
@@ -163,6 +165,7 @@ const TextStyle = {
       ${applyStyleIf(
         getStyleValue(styles, FONT_SIZE_ATTRIBUTE, null, null, DESKTOP_DEVICE),
         (styleValue) => css`font-size: ${styleValue}px;`,
+        notZero,
       )}
       ${applyStyleIf(
         getStyleValue(
@@ -177,6 +180,7 @@ const TextStyle = {
       ${applyStyleIf(
         getStyleValue(styles, LETTER_SPACING_ATTRIBUTE, null, null, DESKTOP_DEVICE),
         (styleValue) => css`letter-spacing: ${styleValue}px;`,
+        notZero,
       )}
       ${applyStyleIf(
         getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE, null, null, DESKTOP_DEVICE),

@@ -10,7 +10,7 @@ import {
   TABLET_DEVICE,
 } from '@cc/constants/responsive';
 import { getLightestCampaignThemeColor } from '@cc/utils/campaignThemeColorSelectors';
-import applyStyleIf from '@cc/utils/applyStyleIf';
+import applyStyleIf, { notZero } from '@cc/utils/applyStyleIf';
 import getStyleValue from '@cc/utils/getStyleValue';
 
 export const KEY = 'BOX_STYLE';
@@ -115,11 +115,13 @@ const BoxStyle = {
         border-style: solid;
         border-width: ${styleValue}px;
       `,
+      notZero,
     )}
 
     ${applyStyleIf(
       getStyleValue(styles, BORDER_RADIUS_ATTRIBUTE),
       (styleValue) => css`border-radius: ${styleValue}px;`,
+      notZero,
     )}
 
     ${applyStyleIf(
@@ -128,6 +130,7 @@ const BoxStyle = {
         padding-left: ${styleValue}px;
         padding-right: ${styleValue}px;
       `,
+      notZero,
     )}
 
     ${applyStyleIf(
@@ -136,6 +139,7 @@ const BoxStyle = {
         padding-top: ${styleValue}px;
         padding-bottom: ${styleValue}px;
       `,
+      notZero,
     )}
 
     @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
@@ -147,6 +151,7 @@ const BoxStyle = {
       ${applyStyleIf(
         getStyleValue(styles, BORDER_COLOR_ATTRIBUTE, campaignTheme, 'colors', TABLET_DEVICE),
         (styleValue) => css`border-color: ${styleValue};`,
+        notZero,
       )}
 
       ${applyStyleIf(
@@ -155,11 +160,13 @@ const BoxStyle = {
           border-style: solid;
           border-width: ${styleValue}px;
         `,
+        notZero,
       )}
 
       ${applyStyleIf(
         getStyleValue(styles, BORDER_RADIUS_ATTRIBUTE, null, null, TABLET_DEVICE),
         (styleValue) => css`border-radius: ${styleValue}px;`,
+        notZero,
       )}
 
       ${applyStyleIf(
@@ -168,6 +175,7 @@ const BoxStyle = {
           padding-left: ${styleValue}px;
           padding-right: ${styleValue}px;
         `,
+        notZero,
       )}
 
       ${applyStyleIf(
@@ -176,6 +184,7 @@ const BoxStyle = {
           padding-top: ${styleValue}px;
           padding-bottom: ${styleValue}px;
         `,
+        notZero,
       )}
     }
 
@@ -196,11 +205,13 @@ const BoxStyle = {
           border-style: solid;
           border-width: ${styleValue}px;
         `,
+        notZero,
       )}
 
       ${applyStyleIf(
         getStyleValue(styles, BORDER_RADIUS_ATTRIBUTE, null, null, DESKTOP_DEVICE),
         (styleValue) => css`border-radius: ${styleValue}px;`,
+        notZero,
       )}
 
       ${applyStyleIf(
@@ -209,6 +220,7 @@ const BoxStyle = {
           padding-left: ${styleValue}px;
           padding-right: ${styleValue}px;
         `,
+        notZero,
       )}
 
       ${applyStyleIf(
@@ -217,6 +229,7 @@ const BoxStyle = {
           padding-top: ${styleValue}px;
           padding-bottom: ${styleValue}px;
         `,
+        notZero,
       )}
     }
   `,

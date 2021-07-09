@@ -1,3 +1,7 @@
+export function notZero(styleValue) {
+  return styleValue !== null && styleValue !== 0;
+}
+
 export default function applyStyleIf(
   styleValue = null,
   style = () => {},
