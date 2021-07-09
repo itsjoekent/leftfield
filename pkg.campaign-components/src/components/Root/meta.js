@@ -6,10 +6,13 @@ import {
   OPEN_GRID_TRAIT,
   SECTION_TRAIT,
 } from '@cc/constants/traits';
+import BoxStyle from '@cc/styles/box';
 
 export const TAG = 'Root';
 
 export const SECTIONS_SLOT = 'SECTIONS_SLOT';
+
+export const BACKGROUND_STYLE = 'BACKGROUND_STYLE';
 
 const RootMeta = {
   tag: TAG,
@@ -34,13 +37,13 @@ const RootMeta = {
       ],
     },
   ],
-  // styles: [
-  //   {
-  //     id: ROOT_STYLE,
-  //     label: 'Grid Style',
-  //     type: SIMPLE_LAYOUT_STYLE_TYPE,
-  //   },
-  // ],
+  styles: [
+    {
+      id: BACKGROUND_STYLE,
+      label: 'Page Background',
+      attributes: BoxStyle.attributes(),
+    },
+  ],
 };
 
 export default RootMeta;

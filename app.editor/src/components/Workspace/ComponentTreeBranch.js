@@ -66,7 +66,7 @@ export default function ComponentTreeBranch(props) {
         {name}
       </Typography>
       {hasSlots && displaySlots.map((slotMeta) => (
-        <Flex.Column>
+        <Flex.Column key={slotMeta.id}>
           <Typography
             fontStyle="medium"
             fontSize="12px"

@@ -63,6 +63,7 @@ const Container = styled.button`
   cursor: default;
   border: none;
   border-radius: ${(props) => props.theme.rounded.default};
+  overflow: hidden;
   background: none;
 
   ${(props) => props.isDisabled && css`

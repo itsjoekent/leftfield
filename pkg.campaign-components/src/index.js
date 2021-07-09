@@ -10,4 +10,6 @@ export * as Responsive from '@cc/constants/responsive';
 
 export * as SiteSettings from '@cc/constants/settings';
 
+export { default as GlobalReset } from '@cc/GlobalReset';
+
 export { default as theme } from '@cc/theme';

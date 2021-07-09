@@ -4,6 +4,7 @@ import makeValidationError from '@cc/utils/makeValidationError';
 import {
   COLOR_TYPE,
   CHECKLIST_TYPE,
+  NUMBER_RANGE_TYPE,
   TOGGLE_TYPE,
 } from '@cc/constants/property-types';
 import { US_ENGLISH_LANG } from '@cc/constants/languages';
@@ -58,6 +59,8 @@ export const WIDE_DESKTOP_DONATE_BUTTONS_SLOT = 'WIDE_DESKTOP_DONATE_BUTTONS_SLO
 
 export const DISCLAIMER_TEXT_STYLE = 'DISCLAIMER_TEXT_STYLE';
 export const GRID_STYLE = 'GRID_STYLE';
+
+export const DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE = 'DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE';
 
 const ActBlueDonateFormMeta = {
   tag: TAG,
@@ -171,16 +174,31 @@ const ActBlueDonateFormMeta = {
       id: DISCLAIMER_TEXT_STYLE,
       label: 'Disclaimer Text Style',
       type: TextStyle.key,
-      // TODO: Add attribute for top margin
-      attributes: TextStyle.attributes({
-        [FONT_SIZE_ATTRIBUTE]: {
-          defaultValue: {
-            [MOBILE_DEVICE]: {
-              custom: 12,
+      attributes: [
+        ...TextStyle.attributes({
+          [FONT_SIZE_ATTRIBUTE]: {
+            defaultValue: {
+              [MOBILE_DEVICE]: {
+                custom: 12,
+              },
             },
           },
-        },
-      }),
+        }),
+        {
+          id: DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE,
+          label: 'Express Disclaimer Top Spacing',
+          help: 'Space between the disclaimer copy and the donate button grid',
+          type: NUMBER_RANGE_TYPE,
+          min: 2,
+          max: 24,
+          incrementBy: 2,
+          defaultValue: {
+            [MOBILE_DEVICE]: {
+              custom: 6,
+            },
+          },
+        }
+      ],
       conditional: ({ properties }) => !!getPropertyValue(properties, ENABLE_EXPRESS_DONATE_PROPERTY),
     },
   ],

@@ -4,6 +4,7 @@ import { PropertyTypes } from 'pkg.campaign-components';
 import WorkspaceStyleColorPicker from '@editor/components/Workspace/Style/ColorPicker';
 import WorkspaceStyleNumberRange from '@editor/components/Workspace/Style/NumberRange';
 import WorkspaceStyleSelector from '@editor/components/Workspace/Style/Selector';
+import WorkspaceStyleToggle from '@editor/components/Workspace/Style/Toggle';
 
 export default function Attribute(props) {
   const {
@@ -28,6 +29,13 @@ export default function Attribute(props) {
 
     case PropertyTypes.SELECT_TYPE: return (
       <WorkspaceStyleSelector
+        styleId={styleId}
+        attribute={attribute}
+      />
+    );
+
+    case PropertyTypes.TOGGLE_TYPE: return (
+      <WorkspaceStyleToggle
         styleId={styleId}
         attribute={attribute}
       />

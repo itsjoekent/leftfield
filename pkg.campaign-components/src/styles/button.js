@@ -14,6 +14,7 @@ import BoxStyle, {
   PADDING_HORIZONTAL_ATTRIBUTE,
   PADDING_VERTICAL_ATTRIBUTE,
 } from '@cc/styles/box';
+import DisplayStyle from '@cc/styles/display';
 import TextStyle, {
   COLOR_ATTRIBUTE,
   FONT_SIZE_ATTRIBUTE,
@@ -64,8 +65,14 @@ const ButtonStyle = {
         max: 24,
       },
     }),
+    ...DisplayStyle.attributes(),
   ]),
   styling: ({ campaignTheme, styles }) => css`
+    ${DisplayStyle.styling({
+      campaignTheme,
+      styles,
+    })}
+
     ${TextStyle.styling({
       campaignTheme,
       styles,

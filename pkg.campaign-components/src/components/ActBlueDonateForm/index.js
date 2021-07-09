@@ -1,11 +1,12 @@
 import React from 'react';
-import styled, { ThemeProvider } from 'styled-components';
+import styled, { css } from 'styled-components';
 import get from 'lodash.get';
 import {
   ONE_BUTTON_LAYOUT,
   MULTI_BUTTON_LAYOUT,
 
   DISCLAIMER_TEXT_STYLE,
+  DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE,
   GRID_STYLE,
 
   LAYOUT_PROPERTY,
@@ -20,12 +21,22 @@ import {
   WIDE_MOBILE_DONATE_BUTTONS_SLOT,
   WIDE_DESKTOP_DONATE_BUTTONS_SLOT,
 } from '@cc/components/ActBlueDonateForm/meta';
-import { initialFundraisingState, FundraisingContext } from '@cc/context/Fundraising';
+import {
+  DESKTOP_DEVICE,
+  MOBILE_DEVICE,
+  TABLET_DEVICE,
+} from '@cc/constants/responsive';
+import {
+  initialFundraisingState,
+  FundraisingContext,
+} from '@cc/context/Fundraising';
 import useLanguage from '@cc/hooks/useLanguage';
 import BoxStyle from '@cc/styles/box';
-import GridStyle from '@cc/styles/grid';
+import GridStyle, { COLUMNS_ATTRIBUTE } from '@cc/styles/grid';
 import TextStyle from '@cc/styles/text';
+import applyStyleIf from '@cc/utils/applyStyleIf';
 import getPropertyValue from '@cc/utils/getPropertyValue';
+import getStyleValue from '@cc/utils/getStyleValue';
 import makeActBlueLink from '@cc/utils/makeActBlueLink';
 import mapSourceToRefcode from '@cc/utils/makeActBlueLink';
 
@@ -69,14 +80,6 @@ export default function ActBlueDonateForm(props) {
     buildUrl,
   };
 
-  const localTheme = (theme) => ({
-    ...theme,
-    properties,
-    slots,
-    styles,
-    language,
-  });
-
   if (getPropertyValue(properties, LAYOUT_PROPERTY) === ONE_BUTTON_LAYOUT) {
     return (
       <FundraisingContext.Provider value={fundraisingState}>
@@ -85,50 +88,73 @@ export default function ActBlueDonateForm(props) {
     );
   }
 
+  const gridStyles = get(styles, GRID_STYLE, {});
+  const textDisclaimerStyles = get(styles, DISCLAIMER_TEXT_STYLE, {});
+
   return (
-    <ThemeProvider theme={localTheme}>
-      <FundraisingContext.Provider value={fundraisingState}>
-        {!!getPropertyValue(properties, ENABLE_EXPRESS_DONATE_PROPERTY) ? (
-          <ExpressFormSpacing>
-            <FormGrid>
-              {get(slots, DONATE_BUTTONS_SLOT, null)}
-            </FormGrid>
-            <Disclaimer>
-              {getPropertyValue(properties, EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY)}
-            </Disclaimer>
-          </ExpressFormSpacing>
-        ) : (
-          <FormGrid>
-            {get(slots, DONATE_BUTTONS_SLOT, null)}
-          </FormGrid>
+    <FundraisingContext.Provider value={fundraisingState}>
+      <FormGrid gridStyles={gridStyles}>
+        {get(slots, DONATE_BUTTONS_SLOT, null)}
+        {!!getPropertyValue(properties, ENABLE_EXPRESS_DONATE_PROPERTY) && (
+          <Disclaimer
+            gridStyles={gridStyles}
+            textDisclaimerStyles={textDisclaimerStyles}
+          >
+            {getPropertyValue(properties, EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY)}
+          </Disclaimer>
         )}
-      </FundraisingContext.Provider>
-    </ThemeProvider>
+      </FormGrid>
+    </FundraisingContext.Provider>
   );
 }
-
-const ExpressFormSpacing = styled.div`
-  display: flex;
-  flex-direction: column;
-  grid-gap: 16px;
-`;
 
 const Disclaimer = styled.p`
   ${(props) => TextStyle.styling({
     campaignTheme: props.theme.campaign,
-    styles: get(props, `theme.styles.${DISCLAIMER_TEXT_STYLE}`, {}),
+    styles: props.textDisclaimerStyles,
   })}
 
   text-align: center;
+
+  grid-column: span ${(props) => getStyleValue(props.gridStyles, COLUMNS_ATTRIBUTE)};
+  margin-top: ${(props) => getStyleValue(props.textDisclaimerStyles, DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE)}px;
+
+  @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
+    ${(props) => css`
+      ${applyStyleIf(
+        getStyleValue(props.gridStyles, COLUMNS_ATTRIBUTE, null, null, TABLET_DEVICE),
+        (styleValue) => css`grid-column: span ${styleValue};`,
+      )}
+
+      ${applyStyleIf(
+        getStyleValue(props.textDisclaimerStyles, DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE, null, null, TABLET_DEVICE),
+        (styleValue) => css`margin-top: ${styleValue}px;`,
+      )}
+    `}
+  }
+
+  @media (${(props) => props.theme.deviceBreakpoints.desktopSmallUp}) {
+    ${(props) => css`
+      ${applyStyleIf(
+        getStyleValue(props.gridStyles, COLUMNS_ATTRIBUTE, null, null, DESKTOP_DEVICE),
+        (styleValue) => css`grid-column: span ${styleValue};`,
+      )}
+
+      ${applyStyleIf(
+        getStyleValue(props.textDisclaimerStyles, DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE, null, null, DESKTOP_DEVICE),
+        (styleValue) => css`margin-top: ${styleValue}px;`,
+      )}
+    `}
+  }
 `;
 
 const FormGrid = styled.div`
   ${(props) => GridStyle.styling({
-    styles: get(props, `theme.styles.${GRID_STYLE}`, {}),
+    styles: props.gridStyles,
   })}
 
   ${(props) => BoxStyle.styling({
     campaignTheme: props.theme.campaign,
-    styles: get(props, `theme.styles.${GRID_STYLE}`, {}),
+    styles: props.gridStyles,
   })}
 `;

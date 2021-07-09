@@ -30,6 +30,17 @@ const TextStyle = {
   key: KEY,
   attributes: (overrides) => ([
     {
+      id: COLOR_ATTRIBUTE,
+      label: 'Text Color',
+      type: COLOR_TYPE,
+      dynamicDefaultThemeValue: ({ campaignTheme }) => ({
+        [MOBILE_DEVICE]: {
+          inheritFromTheme: getDarkestCampaignThemeColor(campaignTheme),
+        },
+      }),
+      ...(get(overrides, COLOR_ATTRIBUTE, {})),
+    },
+    {
       id: FONT_SIZE_ATTRIBUTE,
       label: 'Font size',
       type: NUMBER_RANGE_TYPE,
@@ -92,15 +103,18 @@ const TextStyle = {
       ...(get(overrides, LETTER_SPACING_ATTRIBUTE, {})),
     },
     {
-      id: COLOR_ATTRIBUTE,
-      label: 'Text Color',
-      type: COLOR_TYPE,
-      dynamicDefaultThemeValue: ({ campaignTheme }) => ({
+      id: LINE_HEIGHT_ATTRIBUTE,
+      label: 'Line Height',
+      type: NUMBER_RANGE_TYPE,
+      min: 0.8,
+      max: 3,
+      incrementBy: 0.1,
+      defaultValue: {
         [MOBILE_DEVICE]: {
-          inheritFromTheme: getDarkestCampaignThemeColor(campaignTheme),
+          custom: 1.2,
         },
-      }),
-      ...(get(overrides, COLOR_ATTRIBUTE, {})),
+      },
+      ...(get(overrides, LINE_HEIGHT_ATTRIBUTE, {})),
     },
   ]),
   styling: ({ campaignTheme, styles }) => css`
@@ -113,6 +127,7 @@ const TextStyle = {
       `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
     )};
     letter-spacing: ${getStyleValue(styles, LETTER_SPACING_ATTRIBUTE)}px;
+    line-height: ${getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE)};
     color: ${getStyleValue(styles, COLOR_ATTRIBUTE, campaignTheme, 'colors')};
 
     @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
@@ -133,6 +148,10 @@ const TextStyle = {
       ${applyStyleIf(
         getStyleValue(styles, LETTER_SPACING_ATTRIBUTE, null, null, TABLET_DEVICE),
         (styleValue) => css`letter-spacing: ${styleValue}px;`,
+      )}
+      ${applyStyleIf(
+        getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE, null, null, TABLET_DEVICE),
+        (styleValue) => css`line-height: ${styleValue};`,
       )}
       ${applyStyleIf(
         getStyleValue(styles, COLOR_ATTRIBUTE, campaignTheme, 'colors', TABLET_DEVICE),
@@ -158,6 +177,10 @@ const TextStyle = {
       ${applyStyleIf(
         getStyleValue(styles, LETTER_SPACING_ATTRIBUTE, null, null, DESKTOP_DEVICE),
         (styleValue) => css`letter-spacing: ${styleValue}px;`,
+      )}
+      ${applyStyleIf(
+        getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE, null, null, DESKTOP_DEVICE),
+        (styleValue) => css`line-height: ${styleValue};`,
       )}
       ${applyStyleIf(
         getStyleValue(styles, COLOR_ATTRIBUTE, campaignTheme, 'colors', DESKTOP_DEVICE),

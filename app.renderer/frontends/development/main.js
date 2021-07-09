@@ -3,7 +3,11 @@ import { render } from 'react-dom';
 import { ThemeProvider } from 'styled-components';
 import get from 'lodash.get';
 import Builder from 'pkg.builder';
-import { Components, theme } from 'pkg.campaign-components';
+import {
+  Components,
+  GlobalReset,
+  theme,
+} from 'pkg.campaign-components';
 
 window.addEventListener('message', (event) => {
   // if (event.origin !== "http://example.org:8080") {
@@ -47,6 +51,7 @@ window.addEventListener('message', (event) => {
 
       render((
         <ThemeProvider theme={theme}>
+          <GlobalReset />
           {Builder(React.createElement, page)}
         </ThemeProvider>
       ), document.getElementById('root'));
