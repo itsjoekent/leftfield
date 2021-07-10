@@ -9,7 +9,7 @@ import PreviewSelector from '@editor/components/PreviewSelector';
 function App() {
   return (
     <React.Fragment>
-      <Page fullWidth fullViewportHeight>
+      <Page fullWidth minHeight="100vh">
         <Flex.Row
           justify="space-between"
           padding="12px"
@@ -28,12 +28,12 @@ function App() {
           padding="24px"
           minHeight="0"
         >
-          <LeftSide>
+          <WorkspaceContainer as="section">
             <Workspace />
-          </LeftSide>
-          <RightSide>
+          </WorkspaceContainer>
+          <PreviewContainer as="section">
             <Preview />
-          </RightSide>
+          </PreviewContainer>
         </Flex.Row>
       </Page>
       <Modal />
@@ -46,14 +46,23 @@ const Page = styled(Flex.Column)`
   background-size: 25px 25px;
 `;
 
-const LeftSide = styled.section`
+const LeftSide = styled.div`
   width: calc(33.33% - 12px);
   height: 100%;
 `;
 
-const RightSide = styled.section`
+const RightSide = styled.div`
   width: calc(66.66% - 12px);
   height: 100%;
+`;
+
+const WorkspaceContainer = styled(LeftSide)`
+  height: calc(100vh - 96px);
+`;
+
+const PreviewContainer = styled(RightSide)`
+  min-height: 100%;
+  height: auto;
 `;
 
 export default App;
