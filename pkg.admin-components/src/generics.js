@@ -99,6 +99,7 @@ export const shadow = css`
 export const size = css`
   ${({ fullHeight }) => !!fullHeight && css`height: 100%;`}
   ${({ fullWidth }) => !!fullWidth && css`width: 100%;`}
+  ${({ fullViewportHeight }) => !!fullViewportHeight && css`height: 100vh;`}
 
   ${({ flexGrow }) => !!flexGrow && css`flex-grow: 1;`}
 

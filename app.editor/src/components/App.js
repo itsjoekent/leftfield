@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Flex } from 'pkg.admin-components';
 import Modal from '@editor/components/Modal';
 import Workspace from '@editor/components/Workspace';
 import Preview from '@editor/components/Preview';
@@ -8,45 +9,41 @@ import PreviewSelector from '@editor/components/PreviewSelector';
 function App() {
   return (
     <React.Fragment>
-      <Page>
-        <SectionLayout>
+      <Page fullWidth fullViewportHeight>
+        <Flex.Row
+          justify="space-between"
+          padding="12px"
+          bg={(colors) => colors.mono[100]}
+          shadow={(shadows) => shadows.light}
+        >
           <LeftSide />
           <RightSide>
             <PreviewSelector />
           </RightSide>
-        </SectionLayout>
-        <PanelLayout as="main">
+        </Flex.Row>
+        <Flex.Row
+          as="main"
+          justify="space-between"
+          flexGrow
+          padding="24px"
+          minHeight="0"
+        >
           <LeftSide>
             <Workspace />
           </LeftSide>
           <RightSide>
             <Preview />
           </RightSide>
-        </PanelLayout>
+        </Flex.Row>
       </Page>
       <Modal />
     </React.Fragment>
   );
 }
 
-const Page = styled.div`
-  display: flex;
-  flex-direction: column;
-  grid-gap: 24px;
-  width: 100%;
-  height: 100vh;
-  padding: 24px;
-`;
-
-const SectionLayout = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-`;
-
-const PanelLayout = styled(SectionLayout)`
-  flex-grow: 1;
-  min-height: 0;
+const Page = styled(Flex.Column)`
+  background: radial-gradient(${(props) => props.theme.colors.purple[200]} 1px, transparent 1px);
+  background-size: 25px 25px;
 `;
 
 const LeftSide = styled.section`
