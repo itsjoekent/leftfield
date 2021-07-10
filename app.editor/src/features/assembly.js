@@ -168,18 +168,19 @@ export const assemblySlice = createSlice({
       } = action.payload;
 
       set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value.${language}`, value);
+      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.inheritedFrom.${language}`, null);
     },
-    setComponentInstancePropertyStorage: (state, action) => {
+    setComponentInstanceInheritedFrom: (state, action) => {
       const {
         pageId,
         componentId,
         propertyId,
-        key,
         value,
         language = Languages.US_ENGLISH_LANG,
       } = action.payload;
 
-      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.storage.${key}.${language}`, value);
+      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.inheritedFrom.${language}`, value);
+      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value.${language}`, null);
     },
     setComponentInstanceStyle: (state, action) => {
       const {
@@ -226,14 +227,14 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value`, {});
     },
-    wipePropertyStorage: (state, action) => {
+    wipePropertyInheritedFrom: (state, action) => {
       const {
         pageId,
         componentId,
         propertyId,
       } = action.payload;
 
-      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.storage`, {});
+      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.inheritedFrom`, {});
     },
     wipeSlot: (state, action) => {
       const {
@@ -263,12 +264,12 @@ export const {
   removeChildComponentInstance,
   resetComponentInstanceStyleAttribute,
   setComponentInstancePropertyValue,
-  setComponentInstancePropertyStorage,
+  setComponentInstanceInheritedFrom,
   setComponentInstanceStyle,
   setComponentInstanceCustomStyle,
   setComponentInstanceThemeStyle,
   wipePropertyValue,
-  wipePropertyStorage,
+  wipePropertyInheritedFrom,
   wipeSlot,
 } = assemblySlice.actions;
 
@@ -411,20 +412,20 @@ export function selectComponentPropertyValue(pageId, componentId, propertyId, la
   return _selectComponentPropertyValue;
 }
 
-export function selectComponentPropertyStorage(pageId, componentId, propertyId) {
-  function _selectComponentPropertyStorage(state) {
-    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.storage`, {});
+export function selectComponentPropertyInheritedFrom(pageId, componentId, propertyId) {
+  function _selectComponentPropertyInheritedFrom(state) {
+    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.inheritedFrom`, {});
   }
 
-  return _selectComponentPropertyStorage;
+  return _selectComponentPropertyInheritedFrom;
 }
 
-export function selectComponentPropertyStorageValue(pageId, componentId, propertyId, key, language = Languages.US_ENGLISH_LANG) {
-  function _selectComponentPropertyStorageValue(state) {
-    return get(selectComponentPropertyStorage(pageId, componentId, propertyId)(state), `${key}.${language}`, null);
+export function selectComponentPropertyInheritedFromForLanguage(pageId, componentId, propertyId, language = Languages.US_ENGLISH_LANG) {
+  function _selectComponentPropertyInheritedFromForLanguage(state) {
+    return get(selectComponentPropertyInheritedFrom(pageId, componentId, propertyId)(state), language, null);
   }
 
-  return _selectComponentPropertyStorageValue;
+  return _selectComponentPropertyInheritedFromForLanguage;
 }
 
 export function selectComponentStyles(pageId, componentId) {

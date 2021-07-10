@@ -57,7 +57,7 @@ export default function Preview() {
           const property = find(properties, { id: propertyId });
 
           const inheritFromSetting = get(property, 'inheritFromSetting', null);
-          const inheritedFrom = get(pagePreview, `components.${componentId}.properties.${propertyId}.storage.inheritedFrom`, {});
+          const inheritedFrom = get(pagePreview, `components.${componentId}.properties.${propertyId}.inheritedFrom`, {});
 
           if (!!inheritFromSetting && !!inheritedFrom) {
             Object.keys(inheritedFrom).forEach((language) => {

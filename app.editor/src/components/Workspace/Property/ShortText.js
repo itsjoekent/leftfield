@@ -4,9 +4,10 @@ import { useSelector } from 'react-redux';
 import { useFormField } from 'pkg.form-wizard';
 import { Languages } from 'pkg.campaign-components';
 import { Inputs } from 'pkg.admin-components';
-import { selectComponentPropertyStorageValue } from '@editor/features/assembly';
+import { selectComponentPropertyInheritedFromForLanguage } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useGetSetting from '@editor/hooks/useGetSetting';
+import isDefined from '@editor/utils/isDefined';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export default function ShortText(props) {
@@ -19,11 +20,10 @@ export default function ShortText(props) {
 
   const getSetting = useGetSetting(activePageId);
 
-  const inheritedFrom = useSelector(selectComponentPropertyStorageValue(
+  const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
     activeComponentId,
     propertyId,
-    'inheritedFrom',
     language,
   ));
 
@@ -43,7 +43,7 @@ export default function ShortText(props) {
     'aria-labelledby': `${propertyId}-${Languages.US_ENGLISH_LANG}`,
   };
 
-  if (!!inheritedFrom) {
+  if (isDefined(inheritedFrom)) {
     const value = pullTranslatedValue(
       getSetting(inheritedFrom, inheritFromSetting),
       language,

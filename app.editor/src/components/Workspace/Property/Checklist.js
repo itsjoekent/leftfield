@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useFormField } from 'pkg.form-wizard';
 import { Languages } from 'pkg.campaign-components';
 import { Inputs } from 'pkg.admin-components';
-import { selectComponentPropertyStorageValue } from '@editor/features/assembly';
+import { selectComponentPropertyInheritedFromForLanguage } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useDynamicEvaluation from '@editor/hooks/useDynamicEvaluation';
 
@@ -16,11 +16,10 @@ export default function Checklist(props) {
 
   const { evaluateDynamicPropertyAttribute } = useDynamicEvaluation(activePageId, activeComponentId);
 
-  const inheritedFrom = useSelector(selectComponentPropertyStorageValue(
+  const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
     activeComponentId,
     propertyId,
-    'inheritedFrom',
     language,
   ));
 

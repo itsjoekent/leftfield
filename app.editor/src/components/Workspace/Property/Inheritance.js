@@ -17,9 +17,9 @@ import {
   SETTING_LABELS,
 } from '@editor/constants/inheritance';
 import {
-  selectComponentPropertyStorageValue,
+  selectComponentPropertyInheritedFromForLanguage,
   selectPageTemplateId,
-  setComponentInstancePropertyStorage,
+  setComponentInstanceInheritedFrom,
   setComponentInstancePropertyValue,
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -40,11 +40,10 @@ export default function PropertyInheritance(props) {
   const templatedFrom = useSelector(selectPageTemplateId(activePageId));
   const hasTemplate = !!templatedFrom;
 
-  const inheritedFrom = useSelector(selectComponentPropertyStorageValue(
+  const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
     activeComponentId,
     propertyId,
-    'inheritedFrom',
     language,
   ));
 
@@ -70,16 +69,8 @@ export default function PropertyInheritance(props) {
                 language,
               );
 
+              console.log(value);
               setFieldValue(value);
-
-              dispatch(setComponentInstancePropertyStorage({
-                pageId: activePageId,
-                componentId: activeComponentId,
-                propertyId,
-                key: 'inheritedFrom',
-                value: null,
-                language,
-              }));
             }}
             IconComponent={Icons.RemoveFill}
             width={18}
@@ -113,18 +104,10 @@ export default function PropertyInheritance(props) {
     return function _onClick(event) {
       event.preventDefault();
 
-      dispatch(setComponentInstancePropertyValue({
+      dispatch(setComponentInstanceInheritedFrom({
         pageId: activePageId,
         componentId: activeComponentId,
         propertyId,
-        value: null,
-      }));
-
-      dispatch(setComponentInstancePropertyStorage({
-        pageId: activePageId,
-        componentId: activeComponentId,
-        propertyId,
-        key: 'inheritedFrom',
         value: value,
         language,
       }));

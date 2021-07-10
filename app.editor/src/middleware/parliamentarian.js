@@ -17,16 +17,17 @@ import {
   reorderChildComponentInstance,
   removeChildComponentInstance,
   setComponentInstancePropertyValue,
-  setComponentInstancePropertyStorage,
+  setComponentInstanceInheritedFrom,
   setComponentInstanceStyle,
   setComponentInstanceCustomStyle,
   setComponentInstanceThemeStyle,
   wipePropertyValue,
-  wipePropertyStorage,
+  wipePropertyInheritedFrom,
   wipeSlot,
 
   selectComponentProperties,
-  selectComponentPropertyStorage,
+  selectComponentPropertyInheritedFrom,
+  selectComponentPropertyInheritedFromForLanguage,
   selectComponentStyles,
   selectComponentTag,
   selectComponentsParentComponentId,
@@ -61,7 +62,7 @@ const TRIGGERS = [
   reorderChildComponentInstance.toString(),
   removeChildComponentInstance.toString(),
   setComponentInstancePropertyValue.toString(),
-  setComponentInstancePropertyStorage.toString(),
+  setComponentInstanceInheritedFrom.toString(),
   setComponentInstanceCustomStyle.toString(),
   setComponentInstanceThemeStyle.toString(),
   setActiveComponentId.toString(),
@@ -158,9 +159,15 @@ function runParliamentarian(
     const inheritFromSetting = get(property, 'inheritFromSetting', null);
 
     const getPropertyValue = (language) => get(componentPropertyValues, `${propertyId}.value.${language}`);
-    const getStorageValue = (storageKey, language) => get(componentPropertyValues, `${propertyId}.storage.${storageKey}.${language}`);
+
     const hasSetDefault = (language) => !!get(appliedPropertyDefaults, `${propertyId}.${language}`, false)
-      || !!(inheritFromSetting && isDefined(getStorageValue('inheritedFrom', language)))
+      || !!(inheritFromSetting && isDefined(
+        selectComponentPropertyInheritedFromForLanguage(
+          pageId,
+          componentId,
+          propertyId,
+          language,
+        )(state)))
       || isDefined(getPropertyValue(language));
 
     if (!!inheritFromSetting) {
@@ -185,11 +192,10 @@ function runParliamentarian(
         const inheritanceLevel = get(settingMatch(language), '[1]', null);
 
         if (!!inheritanceLevel && !hasSetDefault(language)) {
-          queueDispatch(setComponentInstancePropertyStorage({
+          queueDispatch(setComponentInstanceInheritedFrom({
             pageId,
             componentId,
             propertyId: property.id,
-            key: 'inheritedFrom',
             value: inheritanceLevel,
             language,
           }));
@@ -250,7 +256,7 @@ function runParliamentarian(
   });
 
   // @NOTE
-  // Step: Remove values & storage from hidden properties.
+  // Step: Remove values from hidden properties.
 
   hiddenProperties.forEach((property) => {
     const propertyId = property.id;
@@ -267,12 +273,12 @@ function runParliamentarian(
       }));
     }
 
-    const hasStorage = !!Object.keys(
-      selectComponentPropertyStorage(pageId, componentId, propertyId)(state)
+    const hasInheritedFrom = !!Object.keys(
+      selectComponentPropertyInheritedFrom(pageId, componentId, propertyId)(state)
     ).length;
 
-    if (hasStorage) {
-      queueDispatch(wipePropertyStorage({
+    if (hasInheritedFrom) {
+      queueDispatch(wipePropertyInheritedFrom({
         pageId,
         componentId,
         propertyId,

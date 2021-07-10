@@ -4,9 +4,10 @@ import { useSelector } from 'react-redux';
 import { useFormField } from 'pkg.form-wizard';
 import { Languages } from 'pkg.campaign-components';
 import { Inputs } from 'pkg.admin-components';
-import { selectComponentPropertyStorageValue } from '@editor/features/assembly';
+import { selectComponentPropertyInheritedFromForLanguage } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useGetSetting from '@editor/hooks/useGetSetting';
+import isDefined from '@editor/utils/isDefined';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 
@@ -19,11 +20,10 @@ export default function Toggle(props) {
 
   const getSetting = useGetSetting(activePageId);
 
-  const inheritedFrom = useSelector(selectComponentPropertyStorageValue(
+  const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
     activeComponentId,
     propertyId,
-    'inheritedFrom',
     language,
   ));
 
@@ -38,7 +38,7 @@ export default function Toggle(props) {
     value,
   } = field;
 
-  const finalValue = !inheritedFrom ? value : (
+  const finalValue = !isDefined(inheritedFrom) ? value : (
     pullTranslatedValue(
       getSetting(inheritedFrom, inheritFromSetting),
       language,
