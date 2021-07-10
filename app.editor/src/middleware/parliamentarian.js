@@ -8,7 +8,6 @@ import {
 } from 'pkg.campaign-components';
 import {
   SITE_SETTINGS,
-  TEMPLATE_SETTINGS,
   PAGE_SETTINGS,
 } from '@editor/constants/inheritance';
 import {
@@ -34,7 +33,6 @@ import {
   selectComponentsParentComponentSlotId,
   selectComponentSlot,
   selectPageSettings,
-  selectPageTemplateId,
   selectSiteSettings,
   selectCampaignTheme,
 } from '@editor/features/assembly';
@@ -101,7 +99,6 @@ function runParliamentarian(
   const parentComponentSlotId = selectComponentsParentComponentSlotId(pageId, componentId)(state);
   const parentComponentSlotMeta = find(get(ComponentMeta[parentComponentTag], 'slots'), { id: parentComponentSlotId }) || null;
 
-  const templateSettings = selectPageSettings(selectPageTemplateId(pageId)(state))(state);
   const pageSettings = selectPageSettings(pageId)(state);
 
   // @NOTE
@@ -173,7 +170,6 @@ function runParliamentarian(
     if (!!inheritFromSetting) {
       const search = [
         [pageSettings, PAGE_SETTINGS],
-        [templateSettings, TEMPLATE_SETTINGS],
         [siteSettings, SITE_SETTINGS],
       ];
 

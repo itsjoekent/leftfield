@@ -12,15 +12,12 @@ import {
 } from 'pkg.admin-components';
 import {
   SITE_SETTINGS,
-  TEMPLATE_SETTINGS,
   PAGE_SETTINGS,
   SETTING_LABELS,
 } from '@editor/constants/inheritance';
 import {
   selectComponentPropertyInheritedFromForLanguage,
-  selectPageTemplateId,
   setComponentInstanceInheritedFrom,
-  setComponentInstancePropertyValue,
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useGetSetting from '@editor/hooks/useGetSetting';
@@ -36,9 +33,6 @@ export default function PropertyInheritance(props) {
   const { setFieldValue } = useFormField(fieldId);
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
-
-  const templatedFrom = useSelector(selectPageTemplateId(activePageId));
-  const hasTemplate = !!templatedFrom;
 
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
@@ -121,14 +115,6 @@ export default function PropertyInheritance(props) {
           onClick={onClick(SITE_SETTINGS)}
         >
           {SETTING_LABELS[SITE_SETTINGS]}
-        </InheritanceButton>
-      )}
-      {!!hasTemplate && isSettingDefined(TEMPLATE_SETTINGS) && (
-        <InheritanceButton
-          aria-label={`Reference the ${SETTING_LABELS[TEMPLATE_SETTINGS]} value`}
-          onClick={onClick(TEMPLATE_SETTINGS)}
-        >
-          {SETTING_LABELS[TEMPLATE_SETTINGS]}
         </InheritanceButton>
       )}
       {isSettingDefined(PAGE_SETTINGS) && (

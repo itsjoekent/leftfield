@@ -55,7 +55,6 @@ export const assemblySlice = createSlice({
         },
         name: 'Test page',
         settings: {},
-        templatedFrom: null,
         rootComponentId: '1',
       },
     },
@@ -68,7 +67,7 @@ export const assemblySlice = createSlice({
         ],
       },
     },
-    templates: [],
+    templatedFrom: null,
     theme: theme.campaign,
   },
   reducers: {
@@ -275,12 +274,16 @@ export const {
 
 export default assemblySlice.reducer;
 
+export function selectCampaignTheme(state) {
+  return get(state, 'assembly.theme', {});
+}
+
 export function selectSiteSettings(state) {
   return get(state, 'assembly.siteSettings', {});
 }
 
-export function selectCampaignTheme(state) {
-  return get(state, 'assembly.theme', {});
+export function selectSiteTemplateId(state) {
+  return get(state, 'assembly.templatedFrom', null);
 }
 
 export function selectPage(pageId) {
@@ -297,14 +300,6 @@ export function selectPageSettings(pageId) {
   }
 
   return _selectPageSettings;
-}
-
-export function selectPageTemplateId(pageId) {
-  function _selectPageTemplateId(state) {
-    return get(selectPage(pageId)(state), 'templatedFrom', null);
-  }
-
-  return _selectPageTemplateId;
 }
 
 export function selectPageName(pageId) {
