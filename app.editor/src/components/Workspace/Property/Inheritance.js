@@ -69,7 +69,6 @@ export default function PropertyInheritance(props) {
                 language,
               );
 
-              console.log(value);
               setFieldValue(value);
             }}
             IconComponent={Icons.RemoveFill}
