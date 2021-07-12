@@ -8,12 +8,13 @@ import {
   Flex,
   Icons,
   Tooltip,
-  Typography,
 } from 'pkg.admin-components';
 import {
+  deleteComponentAndDescendants,
   duplicateComponent,
   selectComponent,
 } from '@editor/features/assembly';
+import { setModal, CONFIRM_MODAL } from '@editor/features/modal';
 import { setActiveComponentId } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
@@ -43,25 +44,15 @@ export default function InstanceCard(props) {
             <Label>{get(component, 'name')}</Label>
           </Flex.Row>
           <IconRow align="center" gridGap="6px">
-            <Buttons.Outline
-              paddingVertical="2px"
-              paddingHorizontal="4px"
-              bg={(colors) => colors.mono[100]}
-              borderWidth="1px"
-              borderColor={(colors) => colors.mono[500]}
-              hoverBorderColor={(colors) => colors.purple[500]}
-              gridGap="4px"
-              IconComponent={Icons.EditFill}
-              iconSize={16}
-              onClick={() => dispatch(setActiveComponentId({ componentId }))}
-            >
-              <Typography
-                fontStyle="medium"
-                fontSize="16px"
-              >
-                Edit
-              </Typography>
-            </Buttons.Outline>
+            <Tooltip copy="Edit component" point={Tooltip.UP_RIGHT_ALIGNED}>
+              <Buttons.IconButton
+                IconComponent={Icons.EditFill}
+                color={(colors) => colors.mono[500]}
+                hoverColor={(colors) => colors.purple[500]}
+                aria-label="Edit component"
+                onClick={() => dispatch(setActiveComponentId({ componentId }))}
+              />
+            </Tooltip>
             <Tooltip copy="Duplicate component" point={Tooltip.UP_RIGHT_ALIGNED}>
               <Buttons.IconButton
                 IconComponent={Icons.CopyAlt}
@@ -80,6 +71,20 @@ export default function InstanceCard(props) {
                 color={(colors) => colors.mono[500]}
                 hoverColor={(colors) => colors.red[600]}
                 aria-label="Remove component"
+                onClick={() => dispatch(setModal({
+                  type: CONFIRM_MODAL,
+                  props: {
+                    title: 'Confirm deletion',
+                    header: 'Are you sure you want to delete this component?',
+                    confirmButtonLabel: 'Delete component',
+                    confirmButtonIconName: 'Trash',
+                    isDangerous: true,
+                    onConfirm: () => dispatch(deleteComponentAndDescendants({
+                      pageId: activePageId,
+                      componentId,
+                    })),
+                  },
+                }))}
               />
             </Tooltip>
           </IconRow>

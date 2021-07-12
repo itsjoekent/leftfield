@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-export const ELEMENT_LIBRARY = 'ELEMENT_LIBRARY';
+export const ELEMENT_LIBRARY_MODAL = 'ELEMENT_LIBRARY_MODAL';
+export const CONFIRM_MODAL = 'CONFIRM_MODAL';
 
 export const modalSlice = createSlice({
   name: 'modal',

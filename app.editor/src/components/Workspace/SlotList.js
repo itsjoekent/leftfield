@@ -10,7 +10,7 @@ import {
 } from 'pkg.admin-components';
 import WorkspaceSlotInstanceList from '@editor/components/Workspace/SlotInstanceList';
 import { selectComponentSlot } from '@editor/features/assembly';
-import { setModal, ELEMENT_LIBRARY } from '@editor/features/modal';
+import { setModal, ELEMENT_LIBRARY_MODAL } from '@editor/features/modal';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
 // TODO:
@@ -58,7 +58,7 @@ export default function SlotList(props) {
             gridGap="6px"
             align="center"
             onClick={() => dispatch(setModal({
-              type: ELEMENT_LIBRARY,
+              type: ELEMENT_LIBRARY_MODAL,
               props: {
                 pageId: activePageId,
                 parentComponentId: activeComponentId,

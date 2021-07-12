@@ -7,7 +7,12 @@ import {
   Tooltip,
   Typography,
 } from 'pkg.admin-components';
-import { selectComponentName } from '@editor/features/assembly';
+import {
+  deleteComponentAndDescendants,
+  selectComponentName,
+  selectPageRootComponentId,
+} from '@editor/features/assembly';
+import { setModal, CONFIRM_MODAL } from '@editor/features/modal';
 import {
   selectIsComponentTreeOpen,
   selectHasPast,
@@ -26,6 +31,10 @@ export default function WorkspaceComponentToolbar() {
 
   const activeComponentName = useSelector(
     selectComponentName(activePageId, activeComponentId)
+  );
+
+  const activePageRootComponentId = useSelector(
+    selectPageRootComponentId(activePageId)
   );
 
   const isComponentTreeOpen = useSelector(selectIsComponentTreeOpen);
@@ -97,30 +106,40 @@ export default function WorkspaceComponentToolbar() {
         </Tooltip>
       </Flex.Row>
       <Flex.Row align="center" gridGap="6px">
-        <Tooltip copy="Copy component" point={Tooltip.UP_RIGHT_ALIGNED}>
-          <Buttons.IconButton
-            IconComponent={Icons.Copy}
-            color={(colors) => colors.purple[500]}
-            hoverColor={(colors) => colors.mono[900]}
-            aria-label="Copy component"
-          />
-        </Tooltip>
-        <Tooltip copy="Paste component" point={Tooltip.UP_RIGHT_ALIGNED}>
-          <Buttons.IconButton
-            IconComponent={Icons.DeskAlt}
-            color={(colors) => colors.purple[500]}
-            hoverColor={(colors) => colors.mono[900]}
-            aria-label="Paste component"
-          />
-        </Tooltip>
-        <Tooltip copy="Remove component" point={Tooltip.UP_RIGHT_ALIGNED}>
-          <Buttons.IconButton
-            IconComponent={Icons.Trash}
-            color={(colors) => colors.purple[500]}
-            hoverColor={(colors) => colors.red[600]}
-            aria-label="Remove component"
-          />
-        </Tooltip>
+        {activePageRootComponentId !== activeComponentId && (
+          <Tooltip copy="Export component" point={Tooltip.UP_RIGHT_ALIGNED}>
+            <Buttons.IconButton
+              IconComponent={Icons.Export}
+              color={(colors) => colors.purple[500]}
+              hoverColor={(colors) => colors.mono[900]}
+              aria-label="Export component"
+            />
+          </Tooltip>
+        )}
+        {activePageRootComponentId !== activeComponentId && (
+          <Tooltip copy="Remove component" point={Tooltip.UP_RIGHT_ALIGNED}>
+            <Buttons.IconButton
+              IconComponent={Icons.Trash}
+              color={(colors) => colors.purple[500]}
+              hoverColor={(colors) => colors.red[600]}
+              aria-label="Remove component"
+              onClick={() => dispatch(setModal({
+                type: CONFIRM_MODAL,
+                props: {
+                  title: 'Confirm deletion',
+                  header: 'Are you sure you want to delete this component?',
+                  confirmButtonLabel: 'Delete component',
+                  confirmButtonIconName: 'Trash',
+                  isDangerous: true,
+                  onConfirm: () => dispatch(deleteComponentAndDescendants({
+                    pageId: activePageId,
+                    componentId: activeComponentId,
+                  })),
+                },
+              }))}
+            />
+          </Tooltip>
+        )}
       </Flex.Row>
     </Flex.Row>
   );

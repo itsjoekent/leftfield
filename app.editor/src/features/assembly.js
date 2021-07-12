@@ -14,14 +14,17 @@ const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
   [key]: get(SiteSettings[key], `field.defaultValue`),
 }), {});
 
-function _addChildComponent(state, action) {
+function _addChildComponentToSlot(
+  state,
+  payload,
+) {
   const {
-    pageId,
     componentId,
+    pageId,
     parentComponentId,
     slotId,
     slotPlacementOrder,
-  } = action.payload;
+  } = payload;
 
   const path = `pages.${pageId}.components.${parentComponentId}.slots.${slotId}`;
 
@@ -35,6 +38,24 @@ function _addChildComponent(state, action) {
   set(state, path, children);
   set(state, `pages.${pageId}.components.${componentId}.childOf`, parentComponentId);
   set(state, `pages.${pageId}.components.${componentId}.withinSlot`, slotId);
+}
+
+function _removeChildComponentFromSlot(
+  state,
+  payload,
+) {
+  const {
+    pageId,
+    componentId,
+    slotId,
+    targetIndex,
+  } = payload;
+
+  const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
+  const children = get(state, path, []);
+
+  children.splice(targetIndex, 1);
+  set(state, path, children);
 }
 
 export const assemblySlice = createSlice({
@@ -79,7 +100,7 @@ export const assemblySlice = createSlice({
     theme: theme.campaign,
   },
   reducers: {
-    addChildComponent: _addChildComponent,
+    addChildComponentToSlot: (state, action) => _addChildComponentToSlot(state, action.payload),
     buildComponent: (state, action) => {
       const {
         componentId,
@@ -95,6 +116,42 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${insert.id}`, insert);
     },
+    deleteComponentAndDescendants: (state, action) => {
+      const {
+        pageId,
+        componentId,
+      } = action.payload;
+
+      const childOf = get(state, `pages.${pageId}.components.${componentId}.childOf`, {});
+      const withinSlot = get(state, `pages.${pageId}.components.${componentId}.withinSlot`, {});
+
+      if (!!childOf && !!withinSlot) {
+        const targetIndex = get(
+          state,
+          `pages.${pageId}.components.${childOf}.slots.${withinSlot}`,
+          [],
+        ).indexOf(componentId);
+
+        _removeChildComponentFromSlot(state, {
+          pageId,
+          componentId: childOf,
+          slotId: withinSlot,
+          targetIndex,
+        });
+      }
+
+      function recursiveDelete(targetComponentId) {
+        const slots = get(state, `pages.${pageId}.components.${targetComponentId}.slots`, {});
+
+        Object.keys(slots).forEach((slotId) => {
+          slots[slotId].forEach((childId) => recursiveDelete(childId));
+        });
+
+        delete state.pages[pageId].components[targetComponentId];
+      }
+
+      recursiveDelete(componentId);
+    },
     duplicateComponent: (state, action) => {
       const {
         pageId,
@@ -109,13 +166,11 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${duplicatedComponent.id}`, duplicatedComponent);
 
-      _addChildComponent(state, {
-        payload: {
-          pageId,
-          componentId: duplicatedComponent.id,
-          parentComponentId: get(originalComponent, 'childOf'),
-          slotId: get(originalComponent, 'withinSlot'),
-        },
+      _addChildComponentToSlot(state, {
+        pageId,
+        componentId: duplicatedComponent.id,
+        parentComponentId: get(originalComponent, 'childOf'),
+        slotId: get(originalComponent, 'withinSlot'),
       });
     },
     reorderChildComponent: (state, action) => {
@@ -134,26 +189,7 @@ export const assemblySlice = createSlice({
       children.splice(toIndex, 0, targetComponentId);
       set(state, path, children);
     },
-    removeChildComponent: (state, action) => {
-      const {
-        pageId,
-        componentId,
-        slotId,
-        targetIndex,
-      } = action.payload;
-
-      const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
-      const children = get(state, path, []);
-
-      const targetComponentId = children[targetIndex];
-
-      children.splice(targetIndex, 1);
-      set(state, path, children);
-
-      if (get(state, `pages.${pageId}.components.${targetComponentId}`)) {
-        delete state.pages[pageId].components[targetComponentId];
-      }
-    },
+    removeChildComponentFromSlot: (state, action) => _removeChildComponentFromSlot(state, action.payload),
     resetComponentStyleAttribute: (state, action) => {
       const {
         pageId,
@@ -268,11 +304,12 @@ export const assemblySlice = createSlice({
 });
 
 export const {
-  addChildComponent,
+  addChildComponentToSlot,
   buildComponent,
   duplicateComponent,
+  deleteComponentAndDescendants,
+  removeChildComponentFromSlot,
   reorderChildComponent,
-  removeChildComponent,
   resetComponentStyleAttribute,
   setComponentPropertyValue,
   setComponentInheritedFrom,
@@ -398,7 +435,9 @@ export function selectComponentSlot(pageId, componentId, slotId) {
 export function selectComponentSlotMapped(pageId, componentId, slotId) {
   function _selectComponentSlotMapped(state) {
     const componentIds = selectComponentSlot(pageId, componentId, slotId)(state);
-    return componentIds.map((childId) => selectComponent(pageId, childId)(state));
+    return componentIds
+      .map((childId) => selectComponent(pageId, childId)(state))
+      .filter((child) => child !== null);
   }
 
   return _selectComponentSlotMapped;

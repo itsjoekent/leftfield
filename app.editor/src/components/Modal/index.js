@@ -4,11 +4,14 @@ import { useSelector } from 'react-redux';
 import {
   selectModalType,
   selectModalProps,
-  ELEMENT_LIBRARY,
+
+  CONFIRM_MODAL,
+  ELEMENT_LIBRARY_MODAL,
 } from '@editor/features/modal';
 
 const componentFileMap = {
-  [ELEMENT_LIBRARY]: async () => import('./ElementLibrary'),
+  [CONFIRM_MODAL]: async () => import('./Confirm'),
+  [ELEMENT_LIBRARY_MODAL]: async () => import('./ElementLibrary'),
 };
 
 export default function Modal() {

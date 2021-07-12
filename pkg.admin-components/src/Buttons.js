@@ -5,6 +5,84 @@ import generics from '@ac/generics';
 import useAdminTheme from '@ac/useAdminTheme';
 import useIsHovering from '@ac/useIsHovering';
 
+const FilledButtonWrapper = styled.button`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  cursor: pointer;
+  border-radius: ${(props) => props.theme.rounded.extra};
+  border-style: solid;
+
+  ${({ buttonBg, theme }) => !!buttonBg && css`
+    border-color: ${buttonBg(theme.colors)};
+    background-color: ${buttonBg(theme.colors)};
+  `}
+
+  transition: all ${(props) => props.theme.animation.defaultTransition};
+  transition-property: border, background-color, box-shadow;
+
+  ${Typography} {
+    transition: color ${(props) => props.theme.animation.defaultTransition};
+    ${({ buttonFg, theme }) => !!buttonFg && css`color: ${buttonFg(theme.colors)};`}
+  }
+
+  &:hover {
+    ${({ buttonFg, theme }) => !!buttonFg && css`background-color: ${buttonFg(theme.colors)};`}
+
+    ${Typography} {
+      ${({ buttonBg, theme }) => !!buttonBg && css`color: ${buttonBg(theme.colors)};`}
+    }
+  }
+
+  svg * {
+    transition: all ${(props) => props.theme.animation.defaultTransition};
+    transition-property: stroke, fill;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  ${({ gridGap }) => !!gridGap && css`grid-gap: ${gridGap};`}
+  ${generics}
+`;
+
+export function Filled(props) {
+  const {
+    children,
+    IconComponent,
+    iconSize,
+    ...rest
+  } = props;
+
+  const theme = useAdminTheme();
+
+  const buttonRef = React.useRef(null);
+  const isHovering = useIsHovering(buttonRef);
+
+  const iconColor = rest.buttonFg;
+  const iconHoverColor = rest.buttonBg;
+
+  const finalIconColor = !!IconComponent && isHovering
+    ? (!!iconHoverColor && iconHoverColor(theme.colors))
+    : (!!iconColor && iconColor(theme.colors));
+
+  return (
+    <FilledButtonWrapper ref={buttonRef} {...rest}>
+      {!!IconComponent && (
+        <IconComponent
+          width={iconSize}
+          height={iconSize}
+          color={finalIconColor}
+        />
+      )}
+      {children}
+    </FilledButtonWrapper>
+  );
+}
+
 const OutlineButtonWrapper = styled.button`
   display: flex;
   flex-direction: row;
@@ -58,8 +136,8 @@ export function Outline(props) {
   const iconHoverColor = rest.hoverBorderColor;
 
   const finalIconColor = !!IconComponent && isHovering
-    ? (iconHoverColor && iconHoverColor(theme.colors))
-    : (iconColor && iconColor(theme.colors));
+    ? (!!iconHoverColor && iconHoverColor(theme.colors))
+    : (!!iconColor && iconColor(theme.colors));
 
   return (
     <OutlineButtonWrapper ref={buttonRef} {...rest}>

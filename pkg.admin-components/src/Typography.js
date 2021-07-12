@@ -11,6 +11,7 @@ const Typography = styled.p`
   ${(props) => props.fontStyle && props.theme.fonts[props.fontFamily || 'main'][props.fontStyle]}
   ${(props) => props.fontSize && css`font-size: ${props.fontSize};`}
   ${(props) => props.letterSpacing && css`letter-spacing: ${props.letterSpacing};`}
+  ${(props) => props.lineHeight && css`line-height: ${props.lineHeight};`}
 
   ${(props) => props.textDecoration && css`text-decoration: ${props.textDecoration};`}
   ${(props) => props.textOverflow && css`text-overflow: ${props.textOverflow};`}

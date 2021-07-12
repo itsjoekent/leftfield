@@ -6,9 +6,9 @@ import { Flex } from 'pkg.admin-components';
 import WorkspaceFieldLabel from '@editor/components/Workspace/FieldLabel';
 import WorkspaceSlotList from '@editor/components/Workspace/SlotList';
 import {
-  addChildComponent,
+  addChildComponentToSlot,
   reorderChildComponent,
-  removeChildComponent,
+  removeChildComponentFromSlot,
 } from '@editor/features/assembly';
 import { selectVisibleSlots } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -42,14 +42,14 @@ export default function WorkspaceSlotsSection() {
     }
 
     if (destination.droppableId !== source.droppableId) {
-      dispatch(removeChildComponent({
+      dispatch(removeChildComponentFromSlot({
         pageId: activePageId,
         componentId: activeComponentId,
         slotId: source.droppableId,
         targetIndex: source.index,
       }));
 
-      dispatch(addChildComponent({
+      dispatch(addChildComponentToSlot({
         pageId: activePageId,
         componentId: draggableId,
         parentComponentId: activeComponentId,

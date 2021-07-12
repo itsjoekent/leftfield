@@ -8,7 +8,7 @@ import ModalDefaultLayout from '@editor/components/Modal/DefaultLayout';
 import SearchBar from '@editor/components/Modal/ElementLibrary/SearchBar';
 import TraitPill from '@editor/components/Modal/ElementLibrary/TraitPill';
 import ComponentCard from '@editor/components/Modal/ElementLibrary/ComponentCard';
-import { addChildComponent, buildComponent } from '@editor/features/assembly';
+import { addChildComponentToSlot, buildComponent } from '@editor/features/assembly';
 import { closeModal } from '@editor/features/modal';
 
 const featuredTraits = [
@@ -42,7 +42,7 @@ export default function ElementLibraryModal(props) {
       componentTag: meta.tag,
     }));
 
-    dispatch(addChildComponent({
+    dispatch(addChildComponentToSlot({
       componentId,
       pageId,
       parentComponentId,

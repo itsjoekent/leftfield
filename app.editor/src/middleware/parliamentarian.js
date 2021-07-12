@@ -15,10 +15,12 @@ import {
   PAGE_SETTINGS,
 } from '@editor/constants/inheritance';
 import {
-  addChildComponent,
+  addChildComponentToSlot,
   buildComponent,
+  deleteComponentAndDescendants,
+  duplicateComponent,
+  removeChildComponentFromSlot,
   reorderChildComponent,
-  removeChildComponent,
   setComponentPropertyValue,
   setComponentInheritedFrom,
   setComponentStyle,
@@ -29,6 +31,7 @@ import {
   wipePropertyInheritedFrom,
   wipeSlot,
 
+  selectComponent,
   selectComponentInstanceOf,
   selectComponentProperties,
   selectComponentPropertyInheritedFrom,
@@ -39,6 +42,7 @@ import {
   selectComponentsParentComponentSlotId,
   selectComponentSlot,
   selectLibraryComponentProperties,
+  selectPageRootComponentId,
   selectPageSettings,
   selectSiteSettings,
   selectCampaignTheme,
@@ -63,6 +67,7 @@ import {
   SLOTS_TAB,
   DOCUMENTATION_TAB,
   FEEDBACK_TAB,
+  DISABLE_HISTORY,
 } from '@editor/features/workspace';
 import { getPropertyValue } from '@editor/hooks/useGetPropertyValue';
 import isDefined from '@editor/utils/isDefined';
@@ -70,10 +75,12 @@ import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 const TRIGGERS = [
   PARLIAMENTARIAN_BOOTSTRAP_TYPE,
-  addChildComponent.toString(),
+  addChildComponentToSlot.toString(),
   buildComponent.toString(),
+  deleteComponentAndDescendants.toString(),
+  duplicateComponent.toString(),
+  removeChildComponentFromSlot.toString(),
   reorderChildComponent.toString(),
-  removeChildComponent.toString(),
   setComponentPropertyValue.toString(),
   setComponentInheritedFrom.toString(),
   setComponentCustomStyle.toString(),
@@ -475,6 +482,15 @@ const parliamentarian = store => next => action => {
   const pageId = selectActivePageId(state);
   const componentId = selectActiveComponentId(state);
 
+  if (!isDefined(selectComponent(pageId, componentId)(state))) {
+    store.dispatch(setActiveComponentId({
+      componentId: selectPageRootComponentId(pageId)(state),
+      [DISABLE_HISTORY]: true,
+    }));
+
+    return result;
+  }
+
   const pageSettings = selectPageSettings(pageId)(state);
   const siteSettings = selectSiteSettings(state);
   const campaignTheme = selectCampaignTheme(state);
@@ -497,7 +513,7 @@ const parliamentarian = store => next => action => {
     true,
   );
 
-  if (action.type === addChildComponent.toString()) {
+  if (action.type === addChildComponentToSlot.toString()) {
     runParliamentarian(
       queueDispatch,
       state,
@@ -562,7 +578,7 @@ const parliamentarian = store => next => action => {
   });
 
   store.dispatch(setCompiledPage({ pageId, compilation: pageCompilation }));
-  console.log('parliamentarian (compiled) => ', store.getState());
+  // console.log('parliamentarian (compiled) => ', store.getState());
 
   return result;
 }

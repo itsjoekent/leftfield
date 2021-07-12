@@ -8,6 +8,13 @@ export const SLOTS_TAB = 'SLOTS_TAB';
 export const DOCUMENTATION_TAB = 'DOCUMENTATION_TAB';
 export const FEEDBACK_TAB = 'FEEDBACK_TAB';
 
+export const DISABLE_HISTORY = 'DISABLE_HISTORY';
+
+function shouldLogAction(action) {
+  return !get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false)
+    && !get(action, `payload.${DISABLE_HISTORY}`, false);
+}
+
 export const workspaceSlice = createSlice({
   name: 'workspace',
   initialState: {
@@ -24,7 +31,10 @@ export const workspaceSlice = createSlice({
   },
   reducers: {
     setTab: (state, action) => {
-      if (!get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false)) {
+      const { payload: { tab } } = action;
+      if (tab === state.tab) return;
+
+      if (shouldLogAction(action)) {
         state.past.push({
           componentId: state.activeComponentId,
           pageId: state.activePageId,
@@ -34,10 +44,13 @@ export const workspaceSlice = createSlice({
         state.future = [];
       }
 
-      state.tab = action.payload.tab;
+      state.tab = tab;
     },
     setActivePageId: (state, action) => {
-      if (!get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false)) {
+      const { payload: { pageId } } = action;
+      if (pageId === state.activePageId) return;
+
+      if (shouldLogAction(action)) {
         state.past.push({
           componentId: state.activeComponentId,
           pageId: state.activePageId,
@@ -47,11 +60,14 @@ export const workspaceSlice = createSlice({
         state.future = [];
       }
 
-      state.activePageId = action.payload.pageId;
+      state.activePageId = pageId;
       state.isComponentTreeOpen = false;
     },
     setActiveComponentId: (state, action) => {
-      if (!get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false)) {
+      const { payload: { componentId } } = action;
+      if (componentId === state.activeComponentId) return;
+
+      if (shouldLogAction(action)) {
         state.past.push({
           componentId: state.activeComponentId,
           pageId: state.activePageId,
@@ -61,7 +77,7 @@ export const workspaceSlice = createSlice({
         state.future = [];
       }
 
-      state.activeComponentId = action.payload.componentId;
+      state.activeComponentId = componentId;
       state.isComponentTreeOpen = false;
     },
     setIsComponentTreeOpen: (state, action) => {
