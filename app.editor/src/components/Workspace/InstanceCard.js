@@ -53,7 +53,7 @@ export default function InstanceCard(props) {
               gridGap="4px"
               IconComponent={Icons.EditFill}
               iconSize={16}
-              onClick={() => dispatch(setActiveComponentId(componentId))}
+              onClick={() => dispatch(setActiveComponentId({ componentId }))}
             >
               <Typography
                 fontStyle="medium"

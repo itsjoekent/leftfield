@@ -38,7 +38,7 @@ export default function Preview() {
 
     const { contentWindow: targetWindow } = iframe;
 
-    if (isPreviewReady && activePagePreview) {
+    if (isPreviewReady && !!Object.keys(activePagePreview).length) {
       targetWindow.postMessage({
         type: 'RENDER',
         payload: {

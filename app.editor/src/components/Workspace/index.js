@@ -32,24 +32,15 @@ import {
   selectVisibleStyles,
 } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
-import usePrevious from '@editor/hooks/usePrevious';
 
 export default function Workspace(props) {
   const tab = useSelector(selectTab);
 
   const dispatch = useDispatch();
 
-  const {
-    activeComponentMeta,
-    activeComponentId,
-    activePageId,
-  } = useActiveWorkspaceComponent();
+  const { activeComponentMeta } = useActiveWorkspaceComponent();
 
   const isComponentTreeOpen = useSelector(selectIsComponentTreeOpen);
-
-  const previousActiveComponentId = usePrevious(activeComponentId);
-  const previousActivePageId = usePrevious(activePageId);
-
   const visibleProperties = useSelector(selectVisibleProperties);
   const activeComponentHasProperties = !!visibleProperties.length;
 
@@ -60,37 +51,6 @@ export default function Workspace(props) {
   const activeComponentHasSlots = !!visibleSlots.length;
 
   const activeComponentHasDocumentation = !!get(activeComponentMeta, 'documentation', '').length;
-
-  React.useEffect(() => {
-    const tabAvailability = {
-      [PROPERTIES_TAB]: activeComponentHasProperties,
-      [STYLES_TAB]: activeComponentHasStyles,
-      [SLOTS_TAB]: activeComponentHasSlots,
-      [DOCUMENTATION_TAB]: activeComponentHasDocumentation,
-    };
-
-    if (
-      (!tabAvailability[tab])
-      || (previousActiveComponentId !== activeComponentId)
-      || (previousActivePageId !== activePageId)
-    ) {
-      const nextIndex = Object.values(tabAvailability)
-        .findIndex((isAvailable) => !!isAvailable);
-
-      dispatch(setTab(Object.keys(tabAvailability)[nextIndex]));
-    }
-  }, [
-    dispatch,
-    tab,
-    activeComponentHasProperties,
-    activeComponentHasStyles,
-    activeComponentHasSlots,
-    activeComponentHasDocumentation,
-    activeComponentId,
-    activePageId,
-    previousActiveComponentId,
-    previousActivePageId,
-  ]);
 
   function isActiveTab(key) {
     return tab === key;
@@ -131,7 +91,7 @@ export default function Workspace(props) {
               <Tooltip copy="Edit properties" point={Tooltip.LEFT}>
                 <Buttons.IconButton
                   aria-label="Edit component properties"
-                  onClick={() => dispatch(setTab(PROPERTIES_TAB))}
+                  onClick={() => dispatch(setTab({ tab: PROPERTIES_TAB }))}
                   color={iconButtonColor(PROPERTIES_TAB)}
                   hoverColor={(colors) => colors.mono[500]}
                   IconComponent={Icons.SettingFill}
@@ -142,7 +102,7 @@ export default function Workspace(props) {
               <Tooltip copy="Edit styles" point={Tooltip.LEFT}>
                 <Buttons.IconButton
                   aria-label="Edit component styles"
-                  onClick={() => dispatch(setTab(STYLES_TAB))}
+                  onClick={() => dispatch(setTab({ tab: STYLES_TAB }))}
                   color={iconButtonColor(STYLES_TAB)}
                   hoverColor={(colors) => colors.mono[500]}
                   IconComponent={Icons.DimondAltFill}
@@ -153,7 +113,7 @@ export default function Workspace(props) {
               <Tooltip copy="Edit slots" point={Tooltip.LEFT}>
                 <Buttons.IconButton
                   aria-label="Edit component slots"
-                  onClick={() => dispatch(setTab(SLOTS_TAB))}
+                  onClick={() => dispatch(setTab({ tab: SLOTS_TAB }))}
                   color={iconButtonColor(SLOTS_TAB)}
                   hoverColor={(colors) => colors.mono[500]}
                   IconComponent={Icons.MenuAlt}
@@ -164,7 +124,7 @@ export default function Workspace(props) {
               <Tooltip copy="Documentation" point={Tooltip.LEFT}>
                 <Buttons.IconButton
                   aria-label="Component documentation"
-                  onClick={() => dispatch(setTab(DOCUMENTATION_TAB))}
+                  onClick={() => dispatch(setTab({ tab: DOCUMENTATION_TAB }))}
                   color={iconButtonColor(DOCUMENTATION_TAB)}
                   hoverColor={(colors) => colors.mono[500]}
                   IconComponent={Icons.QuestionFill}
@@ -174,7 +134,7 @@ export default function Workspace(props) {
             <Tooltip copy="Submit feedback or bugs" point={Tooltip.LEFT}>
               <Buttons.IconButton
                 aria-label="Submit feedback or bugs"
-                onClick={() => dispatch(setTab(FEEDBACK_TAB))}
+                onClick={() => dispatch(setTab({ tab: FEEDBACK_TAB }))}
                 color={iconButtonColor(FEEDBACK_TAB)}
                 hoverColor={(colors) => colors.mono[500]}
                 IconComponent={Icons.Bug}

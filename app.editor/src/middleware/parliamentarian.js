@@ -7,6 +7,10 @@ import {
   SiteSettings,
 } from 'pkg.campaign-components';
 import {
+  PARLIAMENTARIAN_BOOTSTRAP_TYPE,
+  PARLIAMENTARIAN_ESCAPE_KEY,
+} from '@editor/constants/parliamentarian';
+import {
   SITE_SETTINGS,
   PAGE_SETTINGS,
 } from '@editor/constants/inheritance';
@@ -42,23 +46,30 @@ import {
 import {
   setActiveComponentId,
   setActivePageId,
+  setTab,
   setVisibleProperties,
   setVisibleSlots,
   setVisibleStyles,
 
-  navigateToPastComponent,
-  navigateToFutureComponent,
+  navigateToPast,
+  navigateToFuture,
 
   selectActivePageId,
   selectActiveComponentId,
+  selectTab,
+
+  PROPERTIES_TAB,
+  STYLES_TAB,
+  SLOTS_TAB,
+  DOCUMENTATION_TAB,
+  FEEDBACK_TAB,
 } from '@editor/features/workspace';
 import { getPropertyValue } from '@editor/hooks/useGetPropertyValue';
 import isDefined from '@editor/utils/isDefined';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
-export const PARLIAMENTARIAN_ESCAPE_KEY = '__parliamentarian';
-
 const TRIGGERS = [
+  PARLIAMENTARIAN_BOOTSTRAP_TYPE,
   addChildComponentInstance.toString(),
   buildComponent.toString(),
   reorderChildComponentInstance.toString(),
@@ -68,12 +79,10 @@ const TRIGGERS = [
   setComponentInstanceCustomStyle.toString(),
   setComponentInstanceThemeStyle.toString(),
   setActiveComponentId.toString(),
-  navigateToPastComponent.toString(),
-  navigateToFutureComponent.toString(),
+  navigateToPast.toString(),
+  navigateToFuture.toString(),
   setActivePageId.toString(),
 ];
-
-let initialized = false;
 
 function runParliamentarian(
   queueDispatch,
@@ -427,6 +436,26 @@ function runParliamentarian(
   // @NOTE
   // Step: Validate visible slots.
   // TODO...
+
+  // @NOTE
+  // Step: Set default workspace tab
+  if (!!updateWorkspace) {
+    const tabAvailability = {
+      [PROPERTIES_TAB]: !!visibleProperties.length,
+      [STYLES_TAB]: !!visibleStyles.length,
+      [SLOTS_TAB]: !!visibleSlots.length,
+      [DOCUMENTATION_TAB]: !!get(componentMeta, 'documentation', '').length,
+      [FEEDBACK_TAB]: true,
+    };
+
+    if (!tabAvailability[selectTab(state)]) {
+      const nextIndex = Object.values(tabAvailability)
+        .findIndex((isAvailable) => !!isAvailable);
+
+      const defaultTab = Object.keys(tabAvailability)[nextIndex];
+      queueDispatch(setTab({ tab: defaultTab }));
+    }
+  }
 }
 
 const parliamentarian = store => next => action => {
@@ -435,12 +464,8 @@ const parliamentarian = store => next => action => {
   const shouldRun = TRIGGERS.includes(action.type)
     && get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false) === false;
 
-  if (!!initialized && !shouldRun) {
+  if (!shouldRun) {
     return result;
-  }
-
-  if (!initialized) {
-    initialized = true;
   }
 
   const state = store.getState();

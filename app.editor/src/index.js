@@ -5,7 +5,10 @@ import { ThemeProvider } from 'styled-components';
 import { theme, GlobalReset } from 'pkg.admin-components';
 import store from '@editor/store';
 import Entrypoint from '@editor/components/Entrypoint';
+import { PARLIAMENTARIAN_BOOTSTRAP_TYPE } from '@editor/constants/parliamentarian';
 import '@editor/index.css';
+
+store.dispatch({ type: PARLIAMENTARIAN_BOOTSTRAP_TYPE });
 
 ReactDOM.render(
   <React.StrictMode>

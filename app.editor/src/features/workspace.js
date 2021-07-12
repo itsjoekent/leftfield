@@ -1,4 +1,6 @@
+import { get } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
+import { PARLIAMENTARIAN_ESCAPE_KEY } from '@editor/constants/parliamentarian';
 
 export const PROPERTIES_TAB = 'PROPERTIES_TAB';
 export const STYLES_TAB = 'STYLES_TAB';
@@ -10,10 +12,10 @@ export const workspaceSlice = createSlice({
   name: 'workspace',
   initialState: {
     activeComponentId: '1',
-    pastActiveComponents: [],
-    futureActiveComponents: [],
+    past: [],
+    future: [],
     isComponentTreeOpen: false,
-    isComponentInspecting: false,
+    isComponentInspecting: false, // TODO: remove
     activePageId: 'test',
     tab: PROPERTIES_TAB,
     visibleProperties: [],
@@ -22,19 +24,45 @@ export const workspaceSlice = createSlice({
   },
   reducers: {
     setTab: (state, action) => {
-      state.tab = action.payload;
-    },
-    setActivePageId: (state, action) => {
-      state.activePageId = action.payload;
-    },
-    setActiveComponentId: (state, action) => {
-      if (state.activeComponentId === action.payload) {
-        return;
+      if (!get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false)) {
+        state.past.push({
+          componentId: state.activeComponentId,
+          pageId: state.activePageId,
+          tab: state.tab,
+        });
+
+        state.future = [];
       }
 
-      state.pastActiveComponents.push(state.activeComponentId);
-      state.activeComponentId = action.payload;
-      state.futureActiveComponents = [];
+      state.tab = action.payload.tab;
+    },
+    setActivePageId: (state, action) => {
+      if (!get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false)) {
+        state.past.push({
+          componentId: state.activeComponentId,
+          pageId: state.activePageId,
+          tab: state.tab,
+        });
+
+        state.future = [];
+      }
+
+      state.activePageId = action.payload.pageId;
+      state.isComponentTreeOpen = false;
+    },
+    setActiveComponentId: (state, action) => {
+      if (!get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false)) {
+        state.past.push({
+          componentId: state.activeComponentId,
+          pageId: state.activePageId,
+          tab: state.tab,
+        });
+
+        state.future = [];
+      }
+
+      state.activeComponentId = action.payload.componentId;
+      state.isComponentTreeOpen = false;
     },
     setIsComponentTreeOpen: (state, action) => {
       state.isComponentTreeOpen = action.payload;
@@ -46,15 +74,33 @@ export const workspaceSlice = createSlice({
     setIsComponentInspecting: (state, action) => {
       state.isComponentInspecting = action.payload;
     },
-    navigateToPastComponent: (state, action) => {
-      const past = state.pastActiveComponents.pop();
-      state.futureActiveComponents.push(state.activeComponentId);
-      state.activeComponentId = past;
+    navigateToPast: (state, action) => {
+      const past = state.past.pop();console.log(past);
+      state.future.push({
+        componentId: state.activeComponentId,
+        pageId: state.activePageId,
+        tab: state.tab,
+      });
+
+      state.activeComponentId = past.componentId;
+      state.activePageId = past.pageId;
+      state.tab = past.tab;
+
+      state.isComponentTreeOpen = false;
     },
-    navigateToFutureComponent: (state, action) => {
-      const next = state.futureActiveComponents.pop();
-      state.pastActiveComponents.push(state.activeComponentId);
-      state.activeComponentId = next;
+    navigateToFuture: (state, action) => {
+      const next = state.future.pop();
+      state.past.push({
+        componentId: state.activeComponentId,
+        pageId: state.activePageId,
+        tab: state.tab,
+      });
+
+      state.activeComponentId = next.componentId;
+      state.activePageId = next.pageId;
+      state.tab = next.tab;
+
+      state.isComponentTreeOpen = false;
     },
     setVisibleProperties: (state, action) => {
       state.visibleProperties = action.payload.visibleProperties;
@@ -73,8 +119,8 @@ export const {
   setActiveComponentId,
   setIsComponentTreeOpen,
   setIsComponentInspecting,
-  navigateToPastComponent,
-  navigateToFutureComponent,
+  navigateToPast,
+  navigateToFuture,
   setTab,
   setVisibleProperties,
   setVisibleSlots,
@@ -95,12 +141,12 @@ export function selectIsComponentInspecting(state) {
   return !!state.workspace.isComponentInspecting;
 }
 
-export function selectHasPastComponents(state) {
-  return !!state.workspace.pastActiveComponents.length;
+export function selectHasPast(state) {
+  return !!state.workspace.past.length;
 }
 
-export function selectHasFutureComponents(state) {
-  return !!state.workspace.futureActiveComponents.length;
+export function selectHasFuture(state) {
+  return !!state.workspace.future.length;
 }
 
 export function selectActivePageId(state) {

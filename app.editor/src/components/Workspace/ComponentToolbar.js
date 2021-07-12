@@ -10,11 +10,11 @@ import {
 import { selectComponentName } from '@editor/features/assembly';
 import {
   selectIsComponentTreeOpen,
-  selectHasPastComponents,
-  selectHasFutureComponents,
+  selectHasPast,
+  selectHasFuture,
   setIsComponentTreeOpen,
-  navigateToPastComponent,
-  navigateToFutureComponent,
+  navigateToPast,
+  navigateToFuture,
 } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
@@ -31,8 +31,8 @@ export default function WorkspaceComponentToolbar() {
   const isComponentTreeOpen = useSelector(selectIsComponentTreeOpen);
   const componentTreeLabel = `${isComponentTreeOpen ? 'Close' : 'Open'} Component tree`;
 
-  const canNavigateBackwards = useSelector(selectHasPastComponents);
-  const canNavigateForwards = useSelector(selectHasFutureComponents);
+  const canNavigateBackwards = useSelector(selectHasPast);
+  const canNavigateForwards = useSelector(selectHasFuture);
 
   const dispatch = useDispatch();
 
@@ -52,7 +52,7 @@ export default function WorkspaceComponentToolbar() {
             hoverColor={(colors) => colors.purple[canNavigateBackwards ? 800 : 200]}
             aria-label="Go back"
             disabled={!canNavigateBackwards}
-            onClick={() => canNavigateBackwards && dispatch(navigateToPastComponent())}
+            onClick={() => canNavigateBackwards && dispatch(navigateToPast())}
           />
         </Tooltip>
         <Tooltip copy="Go forward" point={Tooltip.UP_LEFT_ALIGNED}>
@@ -62,7 +62,7 @@ export default function WorkspaceComponentToolbar() {
             hoverColor={(colors) => colors.purple[canNavigateForwards ? 800 : 200]}
             aria-label="Go forward"
             disabled={!canNavigateForwards}
-            onClick={() => canNavigateForwards && dispatch(navigateToFutureComponent())}
+            onClick={() => canNavigateForwards && dispatch(navigateToFuture())}
           />
         </Tooltip>
         <Tooltip copy={componentTreeLabel} point={Tooltip.UP_LEFT_ALIGNED}>
