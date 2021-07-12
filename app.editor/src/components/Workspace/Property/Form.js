@@ -6,7 +6,7 @@ import { FormWizardProvider, formActions } from 'pkg.form-wizard';
 import WorkspacePropertyFormField from '@editor/components/Workspace/Property/FormField';
 import {
   selectComponentProperties,
-  setComponentInstancePropertyValue,
+  setComponentPropertyValue,
 } from '@editor/features/assembly';
 import { selectVisibleProperties } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -105,7 +105,7 @@ export default function PropertiesForm() {
     const propertyId = get(field, 'attributes.propertyId');
     const language = get(field, 'attributes.language');
 
-    dispatch(setComponentInstancePropertyValue({
+    dispatch(setComponentPropertyValue({
       pageId: activePageId,
       componentId: activeComponentId,
       propertyId,

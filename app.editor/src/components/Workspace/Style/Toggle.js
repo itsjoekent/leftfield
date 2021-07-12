@@ -5,7 +5,7 @@ import { Inputs } from 'pkg.admin-components';
 import { Responsive } from 'pkg.campaign-components';
 import {
   selectComponentStyleAttributeForDeviceCascading,
-  setComponentInstanceCustomStyle,
+  setComponentCustomStyle,
 } from '@editor/features/assembly';
 import { selectDeviceSize } from '@editor/features/previewMode';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -38,7 +38,7 @@ export default function Toggle(props) {
   const customValue = get(attributeValue, 'custom', 0);
 
   function onChange(value) {
-    dispatch(setComponentInstanceCustomStyle({
+    dispatch(setComponentCustomStyle({
       pageId: activePageId,
       componentId: activeComponentId,
       styleId,

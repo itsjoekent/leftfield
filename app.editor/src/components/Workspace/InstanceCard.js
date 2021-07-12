@@ -62,22 +62,6 @@ export default function InstanceCard(props) {
                 Edit
               </Typography>
             </Buttons.Outline>
-            <Tooltip copy="Copy component" point={Tooltip.UP}>
-              <Buttons.IconButton
-                IconComponent={Icons.Copy}
-                color={(colors) => colors.mono[500]}
-                hoverColor={(colors) => colors.mono[900]}
-                aria-label="Copy component"
-              />
-            </Tooltip>
-            <Tooltip copy="Paste component" point={Tooltip.UP}>
-              <Buttons.IconButton
-                IconComponent={Icons.DeskAlt}
-                color={(colors) => colors.mono[500]}
-                hoverColor={(colors) => colors.mono[900]}
-                aria-label="Paste component"
-              />
-            </Tooltip>
             <Tooltip copy="Duplicate component" point={Tooltip.UP_RIGHT_ALIGNED}>
               <Buttons.IconButton
                 IconComponent={Icons.CopyAlt}

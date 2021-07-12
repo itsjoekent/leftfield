@@ -19,7 +19,7 @@ import {
 import {
   selectComponentInstanceOf,
   selectComponentPropertyInheritedFromForLanguage,
-  setComponentInstanceInheritedFrom,
+  setComponentInheritedFrom,
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useGetPropertyValue from '@editor/hooks/useGetPropertyValue';
@@ -102,7 +102,7 @@ export default function PropertyInheritance(props) {
     return function _onClick(event) {
       event.preventDefault();
 
-      dispatch(setComponentInstanceInheritedFrom({
+      dispatch(setComponentInheritedFrom({
         pageId: activePageId,
         componentId: activeComponentId,
         propertyId,

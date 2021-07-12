@@ -12,12 +12,12 @@ export const workspaceSlice = createSlice({
   name: 'workspace',
   initialState: {
     activeComponentId: '1',
+    activePageId: 'test',
+    tab: PROPERTIES_TAB,
     past: [],
     future: [],
     isComponentTreeOpen: false,
     isComponentInspecting: false, // TODO: remove
-    activePageId: 'test',
-    tab: PROPERTIES_TAB,
     visibleProperties: [],
     visibleSlots: [],
     visibleStyles: [],
@@ -75,7 +75,7 @@ export const workspaceSlice = createSlice({
       state.isComponentInspecting = action.payload;
     },
     navigateToPast: (state, action) => {
-      const past = state.past.pop();console.log(past);
+      const past = state.past.pop();
       state.future.push({
         componentId: state.activeComponentId,
         pageId: state.activePageId,

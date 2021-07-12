@@ -14,7 +14,7 @@ const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
   [key]: get(SiteSettings[key], `field.defaultValue`),
 }), {});
 
-function _addChildComponentInstance(state, action) {
+function _addChildComponent(state, action) {
   const {
     pageId,
     componentId,
@@ -79,7 +79,7 @@ export const assemblySlice = createSlice({
     theme: theme.campaign,
   },
   reducers: {
-    addChildComponentInstance: _addChildComponentInstance,
+    addChildComponent: _addChildComponent,
     buildComponent: (state, action) => {
       const {
         componentId,
@@ -109,7 +109,7 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${duplicatedComponent.id}`, duplicatedComponent);
 
-      _addChildComponentInstance(state, {
+      _addChildComponent(state, {
         payload: {
           pageId,
           componentId: duplicatedComponent.id,
@@ -118,7 +118,7 @@ export const assemblySlice = createSlice({
         },
       });
     },
-    reorderChildComponentInstance: (state, action) => {
+    reorderChildComponent: (state, action) => {
       const {
         pageId,
         componentId,
@@ -130,11 +130,11 @@ export const assemblySlice = createSlice({
       const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
       const children = get(state, path, []);
 
-      const [targetInstanceId] = children.splice(fromIndex, 1);
-      children.splice(toIndex, 0, targetInstanceId);
+      const [targetComponentId] = children.splice(fromIndex, 1);
+      children.splice(toIndex, 0, targetComponentId);
       set(state, path, children);
     },
-    removeChildComponentInstance: (state, action) => {
+    removeChildComponent: (state, action) => {
       const {
         pageId,
         componentId,
@@ -154,7 +154,7 @@ export const assemblySlice = createSlice({
         delete state.pages[pageId].components[targetComponentId];
       }
     },
-    resetComponentInstanceStyleAttribute: (state, action) => {
+    resetComponentStyleAttribute: (state, action) => {
       const {
         pageId,
         componentId,
@@ -165,7 +165,7 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, {});
     },
-    setComponentInstancePropertyValue: (state, action) => {
+    setComponentPropertyValue: (state, action) => {
       const {
         pageId,
         componentId,
@@ -177,7 +177,7 @@ export const assemblySlice = createSlice({
       set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value.${language}`, value);
       set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.inheritedFrom.${language}`, null);
     },
-    setComponentInstanceInheritedFrom: (state, action) => {
+    setComponentInheritedFrom: (state, action) => {
       const {
         pageId,
         componentId,
@@ -189,7 +189,7 @@ export const assemblySlice = createSlice({
       set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.inheritedFrom.${language}`, value);
       set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value.${language}`, null);
     },
-    setComponentInstanceStyle: (state, action) => {
+    setComponentStyle: (state, action) => {
       const {
         pageId,
         componentId,
@@ -201,7 +201,7 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, value);
     },
-    setComponentInstanceCustomStyle: (state, action) => {
+    setComponentCustomStyle: (state, action) => {
       const {
         pageId,
         componentId,
@@ -213,7 +213,7 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, { custom: value });
     },
-    setComponentInstanceThemeStyle: (state, action) => {
+    setComponentThemeStyle: (state, action) => {
       const {
         pageId,
         componentId,
@@ -268,17 +268,17 @@ export const assemblySlice = createSlice({
 });
 
 export const {
-  addChildComponentInstance,
+  addChildComponent,
   buildComponent,
   duplicateComponent,
-  reorderChildComponentInstance,
-  removeChildComponentInstance,
-  resetComponentInstanceStyleAttribute,
-  setComponentInstancePropertyValue,
-  setComponentInstanceInheritedFrom,
-  setComponentInstanceStyle,
-  setComponentInstanceCustomStyle,
-  setComponentInstanceThemeStyle,
+  reorderChildComponent,
+  removeChildComponent,
+  resetComponentStyleAttribute,
+  setComponentPropertyValue,
+  setComponentInheritedFrom,
+  setComponentStyle,
+  setComponentCustomStyle,
+  setComponentThemeStyle,
   setCompiledPage,
   wipePropertyValue,
   wipePropertyInheritedFrom,

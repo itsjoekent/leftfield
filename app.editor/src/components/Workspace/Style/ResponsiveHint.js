@@ -11,7 +11,7 @@ import {
 import { Responsive } from 'pkg.campaign-components';
 import responsiveLabels from '@editor/constants/responsive-labels';
 import {
-  resetComponentInstanceStyleAttribute,
+  resetComponentStyleAttribute,
   selectComponentStyleAttributeForDeviceCascading,
 } from '@editor/features/assembly';
 import { selectDeviceSize } from '@editor/features/previewMode';
@@ -72,7 +72,7 @@ export default function ResponsiveHint(props) {
         gridGap="2px"
         IconComponent={Icons.TrashLight}
         iconSize={16}
-        onClick={() => dispatch(resetComponentInstanceStyleAttribute({
+        onClick={() => dispatch(resetComponentStyleAttribute({
           pageId: activePageId,
           componentId: activeComponentId,
           styleId,

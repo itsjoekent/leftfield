@@ -15,15 +15,15 @@ import {
   PAGE_SETTINGS,
 } from '@editor/constants/inheritance';
 import {
-  addChildComponentInstance,
+  addChildComponent,
   buildComponent,
-  reorderChildComponentInstance,
-  removeChildComponentInstance,
-  setComponentInstancePropertyValue,
-  setComponentInstanceInheritedFrom,
-  setComponentInstanceStyle,
-  setComponentInstanceCustomStyle,
-  setComponentInstanceThemeStyle,
+  reorderChildComponent,
+  removeChildComponent,
+  setComponentPropertyValue,
+  setComponentInheritedFrom,
+  setComponentStyle,
+  setComponentCustomStyle,
+  setComponentThemeStyle,
   setCompiledPage,
   wipePropertyValue,
   wipePropertyInheritedFrom,
@@ -70,14 +70,14 @@ import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 const TRIGGERS = [
   PARLIAMENTARIAN_BOOTSTRAP_TYPE,
-  addChildComponentInstance.toString(),
+  addChildComponent.toString(),
   buildComponent.toString(),
-  reorderChildComponentInstance.toString(),
-  removeChildComponentInstance.toString(),
-  setComponentInstancePropertyValue.toString(),
-  setComponentInstanceInheritedFrom.toString(),
-  setComponentInstanceCustomStyle.toString(),
-  setComponentInstanceThemeStyle.toString(),
+  reorderChildComponent.toString(),
+  removeChildComponent.toString(),
+  setComponentPropertyValue.toString(),
+  setComponentInheritedFrom.toString(),
+  setComponentCustomStyle.toString(),
+  setComponentThemeStyle.toString(),
   setActiveComponentId.toString(),
   navigateToPast.toString(),
   navigateToFuture.toString(),
@@ -194,7 +194,7 @@ function runParliamentarian(
         const inheritanceLevel = get(settingMatch(language), '[1]', null);
 
         if (!!inheritanceLevel && !hasSetDefault(language)) {
-          queueDispatch(setComponentInstanceInheritedFrom({
+          queueDispatch(setComponentInheritedFrom({
             pageId,
             componentId,
             propertyId: property.id,
@@ -221,7 +221,7 @@ function runParliamentarian(
         const translatedValue = pullTranslatedValue(dynamicValue, language);
 
         if (getLocalPropertyValue(language) !== translatedValue) {
-          queueDispatch(setComponentInstancePropertyValue({
+          queueDispatch(setComponentPropertyValue({
             pageId,
             componentId,
             propertyId,
@@ -245,7 +245,7 @@ function runParliamentarian(
         const translatedValue = pullTranslatedValue(defaultValue, language);
 
         if (getLocalPropertyValue(language) !== translatedValue) {
-          queueDispatch(setComponentInstancePropertyValue({
+          queueDispatch(setComponentPropertyValue({
             pageId,
             componentId,
             propertyId,
@@ -362,7 +362,7 @@ function runParliamentarian(
         const value = attributeValue[device];
 
         if (!hasSetDefault(device)) {
-          queueDispatch(setComponentInstanceStyle({
+          queueDispatch(setComponentStyle({
             pageId,
             componentId,
             styleId,
@@ -497,7 +497,7 @@ const parliamentarian = store => next => action => {
     true,
   );
 
-  if (action.type === addChildComponentInstance.toString()) {
+  if (action.type === addChildComponent.toString()) {
     runParliamentarian(
       queueDispatch,
       state,

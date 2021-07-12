@@ -14,9 +14,9 @@ import {
 import {
   selectCampaignTheme,
   selectComponentStyleAttributeForDeviceCascading,
-  setComponentInstanceStyle,
-  setComponentInstanceCustomStyle,
-  setComponentInstanceThemeStyle,
+  setComponentStyle,
+  setComponentCustomStyle,
+  setComponentThemeStyle,
 } from '@editor/features/assembly';
 import { selectDeviceSize } from '@editor/features/previewMode';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -86,7 +86,7 @@ export default function ColorPicker(props) {
   ]);
 
   function resetColor() {
-    dispatch(setComponentInstanceStyle({
+    dispatch(setComponentStyle({
       pageId: activePageId,
       componentId: activeComponentId,
       styleId,
@@ -102,7 +102,7 @@ export default function ColorPicker(props) {
       return;
     }
 
-    dispatch(setComponentInstanceThemeStyle({
+    dispatch(setComponentThemeStyle({
       pageId: activePageId,
       componentId: activeComponentId,
       styleId,
@@ -113,7 +113,7 @@ export default function ColorPicker(props) {
   }
 
   function setCustomColor(hex) {
-    dispatch(setComponentInstanceCustomStyle({
+    dispatch(setComponentCustomStyle({
       pageId: activePageId,
       componentId: activeComponentId,
       styleId,

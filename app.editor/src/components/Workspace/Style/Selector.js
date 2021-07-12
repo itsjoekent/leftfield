@@ -6,7 +6,7 @@ import { Responsive } from 'pkg.campaign-components';
 import {
   selectCampaignTheme,
   selectComponentStyleAttributeForDeviceCascading,
-  setComponentInstanceThemeStyle,
+  setComponentThemeStyle,
   selectComponentStyles,
 } from '@editor/features/assembly';
 import { selectDeviceSize } from '@editor/features/previewMode';
@@ -57,7 +57,7 @@ export default function Selector(props) {
       value={find(options, { value: inheritFromTheme })}
       options={options}
       isDisabled={notResponsive && device !== Responsive.MOBILE_DEVICE}
-      onChange={({ value }) => dispatch(setComponentInstanceThemeStyle({
+      onChange={({ value }) => dispatch(setComponentThemeStyle({
         pageId: activePageId,
         componentId: activeComponentId,
         styleId,
