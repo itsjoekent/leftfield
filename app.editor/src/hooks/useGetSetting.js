@@ -9,6 +9,7 @@ import {
   selectSiteSettings,
 } from '@editor/features/assembly';
 
+//TODO
 export default function useGetSetting(pageId) {
   const pageSettings = useSelector(selectPageSettings(pageId));
   const siteSettings = useSelector(selectSiteSettings);

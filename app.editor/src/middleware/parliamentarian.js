@@ -20,10 +20,12 @@ import {
   setComponentInstanceStyle,
   setComponentInstanceCustomStyle,
   setComponentInstanceThemeStyle,
+  setCompiledPage,
   wipePropertyValue,
   wipePropertyInheritedFrom,
   wipeSlot,
 
+  selectComponentInstanceOf,
   selectComponentProperties,
   selectComponentPropertyInheritedFrom,
   selectComponentPropertyInheritedFromForLanguage,
@@ -32,6 +34,7 @@ import {
   selectComponentsParentComponentId,
   selectComponentsParentComponentSlotId,
   selectComponentSlot,
+  selectLibraryComponentProperties,
   selectPageSettings,
   selectSiteSettings,
   selectCampaignTheme,
@@ -49,6 +52,7 @@ import {
   selectActivePageId,
   selectActiveComponentId,
 } from '@editor/features/workspace';
+import { getPropertyValue } from '@editor/hooks/useGetPropertyValue';
 import isDefined from '@editor/utils/isDefined';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
@@ -76,17 +80,12 @@ function runParliamentarian(
   state,
   pageId,
   componentId,
+  pageSettings,
+  siteSettings,
+  campaignTheme,
+  languages,
   updateWorkspace = true,
 ) {
-  const siteSettings = selectSiteSettings(state);
-  const campaignTheme = selectCampaignTheme(state);
-
-  const languages = get(
-    siteSettings,
-    `${SiteSettings.LANGUAGES.key}.${Languages.US_ENGLISH_LANG}`,
-    [Languages.US_ENGLISH_LANG],
-  );
-
   const componentTag = selectComponentTag(pageId, componentId)(state);
   const componentPropertyValues = selectComponentProperties(pageId, componentId)(state);
   const componentStyleValues = selectComponentStyles(pageId, componentId)(state);
@@ -98,8 +97,6 @@ function runParliamentarian(
   const parentComponentTag = selectComponentTag(pageId, parentComponentId)(state);
   const parentComponentSlotId = selectComponentsParentComponentSlotId(pageId, componentId)(state);
   const parentComponentSlotMeta = find(get(ComponentMeta[parentComponentTag], 'slots'), { id: parentComponentSlotId }) || null;
-
-  const pageSettings = selectPageSettings(pageId)(state);
 
   // @NOTE
   // Step: Determine visible & hidden properties.
@@ -155,7 +152,7 @@ function runParliamentarian(
     const dynamicDefaultValue = get(property, 'dynamicDefaultValue', null);
     const inheritFromSetting = get(property, 'inheritFromSetting', null);
 
-    const getPropertyValue = (language) => get(componentPropertyValues, `${propertyId}.value.${language}`);
+    const getLocalPropertyValue = (language) => get(componentPropertyValues, `${propertyId}.value.${language}`);
 
     const hasSetDefault = (language) => !!get(appliedPropertyDefaults, `${propertyId}.${language}`, false)
       || !!(inheritFromSetting && isDefined(
@@ -165,7 +162,7 @@ function runParliamentarian(
           propertyId,
           language,
         )(state)))
-      || isDefined(getPropertyValue(language));
+      || isDefined(getLocalPropertyValue(language));
 
     if (!!inheritFromSetting) {
       const search = [
@@ -214,7 +211,7 @@ function runParliamentarian(
 
         const translatedValue = pullTranslatedValue(dynamicValue, language);
 
-        if (getPropertyValue(language) !== translatedValue) {
+        if (getLocalPropertyValue(language) !== translatedValue) {
           queueDispatch(setComponentInstancePropertyValue({
             pageId,
             componentId,
@@ -238,7 +235,7 @@ function runParliamentarian(
 
         const translatedValue = pullTranslatedValue(defaultValue, language);
 
-        if (getPropertyValue(language) !== translatedValue) {
+        if (getLocalPropertyValue(language) !== translatedValue) {
           queueDispatch(setComponentInstancePropertyValue({
             pageId,
             componentId,
@@ -453,11 +450,25 @@ const parliamentarian = store => next => action => {
   const pageId = selectActivePageId(state);
   const componentId = selectActiveComponentId(state);
 
+  const pageSettings = selectPageSettings(pageId)(state);
+  const siteSettings = selectSiteSettings(state);
+  const campaignTheme = selectCampaignTheme(state);
+
+  const languages = get(
+    siteSettings,
+    `${SiteSettings.LANGUAGES.key}.${Languages.US_ENGLISH_LANG}`,
+    [Languages.US_ENGLISH_LANG],
+  );
+
   runParliamentarian(
     queueDispatch,
     state,
     pageId,
     componentId,
+    pageSettings,
+    siteSettings,
+    campaignTheme,
+    languages,
     true,
   );
 
@@ -467,6 +478,10 @@ const parliamentarian = store => next => action => {
       state,
       pageId,
       action.payload.componentId,
+      pageSettings,
+      siteSettings,
+      campaignTheme,
+      languages,
       false,
     );
   }
@@ -481,7 +496,48 @@ const parliamentarian = store => next => action => {
     });
   }));
 
-  console.log('parliamentarian => ', store.getState());
+  const appliedState = store.getState();
+  console.log('parliamentarian => ', appliedState);
+
+  const pageCompilation = JSON.parse(JSON.stringify(get(appliedState, `assembly.pages.${pageId}`)));
+  Object.keys(get(pageCompilation, 'components', {})).forEach((componentId) => {
+    const tag = selectComponentTag(pageId, componentId)(appliedState);
+    const previewComponentProperties = selectComponentProperties(pageId, componentId)(appliedState);
+    const instanceOf = selectComponentInstanceOf(pageId, componentId)(appliedState);
+    const instanceOfProperties = selectLibraryComponentProperties(instanceOf)(appliedState);
+
+    Object.keys(previewComponentProperties).forEach((propertyId) => {
+      const properties = get(ComponentMeta[tag], `properties`);
+      const property = find(properties, { id: propertyId });
+      const isTranslatable = get(property, 'isTranslatable', false);
+
+      languages.forEach((language) => {
+        if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
+          return;
+        }
+
+        set(
+          pageCompilation,
+          `components.${componentId}.properties.${propertyId}.value.${language}`,
+          getPropertyValue(
+            propertyId,
+            language,
+            pageSettings,
+            siteSettings,
+            tag,
+            previewComponentProperties,
+            instanceOf,
+            instanceOfProperties,
+          ),
+        );
+
+        delete pageCompilation.components[componentId].properties[propertyId].inheritedFrom;
+      });
+    });
+  });
+
+  store.dispatch(setCompiledPage({ pageId, compilation: pageCompilation }));
+  console.log('parliamentarian (compiled) => ', store.getState());
 
   return result;
 }

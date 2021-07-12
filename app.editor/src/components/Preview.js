@@ -1,13 +1,9 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { find, get, set } from 'lodash';
 import { useSelector } from 'react-redux';
-import { ComponentMeta } from 'pkg.campaign-components';
-import { selectPage } from '@editor/features/assembly';
+import { selectCompiledPage } from '@editor/features/assembly';
 import { selectDeviceSizeList } from '@editor/features/previewMode';
 import { selectActivePageId } from '@editor/features/workspace';
-import useGetSetting from '@editor/hooks/useGetSetting';
-import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export default function Preview() {
   const {
@@ -19,9 +15,7 @@ export default function Preview() {
   const iframeRef = React.useRef(null);
 
   const activePageId = useSelector(selectActivePageId);
-  const activePage = useSelector(selectPage(activePageId));
-
-  const getSetting = useGetSetting(activePageId);
+  const activePagePreview = useSelector(selectCompiledPage(activePageId));
 
   const [isPreviewReady, setIsPreviewReady] = React.useState(false);
 
@@ -44,51 +38,17 @@ export default function Preview() {
 
     const { contentWindow: targetWindow } = iframe;
 
-    if (isPreviewReady && !!activePage) {
-      // @NOTE: This stringifcation is necessary because
-      // the 'state' variable has `.preventExtensions()` applied.
-      const pagePreview = JSON.parse(JSON.stringify(activePage));
-
-      Object.keys(get(pagePreview, 'components', {})).forEach((componentId) => {
-        const tag = get(pagePreview, `components.${componentId}.tag`);
-
-        Object.keys(get(pagePreview, `components.${componentId}.properties`, {})).forEach((propertyId) => {
-          const properties = get(ComponentMeta[tag], `properties`);
-          const property = find(properties, { id: propertyId });
-
-          const inheritFromSetting = get(property, 'inheritFromSetting', null);
-          const inheritedFrom = get(pagePreview, `components.${componentId}.properties.${propertyId}.inheritedFrom`, {});
-
-          if (!!inheritFromSetting && !!inheritedFrom) {
-            Object.keys(inheritedFrom).forEach((language) => {
-              const valuePath = `components.${componentId}.properties.${propertyId}.value.${language}`;
-              const inputValue = get(pagePreview, valuePath);
-
-              if (typeof inputValue !== 'undefined' && inputValue !== null) {
-                return;
-              }
-
-              const inheritedFromLocale = pullTranslatedValue(inheritedFrom, language);
-              const settingValue = getSetting(inheritedFromLocale, inheritFromSetting);
-              const translatedValue = pullTranslatedValue(settingValue, language);
-
-              set(pagePreview, valuePath, translatedValue);
-            });
-          }
-        });
-      });
-
+    if (isPreviewReady && activePagePreview) {
       targetWindow.postMessage({
         type: 'RENDER',
         payload: {
-          page: pagePreview,
+          page: activePagePreview,
         },
       }, '*');
     }
   }, [
-    activePage,
-    getSetting,
     isPreviewReady,
+    activePagePreview,
   ]);
 
   return (

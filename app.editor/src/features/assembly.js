@@ -40,6 +40,13 @@ function _addChildComponentInstance(state, action) {
 export const assemblySlice = createSlice({
   name: 'assembly',
   initialState: {
+    compiled: {
+      'test': {},
+    },
+    library: {
+      components: {},
+      styles: {},
+    },
     pages: {
       'test': {
         components: {
@@ -68,6 +75,7 @@ export const assemblySlice = createSlice({
       },
     },
     templatedFrom: null,
+    // TODO: Move to library?
     theme: theme.campaign,
   },
   reducers: {
@@ -217,6 +225,10 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, { inheritFromTheme: value });
     },
+    setCompiledPage: (state, action) => {
+      const { pageId, compilation } = action.payload;
+      set(state, `compiled.${pageId}`, compilation);
+    },
     wipePropertyValue: (state, action) => {
       const {
         pageId,
@@ -267,6 +279,7 @@ export const {
   setComponentInstanceStyle,
   setComponentInstanceCustomStyle,
   setComponentInstanceThemeStyle,
+  setCompiledPage,
   wipePropertyValue,
   wipePropertyInheritedFrom,
   wipeSlot,
@@ -488,4 +501,48 @@ export function selectComponentStyleAttributeForDeviceCascading(pageId, componen
   }
 
   return _selectComponentStyleAttributeForDeviceCascading;
+}
+
+export function selectComponentInstanceOf(pageId, componentId) {
+  function _selectComponentInstanceOf(state) {
+    return get(selectComponent(pageId, componentId)(state), 'instanceOf', null);
+  }
+
+  return _selectComponentInstanceOf;
+}
+
+export function selectLibrary(state) {
+  return get(state, 'library', {});
+}
+
+export function selectLibraryComponents(state) {
+  return get(selectLibrary(state), 'components', {});
+}
+
+export function selectLibraryComponent(componentId) {
+  function _selectLibraryComponent(state) {
+    return get(selectLibraryComponents(state), componentId, null);
+  }
+
+  return _selectLibraryComponent;
+}
+
+export function selectLibraryComponentProperties(componentId) {
+  function _selectLibraryComponentProperties(state) {
+    return get(selectLibraryComponent(componentId), 'properties', {});
+  }
+
+  return _selectLibraryComponentProperties;
+}
+
+export function selectCompiledPages(state) {
+  return get(state, 'assembly.compiled', {});
+}
+
+export function selectCompiledPage(pageId) {
+  function _selectCompiledPage(state) {
+    return get(selectCompiledPages(state), pageId, {});
+  }
+
+  return _selectCompiledPage;
 }

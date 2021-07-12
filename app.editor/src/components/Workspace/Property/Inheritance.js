@@ -11,16 +11,20 @@ import {
   Typography,
 } from 'pkg.admin-components';
 import {
-  SITE_SETTINGS,
+  MAIN_COMPONENT,
   PAGE_SETTINGS,
   SETTING_LABELS,
+  SITE_SETTINGS,
 } from '@editor/constants/inheritance';
 import {
+  selectComponentInstanceOf,
   selectComponentPropertyInheritedFromForLanguage,
   setComponentInstanceInheritedFrom,
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
+import useGetPropertyValue from '@editor/hooks/useGetPropertyValue';
 import useGetSetting from '@editor/hooks/useGetSetting';
+import isDefined from '@editor/utils/isDefined';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export default function PropertyInheritance(props) {
@@ -34,6 +38,7 @@ export default function PropertyInheritance(props) {
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
 
+  const instanceOf = useSelector(selectComponentInstanceOf(activePageId, activeComponentId));
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
     activeComponentId,
@@ -41,29 +46,29 @@ export default function PropertyInheritance(props) {
     language,
   ));
 
+  const getPropertyValue = useGetPropertyValue(activePageId, activeComponentId);
   const getSetting = useGetSetting(activePageId);
+
   const inheritFromSetting = get(property, 'inheritFromSetting', null);
 
   function isSettingDefined(level) {
     const setting = getSetting(level, inheritFromSetting, null);
-    return (isTranslatable ? pullTranslatedValue(setting, language) : setting) !== null;
+    return isDefined(isTranslatable ? pullTranslatedValue(setting, language) : setting);
   }
 
   // TODO: Deep link to the setting menu
-  if (!!inheritedFrom) {
+  if (isDefined(inheritedFrom) || isDefined(instanceOf)) {
+    const label = isDefined(instanceOf)
+      ? SETTING_LABELS[MAIN_COMPONENT]
+      : SETTING_LABELS[inheritedFrom];
+
     return (
       <Flex.Row align="center" gridGap="2px" paddingRight="12px">
         <Tooltip copy="Remove settings reference" point={Tooltip.UP_LEFT_ALIGNED}>
           <Buttons.IconButton
             onClick={(event) => {
               event.preventDefault();
-
-              const value = pullTranslatedValue(
-                getSetting(inheritedFrom, inheritFromSetting),
-                language,
-              );
-
-              setFieldValue(value);
+              setFieldValue(getPropertyValue(propertyId));
             }}
             IconComponent={Icons.RemoveFill}
             width={18}
@@ -86,7 +91,7 @@ export default function PropertyInheritance(props) {
             fg={(colors) => colors.blue[400]}
             hoverFg={(colors) => colors.blue[700]}
           >
-            {SETTING_LABELS[inheritedFrom]}
+            {label}
           </Typography>
         </Typography>
       </Flex.Row>
@@ -109,20 +114,20 @@ export default function PropertyInheritance(props) {
 
   return (
     <Flex.Row align="center" gridGap="6px">
-      {isSettingDefined(SITE_SETTINGS) && (
-        <InheritanceButton
-          aria-label={`Reference the ${SETTING_LABELS[SITE_SETTINGS]} value`}
-          onClick={onClick(SITE_SETTINGS)}
-        >
-          {SETTING_LABELS[SITE_SETTINGS]}
-        </InheritanceButton>
-      )}
       {isSettingDefined(PAGE_SETTINGS) && (
         <InheritanceButton
           aria-label={`Reference the ${SETTING_LABELS[PAGE_SETTINGS]} value`}
           onClick={onClick(PAGE_SETTINGS)}
         >
           {SETTING_LABELS[PAGE_SETTINGS]}
+        </InheritanceButton>
+      )}
+      {isSettingDefined(SITE_SETTINGS) && (
+        <InheritanceButton
+          aria-label={`Reference the ${SETTING_LABELS[SITE_SETTINGS]} value`}
+          onClick={onClick(SITE_SETTINGS)}
+        >
+          {SETTING_LABELS[SITE_SETTINGS]}
         </InheritanceButton>
       )}
     </Flex.Row>

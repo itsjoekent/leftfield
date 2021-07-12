@@ -4,22 +4,24 @@ import { useSelector } from 'react-redux';
 import { useFormField } from 'pkg.form-wizard';
 import { Languages } from 'pkg.campaign-components';
 import { Inputs } from 'pkg.admin-components';
-import { selectComponentPropertyInheritedFromForLanguage } from '@editor/features/assembly';
+import {
+  selectComponentInstanceOf,
+  selectComponentPropertyInheritedFromForLanguage,
+} from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
-import useGetSetting from '@editor/hooks/useGetSetting';
+import useGetPropertyValue from '@editor/hooks/useGetPropertyValue';
 import isDefined from '@editor/utils/isDefined';
-import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export default function ShortText(props) {
   const { fieldId, language, property } = props;
 
   const propertyId = get(property, 'id');
-  const inheritFromSetting = get(property, 'inheritFromSetting', null);
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
 
-  const getSetting = useGetSetting(activePageId);
+  const getPropertyValue = useGetPropertyValue(activePageId, activeComponentId);
 
+  const instanceOf = useSelector(selectComponentInstanceOf(activePageId, activeComponentId));
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
     activeComponentId,
@@ -43,11 +45,8 @@ export default function ShortText(props) {
     'aria-labelledby': `${propertyId}-${Languages.US_ENGLISH_LANG}`,
   };
 
-  if (isDefined(inheritedFrom)) {
-    const value = pullTranslatedValue(
-      getSetting(inheritedFrom, inheritFromSetting),
-      language,
-    );
+  if (isDefined(inheritedFrom) || isDefined(instanceOf)) {
+    const value = getPropertyValue(propertyId, language);
 
     finalInputProps['disabled'] = true;
     finalInputProps['value'] = value;

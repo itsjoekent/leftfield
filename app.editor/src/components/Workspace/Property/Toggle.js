@@ -4,22 +4,24 @@ import { useSelector } from 'react-redux';
 import { useFormField } from 'pkg.form-wizard';
 import { Languages } from 'pkg.campaign-components';
 import { Inputs } from 'pkg.admin-components';
-import { selectComponentPropertyInheritedFromForLanguage } from '@editor/features/assembly';
+import {
+  selectComponentInstanceOf,
+  selectComponentPropertyInheritedFromForLanguage,
+} from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
-import useGetSetting from '@editor/hooks/useGetSetting';
+import useGetPropertyValue from '@editor/hooks/useGetPropertyValue';
 import isDefined from '@editor/utils/isDefined';
-import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 
 export default function Toggle(props) {
   const { fieldId, language, property } = props;
   const propertyId = get(property, 'id');
-  const inheritFromSetting = get(property, 'inheritFromSetting', null);
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
 
-  const getSetting = useGetSetting(activePageId);
+  const getPropertyValue = useGetPropertyValue(activePageId, activeComponentId);
 
+  const instanceOf = useSelector(selectComponentInstanceOf(activePageId, activeComponentId));
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
     activeComponentId,
@@ -38,12 +40,9 @@ export default function Toggle(props) {
     value,
   } = field;
 
-  const finalValue = !isDefined(inheritedFrom) ? value : (
-    pullTranslatedValue(
-      getSetting(inheritedFrom, inheritFromSetting),
-      language,
-    )
-  );
+  const finalValue = (isDefined(inheritedFrom) || isDefined(instanceOf))
+    ? getPropertyValue(propertyId, language)
+    : value;
 
   return (
     <Inputs.Toggle
