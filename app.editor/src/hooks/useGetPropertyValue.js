@@ -2,15 +2,12 @@ import { find, get } from 'lodash';
 import { useSelector } from 'react-redux';
 import { ComponentMeta, Languages } from 'pkg.campaign-components';
 import {
-  MAIN_COMPONENT,
   PAGE_SETTINGS,
   SITE_SETTINGS,
 } from '@editor/constants/inheritance';
 import {
-  selectComponentInstanceOf,
   selectComponentProperties,
   selectComponentTag,
-  selectLibraryComponentProperties,
   selectPageSettings,
   selectSiteSettings,
 } from '@editor/features/assembly';
@@ -24,8 +21,6 @@ export function getPropertyValue(
   _siteSettings,
   _componentTag,
   _componentProperties,
-  _instanceOf,
-  _instanceOfProperties,
 ) {
   const search = ((searchFrom) => {
     switch (searchFrom) {
@@ -38,31 +33,11 @@ export function getPropertyValue(
     }
   });
 
-  const componentProperty = get(_componentProperties, propertyId);
   const componentPropertyMeta = find(get(ComponentMeta[_componentTag], 'properties'), { id: propertyId });
   const inheritFromSetting = get(componentPropertyMeta, 'inheritFromSetting', null);
+
+  const componentProperty = get(_componentProperties, propertyId);
   const inheritedFrom = pullTranslatedValue(get(componentProperty, 'inheritedFrom', null), language);
-
-  if (isDefined(_instanceOf) && inheritedFrom === MAIN_COMPONENT) {
-    const instanceOfProperty = get(_instanceOfProperties, propertyId);
-    const instanceOfInheritedFrom = pullTranslatedValue(get(instanceOfProperty, 'inheritedFrom', null), language);
-
-    if (isDefined(inheritFromSetting) && isDefined(instanceOfInheritedFrom)) {
-      return pullTranslatedValue(
-        get(search(instanceOfInheritedFrom), inheritFromSetting, null),
-        language,
-      );
-    }
-
-    const instanceOfPropertyValue = pullTranslatedValue(
-      get(instanceOfProperty, 'value', null),
-      language,
-    );
-
-    if (isDefined(instanceOfPropertyValue)) {
-      return instanceOfPropertyValue;
-    }
-  }
 
   if (isDefined(inheritFromSetting) && isDefined(inheritedFrom)) {
     return pullTranslatedValue(
@@ -86,9 +61,6 @@ export default function useGetPropertyValue(pageId, componentId) {
   const componentTag = useSelector(selectComponentTag(pageId, componentId));
   const componentProperties = useSelector(selectComponentProperties(pageId, componentId));
 
-  const instanceOf = useSelector(selectComponentInstanceOf(pageId, componentId));
-  const instanceOfProperties = useSelector(selectLibraryComponentProperties(instanceOf));
-
   return (propertyId, language) => getPropertyValue(
     propertyId,
     language,
@@ -96,7 +68,5 @@ export default function useGetPropertyValue(pageId, componentId) {
     siteSettings,
     componentTag,
     componentProperties,
-    instanceOf,
-    instanceOfProperties,
   );
 }

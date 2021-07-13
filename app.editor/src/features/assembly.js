@@ -8,8 +8,6 @@ import {
   SiteSettings,
   theme,
 } from 'pkg.campaign-components';
-import { MAIN_COMPONENT } from '@editor/constants/inheritance';
-import { getSiteSettings } from '@editor/hooks/useSiteLanguages';
 
 const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
   ...acc,
@@ -66,10 +64,6 @@ export const assemblySlice = createSlice({
     compiled: {
       'test': {},
     },
-    library: {
-      components: {},
-      styles: {},
-    },
     pages: {
       'test': {
         components: {
@@ -97,6 +91,7 @@ export const assemblySlice = createSlice({
         ],
       },
     },
+    styleLibrary: {},
     templatedFrom: null,
     // TODO: Move to library?
     theme: theme.campaign,
@@ -174,53 +169,6 @@ export const assemblySlice = createSlice({
         parentComponentId: get(originalComponent, 'childOf'),
         slotId: get(originalComponent, 'withinSlot'),
       });
-    },
-    exportComponentToLibrary: (state, action) => {
-      const {
-        pageId,
-        componentId,
-      } = action.payload;
-
-      const component = selectComponent(pageId, componentId)({ assembly: state });
-
-      const libraryId = uuid();
-      const libraryComponent = {
-        ...component,
-        id: libraryId,
-      };
-
-      delete libraryComponent.childOf;
-      delete libraryComponent.withinSlot;
-
-      set(state, `library.components.${libraryId}`, libraryComponent);
-
-      set(state, `pages.${pageId}.components.${componentId}.instanceOf`, libraryId);
-
-      const componentPropertyValues = selectComponentProperties(pageId, componentId)({ assembly: state });
-      const languages = getSiteSettings(selectSiteSettings({ assembly: state }));
-
-      const updatedComponentPropertyValues = Object.keys(componentPropertyValues)
-        .reduce((acc, propertyId) => {
-          const tag = get(componentPropertyValues, `${propertyId}.tag`);
-          const property = get(ComponentMeta[tag], `properties`, []);
-          const isTranslatable = get(property, 'isTranslatable', false);
-
-          languages.forEach((language) => {
-            if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
-              return;
-            }
-
-            set(
-              acc,
-              `${propertyId}.inheritedFrom.${language}`,
-              MAIN_COMPONENT
-            );
-          });
-
-          return acc;
-        }, {});
-
-      set(state, `pages.${pageId}.components.${componentId}.properties`, updatedComponentPropertyValues);
     },
     reorderChildComponent: (state, action) => {
       const {
@@ -341,6 +289,7 @@ export const assemblySlice = createSlice({
 
       const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
 
+      // TODO: replace with calling the recursive code above
       get(state, path, []).forEach((childId) => {
         if (get(state, `pages.${pageId}.components.${childId}`)) {
           delete state.pages[pageId].components[childId];
@@ -348,6 +297,17 @@ export const assemblySlice = createSlice({
       });
 
       set(state, path, []);
+    },
+    wipeStyle: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        styleId,
+      } = action.payload;
+
+      const path = `pages.${pageId}.components.${componentId}.styles.${styleId}`;
+
+      set(state, path, {});
     },
   },
 });
@@ -357,7 +317,6 @@ export const {
   buildComponent,
   deleteComponentAndDescendants,
   duplicateComponent,
-  exportComponentToLibrary,
   removeChildComponentFromSlot,
   reorderChildComponent,
   resetComponentStyleAttribute,
@@ -370,6 +329,7 @@ export const {
   wipePropertyValue,
   wipePropertyInheritedFrom,
   wipeSlot,
+  wipeStyle,
 } = assemblySlice.actions;
 
 export default assemblySlice.reducer;
@@ -533,9 +493,17 @@ export function selectComponentStyles(pageId, componentId) {
   return _selectComponentStyles;
 }
 
+export function selectComponentStyle(pageId, componentId, styleId) {
+  function _selectComponentStyle(state) {
+    return get(selectComponentStyles(pageId, componentId)(state), styleId, {});
+  }
+
+  return _selectComponentStyle;
+}
+
 export function selectComponentStyleAttribute(pageId, componentId, styleId, attributeId) {
   function _selectComponentStyleAttribute(state) {
-    return get(selectComponentStyles(pageId, componentId)(state), `${styleId}.${attributeId}`, {});
+    return get(selectComponentStyle(pageId, componentId, styleId)(state), attributeId, {});
   }
 
   return _selectComponentStyleAttribute;
@@ -592,45 +560,8 @@ export function selectComponentStyleAttributeForDeviceCascading(pageId, componen
   return _selectComponentStyleAttributeForDeviceCascading;
 }
 
-export function selectComponentInstanceOf(pageId, componentId) {
-  function _selectComponentInstanceOf(state) {
-    return get(selectComponent(pageId, componentId)(state), 'instanceOf', null);
-  }
-
-  return _selectComponentInstanceOf;
-}
-
-export function selectLibrary(state) {
-  return get(state, 'assembly.library', {});
-}
-
-export function selectLibraryComponents(state) {
-  return get(selectLibrary(state), 'components', {});
-}
-
-export function selectLibraryComponent(componentId) {
-  function _selectLibraryComponent(state) {
-    if (componentId === 'test') console.trace(componentId);
-    return get(selectLibraryComponents(state), componentId, null);
-  }
-
-  return _selectLibraryComponent;
-}
-
-export function selectLibraryComponentProperties(componentId) {
-  function _selectLibraryComponentProperties(state) {
-    return get(selectLibraryComponent(componentId)(state), 'properties', {});
-  }
-
-  return _selectLibraryComponentProperties;
-}
-
-export function selectLibraryComponentProperty(componentId, propertyId) {
-  function _selectLibraryComponentProperty(state) {
-    return get(selectLibraryComponentProperties(componentId)(state), propertyId, {});
-  }
-
-  return _selectLibraryComponentProperty;
+export function selectStyleLibrary(state) {
+  return get(state, 'assembly.styleLibrary', {});
 }
 
 export function selectCompiledPages(state) {

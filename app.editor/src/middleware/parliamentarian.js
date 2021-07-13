@@ -11,7 +11,6 @@ import {
   PARLIAMENTARIAN_ESCAPE_KEY,
 } from '@editor/constants/parliamentarian';
 import {
-  MAIN_COMPONENT,
   PAGE_SETTINGS,
   SITE_SETTINGS,
 } from '@editor/constants/inheritance';
@@ -20,7 +19,6 @@ import {
   buildComponent,
   deleteComponentAndDescendants,
   duplicateComponent,
-  exportComponentToLibrary,
   removeChildComponentFromSlot,
   reorderChildComponent,
   setComponentPropertyValue,
@@ -32,19 +30,18 @@ import {
   wipePropertyValue,
   wipePropertyInheritedFrom,
   wipeSlot,
+  wipeStyle,
 
   selectComponent,
-  selectComponentInstanceOf,
   selectComponentProperties,
   selectComponentPropertyInheritedFrom,
   selectComponentPropertyInheritedFromForLanguage,
+  selectComponentStyle,
   selectComponentStyles,
   selectComponentTag,
   selectComponentsParentComponentId,
   selectComponentsParentComponentSlotId,
   selectComponentSlot,
-  selectLibraryComponentProperties,
-  selectLibraryComponentProperty,
   selectPageRootComponentId,
   selectPageSettings,
   selectSiteSettings,
@@ -82,7 +79,6 @@ const TRIGGERS = [
   buildComponent.toString(),
   deleteComponentAndDescendants.toString(),
   duplicateComponent.toString(),
-  exportComponentToLibrary.toString(),
   removeChildComponentFromSlot.toString(),
   reorderChildComponent.toString(),
   setComponentPropertyValue.toString(),
@@ -93,11 +89,6 @@ const TRIGGERS = [
   navigateToPast.toString(),
   navigateToFuture.toString(),
   setActivePageId.toString(),
-];
-
-const RERUN_TRIGGERS = [
-  setComponentPropertyValue.toString(),
-  setComponentInheritedFrom.toString(),
 ];
 
 function runParliamentarian(
@@ -114,10 +105,6 @@ function runParliamentarian(
   const componentTag = selectComponentTag(pageId, componentId)(state);
   const componentPropertyValues = selectComponentProperties(pageId, componentId)(state);
   const componentStyleValues = selectComponentStyles(pageId, componentId)(state);
-
-  const componentInstanceOf = selectComponentInstanceOf(pageId, componentId)(state);
-  const mainComponentProperties = selectLibraryComponentProperties(componentInstanceOf)(state);
-  const isInstance = isDefined(componentInstanceOf);
 
   const componentMeta = ComponentMeta[componentTag];
   const componentProperties = get(componentMeta, 'properties', []);
@@ -147,8 +134,6 @@ function runParliamentarian(
           siteSettings,
           componentTag,
           componentPropertyValues,
-          componentInstanceOf,
-          mainComponentProperties,
         ),
       );
     });
@@ -222,31 +207,6 @@ function runParliamentarian(
           language,
         )(state)))
       || isDefined(getLocalPropertyValue(language));
-
-    if (isInstance) {
-      const instanceProperty = selectLibraryComponentProperty(componentInstanceOf, propertyId)(state);
-
-      languages.forEach((language) => {
-        if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
-          return;
-        }
-
-        const mainComponentHasProperty = isDefined(pullTranslatedValue(get(instanceProperty, 'value'), language))
-          || isDefined(pullTranslatedValue(get(instanceProperty, 'inheritedFrom'), language));
-
-        if (!!mainComponentHasProperty && !hasSetDefault(language)) {
-          queueDispatch(setComponentInheritedFrom({
-            pageId,
-            componentId,
-            propertyId: property.id,
-            value: MAIN_COMPONENT,
-            language,
-          }));
-
-          set(appliedPropertyDefaults, `${propertyId}.${language}`, true);
-        }
-      });
-    }
 
     if (!!inheritFromSetting) {
       const search = [
@@ -463,6 +423,25 @@ function runParliamentarian(
   });
 
   // @NOTE
+  // Step: Remove values from hidden styles.
+
+  hiddenStyles.forEach((style) => {
+    const styleId = style.id;
+
+    const hasValue = !isEmpty(
+      selectComponentStyle(pageId, componentId, styleId)(state)
+    );
+
+    if (hasValue) {
+      queueDispatch(wipeStyle({
+        pageId,
+        componentId,
+        styleId,
+      }));
+    }
+  });
+
+  // @NOTE
   // Step: Determine visible & hidden slots.
 
   const {
@@ -559,20 +538,6 @@ const parliamentarian = store => next => action => {
   const dispatches = [];
   const queueDispatch = (action) => dispatches.push(action);
 
-  function runQueue() {
-    batch(() => dispatches.forEach((action) => {
-      store.dispatch({
-        ...action,
-        payload: {
-          ...action.payload,
-          [PARLIAMENTARIAN_ESCAPE_KEY]: true,
-        },
-      });
-    }));
-
-    dispatches.length = 0;
-  }
-
   const pageId = selectActivePageId(state);
   const componentId = selectActiveComponentId(state);
 
@@ -621,26 +586,15 @@ const parliamentarian = store => next => action => {
     );
   }
 
-  runQueue();
-
-  const shouldReRun = RERUN_TRIGGERS.includes(action.type)
-    && get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false) === false;
-
-  if (shouldReRun) {
-    runParliamentarian(
-      queueDispatch,
-      store.getState(),
-      pageId,
-      componentId,
-      pageSettings,
-      siteSettings,
-      campaignTheme,
-      languages,
-      true,
-    );
-
-    runQueue();
-  }
+  batch(() => dispatches.forEach((action) => {
+    store.dispatch({
+      ...action,
+      payload: {
+        ...action.payload,
+        [PARLIAMENTARIAN_ESCAPE_KEY]: true,
+      },
+    });
+  }));
 
   const appliedState = store.getState();
   console.log('parliamentarian => ', appliedState);
@@ -649,8 +603,6 @@ const parliamentarian = store => next => action => {
   Object.keys(get(pageCompilation, 'components', {})).forEach((componentId) => {
     const tag = selectComponentTag(pageId, componentId)(appliedState);
     const previewComponentProperties = selectComponentProperties(pageId, componentId)(appliedState);
-    const instanceOf = selectComponentInstanceOf(pageId, componentId)(appliedState);
-    const instanceOfProperties = selectLibraryComponentProperties(instanceOf)(appliedState);
 
     Object.keys(previewComponentProperties).forEach((propertyId) => {
       const properties = get(ComponentMeta[tag], `properties`);
@@ -672,8 +624,6 @@ const parliamentarian = store => next => action => {
             siteSettings,
             tag,
             previewComponentProperties,
-            instanceOf,
-            instanceOfProperties,
           ),
         );
 

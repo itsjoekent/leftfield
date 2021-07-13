@@ -11,7 +11,6 @@ import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceCompone
 import useGetPropertyValue from '@editor/hooks/useGetPropertyValue';
 import isDefined from '@editor/utils/isDefined';
 
-
 export default function Toggle(props) {
   const { fieldId, language, property } = props;
   const propertyId = get(property, 'id');

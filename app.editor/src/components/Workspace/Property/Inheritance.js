@@ -11,15 +11,12 @@ import {
   Typography,
 } from 'pkg.admin-components';
 import {
-  MAIN_COMPONENT,
   PAGE_SETTINGS,
   SETTING_LABELS,
   SITE_SETTINGS,
 } from '@editor/constants/inheritance';
 import {
-  selectComponentInstanceOf,
   selectComponentPropertyInheritedFromForLanguage,
-  selectLibraryComponentProperty,
   setComponentInheritedFrom,
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -39,9 +36,6 @@ export default function PropertyInheritance(props) {
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
 
-  const instanceOf = useSelector(selectComponentInstanceOf(activePageId, activeComponentId));
-  const instanceProperty = useSelector(selectLibraryComponentProperty(instanceOf, propertyId));
-
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
     activeComponentId,
@@ -55,15 +49,6 @@ export default function PropertyInheritance(props) {
   const inheritFromSetting = get(property, 'inheritFromSetting', null);
 
   function isSettingDefined(level) {
-    if (level === MAIN_COMPONENT) {
-      if (!instanceOf) {
-        return false;
-      }
-
-      return isDefined(pullTranslatedValue(get(instanceProperty, 'value'), language))
-        || isDefined(pullTranslatedValue(get(instanceProperty, 'inheritedFrom'), language));
-    }
-
     const setting = getSetting(level, inheritFromSetting, null);
     return isDefined(isTranslatable ? pullTranslatedValue(setting, language) : setting);
   }
@@ -124,14 +109,6 @@ export default function PropertyInheritance(props) {
 
   return (
     <Flex.Row align="center" gridGap="6px">
-      {isSettingDefined(MAIN_COMPONENT) && (
-        <InheritanceButton
-          aria-label={`Reference the ${SETTING_LABELS[MAIN_COMPONENT]} value`}
-          onClick={onClick(MAIN_COMPONENT)}
-        >
-          {SETTING_LABELS[MAIN_COMPONENT]}
-        </InheritanceButton>
-      )}
       {isSettingDefined(PAGE_SETTINGS) && (
         <InheritanceButton
           aria-label={`Reference the ${SETTING_LABELS[PAGE_SETTINGS]} value`}
