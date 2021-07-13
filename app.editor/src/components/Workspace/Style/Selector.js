@@ -7,7 +7,7 @@ import {
   selectCampaignTheme,
   selectComponentStyleAttributeForDeviceCascading,
   setComponentThemeStyle,
-  selectComponentStyles,
+  selectComponentStyle,
 } from '@editor/features/assembly';
 import { selectDeviceSize } from '@editor/features/previewMode';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -24,8 +24,8 @@ export default function Selector(props) {
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
-  const componentStyles = useSelector(
-    selectComponentStyles(activePageId, activeComponentId)
+  const componentStyle = useSelector(
+    selectComponentStyle(activePageId, activeComponentId, styleId)
   );
 
   const campaignTheme = useSelector(selectCampaignTheme);
@@ -36,7 +36,7 @@ export default function Selector(props) {
 
   const dynamicEvalData = {
     campaignTheme,
-    styles: get(componentStyles, styleId, {}),
+    styles: componentStyle,
   };
 
   const options = get(attribute, 'options')

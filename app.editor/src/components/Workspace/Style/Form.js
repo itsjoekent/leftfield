@@ -1,5 +1,6 @@
 import React from 'react';
 import { get } from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Buttons,
   Icons,
@@ -10,6 +11,14 @@ import {
 import WorkspaceStyleAttribute from '@editor/components/Workspace/Style/Attribute';
 import WorkspaceStyleLabel from '@editor/components/Workspace/Style/Label';
 import WorkspaceStyleResponsiveHint from '@editor/components/Workspace/Style/ResponsiveHint';
+import {
+  detachStyleReference,
+  selectComponentStyleInheritsFrom,
+  selectStyleNameFromStyleLibrary,
+} from '@editor/features/assembly';
+import { setModal, EXPORT_STYLE_MODAL } from '@editor/features/modal';
+import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
+import isDefined from '@editor/utils/isDefined';
 
 export default function StyleForm(props) {
   const { styleData } = props;
@@ -19,6 +28,18 @@ export default function StyleForm(props) {
   const help = get(styleData, 'help', null);
   const type = get(styleData, 'type', null);
   const attributes = get(styleData, 'attributes', []);
+
+  const dispatch = useDispatch();
+
+  const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
+
+  const inheritsFromStyle = useSelector(selectComponentStyleInheritsFrom(
+    activePageId,
+    activeComponentId,
+    styleId,
+  ));
+
+  const inheritsFromStyleName = useSelector(selectStyleNameFromStyleLibrary(inheritsFromStyle));
 
   return (
     <Flex.Column
@@ -47,17 +68,26 @@ export default function StyleForm(props) {
                   onClick={() => {}}
                 />
               </Tooltip>
-              <Tooltip copy="Export this style" point={Tooltip.UP_RIGHT_ALIGNED}>
-                <Buttons.IconButton
-                  IconComponent={Icons.Export}
-                  width={20}
-                  height={20}
-                  color={(colors) => colors.mono[500]}
-                  hoverColor={(colors) => colors.mono[700]}
-                  aria-label="Export this style"
-                  onClick={() => {}}
-                />
-              </Tooltip>
+              {!isDefined(inheritsFromStyle) && (
+                <Tooltip copy="Export this style" point={Tooltip.UP_RIGHT_ALIGNED}>
+                  <Buttons.IconButton
+                    IconComponent={Icons.Export}
+                    width={20}
+                    height={20}
+                    color={(colors) => colors.mono[500]}
+                    hoverColor={(colors) => colors.mono[700]}
+                    aria-label="Export this style"
+                    onClick={() => dispatch(setModal({
+                      type: EXPORT_STYLE_MODAL,
+                      props: {
+                        pageId: activePageId,
+                        componentId: activeComponentId,
+                        styleId,
+                      },
+                    }))}
+                  />
+                </Tooltip>
+              )}
             </Flex.Row>
           )}
         </Flex.Row>
@@ -69,6 +99,32 @@ export default function StyleForm(props) {
           >
             {help}
           </Typography>
+        )}
+        {isDefined(inheritsFromStyle) && (
+          <Flex.Row fullWidth align="center" gridGap="2px">
+            <Tooltip copy="Detatch style reference" point={Tooltip.UP_LEFT_ALIGNED}>
+              <Buttons.IconButton
+                onClick={() => dispatch(detachStyleReference({
+                  pageId: activePageId,
+                  componentId: activeComponentId,
+                  styleId,
+                }))}
+                IconComponent={Icons.RemoveFill}
+                width={18}
+                height={18}
+                color={(colors) => colors.blue[500]}
+                hoverColor={(colors) => colors.blue[800]}
+                aria-label="Detatch style reference"
+              />
+            </Tooltip>
+            <Typography
+              fontStyle="regular"
+              fontSize="14px"
+              fg={(colors) => colors.blue[500]}
+            >
+              Editing {inheritsFromStyleName}
+            </Typography>
+          </Flex.Row>
         )}
       </Flex.Column>
       {attributes.map((attribute) => (

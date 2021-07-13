@@ -84,6 +84,7 @@ export default function Workspace(props) {
           justifyContent="space-between"
           gridGap="36px"
           padding="12px"
+          paddingBottom="0px"
           overflowY="scroll"
         >
           <Flex.Column fullHeight gridGap="12px">
@@ -141,7 +142,12 @@ export default function Workspace(props) {
               />
             </Tooltip>
           </Flex.Column>
-          <Flex.Column overflowY="scroll" gridGap="32px" fullWidth>
+          <Flex.Column
+            overflowY="scroll"
+            gridGap="32px"
+            paddingBottom="24px"
+            fullWidth
+          >
             {isActiveTab(PROPERTIES_TAB) && (
               <WorkspaceSection name="Properties">
                 <WorkspacePropertiesForm />

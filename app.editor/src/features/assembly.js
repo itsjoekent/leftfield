@@ -8,6 +8,7 @@ import {
   SiteSettings,
   theme,
 } from 'pkg.campaign-components';
+import isDefined from '@editor/utils/isDefined';
 
 const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
   ...acc,
@@ -149,6 +150,23 @@ export const assemblySlice = createSlice({
 
       recursiveDelete(componentId);
     },
+    detachStyleReference: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        styleId,
+      } = action.payload;
+
+      const style = selectComponentStyle(pageId, componentId, styleId)({ assembly: state });
+
+      const insert = { ...style };
+      delete insert.id;
+      delete insert.name;
+
+      console.log(insert);
+
+      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, insert);
+    },
     duplicateComponent: (state, action) => {
       const {
         pageId,
@@ -169,6 +187,22 @@ export const assemblySlice = createSlice({
         parentComponentId: get(originalComponent, 'childOf'),
         slotId: get(originalComponent, 'withinSlot'),
       });
+    },
+    exportStyle: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        styleId,
+        styleName,
+      } = action.payload;
+
+      const style = selectComponentStyle(pageId, componentId, styleId)({ assembly: state });
+
+      const libraryId = uuid();
+      const libraryStyle = { ...style, id: libraryId, name: styleName };
+
+      set(state, `styleLibrary.${libraryId}`, libraryStyle);
+      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromStyle: libraryId });
     },
     reorderChildComponent: (state, action) => {
       const {
@@ -195,6 +229,12 @@ export const assemblySlice = createSlice({
         attributeId,
         device,
       } = action.payload;
+
+      const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      if (isDefined(inheritsFromStyle)) {
+        set(state, `styleLibrary.${inheritsFromStyle}.${attributeId}.${device}`, {});
+        return;
+      }
 
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, {});
     },
@@ -232,6 +272,12 @@ export const assemblySlice = createSlice({
         value,
       } = action.payload;
 
+      const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      if (isDefined(inheritsFromStyle)) {
+        set(state, `styleLibrary.${inheritsFromStyle}.${attributeId}.${device}`, value);
+        return;
+      }
+
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, value);
     },
     setComponentCustomStyle: (state, action) => {
@@ -244,6 +290,12 @@ export const assemblySlice = createSlice({
         value,
       } = action.payload;
 
+      const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      if (isDefined(inheritsFromStyle)) {
+        set(state, `styleLibrary.${inheritsFromStyle}.${attributeId}.${device}`, { custom: value });
+        return;
+      }
+
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, { custom: value });
     },
     setComponentThemeStyle: (state, action) => {
@@ -255,6 +307,12 @@ export const assemblySlice = createSlice({
         device,
         value,
       } = action.payload;
+
+      const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      if (isDefined(inheritsFromStyle)) {
+        set(state, `styleLibrary.${inheritsFromStyle}.${attributeId}.${device}`, { inheritFromTheme: value });
+        return;
+      }
 
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, { inheritFromTheme: value });
     },
@@ -316,7 +374,9 @@ export const {
   addChildComponentToSlot,
   buildComponent,
   deleteComponentAndDescendants,
+  detachStyleReference,
   duplicateComponent,
+  exportStyle,
   removeChildComponentFromSlot,
   reorderChildComponent,
   resetComponentStyleAttribute,
@@ -493,8 +553,22 @@ export function selectComponentStyles(pageId, componentId) {
   return _selectComponentStyles;
 }
 
+export function selectComponentStyleInheritsFrom(pageId, componentId, styleId) {
+  function _selectComponentStyleInheritsFrom(state) {
+    return get(selectComponentStyles(pageId, componentId)(state), `${styleId}.inheritsFromStyle`, null);
+  }
+
+  return _selectComponentStyleInheritsFrom;
+}
+
 export function selectComponentStyle(pageId, componentId, styleId) {
   function _selectComponentStyle(state) {
+    const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)(state);
+
+    if (isDefined(inheritsFromStyle)) {
+      return selectStyleFromStyleLibrary(inheritsFromStyle, styleId)(state);
+    }
+
     return get(selectComponentStyles(pageId, componentId)(state), styleId, {});
   }
 
@@ -560,10 +634,6 @@ export function selectComponentStyleAttributeForDeviceCascading(pageId, componen
   return _selectComponentStyleAttributeForDeviceCascading;
 }
 
-export function selectStyleLibrary(state) {
-  return get(state, 'assembly.styleLibrary', {});
-}
-
 export function selectCompiledPages(state) {
   return get(state, 'assembly.compiled', {});
 }
@@ -574,4 +644,24 @@ export function selectCompiledPage(pageId) {
   }
 
   return _selectCompiledPage;
+}
+
+export function selectStyleLibrary(state) {
+  return get(state, 'assembly.styleLibrary', {});
+}
+
+export function selectStyleFromStyleLibrary(styleId) {
+  function _selectStyleFromStyleLibrary(state) {
+    return get(selectStyleLibrary(state), styleId, {});
+  }
+
+  return _selectStyleFromStyleLibrary;
+}
+
+export function selectStyleNameFromStyleLibrary(styleId) {
+  function _selectStyleNameFromStyleLibrary(state) {
+    return get(selectStyleFromStyleLibrary(styleId)(state), 'name', null);
+  }
+
+  return _selectStyleNameFromStyleLibrary;
 }

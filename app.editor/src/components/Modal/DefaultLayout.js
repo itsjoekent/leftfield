@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { Flex, Icons } from 'pkg.admin-components';
+import { Buttons, Flex, Icons } from 'pkg.admin-components';
 import { closeModal } from '@editor/features/modal';
 
 export default function DefaultLayout(props) {
@@ -46,16 +46,20 @@ export default function DefaultLayout(props) {
         ref={modalRef}
         width={width}
         role="dialog"
-        aria-labelledby="modal-title"
       >
-        <TitleRow justify="center" align="center" padding="6px">
-          <Title id="modal-title">{title}</Title>
-          <CloseButton
+        <TitleRow
+          justify="flex-end"
+          align="center"
+          padding="6px"
+          bg={(colors) => colors.mono[200]}
+        >
+          <Buttons.IconButton
+            IconComponent={Icons.CloseRound}
+            color={(colors) => colors.mono[600]}
+            hoverColor={(colors) => colors.mono[900]}
             aria-label="Close dialog"
             onClick={() => dispatch(closeModal())}
-          >
-            <Icons.CloseRound width={18} height={18} />
-          </CloseButton>
+          />
         </TitleRow>
         {children}
       </ModalContainer>
@@ -89,47 +93,4 @@ const ModalContainer = styled(Flex.Column)`
 const TitleRow = styled(Flex.Row)`
   border-top-right-radius: ${(props) => props.theme.rounded.default};
   border-top-left-radius: ${(props) => props.theme.rounded.default};
-  background-color: ${(props) => props.theme.colors.mono[200]};
-  position: relative;
-`;
-
-const Title = styled.h1`
-  ${(props) => props.theme.fonts.main.medium};
-  font-size: 14px;
-  color: ${(props) => props.theme.colors.mono[700]};
-`;
-
-const CloseButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  position: absolute;
-  right: 4px;
-
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-
-  cursor: pointer;
-  background: none;
-  transition: ${(props) => props.theme.animation.defaultTransition} background-color;
-
-  margin: 0;
-  padding: 0;
-  border: none;
-
-  svg path {
-    stroke: ${(props) => props.theme.colors.mono[900]};
-    transition: ${(props) => props.theme.animation.defaultTransition} stroke;
-  }
-
-  &:hover {
-    background-color: ${(props) => props.theme.colors.mono[900]};
-
-    svg path {
-      stroke: ${(props) => props.theme.colors.mono[100]};
-      transition: ${(props) => props.theme.animation.defaultTransition} stroke;
-    }
-  }
 `;

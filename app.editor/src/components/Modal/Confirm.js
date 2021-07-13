@@ -48,13 +48,11 @@ export default function ConfirmModal(props) {
           justify="flex-end"
           gridGap="6px"
         >
-          <Buttons.Outline
+          <Buttons.TextButton
             paddingVertical="4px"
             paddingHorizontal="8px"
-            bg={(colors) => colors.mono[100]}
-            borderWidth="2px"
-            borderColor={(colors) => colors.mono[600]}
-            hoverBorderColor={(colors) => colors.mono[900]}
+            buttonFg={(colors) => colors.mono[500]}
+            hoverButtonFg={(colors) => colors.mono[900]}
             onClick={() => dispatch(closeModal())}
           >
             <Typography
@@ -63,7 +61,7 @@ export default function ConfirmModal(props) {
             >
               {cancelButtonLabel}
             </Typography>
-          </Buttons.Outline>
+          </Buttons.TextButton>
           <Buttons.Filled
             IconComponent={confirmButtonIconName && Icons[confirmButtonIconName]}
             gridGap="4px"

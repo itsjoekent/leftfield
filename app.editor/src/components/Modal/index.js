@@ -7,11 +7,13 @@ import {
 
   CONFIRM_MODAL,
   ELEMENT_LIBRARY_MODAL,
+  EXPORT_STYLE_MODAL,
 } from '@editor/features/modal';
 
 const componentFileMap = {
   [CONFIRM_MODAL]: async () => import('./Confirm'),
   [ELEMENT_LIBRARY_MODAL]: async () => import('./ElementLibrary'),
+  [EXPORT_STYLE_MODAL]: async () => import('./ExportStyle'),
 };
 
 export default function Modal() {

@@ -18,7 +18,9 @@ import {
   addChildComponentToSlot,
   buildComponent,
   deleteComponentAndDescendants,
+  detachStyleReference,
   duplicateComponent,
+  exportStyle,
   removeChildComponentFromSlot,
   reorderChildComponent,
   setComponentPropertyValue,
@@ -32,12 +34,16 @@ import {
   wipeSlot,
   wipeStyle,
 
+  selectCampaignTheme,
   selectComponent,
   selectComponentProperties,
   selectComponentPropertyInheritedFrom,
   selectComponentPropertyInheritedFromForLanguage,
+  selectComponentPropertyValue,
   selectComponentStyle,
   selectComponentStyles,
+  selectComponentStyleAttributeForDevice,
+  selectComponentStyleInheritsFrom,
   selectComponentTag,
   selectComponentsParentComponentId,
   selectComponentsParentComponentSlotId,
@@ -45,7 +51,7 @@ import {
   selectPageRootComponentId,
   selectPageSettings,
   selectSiteSettings,
-  selectCampaignTheme,
+  selectStyleFromStyleLibrary,
 } from '@editor/features/assembly';
 import {
   setActiveComponentId,
@@ -78,7 +84,9 @@ const TRIGGERS = [
   addChildComponentToSlot.toString(),
   buildComponent.toString(),
   deleteComponentAndDescendants.toString(),
+  detachStyleReference.toString(),
   duplicateComponent.toString(),
+  exportStyle.toString(),
   removeChildComponentFromSlot.toString(),
   reorderChildComponent.toString(),
   setComponentPropertyValue.toString(),
@@ -104,7 +112,6 @@ function runParliamentarian(
 ) {
   const componentTag = selectComponentTag(pageId, componentId)(state);
   const componentPropertyValues = selectComponentProperties(pageId, componentId)(state);
-  const componentStyleValues = selectComponentStyles(pageId, componentId)(state);
 
   const componentMeta = ComponentMeta[componentTag];
   const componentProperties = get(componentMeta, 'properties', []);
@@ -394,19 +401,29 @@ function runParliamentarian(
       const defaultValue = get(attribute, 'defaultValue', null);
       const dynamicDefaultThemeValue = get(attribute, 'dynamicDefaultThemeValue', null);
 
-      const hasSetDefault = (device) => isDefined(get(componentStyleValues, `${styleId}.${attributeId}.${device}.inheritFromTheme`))
-        || isDefined(get(componentStyleValues, `${styleId}.${attributeId}.${device}.custom`));
+      const hasSetDefault = (device) => {
+        const attributeValue = selectComponentStyleAttributeForDevice(
+          pageId,
+          componentId,
+          styleId,
+          attributeId,
+          device,
+        )(state);
 
-      const attributeValue = dynamicDefaultThemeValue
+        return isDefined(get(attributeValue, 'inheritFromTheme'))
+          || isDefined(get(attributeValue, 'custom'));
+      }
+
+      const defaultAttributeValue = dynamicDefaultThemeValue
         ? dynamicDefaultThemeValue({ campaignTheme })
         : defaultValue;
 
-      Object.keys(attributeValue || {}).forEach((device) => {
+      Object.keys(defaultAttributeValue || {}).forEach((device) => {
         if (notResponsive && device !== Responsive.MOBILE_DEVICE) {
           return;
         }
 
-        const value = attributeValue[device];
+        const value = defaultAttributeValue[device];
 
         if (!hasSetDefault(device)) {
           queueDispatch(setComponentStyle({
@@ -597,12 +614,17 @@ const parliamentarian = store => next => action => {
   }));
 
   const appliedState = store.getState();
-  console.log('parliamentarian => ', appliedState);
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('parliamentarian => ', appliedState);
+  }
 
   const pageCompilation = JSON.parse(JSON.stringify(get(appliedState, `assembly.pages.${pageId}`)));
+
   Object.keys(get(pageCompilation, 'components', {})).forEach((componentId) => {
     const tag = selectComponentTag(pageId, componentId)(appliedState);
     const previewComponentProperties = selectComponentProperties(pageId, componentId)(appliedState);
+    const previewComponentStyles = selectComponentStyles(pageId, componentId)(appliedState);
 
     Object.keys(previewComponentProperties).forEach((propertyId) => {
       const properties = get(ComponentMeta[tag], `properties`);
@@ -611,6 +633,10 @@ const parliamentarian = store => next => action => {
 
       languages.forEach((language) => {
         if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
+          return;
+        }
+
+        if (isDefined(selectComponentPropertyValue(pageId, componentId, propertyId, language))) {
           return;
         }
 
@@ -629,6 +655,25 @@ const parliamentarian = store => next => action => {
 
         delete pageCompilation.components[componentId].properties[propertyId].inheritedFrom;
       });
+    });
+
+    Object.keys(previewComponentStyles).forEach((styleId) => {
+      const inheritsFromStyle = selectComponentStyleInheritsFrom(
+        pageId,
+        componentId,
+        styleId,
+      )(appliedState);
+
+      if (isDefined(inheritsFromStyle)) {
+        set(
+          pageCompilation,
+          `components.${componentId}.styles.${styleId}`,
+          {
+            ...selectStyleFromStyleLibrary(inheritsFromStyle)(appliedState),
+            name: '',
+          },
+        );
+      }
     });
   });
 

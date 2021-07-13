@@ -200,3 +200,23 @@ export function IconButton(props) {
     </IconButtonWrapper>
   );
 }
+
+export const TextButton = styled.button`
+  background: none;
+  border: none;
+
+  ${Typography} {
+    transition: color ${(props) => props.theme.animation.defaultTransition};
+    ${({ buttonFg, theme }) => !!buttonFg && css`color: ${buttonFg(theme.colors)};`}
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    ${Typography} {
+      ${({ hoverButtonFg, theme }) => !!hoverButtonFg && css`color: ${hoverButtonFg(theme.colors)};`}
+    }
+  }
+
+  ${generics}
+`;
