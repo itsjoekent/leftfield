@@ -9,6 +9,8 @@ import {
 } from 'pkg.admin-components';
 import {
   deleteComponentAndDescendants,
+  exportComponentToLibrary,
+  selectComponentInstanceOf,
   selectComponentName,
   selectPageRootComponentId,
 } from '@editor/features/assembly';
@@ -33,6 +35,10 @@ export default function WorkspaceComponentToolbar() {
     selectComponentName(activePageId, activeComponentId)
   );
 
+  const activeComponentInstanceOf = useSelector(
+    selectComponentInstanceOf(activePageId, activeComponentId)
+  );
+
   const activePageRootComponentId = useSelector(
     selectPageRootComponentId(activePageId)
   );
@@ -45,13 +51,15 @@ export default function WorkspaceComponentToolbar() {
 
   const dispatch = useDispatch();
 
+  const isRootComponent = activePageRootComponentId === activeComponentId;
+  const canExport = !isRootComponent && !activeComponentInstanceOf;
+
   return (
     <Flex.Row
       align="center"
       justify="space-between"
+      padding="12px"
       bg={(colors) => colors.purple[100]}
-      paddingVertical="6px"
-      paddingHorizontal="12px"
     >
       <Flex.Row align="center" gridGap="6px" minWidth="0" paddingRight="12px">
         <Tooltip copy="Go back" point={Tooltip.UP_LEFT_ALIGNED}>
@@ -106,17 +114,21 @@ export default function WorkspaceComponentToolbar() {
         </Tooltip>
       </Flex.Row>
       <Flex.Row align="center" gridGap="6px">
-        {activePageRootComponentId !== activeComponentId && (
+        {canExport && (
           <Tooltip copy="Export component" point={Tooltip.UP_RIGHT_ALIGNED}>
             <Buttons.IconButton
               IconComponent={Icons.Export}
               color={(colors) => colors.purple[500]}
               hoverColor={(colors) => colors.mono[900]}
               aria-label="Export component"
+              onClick={() => dispatch(exportComponentToLibrary({
+                pageId: activePageId,
+                componentId: activeComponentId,
+              }))}
             />
           </Tooltip>
         )}
-        {activePageRootComponentId !== activeComponentId && (
+        {!isRootComponent && (
           <Tooltip copy="Remove component" point={Tooltip.UP_RIGHT_ALIGNED}>
             <Buttons.IconButton
               IconComponent={Icons.Trash}

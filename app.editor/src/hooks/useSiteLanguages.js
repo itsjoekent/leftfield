@@ -3,9 +3,7 @@ import { useSelector } from 'react-redux';
 import { SiteSettings, Languages } from 'pkg.campaign-components';
 import { selectSiteSettings } from '@editor/features/assembly';
 
-export default function useSiteLanguages() {
-  const siteSettings = useSelector(selectSiteSettings);
-
+export function getSiteSettings(siteSettings) {
   const languages = get(
     siteSettings,
     `${SiteSettings.LANGUAGES.key}.${Languages.US_ENGLISH_LANG}`,
@@ -13,4 +11,10 @@ export default function useSiteLanguages() {
   );
 
   return languages;
+}
+
+export default function useSiteLanguages() {
+  const siteSettings = useSelector(selectSiteSettings);
+
+  return getSiteSettings(siteSettings);
 }

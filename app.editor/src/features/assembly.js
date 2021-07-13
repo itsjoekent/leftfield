@@ -1,4 +1,4 @@
-import { get, set } from 'lodash';
+import { get, isEmpty, set } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuid } from 'uuid';
 import {
@@ -8,6 +8,8 @@ import {
   SiteSettings,
   theme,
 } from 'pkg.campaign-components';
+import { MAIN_COMPONENT } from '@editor/constants/inheritance';
+import { getSiteSettings } from '@editor/hooks/useSiteLanguages';
 
 const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
   ...acc,
@@ -173,6 +175,53 @@ export const assemblySlice = createSlice({
         slotId: get(originalComponent, 'withinSlot'),
       });
     },
+    exportComponentToLibrary: (state, action) => {
+      const {
+        pageId,
+        componentId,
+      } = action.payload;
+
+      const component = selectComponent(pageId, componentId)({ assembly: state });
+
+      const libraryId = uuid();
+      const libraryComponent = {
+        ...component,
+        id: libraryId,
+      };
+
+      delete libraryComponent.childOf;
+      delete libraryComponent.withinSlot;
+
+      set(state, `library.components.${libraryId}`, libraryComponent);
+
+      set(state, `pages.${pageId}.components.${componentId}.instanceOf`, libraryId);
+
+      const componentPropertyValues = selectComponentProperties(pageId, componentId)({ assembly: state });
+      const languages = getSiteSettings(selectSiteSettings({ assembly: state }));
+
+      const updatedComponentPropertyValues = Object.keys(componentPropertyValues)
+        .reduce((acc, propertyId) => {
+          const tag = get(componentPropertyValues, `${propertyId}.tag`);
+          const property = get(ComponentMeta[tag], `properties`, []);
+          const isTranslatable = get(property, 'isTranslatable', false);
+
+          languages.forEach((language) => {
+            if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
+              return;
+            }
+
+            set(
+              acc,
+              `${propertyId}.inheritedFrom.${language}`,
+              MAIN_COMPONENT
+            );
+          });
+
+          return acc;
+        }, {});
+
+      set(state, `pages.${pageId}.components.${componentId}.properties`, updatedComponentPropertyValues);
+    },
     reorderChildComponent: (state, action) => {
       const {
         pageId,
@@ -306,8 +355,9 @@ export const assemblySlice = createSlice({
 export const {
   addChildComponentToSlot,
   buildComponent,
-  duplicateComponent,
   deleteComponentAndDescendants,
+  duplicateComponent,
+  exportComponentToLibrary,
   removeChildComponentFromSlot,
   reorderChildComponent,
   resetComponentStyleAttribute,
@@ -509,7 +559,7 @@ export function selectComponentStyleAttributeForDeviceCascading(pageId, componen
       device,
     )(state);
 
-    if (!!Object.keys(firstAttempt).length) {
+    if (!isEmpty(firstAttempt)) {
       return firstAttempt;
     }
 
@@ -523,7 +573,7 @@ export function selectComponentStyleAttributeForDeviceCascading(pageId, componen
     };
 
     return cascading[device].reduce((acc, cascadingDevice) => {
-      if (!!Object.keys(acc).length) return acc;
+      if (!isEmpty(acc)) return acc;
 
       const nthAttempt = selectComponentStyleAttributeForDevice(
         pageId,
@@ -533,7 +583,7 @@ export function selectComponentStyleAttributeForDeviceCascading(pageId, componen
         cascadingDevice,
       )(state);
 
-      return !!Object.keys(nthAttempt).length
+      return !isEmpty(nthAttempt)
         ? { ...nthAttempt, cascadedFrom: cascadingDevice }
         : acc;
     }, {}) || {};
@@ -551,7 +601,7 @@ export function selectComponentInstanceOf(pageId, componentId) {
 }
 
 export function selectLibrary(state) {
-  return get(state, 'library', {});
+  return get(state, 'assembly.library', {});
 }
 
 export function selectLibraryComponents(state) {
@@ -560,6 +610,7 @@ export function selectLibraryComponents(state) {
 
 export function selectLibraryComponent(componentId) {
   function _selectLibraryComponent(state) {
+    if (componentId === 'test') console.trace(componentId);
     return get(selectLibraryComponents(state), componentId, null);
   }
 
@@ -568,10 +619,18 @@ export function selectLibraryComponent(componentId) {
 
 export function selectLibraryComponentProperties(componentId) {
   function _selectLibraryComponentProperties(state) {
-    return get(selectLibraryComponent(componentId), 'properties', {});
+    return get(selectLibraryComponent(componentId)(state), 'properties', {});
   }
 
   return _selectLibraryComponentProperties;
+}
+
+export function selectLibraryComponentProperty(componentId, propertyId) {
+  function _selectLibraryComponentProperty(state) {
+    return get(selectLibraryComponentProperties(componentId)(state), propertyId, {});
+  }
+
+  return _selectLibraryComponentProperty;
 }
 
 export function selectCompiledPages(state) {

@@ -5,7 +5,6 @@ import { useFormField } from 'pkg.form-wizard';
 import { Languages } from 'pkg.campaign-components';
 import { Inputs } from 'pkg.admin-components';
 import {
-  selectComponentInstanceOf,
   selectComponentPropertyInheritedFromForLanguage,
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -21,7 +20,6 @@ export default function ShortText(props) {
 
   const getPropertyValue = useGetPropertyValue(activePageId, activeComponentId);
 
-  const instanceOf = useSelector(selectComponentInstanceOf(activePageId, activeComponentId));
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
     activeComponentId,
@@ -45,7 +43,7 @@ export default function ShortText(props) {
     'aria-labelledby': `${propertyId}-${Languages.US_ENGLISH_LANG}`,
   };
 
-  if (isDefined(inheritedFrom) || isDefined(instanceOf)) {
+  if (isDefined(inheritedFrom)) {
     const value = getPropertyValue(propertyId, language);
 
     finalInputProps['disabled'] = true;

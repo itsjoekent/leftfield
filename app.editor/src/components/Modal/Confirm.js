@@ -70,7 +70,7 @@ export default function ConfirmModal(props) {
             paddingVertical="4px"
             paddingHorizontal="8px"
             buttonFg={(colors) => colors.mono[100]}
-            buttonBg={(colors) => colors.red[500]}
+            buttonBg={(colors) => isDangerous ? colors.red[500] : colors.blue[500]}
             borderWidth="2px"
             onClick={onConfirmWrapper}
           >

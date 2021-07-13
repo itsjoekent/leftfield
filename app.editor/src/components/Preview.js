@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import { isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
 import { selectCompiledPage } from '@editor/features/assembly';
 import { selectDeviceSizeList } from '@editor/features/previewMode';
@@ -38,7 +39,7 @@ export default function Preview() {
 
     const { contentWindow: targetWindow } = iframe;
 
-    if (isPreviewReady && !!Object.keys(activePagePreview).length) {
+    if (isPreviewReady && !isEmpty(activePagePreview)) {
       targetWindow.postMessage({
         type: 'RENDER',
         payload: {

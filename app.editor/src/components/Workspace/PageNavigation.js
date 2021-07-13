@@ -19,8 +19,7 @@ export default function WorkspacePageNavigation() {
       fullWidth
       justify="space-between"
       align="center"
-      paddingVertical="2px"
-      paddingHorizontal="12px"
+      padding="12px"
       bg={(colors) => colors.blue[200]}
     >
       <Flex.Row align="center" gridGap="12px" minWidth="0" paddingRight="12px">

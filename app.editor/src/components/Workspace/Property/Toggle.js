@@ -5,7 +5,6 @@ import { useFormField } from 'pkg.form-wizard';
 import { Languages } from 'pkg.campaign-components';
 import { Inputs } from 'pkg.admin-components';
 import {
-  selectComponentInstanceOf,
   selectComponentPropertyInheritedFromForLanguage,
 } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
@@ -21,7 +20,6 @@ export default function Toggle(props) {
 
   const getPropertyValue = useGetPropertyValue(activePageId, activeComponentId);
 
-  const instanceOf = useSelector(selectComponentInstanceOf(activePageId, activeComponentId));
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
     activeComponentId,
@@ -40,14 +38,14 @@ export default function Toggle(props) {
     value,
   } = field;
 
-  const finalValue = (isDefined(inheritedFrom) || isDefined(instanceOf))
+  const finalValue = isDefined(inheritedFrom)
     ? getPropertyValue(propertyId, language)
     : value;
 
   return (
     <Inputs.Toggle
       labelledBy={`${propertyId}-${Languages.US_ENGLISH_LANG}`}
-      value={finalValue}
+      value={!!finalValue}
       setValue={setFieldValue}
       isDisabled={!!inheritedFrom}
     />

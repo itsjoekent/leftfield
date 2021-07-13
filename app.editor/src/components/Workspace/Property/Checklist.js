@@ -6,7 +6,8 @@ import { Languages } from 'pkg.campaign-components';
 import { Inputs } from 'pkg.admin-components';
 import { selectComponentPropertyInheritedFromForLanguage } from '@editor/features/assembly';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
-import useDynamicEvaluation from '@editor/hooks/useDynamicEvaluation';
+import useGetPropertyValue from '@editor/hooks/useGetPropertyValue';
+import isDefined from '@editor/utils/isDefined';
 
 export default function Checklist(props) {
   const { fieldId, language, property } = props;
@@ -14,7 +15,7 @@ export default function Checklist(props) {
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
 
-  const { evaluateDynamicPropertyAttribute } = useDynamicEvaluation(activePageId, activeComponentId);
+  const getPropertyValue = useGetPropertyValue(activePageId, activeComponentId);
 
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
     activePageId,
@@ -34,19 +35,20 @@ export default function Checklist(props) {
     value,
   } = field;
 
-  const hasDynamicOptions = !!get(property, 'dynamicOptions');
-  const dynamicOptions = hasDynamicOptions ? evaluateDynamicPropertyAttribute(property, 'dynamicOptions') : [];
+  const options = get(property, 'options', []);
 
-  const options = get(property, 'options') || dynamicOptions || [];
+  const finalValue = isDefined(inheritedFrom)
+    ? getPropertyValue(propertyId, language)
+    : value;
 
   return (
     <Inputs.Checklist
       fieldId={fieldId}
       labelledBy={`${propertyId}-${Languages.US_ENGLISH_LANG}`}
-      value={value}
+      value={finalValue}
       options={options}
       setValue={setFieldValue}
-      isDisabled={!!inheritedFrom}
+      isDisabled={isDefined(inheritedFrom)}
     />
   );
 }

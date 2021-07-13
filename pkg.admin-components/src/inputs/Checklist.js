@@ -11,6 +11,7 @@ export default function Checklist(props) {
     setValue,
     value = null,
     options = [],
+    isDisabled = false,
   } = props;
 
   const theme = useTheme();
@@ -53,6 +54,7 @@ export default function Checklist(props) {
     >
       {options.map((option) => {
         const isSelected = value === option.value;
+        const selectedColorTone = isDisabled ? 500 : 900;
 
         return (
           <Option
@@ -61,11 +63,11 @@ export default function Checklist(props) {
             role="option"
             aria-selected={`${isSelected}`}
             isSelected={isSelected}
-            isDisabled={false}
-            onClick={() => setValue(option.value)}
+            isDisabled={isDisabled}
+            onClick={() => !isDisabled && setValue(option.value)}
           >
             <DoneIcon
-              color={isSelected ? theme.colors.mono[900] : theme.colors.mono[100]}
+              color={isSelected ? theme.colors.mono[selectedColorTone] : theme.colors.mono[100]}
               width={16}
               height={16}
             />
@@ -73,7 +75,7 @@ export default function Checklist(props) {
               id={`${fieldId}-${option.value}`}
               fontStyle="regular"
               fontSize="18px"
-              fg={(colors) => isSelected ? colors.mono[900] : colors.mono[500]}
+              fg={(colors) => isSelected ? colors.mono[selectedColorTone] : colors.mono[500]}
             >
               {option.label}
             </Typography>
@@ -92,7 +94,6 @@ const Option = styled.div`
   padding: 6px;
   width: 100%;
 
-  cursor: pointer;
   border-radius: ${(props) => props.theme.rounded.default};
 
   transition: all ${(props) => props.theme.animation.defaultTransition};
@@ -102,6 +103,8 @@ const Option = styled.div`
   border: 1px solid ${(props) => props.theme.colors.mono[500]};
 
   ${(props) => !props.isDisabled && css`
+    cursor: pointer;
+
     ${props.isSelected && css`
       border: 1px solid ${props.theme.colors.mono[900]};
     `}

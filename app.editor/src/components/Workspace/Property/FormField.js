@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 import { get } from 'lodash';
 import { Flex, Typography } from 'pkg.admin-components';
 import { Languages, PropertyTypes } from 'pkg.campaign-components';
@@ -8,7 +9,14 @@ import WorkspacePropertyInheritance from '@editor/components/Workspace/Property/
 import WorkspacePropertyLabel from '@editor/components/Workspace/Property/Label';
 import WorkspacePropertyShortText from '@editor/components/Workspace/Property/ShortText';
 import WorkspacePropertyToggle from '@editor/components/Workspace/Property/Toggle';
+import {
+  selectComponentInstanceOf,
+  selectLibraryComponentProperty,
+} from '@editor/features/assembly';
+import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useSiteLanguages from '@editor/hooks/useSiteLanguages';
+import isDefined from '@editor/utils/isDefined';
+import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 function FormFieldInner(props) {
   const {
@@ -17,6 +25,20 @@ function FormFieldInner(props) {
     language,
     property,
   } = props;
+
+  const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
+
+  const instanceOf = useSelector(selectComponentInstanceOf(activePageId, activeComponentId));
+  const instanceProperty = useSelector(selectLibraryComponentProperty(instanceOf, property.id));
+
+  const inheritFromSetting = !!get(property, 'inheritFromSetting', null);
+  const hasInheritance = isDefined(inheritFromSetting) || (
+    isDefined(instanceOf)
+    && (
+      isDefined(pullTranslatedValue(get(instanceProperty, 'value'), language))
+      || isDefined(pullTranslatedValue(get(instanceProperty, 'inheritedFrom'), language))
+    )
+  );
 
   return (
     <FormFieldInnerContainer gridGap="4px">
@@ -56,8 +78,6 @@ function FormFieldInner(props) {
         }
       })()}
       {(() => {
-        const hasInheritance = !!get(property, 'inheritFromSetting', null);
-
         if (!hasInheritance && !isTranslatable) {
           return null;
         }

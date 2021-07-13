@@ -2,6 +2,7 @@ import { find, get } from 'lodash';
 import { useSelector } from 'react-redux';
 import { ComponentMeta, Languages } from 'pkg.campaign-components';
 import {
+  MAIN_COMPONENT,
   PAGE_SETTINGS,
   SITE_SETTINGS,
 } from '@editor/constants/inheritance';
@@ -13,6 +14,7 @@ import {
   selectPageSettings,
   selectSiteSettings,
 } from '@editor/features/assembly';
+import isDefined from '@editor/utils/isDefined';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export function getPropertyValue(
@@ -39,12 +41,13 @@ export function getPropertyValue(
   const componentProperty = get(_componentProperties, propertyId);
   const componentPropertyMeta = find(get(ComponentMeta[_componentTag], 'properties'), { id: propertyId });
   const inheritFromSetting = get(componentPropertyMeta, 'inheritFromSetting', null);
+  const inheritedFrom = pullTranslatedValue(get(componentProperty, 'inheritedFrom', null), language);
 
-  if (!!_instanceOf) {
+  if (isDefined(_instanceOf) && inheritedFrom === MAIN_COMPONENT) {
     const instanceOfProperty = get(_instanceOfProperties, propertyId);
     const instanceOfInheritedFrom = pullTranslatedValue(get(instanceOfProperty, 'inheritedFrom', null), language);
 
-    if (!!inheritFromSetting && !!instanceOfInheritedFrom) {
+    if (isDefined(inheritFromSetting) && isDefined(instanceOfInheritedFrom)) {
       return pullTranslatedValue(
         get(search(instanceOfInheritedFrom), inheritFromSetting, null),
         language,
@@ -56,12 +59,12 @@ export function getPropertyValue(
       language,
     );
 
-    return instanceOfPropertyValue;
+    if (isDefined(instanceOfPropertyValue)) {
+      return instanceOfPropertyValue;
+    }
   }
 
-  const inheritedFrom = pullTranslatedValue(get(componentProperty, 'inheritedFrom', null), language);
-
-  if (!!inheritFromSetting && !!inheritedFrom) {
+  if (isDefined(inheritFromSetting) && isDefined(inheritedFrom)) {
     return pullTranslatedValue(
       get(search(inheritedFrom), inheritFromSetting, null),
       language,

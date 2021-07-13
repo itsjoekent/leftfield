@@ -1,5 +1,5 @@
 import { batch } from 'react-redux';
-import { find, get, set } from 'lodash';
+import { find, get, isEmpty, set } from 'lodash';
 import {
   ComponentMeta,
   Languages,
@@ -11,14 +11,16 @@ import {
   PARLIAMENTARIAN_ESCAPE_KEY,
 } from '@editor/constants/parliamentarian';
 import {
-  SITE_SETTINGS,
+  MAIN_COMPONENT,
   PAGE_SETTINGS,
+  SITE_SETTINGS,
 } from '@editor/constants/inheritance';
 import {
   addChildComponentToSlot,
   buildComponent,
   deleteComponentAndDescendants,
   duplicateComponent,
+  exportComponentToLibrary,
   removeChildComponentFromSlot,
   reorderChildComponent,
   setComponentPropertyValue,
@@ -42,6 +44,7 @@ import {
   selectComponentsParentComponentSlotId,
   selectComponentSlot,
   selectLibraryComponentProperties,
+  selectLibraryComponentProperty,
   selectPageRootComponentId,
   selectPageSettings,
   selectSiteSettings,
@@ -79,6 +82,7 @@ const TRIGGERS = [
   buildComponent.toString(),
   deleteComponentAndDescendants.toString(),
   duplicateComponent.toString(),
+  exportComponentToLibrary.toString(),
   removeChildComponentFromSlot.toString(),
   reorderChildComponent.toString(),
   setComponentPropertyValue.toString(),
@@ -89,6 +93,11 @@ const TRIGGERS = [
   navigateToPast.toString(),
   navigateToFuture.toString(),
   setActivePageId.toString(),
+];
+
+const RERUN_TRIGGERS = [
+  setComponentPropertyValue.toString(),
+  setComponentInheritedFrom.toString(),
 ];
 
 function runParliamentarian(
@@ -106,6 +115,10 @@ function runParliamentarian(
   const componentPropertyValues = selectComponentProperties(pageId, componentId)(state);
   const componentStyleValues = selectComponentStyles(pageId, componentId)(state);
 
+  const componentInstanceOf = selectComponentInstanceOf(pageId, componentId)(state);
+  const mainComponentProperties = selectLibraryComponentProperties(componentInstanceOf)(state);
+  const isInstance = isDefined(componentInstanceOf);
+
   const componentMeta = ComponentMeta[componentTag];
   const componentProperties = get(componentMeta, 'properties', []);
 
@@ -113,6 +126,35 @@ function runParliamentarian(
   const parentComponentTag = selectComponentTag(pageId, parentComponentId)(state);
   const parentComponentSlotId = selectComponentsParentComponentSlotId(pageId, componentId)(state);
   const parentComponentSlotMeta = find(get(ComponentMeta[parentComponentTag], 'slots'), { id: parentComponentSlotId }) || null;
+
+  const componentPropertyValuesForConditionals = Object.keys(componentPropertyValues).reduce((acc, propertyId) => {
+    const tag = get(componentPropertyValues, `${propertyId}.tag`);
+    const property = get(ComponentMeta[tag], `properties`, []);
+    const isTranslatable = get(property, 'isTranslatable', false);
+
+    languages.forEach((language) => {
+      if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
+        return;
+      }
+
+      set(
+        acc,
+        `${propertyId}.value.${language}`,
+        getPropertyValue(
+          propertyId,
+          language,
+          pageSettings,
+          siteSettings,
+          componentTag,
+          componentPropertyValues,
+          componentInstanceOf,
+          mainComponentProperties,
+        ),
+      );
+    });
+
+    return acc;
+  }, {});
 
   // @NOTE
   // Step: Determine visible & hidden properties.
@@ -134,7 +176,7 @@ function runParliamentarian(
     }
 
     const result = conditional({
-      properties: componentPropertyValues,
+      properties: componentPropertyValuesForConditionals,
       slot: parentComponentSlotMeta,
     });
 
@@ -167,6 +209,7 @@ function runParliamentarian(
     const defaultValue = get(property, 'defaultValue', null);
     const dynamicDefaultValue = get(property, 'dynamicDefaultValue', null);
     const inheritFromSetting = get(property, 'inheritFromSetting', null);
+    const isTranslatable = get(property, 'isTranslatable', false);
 
     const getLocalPropertyValue = (language) => get(componentPropertyValues, `${propertyId}.value.${language}`);
 
@@ -180,6 +223,31 @@ function runParliamentarian(
         )(state)))
       || isDefined(getLocalPropertyValue(language));
 
+    if (isInstance) {
+      const instanceProperty = selectLibraryComponentProperty(componentInstanceOf, propertyId)(state);
+
+      languages.forEach((language) => {
+        if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
+          return;
+        }
+
+        const mainComponentHasProperty = isDefined(pullTranslatedValue(get(instanceProperty, 'value'), language))
+          || isDefined(pullTranslatedValue(get(instanceProperty, 'inheritedFrom'), language));
+
+        if (!!mainComponentHasProperty && !hasSetDefault(language)) {
+          queueDispatch(setComponentInheritedFrom({
+            pageId,
+            componentId,
+            propertyId: property.id,
+            value: MAIN_COMPONENT,
+            language,
+          }));
+
+          set(appliedPropertyDefaults, `${propertyId}.${language}`, true);
+        }
+      });
+    }
+
     if (!!inheritFromSetting) {
       const search = [
         [pageSettings, PAGE_SETTINGS],
@@ -190,14 +258,14 @@ function runParliamentarian(
         const [settings] = item;
         const settingValue = get(settings, inheritFromSetting, null);
 
-        if (language) {
-          return pullTranslatedValue(settingValue, language) !== null;
-        }
-
-        return settingValue !== null;
+        return isDefined(pullTranslatedValue(settingValue, language));
       });
 
       languages.forEach((language) => {
+        if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
+          return;
+        }
+
         const inheritanceLevel = get(settingMatch(language), '[1]', null);
 
         if (!!inheritanceLevel && !hasSetDefault(language)) {
@@ -216,11 +284,15 @@ function runParliamentarian(
 
     if (dynamicDefaultValue) {
       const dynamicValue = dynamicDefaultValue({
-        properties: componentPropertyValues,
+        properties: componentPropertyValuesForConditionals,
         slot: parentComponentSlotMeta,
       });
 
       Object.keys(dynamicValue).forEach((language) => {
+        if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
+          return;
+        }
+
         if (hasSetDefault(language)) {
           return;
         }
@@ -245,6 +317,10 @@ function runParliamentarian(
 
     if (defaultValue !== null) {
       Object.keys(defaultValue).forEach((language) => {
+        if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
+          return;
+        }
+
         if (hasSetDefault(language)) {
           return;
         }
@@ -270,9 +346,9 @@ function runParliamentarian(
   hiddenProperties.forEach((property) => {
     const propertyId = property.id;
 
-    const hasValue = !!Object.keys(
+    const hasValue = !isEmpty(
       get(componentPropertyValues, `${propertyId}.value`, {})
-    ).length;
+    );
 
     if (hasValue) {
       queueDispatch(wipePropertyValue({
@@ -282,9 +358,13 @@ function runParliamentarian(
       }));
     }
 
-    const hasInheritedFrom = !!Object.keys(
-      selectComponentPropertyInheritedFrom(pageId, componentId, propertyId)(state)
-    ).length;
+    const hasInheritedFrom = !isEmpty(
+      selectComponentPropertyInheritedFrom(
+        pageId,
+        componentId,
+        propertyId,
+      )(state)
+    );
 
     if (hasInheritedFrom) {
       queueDispatch(wipePropertyInheritedFrom({
@@ -319,7 +399,7 @@ function runParliamentarian(
     }
 
     const result = conditional({
-      properties: componentPropertyValues,
+      properties: componentPropertyValuesForConditionals,
       slot: parentComponentSlotMeta,
     });
 
@@ -402,7 +482,7 @@ function runParliamentarian(
     }
 
     const result = conditional({
-      properties: componentPropertyValues,
+      properties: componentPropertyValuesForConditionals,
       slot: parentComponentSlotMeta,
     });
 
@@ -479,6 +559,20 @@ const parliamentarian = store => next => action => {
   const dispatches = [];
   const queueDispatch = (action) => dispatches.push(action);
 
+  function runQueue() {
+    batch(() => dispatches.forEach((action) => {
+      store.dispatch({
+        ...action,
+        payload: {
+          ...action.payload,
+          [PARLIAMENTARIAN_ESCAPE_KEY]: true,
+        },
+      });
+    }));
+
+    dispatches.length = 0;
+  }
+
   const pageId = selectActivePageId(state);
   const componentId = selectActiveComponentId(state);
 
@@ -527,15 +621,26 @@ const parliamentarian = store => next => action => {
     );
   }
 
-  batch(() => dispatches.forEach((action) => {
-    store.dispatch({
-      ...action,
-      payload: {
-        ...action.payload,
-        [PARLIAMENTARIAN_ESCAPE_KEY]: true,
-      },
-    });
-  }));
+  runQueue();
+
+  const shouldReRun = RERUN_TRIGGERS.includes(action.type)
+    && get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false) === false;
+
+  if (shouldReRun) {
+    runParliamentarian(
+      queueDispatch,
+      store.getState(),
+      pageId,
+      componentId,
+      pageSettings,
+      siteSettings,
+      campaignTheme,
+      languages,
+      true,
+    );
+
+    runQueue();
+  }
 
   const appliedState = store.getState();
   console.log('parliamentarian => ', appliedState);

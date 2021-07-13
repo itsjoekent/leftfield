@@ -3,9 +3,8 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { find, get } from 'lodash';
 import {
-  Buttons,
-  Flex, Icons,
-  Tooltip,
+  Flex,
+  Icons,
   useAdminTheme,
 } from 'pkg.admin-components';
 import WorkspaceSlotInstanceList from '@editor/components/Workspace/SlotInstanceList';
@@ -69,14 +68,6 @@ export default function SlotList(props) {
             <Icons.AddRound color={theme.colors.mono[600]} />
             Add new component
           </AddButton>
-          <Tooltip copy="Paste component" point={Tooltip.RIGHT}>
-            <Buttons.IconButton
-              IconComponent={Icons.DeskAlt}
-              color={(colors) => colors.mono[600]}
-              hoverColor={(colors) => colors.mono[900]}
-              aria-label="Paste component"
-            />
-          </Tooltip>
         </Flex.Row>
       )}
     </Flex.Column>
