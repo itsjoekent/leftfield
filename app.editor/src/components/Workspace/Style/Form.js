@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -10,13 +11,13 @@ import {
 } from 'pkg.admin-components';
 import WorkspaceStyleAttribute from '@editor/components/Workspace/Style/Attribute';
 import WorkspaceStyleLabel from '@editor/components/Workspace/Style/Label';
+import WorkspaceStyleLibrarySelector from '@editor/components/Workspace/Style/LibrarySelector';
 import WorkspaceStyleResponsiveHint from '@editor/components/Workspace/Style/ResponsiveHint';
+import { selectComponentStyleInheritsFrom } from '@editor/features/assembly';
 import {
-  detachStyleReference,
-  selectComponentStyleInheritsFrom,
-  selectStyleNameFromStyleLibrary,
-} from '@editor/features/assembly';
-import { setModal, EXPORT_STYLE_MODAL } from '@editor/features/modal';
+  setModal,
+  EXPORT_STYLE_MODAL,
+} from '@editor/features/modal';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import isDefined from '@editor/utils/isDefined';
 
@@ -39,58 +40,19 @@ export default function StyleForm(props) {
     styleId,
   ));
 
-  const inheritsFromStyleName = useSelector(selectStyleNameFromStyleLibrary(inheritsFromStyle));
-
   return (
     <Flex.Column
       bg={(colors) => colors.mono[200]}
       rounded={(radius) => radius.default}
     >
       <Flex.Column gridGap="12px" padding="12px">
-        <Flex.Row align="center" justify="space-between">
-          <Typography
-            fontStyle="bold"
-            fontSize="16px"
-            fg={(colors) => colors.mono[700]}
-          >
-            {label}
-          </Typography>
-          {!!type && (
-            <Flex.Row align="center" gridGap="6px">
-              <Tooltip copy="Import existing style" point={Tooltip.UP_RIGHT_ALIGNED}>
-                <Buttons.IconButton
-                  IconComponent={Icons.Import}
-                  width={20}
-                  height={20}
-                  color={(colors) => colors.mono[500]}
-                  hoverColor={(colors) => colors.mono[700]}
-                  aria-label="Import existing style"
-                  onClick={() => {}}
-                />
-              </Tooltip>
-              {!isDefined(inheritsFromStyle) && (
-                <Tooltip copy="Export this style" point={Tooltip.UP_RIGHT_ALIGNED}>
-                  <Buttons.IconButton
-                    IconComponent={Icons.Export}
-                    width={20}
-                    height={20}
-                    color={(colors) => colors.mono[500]}
-                    hoverColor={(colors) => colors.mono[700]}
-                    aria-label="Export this style"
-                    onClick={() => dispatch(setModal({
-                      type: EXPORT_STYLE_MODAL,
-                      props: {
-                        pageId: activePageId,
-                        componentId: activeComponentId,
-                        styleId,
-                      },
-                    }))}
-                  />
-                </Tooltip>
-              )}
-            </Flex.Row>
-          )}
-        </Flex.Row>
+        <Typography
+          fontStyle="bold"
+          fontSize="16px"
+          fg={(colors) => colors.mono[700]}
+        >
+          {label}
+        </Typography>
         {!!help && (
           <Typography
             fontStyle="thin"
@@ -100,30 +62,32 @@ export default function StyleForm(props) {
             {help}
           </Typography>
         )}
-        {isDefined(inheritsFromStyle) && (
-          <Flex.Row fullWidth align="center" gridGap="2px">
-            <Tooltip copy="Detatch style reference" point={Tooltip.UP_LEFT_ALIGNED}>
+        {!!type && (
+          <Flex.Row gridGap="12px" align="center">
+            <LibrarySelectorWrapper>
+              <WorkspaceStyleLibrarySelector
+                styleId={styleId}
+                styleType={type}
+              />
+            </LibrarySelectorWrapper>
+            <Tooltip copy="Export this style" point={Tooltip.UP_RIGHT_ALIGNED}>
               <Buttons.IconButton
-                onClick={() => dispatch(detachStyleReference({
-                  pageId: activePageId,
-                  componentId: activeComponentId,
-                  styleId,
-                }))}
-                IconComponent={Icons.RemoveFill}
-                width={18}
-                height={18}
-                color={(colors) => colors.blue[500]}
+                IconComponent={Icons.Export}
+                color={(colors) => isDefined(inheritsFromStyle) ? colors.mono[500] : colors.blue[500]}
                 hoverColor={(colors) => colors.blue[800]}
-                aria-label="Detatch style reference"
+                aria-label="Export this style"
+                disabled={isDefined(inheritsFromStyle)}
+                onClick={() => dispatch(setModal({
+                  type: EXPORT_STYLE_MODAL,
+                  props: {
+                    pageId: activePageId,
+                    componentId: activeComponentId,
+                    styleId,
+                    styleType: type,
+                  },
+                }))}
               />
             </Tooltip>
-            <Typography
-              fontStyle="regular"
-              fontSize="14px"
-              fg={(colors) => colors.blue[500]}
-            >
-              Editing {inheritsFromStyleName}
-            </Typography>
           </Flex.Row>
         )}
       </Flex.Column>
@@ -154,3 +118,7 @@ export default function StyleForm(props) {
     </Flex.Column>
   );
 }
+
+const LibrarySelectorWrapper = styled.div`
+  flex-grow: 1;
+`;

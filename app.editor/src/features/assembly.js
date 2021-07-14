@@ -193,16 +193,32 @@ export const assemblySlice = createSlice({
         pageId,
         componentId,
         styleId,
+        styleType,
         styleName,
       } = action.payload;
 
       const style = selectComponentStyle(pageId, componentId, styleId)({ assembly: state });
 
-      const libraryId = uuid();
-      const libraryStyle = { ...style, id: libraryId, name: styleName };
+      const libraryStyleId = uuid();
+      const libraryStyle = {
+        ...style,
+        id: libraryStyleId,
+        type: styleType,
+        name: styleName,
+      };
 
-      set(state, `styleLibrary.${libraryId}`, libraryStyle);
-      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromStyle: libraryId });
+      set(state, `styleLibrary.${libraryStyleId}`, libraryStyle);
+      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromStyle: libraryStyleId });
+    },
+    importStyle: (state, action) => {
+      const {
+        pageId,
+        componentId,
+        styleId,
+        libraryStyleId,
+      } = action.payload;
+
+      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromStyle: libraryStyleId });
     },
     reorderChildComponent: (state, action) => {
       const {
@@ -377,6 +393,7 @@ export const {
   detachStyleReference,
   duplicateComponent,
   exportStyle,
+  importStyle,
   removeChildComponentFromSlot,
   reorderChildComponent,
   resetComponentStyleAttribute,

@@ -15,6 +15,7 @@ export default function ExportStyleModal(props) {
     pageId,
     componentId,
     styleId,
+    styleType,
   } = props;
 
   const dispatch = useDispatch();
@@ -43,12 +44,13 @@ export default function ExportStyleModal(props) {
       pageId,
       componentId,
       styleId,
+      styleType,
       styleName,
     }));
   }
 
   return (
-    <ModalDefaultLayout title="Add Style" width="400px">
+    <ModalDefaultLayout title="Export A Style" width="400px">
       <Flex.Column
         gridGap="32px"
         padding="12px"
@@ -62,7 +64,7 @@ export default function ExportStyleModal(props) {
               fg={(colors) => colors.mono[900]}
               lineHeight="1.3"
             >
-              Add a new style
+              Export a new style
             </Typography>
             <Typography
               fontStyle="regular"
