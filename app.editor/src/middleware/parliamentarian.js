@@ -4,7 +4,7 @@ import {
   ComponentMeta,
   Languages,
   Responsive,
-  SiteSettings,
+  Settings,
 } from 'pkg.campaign-components';
 import {
   PARLIAMENTARIAN_BOOTSTRAP_TYPE,
@@ -579,7 +579,7 @@ const parliamentarian = store => next => action => {
 
   const languages = get(
     siteSettings,
-    `${SiteSettings.LANGUAGES.key}.${Languages.US_ENGLISH_LANG}`,
+    `${Settings.LANGUAGES.key}.${Languages.US_ENGLISH_LANG}`,
     [Languages.US_ENGLISH_LANG],
   );
 

@@ -1,5 +1,6 @@
 import React from 'react';
-import { get } from 'lodash';
+import Select from 'react-select';
+import { find, get } from 'lodash';
 import {
   Flex,
   Inputs,
@@ -13,7 +14,7 @@ import useSiteLanguages from '@editor/hooks/useSiteLanguages';
 export default function FormField(props) {
   const { setting } = props;
 
-  const settingId = get(setting, 'key');
+  const settingId = get(setting, 'id');
   const primaryFieldId = `${settingId}-${Languages.US_ENGLISH_LANG}`;
   const { labelProps } = useFormField(primaryFieldId);
 
@@ -26,7 +27,7 @@ export default function FormField(props) {
     <Flex.Column gridGap="8px">
       <WorkspaceFieldLabel
         labelProps={labelProps}
-        help={get(setting, 'field.help')}
+        help={get(setting, 'help')}
         hideRequiredStatus
       />
       {languages.map((language) => (
@@ -35,15 +36,40 @@ export default function FormField(props) {
             {(field) => (
               <React.Fragment>
                 {(() => {
-                  switch (get(setting, 'field.type')) {
+                  switch (get(setting, 'type')) {
                     case PropertyTypes.URL_TYPE:
                     case PropertyTypes.SHORT_TEXT_TYPE: return (
                       <Inputs.DefaultText
                         {...field.inputProps}
                         {...field.inputStylingProps}
-                         aria-labelledby={primaryFieldId}
+                        aria-labelledby={primaryFieldId}
                       />
                     );
+
+                    case PropertyTypes.TOGGLE_TYPE: return (
+                      <Inputs.Toggle
+                        labelledBy={primaryFieldId}
+                        value={field.value}
+                        setValue={field.setFieldValue}
+                      />
+                    );
+
+                    case PropertyTypes.SELECT_TYPE: {
+                      const options = get(setting, 'options');
+                      const selectedValues = (field.value || []).map((value) => find(options, { value }));
+
+                      return (
+                        <Select
+                          isMulti
+                          value={selectedValues}
+                          options={options}
+                          onChange={(selectedOptions) => (
+                            field.setFieldValue(selectedOptions.map(({ value }) => value))
+                          )}
+                          aria-labelledby={primaryFieldId}
+                        />
+                      );
+                    };
 
                     default: return null;
                   }

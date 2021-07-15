@@ -3,7 +3,6 @@ import { find, get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormWizardProvider, formActions } from 'pkg.form-wizard';
 import { Flex } from 'pkg.admin-components';
-import { SiteSettings } from 'pkg.campaign-components';
 import WorkspaceMenuSettingsFormField from '@editor/components/Workspace/Menu/Settings/FormField';
 import useSiteLanguages from '@editor/hooks/useSiteLanguages';
 import isDefined from '@editor/utils/isDefined';
@@ -14,6 +13,7 @@ export default function Settings(props) {
     formName,
     setter,
     getter,
+    settings,
   } = props;
 
   const settingValues = useSelector(getter);
@@ -23,16 +23,13 @@ export default function Settings(props) {
 
   const apiRef = React.useRef(null);
 
-  const settings = Object.keys(SiteSettings)
-    .map((settingId) => SiteSettings[settingId]);
-
   const fields = settings.reduce((acc, setting) => ([
     ...acc,
     ...languages.map((language) => ({
-      id: `${setting.key}-${language}`,
-      label: setting.field.label,
+      id: `${setting.id}-${language}`,
+      label: setting.label,
       attributes: {
-        settingId: setting.key,
+        settingId: setting.id,
         language,
       },
     })),
@@ -87,7 +84,7 @@ export default function Settings(props) {
         <Flex.Column as="form" gridGap="24px" {...formProps}>
           {settings.map((setting) => (
             <WorkspaceMenuSettingsFormField
-              key={setting.key}
+              key={setting.id}
               setting={setting}
             />
           ))}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Settings } from 'pkg.campaign-components';
 import WorkspaceMenuAccordion from '@editor/components/Workspace/Menu/Accordion';
 import WorkspaceMenuSettings from '@editor/components/Workspace/Menu/Settings';
 import {
@@ -22,6 +23,7 @@ export default function SiteSettings(props) {
         formName="site"
         getter={selectSiteSettings}
         setter={setSiteSetting}
+        settings={Settings.SiteSettings}
       />
     </WorkspaceMenuAccordion>
   );

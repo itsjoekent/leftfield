@@ -86,3 +86,22 @@ export const LANGUAGES = {
     ],
   },
 };
+
+function appendSetting(setting) {
+  return { ...setting.field, id: setting.key };
+}
+
+export const SiteSettings = [
+  appendSetting(ACTBLUE_REFCODE_CARRY_ADS_SOURCE),
+  appendSetting(ACTBLUE_EXPRESS_DISCLAIMER_COPY),
+  appendSetting(DEFAULT_ACTBLUE_DONATION_FORM),
+  appendSetting(DEFAULT_ACTBLUE_REFCODE),
+  appendSetting(LANGUAGES),
+];
+
+export const PageSettings = [
+  appendSetting(ACTBLUE_REFCODE_CARRY_ADS_SOURCE),
+  appendSetting(ACTBLUE_EXPRESS_DISCLAIMER_COPY),
+  appendSetting(DEFAULT_ACTBLUE_DONATION_FORM),
+  appendSetting(DEFAULT_ACTBLUE_REFCODE),
+];

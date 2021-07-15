@@ -84,8 +84,10 @@ export default function Workspace(props) {
           flexGrow
           justifyContent="space-between"
           gridGap="36px"
-          padding="12px"
+          paddingTop="12px"
           paddingBottom="0px"
+          paddingLeft="12px"
+          paddingRight="0px"
           overflowY="scroll"
         >
           <Flex.Column fullHeight gridGap="12px">
@@ -147,6 +149,7 @@ export default function Workspace(props) {
             overflowY="scroll"
             gridGap="32px"
             paddingBottom="24px"
+            paddingRight="12px"
             fullWidth
           >
             {isActiveTab(PROPERTIES_TAB) && (

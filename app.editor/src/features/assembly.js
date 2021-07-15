@@ -5,14 +5,14 @@ import {
   ComponentMeta,
   Languages,
   Responsive,
-  SiteSettings,
+  Settings,
   theme,
 } from 'pkg.campaign-components';
 import isDefined from '@editor/utils/isDefined';
 
-const defaultSettings = Object.keys(SiteSettings).reduce((acc, key) => ({
+const defaultSiteSettings = Settings.SiteSettings.reduce((acc, setting) => ({
   ...acc,
-  [key]: get(SiteSettings[key], `field.defaultValue`),
+  [setting.id]: get(setting, `defaultValue`),
 }), {});
 
 function _addChildComponentToSlot(
@@ -84,8 +84,8 @@ export const assemblySlice = createSlice({
       },
     },
     siteSettings: {
-      ...defaultSettings,
-      LANGUAGES: {
+      ...defaultSiteSettings,
+      [Settings.LANGUAGES.key]: {
         [Languages.US_ENGLISH_LANG]: [
           Languages.US_ENGLISH_LANG,
           Languages.MX_SPANISH_LANG,
