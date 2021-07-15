@@ -2,8 +2,10 @@ import makeValidationError from '@cc/utils/makeValidationError';
 import {
   US_ENGLISH_LANG,
   MX_SPANISH_LANG,
+  labels as languageLabels,
 } from '@cc/constants/languages';
 import {
+  SELECT_TYPE,
   SHORT_TEXT_TYPE,
   TOGGLE_TYPE,
   URL_TYPE,
@@ -77,11 +79,10 @@ export const LANGUAGES = {
     defaultValue: {
       [US_ENGLISH_LANG]: [US_ENGLISH_LANG],
     },
-    type: SHORT_TEXT_TYPE,
-    isList: true,
+    type: SELECT_TYPE,
     options: [
-      US_ENGLISH_LANG,
-      MX_SPANISH_LANG,
+      { value: US_ENGLISH_LANG, label: languageLabels[US_ENGLISH_LANG] },
+      { value: MX_SPANISH_LANG, label: languageLabels[MX_SPANISH_LANG] },
     ],
   },
 };

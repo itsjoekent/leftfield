@@ -11,6 +11,7 @@ import {
 import { selectVisibleProperties } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useSiteLanguages from '@editor/hooks/useSiteLanguages';
+import isDefined from '@editor/utils/isDefined';
 import pullTranslatedValue from '@editor/utils/pullTranslatedValue';
 
 export default function PropertiesForm() {
@@ -34,12 +35,11 @@ export default function PropertiesForm() {
       label: property.label,
       attributes: {
         propertyId: property.id,
-        language: language,
+        language,
       },
     })),
   ]), []);
 
-  // TODO: Clear form values that get removed because of the 'conditional' changing...
   React.useEffect(() => {
     if (!apiRef.current || !fields.length) {
       return;
@@ -51,52 +51,17 @@ export default function PropertiesForm() {
     fields.forEach((field) => {
       const propertyId = get(field, 'attributes.propertyId');
       const language = get(field, 'attributes.language');
+      const propertyValue = pullTranslatedValue(get(componentProperties, `${propertyId}.value`), language);
 
-      if (
-        (typeof componentProperties[propertyId] !== 'undefined')
-        && (componentProperties[propertyId] !== null)
-      ) {
-        const propertyValue = get(componentProperties, `${propertyId}.value`);
-        const translatedValue = pullTranslatedValue(propertyValue, language) || '';
-
-        if (formState.values[field.id] !== translatedValue) {
-          formDispatch(formActions.setValue(
-            field.id,
-            translatedValue,
-          ));
-        }
+      if (isDefined(propertyValue) && formState.values[field.id] !== propertyValue) {
+        formDispatch(formActions.setValue(
+          field.id,
+          propertyValue,
+        ));
       }
     });
-
-    // TODO: Move to middleware???
-    // Object.keys(formState.values).forEach((fieldId) => {
-    //   const match = find(fields, { id: fieldId });
-    //
-    //   if (!match) {
-    //     const [propertyId, language] = fieldId.split('-');
-    //     console.log(
-    //       propertyId,
-    //       language,
-    //       componentProperties,
-    //       get(componentProperties, `${propertyId}.value.${language}`, null),
-    //     );
-    //
-    //     if (get(componentProperties, `${propertyId}.value.${language}`, null) !== null) {
-    //       console('wipe', propertyId);
-    //
-    //       dispatch(wipePropertyValue({
-    //         pageId: activePageId,
-    //         componentId: activeComponentId,
-    //         propertyId,
-    //       }));
-    //     }
-    //   }
-    // });
   }, [
-    activeComponentId,
-    activePageId,
     componentProperties,
-    dispatch,
     fields,
   ]);
 

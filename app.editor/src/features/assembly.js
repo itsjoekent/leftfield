@@ -336,6 +336,25 @@ export const assemblySlice = createSlice({
       const { pageId, compilation } = action.payload;
       set(state, `compiled.${pageId}`, compilation);
     },
+    setPageSetting: (state, action) => {
+      const {
+        pageId,
+        settingId,
+        language,
+        value,
+      } = action.payload;
+
+      set(state, `pages.${pageId}.settings.${settingId}.${language}`, value);
+    },
+    setSiteSetting: (state, action) => {
+      const {
+        settingId,
+        language,
+        value,
+      } = action.payload;
+
+      set(state, `siteSettings.${settingId}.${language}`, value);
+    },
     wipePropertyValue: (state, action) => {
       const {
         pageId,
@@ -403,6 +422,8 @@ export const {
   setComponentCustomStyle,
   setComponentThemeStyle,
   setCompiledPage,
+  setPageSetting,
+  setSiteSetting,
   wipePropertyValue,
   wipePropertyInheritedFrom,
   wipeSlot,

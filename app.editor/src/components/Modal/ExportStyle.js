@@ -108,7 +108,7 @@ export default function ExportStyleModal(props) {
           justify="flex-end"
           gridGap="6px"
         >
-          <Buttons.TextButton
+          <Buttons.Text
             paddingVertical="4px"
             paddingHorizontal="8px"
             buttonFg={(colors) => colors.mono[500]}
@@ -121,7 +121,7 @@ export default function ExportStyleModal(props) {
             >
               Cancel
             </Typography>
-          </Buttons.TextButton>
+          </Buttons.Text>
           <Buttons.Filled
             paddingVertical="4px"
             paddingHorizontal="8px"

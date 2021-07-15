@@ -24,7 +24,7 @@ export const workspaceSlice = createSlice({
     past: [],
     future: [],
     isComponentTreeOpen: false,
-    isComponentInspecting: false, // TODO: remove
+    isSettingsMenuOpen: false,
     visibleProperties: [],
     visibleSlots: [],
     visibleStyles: [],
@@ -82,13 +82,9 @@ export const workspaceSlice = createSlice({
     },
     setIsComponentTreeOpen: (state, action) => {
       state.isComponentTreeOpen = action.payload;
-
-      if (!action.payload) {
-        state.isComponentInspecting = false;
-      }
     },
-    setIsComponentInspecting: (state, action) => {
-      state.isComponentInspecting = action.payload;
+    setIsSettingsMenuOpen: (state, action) => {
+      state.isSettingsMenuOpen = action.payload;
     },
     navigateToPast: (state, action) => {
       const past = state.past.pop();
@@ -134,7 +130,7 @@ export const {
   setActivePageId,
   setActiveComponentId,
   setIsComponentTreeOpen,
-  setIsComponentInspecting,
+  setIsSettingsMenuOpen,
   navigateToPast,
   navigateToFuture,
   setTab,
@@ -153,8 +149,8 @@ export function selectIsComponentTreeOpen(state) {
   return !!state.workspace.isComponentTreeOpen;
 }
 
-export function selectIsComponentInspecting(state) {
-  return !!state.workspace.isComponentInspecting;
+export function selectIsSettingsMenuOpen(state) {
+  return !!state.workspace.isSettingsMenuOpen;
 }
 
 export function selectHasPast(state) {

@@ -48,7 +48,7 @@ export default function ConfirmModal(props) {
           justify="flex-end"
           gridGap="6px"
         >
-          <Buttons.TextButton
+          <Buttons.Text
             paddingVertical="4px"
             paddingHorizontal="8px"
             buttonFg={(colors) => colors.mono[500]}
@@ -61,7 +61,7 @@ export default function ConfirmModal(props) {
             >
               {cancelButtonLabel}
             </Typography>
-          </Buttons.TextButton>
+          </Buttons.Text>
           <Buttons.Filled
             IconComponent={confirmButtonIconName && Icons[confirmButtonIconName]}
             gridGap="4px"

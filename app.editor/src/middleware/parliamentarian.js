@@ -30,6 +30,8 @@ import {
   setComponentCustomStyle,
   setComponentThemeStyle,
   setCompiledPage,
+  setPageSetting,
+  setSiteSetting,
   wipePropertyValue,
   wipePropertyInheritedFrom,
   wipeSlot,
@@ -89,16 +91,18 @@ const TRIGGERS = [
   duplicateComponent.toString(),
   exportStyle.toString(),
   importStyle.toString(),
+  navigateToPast.toString(),
+  navigateToFuture.toString(),
   removeChildComponentFromSlot.toString(),
   reorderChildComponent.toString(),
+  setActiveComponentId.toString(),
+  setActivePageId.toString(),
   setComponentPropertyValue.toString(),
   setComponentInheritedFrom.toString(),
   setComponentCustomStyle.toString(),
   setComponentThemeStyle.toString(),
-  setActiveComponentId.toString(),
-  navigateToPast.toString(),
-  navigateToFuture.toString(),
-  setActivePageId.toString(),
+  setPageSetting.toString(),
+  setSiteSetting.toString(),
 ];
 
 function runParliamentarian(
@@ -638,7 +642,7 @@ const parliamentarian = store => next => action => {
           return;
         }
 
-        if (isDefined(selectComponentPropertyValue(pageId, componentId, propertyId, language))) {
+        if (isDefined(selectComponentPropertyValue(pageId, componentId, propertyId, language)(appliedState))) {
           return;
         }
 

@@ -11,7 +11,10 @@ import {
   selectComponentTag,
   selectComponentSlots,
 } from '@editor/features/assembly';
-import { setActiveComponentId } from '@editor/features/workspace';
+import {
+  setActiveComponentId,
+  setIsComponentTreeOpen,
+} from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
 export default function ComponentTreeBranch(props) {
@@ -35,6 +38,7 @@ export default function ComponentTreeBranch(props) {
 
   function onClick(targetComponentId) {
     dispatch(setActiveComponentId({ componentId: targetComponentId }));
+    dispatch(setIsComponentTreeOpen(false));
   }
 
   const displaySlots = hasSlots

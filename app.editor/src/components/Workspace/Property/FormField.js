@@ -119,7 +119,7 @@ export default function FormField(props) {
   const { property } = props;
 
   const isTranslatable = !!get(property, 'isTranslatable', false);
-  const primaryFieldId = `${property.id}-${Languages.US_ENGLISH_LANG}`
+  const primaryFieldId = `${property.id}-${Languages.US_ENGLISH_LANG}`;
 
   const languages = useSiteLanguages();
 

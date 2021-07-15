@@ -21,7 +21,7 @@ export default function useFormField(fieldId) {
     return null;
   }
 
-  const value = get(values, fieldId, '');
+  const value = get(values, fieldId, '') || '';
 
   const inputHtmlId = `${formName}-${fieldId}-input`;
   const labelHtmlId = `${formName}-${fieldId}-label`;

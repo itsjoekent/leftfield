@@ -46,6 +46,7 @@ export default function DefaultLayout(props) {
         ref={modalRef}
         width={width}
         role="dialog"
+        aria-label={title}
       >
         <TitleRow
           justify="flex-end"

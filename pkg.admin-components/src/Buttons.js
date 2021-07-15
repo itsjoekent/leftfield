@@ -90,6 +90,7 @@ const OutlineButtonWrapper = styled.button`
   justify-content: center;
   width: fit-content;
   cursor: pointer;
+  border-style: solid;
   border-radius: ${(props) => props.theme.rounded.extra};
 
   transition: all ${(props) => props.theme.animation.defaultTransition};
@@ -153,6 +154,71 @@ export function Outline(props) {
   );
 }
 
+const TextButtonWrapper = styled.button`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  background: none;
+  border: none;
+
+  ${Typography} {
+    transition: color ${(props) => props.theme.animation.defaultTransition};
+    ${({ buttonFg, theme }) => !!buttonFg && css`color: ${buttonFg(theme.colors)};`}
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    ${Typography} {
+      ${({ hoverButtonFg, theme }) => !!hoverButtonFg && css`color: ${hoverButtonFg(theme.colors)};`}
+    }
+  }
+
+  svg * {
+    transition: all ${(props) => props.theme.animation.defaultTransition};
+    transition-property: stroke, fill;
+  }
+
+  ${({ gridGap }) => !!gridGap && css`grid-gap: ${gridGap};`}
+  ${generics}
+`;
+
+export function Text(props) {
+  const {
+    children,
+    IconComponent,
+    iconSize,
+    ...rest
+  } = props;
+
+  const theme = useAdminTheme();
+
+  const buttonRef = React.useRef(null);
+  const isHovering = useIsHovering(buttonRef);
+
+  const iconColor = rest.buttonFg;
+  const iconHoverColor = rest.hoverButtonFg;
+
+  const finalIconColor = !!IconComponent && isHovering
+    ? (!!iconHoverColor && iconHoverColor(theme.colors))
+    : (!!iconColor && iconColor(theme.colors));
+
+  return (
+    <TextButtonWrapper ref={buttonRef} {...rest}>
+      {!!IconComponent && (
+        <IconComponent
+          width={iconSize}
+          height={iconSize}
+          color={finalIconColor}
+        />
+      )}
+      {children}
+    </TextButtonWrapper>
+  );
+}
+
 const IconButtonWrapper = styled.button`
   display: flex;
   justify-content: center;
@@ -163,6 +229,10 @@ const IconButtonWrapper = styled.button`
   border: none;
   background: none;
   cursor: pointer;
+
+  ${({ disabled }) => !!disabled && css`
+    cursor: not-allowed;
+  `}
 
   svg * {
     transition: stroke 0.4s, fill 0.4s;
@@ -200,23 +270,3 @@ export function IconButton(props) {
     </IconButtonWrapper>
   );
 }
-
-export const TextButton = styled.button`
-  background: none;
-  border: none;
-
-  ${Typography} {
-    transition: color ${(props) => props.theme.animation.defaultTransition};
-    ${({ buttonFg, theme }) => !!buttonFg && css`color: ${buttonFg(theme.colors)};`}
-  }
-
-  &:hover {
-    cursor: pointer;
-
-    ${Typography} {
-      ${({ hoverButtonFg, theme }) => !!hoverButtonFg && css`color: ${hoverButtonFg(theme.colors)};`}
-    }
-  }
-
-  ${generics}
-`;

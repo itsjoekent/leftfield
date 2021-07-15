@@ -11,11 +11,12 @@ import WorkspaceComponentToolbar from '@editor/components/Workspace/ComponentToo
 import WorkspaceComponentTree from '@editor/components/Workspace/ComponentTree';
 import WorkspaceDocumentationSection from '@editor/components/Workspace/DocumentationSection';
 import WorkspaceFeedbackSection from '@editor/components/Workspace/FeedbackSection';
-import WorkspacePageNavigation from '@editor/components/Workspace/PageNavigation';
+import WorkspaceMenu from '@editor/components/Workspace/Menu';
 import WorkspacePropertiesForm from '@editor/components/Workspace/Property/Form';
-import WorkspaceStyleForm from '@editor/components/Workspace/Style/Form';
 import WorkspaceSection from '@editor/components/Workspace/Section';
+import WorkspaceSiteToolbar from '@editor/components/Workspace/SiteToolbar';
 import WorkspaceSlotsSection from '@editor/components/Workspace/SlotsSection';
+import WorkspaceStyleForm from '@editor/components/Workspace/Style/Form';
 import {
   PROPERTIES_TAB,
   STYLES_TAB,
@@ -25,11 +26,10 @@ import {
 
   selectIsComponentTreeOpen,
   selectTab,
-  setTab,
-
   selectVisibleProperties,
   selectVisibleSlots,
   selectVisibleStyles,
+  setTab,
 } from '@editor/features/workspace';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
@@ -70,10 +70,11 @@ export default function Workspace(props) {
       fullHeight
       as="article"
       position="relative"
+      overflowX="hidden"
       shadow={(shadow) => shadow.light}
       bg={(colors) => colors.mono[100]}
     >
-      <WorkspacePageNavigation />
+      <WorkspaceSiteToolbar />
       <WorkspaceComponentToolbar />
       {isComponentTreeOpen && (
         <WorkspaceComponentTree />
@@ -180,6 +181,7 @@ export default function Workspace(props) {
           </Flex.Column>
         </Flex.Row>
       )}
+      <WorkspaceMenu />
     </Flex.Column>
   );
 }

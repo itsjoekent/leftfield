@@ -8,6 +8,7 @@ export default function FieldLabel(props) {
   const {
     labelProps,
     isRequired,
+    hideRequiredStatus = false,
     help,
   } = props;
 
@@ -30,22 +31,24 @@ export default function FieldLabel(props) {
           overflow="hidden"
           {...labelProps}
         />
-        <Typography
-          as="span"
-          fontStyle="light"
-          fontSize="14px"
-          letterSpacing="2%"
-          fg={(colors) => colors.mono[500]}
-        >
-          {isRequired ? '(required)' : '(optional)'}
-        </Typography>
+        {!hideRequiredStatus && (
+          <Typography
+            as="span"
+            fontStyle="light"
+            fontSize="14px"
+            letterSpacing="2%"
+            fg={(colors) => colors.mono[500]}
+          >
+            {isRequired ? '(required)' : '(optional)'}
+          </Typography>
+        )}
       </Flex.Row>
       {!!help && (
         <Typography
           as="p"
           fontStyle="light"
           fontSize="12px"
-          fg={(colors) => colors.mono[500]}
+          fg={(colors) => colors.mono[600]}
         >
           {help}
         </Typography>
