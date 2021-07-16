@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { get } from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { ChromePicker } from 'react-color';
@@ -7,19 +7,21 @@ import { Responsive } from 'pkg.campaign-components';
 import {
   Buttons,
   Flex,
+  Grid,
   Icons,
-  Tooltip,
   Typography,
 } from 'pkg.admin-components';
 import {
-  selectCampaignTheme,
+  resetComponentStyleAttribute,
+  selectCampaignThemeColorsAsSortedArray,
   selectComponentStyleAttributeForDeviceCascading,
-  setComponentStyle,
   setComponentCustomStyle,
   setComponentThemeStyle,
 } from '@editor/features/assembly';
 import { selectDeviceSize } from '@editor/features/previewMode';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
+import useClickOutside from '@editor/hooks/useClickOutside';
+import parseColorPicker from '@editor/utils/parseColorPicker';
 
 export default function ColorPicker(props) {
   const { styleId, attribute } = props;
@@ -31,7 +33,7 @@ export default function ColorPicker(props) {
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
-  const campaignTheme = useSelector(selectCampaignTheme);
+  const campaignThemeColors = useSelector(selectCampaignThemeColorsAsSortedArray);
 
   const previewDevice = useSelector(selectDeviceSize);
   const notResponsive = get(attribute, 'notResponsive', false);
@@ -48,51 +50,30 @@ export default function ColorPicker(props) {
   const dispatch = useDispatch();
 
   const isCustom = !!get(attributeValue, 'custom');
-  const customColorHex = get(attributeValue, 'custom', '#FFF');
+  const customColorValue = get(attributeValue, 'custom', '#FFF');
 
-  const [localCustomColor, setLocalCustomColor] = React.useState(isCustom ? customColorHex : null);
+  const [localCustomColor, setLocalCustomColor] = React.useState(isCustom ? customColorValue : null);
   const [isColorPickerOpen, setIsColorPickerOpen] = React.useState(false);
 
-  const colorPickerRef = React.useRef(null);
-
   React.useEffect(() => {
-    if (!isColorPickerOpen) {
-      return;
+    if (!localCustomColor && isCustom) {
+      setLocalCustomColor(customColorValue);
     }
+  }, [isCustom, customColorValue, localCustomColor]);
 
-    const colorPickerWrapperElement = colorPickerRef.current;
-
-    function handleClickOutside(event) {
-      if (!colorPickerWrapperElement) {
-        return;
-      }
-
-      if (!colorPickerWrapperElement.contains(event.target)) {
-        setIsColorPickerOpen(false);
-      }
+  const colorPickerRef = useClickOutside(() => {
+    if (isColorPickerOpen) {
+      setIsColorPickerOpen(false);
     }
-
-    if (colorPickerWrapperElement) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      if (colorPickerWrapperElement) {
-        document.removeEventListener('mousedown', handleClickOutside);
-      }
-    };
-  }, [
-    isColorPickerOpen,
-  ]);
+  }, [isColorPickerOpen]);
 
   function resetColor() {
-    dispatch(setComponentStyle({
+    dispatch(resetComponentStyleAttribute({
       pageId: activePageId,
       componentId: activeComponentId,
       styleId,
       attributeId,
       device: targetDevice,
-      value: {},
     }));
   }
 
@@ -112,14 +93,14 @@ export default function ColorPicker(props) {
     }));
   }
 
-  function setCustomColor(hex) {
+  function setCustomColor(value) {
     dispatch(setComponentCustomStyle({
       pageId: activePageId,
       componentId: activeComponentId,
       styleId,
       attributeId,
       device: targetDevice,
-      value: hex,
+      value,
     }));
   }
 
@@ -127,57 +108,87 @@ export default function ColorPicker(props) {
 
   return (
     <Flex.Column gridGap="12px">
-      <Flex.Row
-        align="center"
-        gridGap="6px"
-        wrap="wrap"
-      >
-        {Object.keys(get(campaignTheme, 'colors')).map((colorId) => (
-          <Tooltip
-            key={colorId}
-            copy={get(campaignTheme, `colors.${colorId}.label`)}
-            point={Tooltip.UP}
-          >
-            <ColorButton
-              aria-label={`Use ${get(campaignTheme, `colors.${colorId}.label`)}`}
-              isSelected={get(attributeValue, 'inheritFromTheme') === colorId}
-              colorValue={get(campaignTheme, `colors.${colorId}.value`, '#FFF')}
+      <Grid fullWidth columns="1fr 1fr" gap="12px">
+        {campaignThemeColors.map((color) => {
+          const colorId = get(color, 'id');
+          const colorValue = get(color, 'value', '#FFF');
+          const label = get(color, 'label', 'N/A');
+          const isSelected = get(attributeValue, 'inheritFromTheme') === colorId;
+
+          return (
+            <Buttons.Outline
+              key={colorId}
+              fullWidth
+              gridGap="6px"
+              justify="flex-start"
+              padding="4px"
+              overflow="hidden"
+              bg={(colors) => colors.mono[100]}
+              borderWidth="2px"
+              borderColor={(colors) => isSelected ? colors.blue[500] : colors.mono[500]}
+              hoverBorderColor={(colors) => isSelected ? colors.blue[800] : colors.mono[900]}
               onClick={() => onThemeClick(colorId)}
             >
-              <Swatch colorValue={get(campaignTheme, `colors.${colorId}.value`, '#FFF')} />
-            </ColorButton>
-          </Tooltip>
-        ))}
+              <Swatch colorValue={colorValue} />
+              <Typography
+                fontStyle="medium"
+                fontSize="14px"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+              >
+                {label}
+              </Typography>
+            </Buttons.Outline>
+          );
+        })}
         {!!localCustomColor && (
-          <Tooltip copy="Custom Color" point={Tooltip.UP}>
-            <ColorButton
-              aria-label={`Use custom color`}
-              isSelected={isCustom}
-              colorValue={localCustomColor}
-              onClick={() => {
-                if (isCustom) {
-                  resetColor();
-                  return;
-                }
+          <Buttons.Outline
+            fullWidth
+            gridGap="6px"
+            justify="flex-start"
+            padding="4px"
+            overflow="hidden"
+            bg={(colors) => colors.mono[100]}
+            borderWidth="2px"
+            borderColor={(colors) => isCustom ? colors.blue[500] : colors.mono[500]}
+            hoverBorderColor={(colors) => isCustom ? colors.blue[800] : colors.mono[900]}
+            onClick={() => {
+              if (isCustom) {
+                resetColor();
+                return;
+              }
 
-                setCustomColor(localCustomColor);
-              }}
+              setCustomColor(localCustomColor);
+            }}
+          >
+            <Swatch colorValue={localCustomColor} />
+            <Typography
+              fontStyle="medium"
+              fontSize="14px"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
             >
-              <Swatch colorValue={localCustomColor} />
-            </ColorButton>
-          </Tooltip>
+              Custom color
+            </Typography>
+          </Buttons.Outline>
         )}
-      </Flex.Row>
-      <Flex.Column position="relative" fitContent>
+      </Grid>
+      <Flex.Column
+        ref={colorPickerRef}
+        position="relative"
+        fitContent
+      >
         <Buttons.Outline
-          paddingVertical="2px"
-          paddingHorizontal="4px"
+          fullWidth
+          padding="4px"
           bg={(colors) => colors.mono[200]}
-          borderWidth="1px"
+          borderWidth="2px"
           borderColor={(colors) => colors.mono[600]}
           hoverBorderColor={(colors) => colors.mono[900]}
           gridGap="2px"
-          IconComponent={!!localCustomColor ? Icons.EditFill : Icons.AddSquareFill}
+          IconComponent={!!localCustomColor ? Icons.EditFill : Icons.AddRound}
           onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
         >
           <Typography
@@ -188,13 +199,14 @@ export default function ColorPicker(props) {
           </Typography>
         </Buttons.Outline>
         {isColorPickerOpen && (
-          <ColorPickerWrapper ref={colorPickerRef}>
+          <ColorPickerWrapper>
             <ChromePicker
               color={localCustomColor || '#FFFFFF'}
-              onChange={({ hex }) => setLocalCustomColor(hex)}
-              onChangeComplete={({ hex }) => {
-                setLocalCustomColor(hex);
-                setCustomColor(hex);
+              onChange={(output) => setLocalCustomColor(parseColorPicker(output))}
+              onChangeComplete={(output) => {
+                const value = parseColorPicker(output);
+                setLocalCustomColor(value);
+                setCustomColor(value);
               }}
             />
           </ColorPickerWrapper>
@@ -204,43 +216,14 @@ export default function ColorPicker(props) {
   );
 }
 
-const ColorButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  position: relative;
-
-  width: 28px;
-  height: 28px;
-
-  padding: 0;
-  border-radius: 50%;
-  border: 3px solid ${(props) => props.theme.colors.mono[200]};
-  cursor: pointer;
-
-  transition: all ${(props) => props.theme.animation.defaultTransition};
-  transition-property: border-color, box-shadow;
-
-  &:hover {
-    border: 3px solid ${(props) => props.theme.colors.mono[400]};
-  }
-
-  ${(props) => props.isSelected && css`
-    border: 3px solid ${(props) => props.colorValue};
-    ${(props) => props.theme.shadow.light}
-
-    &:hover {
-      border: 3px solid ${(props) => props.colorValue};
-    }
-  `}
-`;
-
 const Swatch = styled.span`
   display: block;
   width: 16px;
   height: 16px;
+  min-width: 16px;
+  min-height: 16px;
   border-radius: 50%;
+  border: 1px solid ${(props) => props.theme.colors.mono[700]};
   background-color: ${(props) => props.colorValue};
 `;
 
@@ -248,7 +231,6 @@ const ColorPickerWrapper = styled.div`
   position: absolute;
   z-index: 1;
   top: 36px;
-  left: 0;
-  ${'' /* left: 50%;
-  transform: translateX(-50%); */}
+  left: 50%;
+  transform: translateX(-50%);
 `;

@@ -5,35 +5,21 @@ import generics from '@ac/generics';
 import useAdminTheme from '@ac/useAdminTheme';
 import useIsHovering from '@ac/useIsHovering';
 
-const FilledButtonWrapper = styled.button`
+const sharedButtonStyles = css`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   width: fit-content;
-  cursor: pointer;
-  border-radius: ${(props) => props.theme.rounded.extra};
+  white-space: nowrap;
   border-style: solid;
-
-  ${({ buttonBg, theme }) => !!buttonBg && css`
-    border-color: ${buttonBg(theme.colors)};
-    background-color: ${buttonBg(theme.colors)};
-  `}
+  cursor: pointer;
 
   transition: all ${(props) => props.theme.animation.defaultTransition};
   transition-property: border, background-color, box-shadow;
 
   ${Typography} {
     transition: color ${(props) => props.theme.animation.defaultTransition};
-    ${({ buttonFg, theme }) => !!buttonFg && css`color: ${buttonFg(theme.colors)};`}
-  }
-
-  &:hover {
-    ${({ buttonFg, theme }) => !!buttonFg && css`background-color: ${buttonFg(theme.colors)};`}
-
-    ${Typography} {
-      ${({ buttonBg, theme }) => !!buttonBg && css`color: ${buttonBg(theme.colors)};`}
-    }
   }
 
   svg * {
@@ -45,8 +31,36 @@ const FilledButtonWrapper = styled.button`
     cursor: not-allowed;
   }
 
+  &:hover {
+    cursor: pointer;
+  }
+
   ${({ gridGap }) => !!gridGap && css`grid-gap: ${gridGap};`}
+  ${({ justify }) => !!justify && css`justify-content: ${justify};`}
   ${generics}
+`;
+
+const FilledButtonWrapper = styled.button`
+  border-radius: ${(props) => props.theme.rounded.extra};
+
+  ${({ buttonBg, theme }) => !!buttonBg && css`
+    border-color: ${buttonBg(theme.colors)};
+    background-color: ${buttonBg(theme.colors)};
+  `}
+
+  ${Typography} {
+    ${({ buttonFg, theme }) => !!buttonFg && css`color: ${buttonFg(theme.colors)};`}
+  }
+
+  &:hover {
+    ${({ buttonFg, theme }) => !!buttonFg && css`background-color: ${buttonFg(theme.colors)};`}
+
+    ${Typography} {
+      ${({ buttonBg, theme }) => !!buttonBg && css`color: ${buttonBg(theme.colors)};`}
+    }
+  }
+
+  ${sharedButtonStyles}
 `;
 
 export function Filled(props) {
@@ -84,20 +98,9 @@ export function Filled(props) {
 }
 
 const OutlineButtonWrapper = styled.button`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  cursor: pointer;
-  border-style: solid;
   border-radius: ${(props) => props.theme.rounded.extra};
 
-  transition: all ${(props) => props.theme.animation.defaultTransition};
-  transition-property: border, background, box-shadow;
-
   ${Typography} {
-    transition: color ${(props) => props.theme.animation.defaultTransition};
     ${({ borderColor, theme }) => !!borderColor && css`color: ${borderColor(theme.colors)};`}
   }
 
@@ -107,17 +110,7 @@ const OutlineButtonWrapper = styled.button`
     }
   `}
 
-  svg * {
-    transition: all ${(props) => props.theme.animation.defaultTransition};
-    transition-property: stroke, fill;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-  }
-
-  ${({ gridGap }) => !!gridGap && css`grid-gap: ${gridGap};`}
-  ${generics}
+  ${sharedButtonStyles}
 `;
 
 export function Outline(props) {
@@ -155,22 +148,11 @@ export function Outline(props) {
 }
 
 const TextButtonWrapper = styled.button`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  background: none;
-  border: none;
-
   ${Typography} {
-    transition: color ${(props) => props.theme.animation.defaultTransition};
     ${({ buttonFg, theme }) => !!buttonFg && css`color: ${buttonFg(theme.colors)};`}
   }
 
   &:hover {
-    cursor: pointer;
-
     ${Typography} {
       ${({ hoverButtonFg, theme }) => !!hoverButtonFg && css`color: ${hoverButtonFg(theme.colors)};`}
     }
@@ -181,8 +163,9 @@ const TextButtonWrapper = styled.button`
     transition-property: stroke, fill;
   }
 
-  ${({ gridGap }) => !!gridGap && css`grid-gap: ${gridGap};`}
-  ${generics}
+  ${sharedButtonStyles}
+  background: none;
+  border: none;
 `;
 
 export function Text(props) {

@@ -9,20 +9,21 @@ import {
 } from 'pkg.admin-components';
 import WorkspaceMenuPageSettings from '@editor/components/Workspace/Menu/PageSettings';
 import WorkspaceMenuSiteSettings from '@editor/components/Workspace/Menu/SiteSettings';
+import WorkspaceMenuTheme from '@editor/components/Workspace/Menu/Theme';
 import {
   selectIsSettingsMenuOpen,
   setIsSettingsMenuOpen,
 } from '@editor/features/workspace';
 
+const CAMPAIGN_THEME_MENU = 'CAMPAIGN_THEME_MENU';
 const PAGE_SETTINGS_MENU = 'PAGE_SETTINGS_MENU';
 const SITE_SETTINGS_MENU = 'SITE_SETTINGS_MENU';
-const CAMPAIGN_THEME_MENU = 'CAMPAIGN_THEME_MENU';
 const STYLE_LIBRARY_MENU = 'STYLE_LIBRARY_MENU';
 
 const menus = [
   [PAGE_SETTINGS_MENU, WorkspaceMenuPageSettings],
   [SITE_SETTINGS_MENU, WorkspaceMenuSiteSettings],
-  // [CAMPAIGN_THEME_MENU, React.Fragment],
+  [CAMPAIGN_THEME_MENU, WorkspaceMenuTheme],
   // [STYLE_LIBRARY_MENU, React.Fragment],
 ];
 

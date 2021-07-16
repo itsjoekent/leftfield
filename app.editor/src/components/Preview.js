@@ -2,7 +2,10 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
-import { selectCompiledPage } from '@editor/features/assembly';
+import {
+  selectCompiledPage,
+  selectCampaignTheme,
+} from '@editor/features/assembly';
 import { selectDeviceSizeList } from '@editor/features/previewMode';
 import { selectActivePageId } from '@editor/features/workspace';
 
@@ -17,6 +20,7 @@ export default function Preview() {
 
   const activePageId = useSelector(selectActivePageId);
   const activePagePreview = useSelector(selectCompiledPage(activePageId));
+  const campaignTheme = useSelector(selectCampaignTheme);
 
   const [isPreviewReady, setIsPreviewReady] = React.useState(false);
 
@@ -44,12 +48,14 @@ export default function Preview() {
         type: 'RENDER',
         payload: {
           page: activePagePreview,
+          campaignTheme,
         },
       }, '*');
     }
   }, [
     isPreviewReady,
     activePagePreview,
+    campaignTheme,
   ]);
 
   return (

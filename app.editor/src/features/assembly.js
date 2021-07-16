@@ -63,7 +63,9 @@ export const assemblySlice = createSlice({
   name: 'assembly',
   initialState: {
     compiled: {
-      'test': {},
+      pages: {
+        'test': {},
+      },
     },
     pages: {
       'test': {
@@ -254,6 +256,14 @@ export const assemblySlice = createSlice({
 
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, {});
     },
+    setCampaignThemeKeyValue: (state, action) => {
+      const {
+        path,
+        value,
+      } = action.payload;
+
+      set(state, `theme.${path}`, value);
+    },
     setComponentPropertyValue: (state, action) => {
       const {
         pageId,
@@ -334,7 +344,7 @@ export const assemblySlice = createSlice({
     },
     setCompiledPage: (state, action) => {
       const { pageId, compilation } = action.payload;
-      set(state, `compiled.${pageId}`, compilation);
+      set(state, `compiled.pages.${pageId}`, compilation);
     },
     setPageSetting: (state, action) => {
       const {
@@ -416,6 +426,7 @@ export const {
   removeChildComponentFromSlot,
   reorderChildComponent,
   resetComponentStyleAttribute,
+  setCampaignThemeKeyValue,
   setComponentPropertyValue,
   setComponentInheritedFrom,
   setComponentStyle,
@@ -434,6 +445,31 @@ export default assemblySlice.reducer;
 
 export function selectCampaignTheme(state) {
   return get(state, 'assembly.theme', {});
+}
+
+export function selectCampaignThemeColors(state) {
+  return get(selectCampaignTheme(state), 'colors');
+}
+
+export function selectCampaignThemeColorsAsArray(state) {
+  const colors = get(selectCampaignTheme(state), 'colors', {});
+
+  return Object.keys(colors)
+    .map((colorId) => ({ ...colors[colorId], id: colorId }))
+    .filter(({ isDeleted }) => !isDeleted);
+}
+
+export function selectCampaignThemeColorSortOrder(state) {
+  return get(selectCampaignTheme(state), 'meta.colorSortOrder', []);
+}
+
+export function selectCampaignThemeColorsAsSortedArray(state) {
+  const colorSortOrder = selectCampaignThemeColorSortOrder(state);
+  const colors = selectCampaignThemeColors(state);
+
+  return colorSortOrder
+    .map((colorId) => ({ ...colors[colorId], id: colorId }))
+    .filter(({ isDeleted }) => !isDeleted);
 }
 
 export function selectSiteSettings(state) {
@@ -673,7 +709,7 @@ export function selectComponentStyleAttributeForDeviceCascading(pageId, componen
 }
 
 export function selectCompiledPages(state) {
-  return get(state, 'assembly.compiled', {});
+  return get(state, 'assembly.compiled.pages', {});
 }
 
 export function selectCompiledPage(pageId) {

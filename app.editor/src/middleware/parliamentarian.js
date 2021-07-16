@@ -3,6 +3,7 @@ import { find, get, isEmpty, set } from 'lodash';
 import {
   ComponentMeta,
   Languages,
+  PropertyTypes,
   Responsive,
   Settings,
 } from 'pkg.campaign-components';
@@ -24,6 +25,8 @@ import {
   importStyle,
   removeChildComponentFromSlot,
   reorderChildComponent,
+  resetComponentStyleAttribute,
+  setCampaignThemeKeyValue,
   setComponentPropertyValue,
   setComponentInheritedFrom,
   setComponentStyle,
@@ -45,6 +48,7 @@ import {
   selectComponentPropertyValue,
   selectComponentStyle,
   selectComponentStyles,
+  selectComponentStyleAttribute,
   selectComponentStyleAttributeForDevice,
   selectComponentStyleInheritsFrom,
   selectComponentTag,
@@ -95,8 +99,10 @@ const TRIGGERS = [
   navigateToFuture.toString(),
   removeChildComponentFromSlot.toString(),
   reorderChildComponent.toString(),
+  resetComponentStyleAttribute.toString(),
   setActiveComponentId.toString(),
   setActivePageId.toString(),
+  setCampaignThemeKeyValue.toString(),
   setComponentPropertyValue.toString(),
   setComponentInheritedFrom.toString(),
   setComponentCustomStyle.toString(),
@@ -106,6 +112,7 @@ const TRIGGERS = [
 ];
 
 function runParliamentarian(
+  action,
   queueDispatch,
   state,
   pageId,
@@ -407,17 +414,46 @@ function runParliamentarian(
       const defaultValue = get(attribute, 'defaultValue', null);
       const dynamicDefaultThemeValue = get(attribute, 'dynamicDefaultThemeValue', null);
 
-      const hasSetDefault = (device) => {
-        const attributeValue = selectComponentStyleAttributeForDevice(
+      const getAttributeValue = (device) => {
+        return selectComponentStyleAttributeForDevice(
           pageId,
           componentId,
           styleId,
           attributeId,
           device,
         )(state);
+      };
+
+      const hasSetDefault = (device) => {
+        const attributeValue = getAttributeValue(device);
 
         return isDefined(get(attributeValue, 'inheritFromTheme'))
           || isDefined(get(attributeValue, 'custom'));
+      }
+
+      if (
+        action.type === setCampaignThemeKeyValue.toString()
+        && get(action, 'payload.path', '').endsWith('isDeleted')
+        && get(action, 'payload.value', false)
+        && get(attribute, 'type') === PropertyTypes.COLOR_TYPE
+      ) {
+        const attribute = selectComponentStyleAttribute(pageId, componentId, styleId, attributeId)(state)
+
+        Object.keys(attribute).forEach((device) => {
+          const inheritFromTheme = get(getAttributeValue(device), 'inheritFromTheme');
+          const themeColor = get(campaignTheme, `colors.${inheritFromTheme}`);
+
+          if (isDefined(inheritFromTheme) && get(themeColor, 'isDeleted', false)) {
+            queueDispatch(setComponentStyle({
+              pageId,
+              componentId,
+              styleId,
+              attributeId,
+              device,
+              value: { custom: get(themeColor, 'value') },
+            }));
+          }
+        });
       }
 
       const defaultAttributeValue = dynamicDefaultThemeValue
@@ -584,6 +620,7 @@ const parliamentarian = store => next => action => {
   );
 
   runParliamentarian(
+    action,
     queueDispatch,
     state,
     pageId,
@@ -597,6 +634,7 @@ const parliamentarian = store => next => action => {
 
   if (action.type === addChildComponentToSlot.toString()) {
     runParliamentarian(
+      action,
       queueDispatch,
       state,
       pageId,

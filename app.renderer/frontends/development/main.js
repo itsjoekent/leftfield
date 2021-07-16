@@ -27,6 +27,11 @@ window.addEventListener('message', (event) => {
         return;
       }
 
+      const campaignTheme = get(data, 'payload.campaignTheme');
+      if (!campaignTheme) {
+        return;
+      }
+
       function recursiveRenderFill(componentId) {
         const component = get(page, `components.${componentId}`);
         if (!component) {
@@ -49,8 +54,13 @@ window.addEventListener('message', (event) => {
 
       recursiveRenderFill(get(page, 'rootComponentId'));
 
+      const finalTheme = {
+        ...theme,
+        campaign: campaignTheme,
+      };
+
       render((
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={finalTheme}>
           <GlobalReset />
           {Builder(React.createElement, page)}
         </ThemeProvider>

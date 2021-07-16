@@ -13,6 +13,7 @@ export default function ConfirmModal(props) {
   const {
     title = 'Confirmation',
     header = 'Are you sure?',
+    subheader = '',
     confirmButtonLabel = 'Confirm',
     cancelButtonLabel = 'Cancel',
     confirmButtonIconName = null,
@@ -34,14 +35,25 @@ export default function ConfirmModal(props) {
         padding="12px"
         bg={(colors) => colors.mono[100]}
       >
-        <Typography
-          fontStyle="regular"
-          fontSize="18px"
-          fg={(colors) => colors.mono[700]}
-          lineHeight="1.3"
-        >
-          {header}
-        </Typography>
+        <Flex.Column gridGap="6px">
+          <Typography
+            fontStyle="regular"
+            fontSize="18px"
+            fg={(colors) => colors.mono[700]}
+            lineHeight="1.3"
+          >
+            {header}
+          </Typography>
+          {subheader && (
+            <Typography
+              fontStyle="regular"
+              fontSize="16px"
+              fg={(colors) => colors.mono[600]}
+            >
+              {subheader}
+            </Typography>
+          )}
+        </Flex.Column>
         <Flex.Row
           fullWidth
           align="center"
