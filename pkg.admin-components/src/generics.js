@@ -108,6 +108,9 @@ export const size = css`
 
   ${({ minWidth }) => !!minWidth && css`min-width: ${minWidth};`}
   ${({ minHeight }) => !!minHeight && css`min-height: ${minHeight};`}
+
+  ${({ maxWidth }) => !!maxWidth && css`max-width: ${maxWidth};`}
+  ${({ maxHeight }) => !!maxHeight && css`max-height: ${maxHeight};`}  
 `;
 
 const all = css`

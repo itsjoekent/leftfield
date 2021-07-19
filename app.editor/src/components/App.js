@@ -9,20 +9,29 @@ import PreviewSelector from '@editor/components/PreviewSelector';
 function App() {
   return (
     <React.Fragment>
-      <Page fullWidth minHeight="100vh">
+      <Page fullWidth minHeight="100vh" align="center">
         <Flex.Row
-          justify="space-between"
-          padding="12px"
+          fullWidth
+          justify="center"
           bg={(colors) => colors.mono[100]}
           shadow={(shadows) => shadows.light}
         >
-          <LeftSide />
-          <RightSide>
-            <PreviewSelector />
-          </RightSide>
+          <Flex.Row
+            fullWidth
+            maxWidth="1440px"
+            justify="space-between"
+            padding="12px"
+          >
+            <LeftSide />
+            <RightSide>
+              <PreviewSelector />
+            </RightSide>
+          </Flex.Row>
         </Flex.Row>
         <Flex.Row
           as="main"
+          fullWidth
+          maxWidth="1440px"
           justify="space-between"
           flexGrow
           padding="24px"
@@ -47,13 +56,21 @@ const Page = styled(Flex.Column)`
 `;
 
 const LeftSide = styled.div`
-  width: calc(33.33% - 12px);
+  width: calc(40% - 12px);
   height: 100%;
+
+  @media (min-width: 1280px) {
+    width: calc(33.33% - 12px);
+  }
 `;
 
 const RightSide = styled.div`
-  width: calc(66.66% - 12px);
+  width: calc(60% - 12px);
   height: 100%;
+
+  @media (min-width: 1280px) {
+    width: calc(66.66% - 12px);
+  }
 `;
 
 const WorkspaceContainer = styled(LeftSide)`
