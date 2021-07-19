@@ -1,20 +1,47 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
-import { isEmpty } from 'lodash';
+import styled from 'styled-components';
+import { get, isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
+import { Responsive } from 'pkg.campaign-components';
 import {
   selectCompiledPage,
   selectCampaignTheme,
 } from '@editor/features/assembly';
-import { selectDeviceSizeList } from '@editor/features/previewMode';
+import { selectPreviewDeviceSize } from '@editor/features/previewMode';
 import { selectActivePageId } from '@editor/features/workspace';
 
-export default function Preview() {
-  const {
-    isDesktopPreview,
-    isMobilePreview,
-    isTabletPreview,
-  } = useSelector(selectDeviceSizeList);
+const devices = {
+  [Responsive.MOBILE_DEVICE]: {
+    resolution: {
+      width: 1080,
+      height: 2340,
+    },
+    pixelRatio: 3,
+  },
+  [Responsive.TABLET_DEVICE]: {
+    resolution: {
+      width: 1668,
+      height: 2388,
+    },
+    pixelRatio: 2,
+  },
+  [Responsive.DESKTOP_DEVICE]: {
+    resolution: {
+      width: 2560,
+      height: 1600,
+    },
+    pixelRatio: 2,
+  },
+};
+
+export default function Preview(props) {
+  const { previewContainerDimensions } = props;
+
+  const deviceSize = useSelector(selectPreviewDeviceSize);
+
+  const pixelRatio = get(devices[deviceSize], 'pixelRatio', 0);
+  const width = get(devices[deviceSize], 'resolution.width', 0) / pixelRatio;
+  const height = get(devices[deviceSize], 'resolution.height', 0) / pixelRatio;
 
   const iframeRef = React.useRef(null);
 
@@ -23,6 +50,7 @@ export default function Preview() {
   const campaignTheme = useSelector(selectCampaignTheme);
 
   const [isPreviewReady, setIsPreviewReady] = React.useState(false);
+  const [previewTransform, setPreviewTransform] = React.useState('scale(1)');
 
   React.useEffect(() => {
     function onMessage(event) {
@@ -58,25 +86,44 @@ export default function Preview() {
     campaignTheme,
   ]);
 
+  React.useEffect(() => {
+    if (!previewContainerDimensions || !width || !height) {
+      return;
+    }
+
+    const scale = Math.min(
+      previewContainerDimensions[0] / width,
+      previewContainerDimensions[1] / height,
+    );
+
+    const scaledWidth = width * scale;
+    const scaledHeight = height * scale;
+
+    const topOffset = ((previewContainerDimensions[1] - scaledHeight) / 2) + 12;
+    const leftOffset = ((previewContainerDimensions[0] - scaledWidth) / 2) + 12;
+
+    setPreviewTransform(`translate(${leftOffset}px, ${topOffset}px) scale(${scale})`);
+  }, [
+    width,
+    height,
+    previewContainerDimensions,
+  ]);
+
+  const style = { width, height, transform: previewTransform };
+
   return (
-    <SectionContainer>
-      <DeviceContainer
-        isDesktopPreview={isDesktopPreview}
-        isMobilePreview={isMobilePreview}
-        isTabletPreview={isTabletPreview}
-      >
+    <PreviewSpace>
+      <DeviceContainer style={style}>
         <Frame ref={iframeRef} src="http://localhost:5001/" />
       </DeviceContainer>
-    </SectionContainer>
+    </PreviewSpace>
   );
 }
 
-const SectionContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
+const PreviewSpace = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
 const DeviceContainer = styled.div`
@@ -84,25 +131,9 @@ const DeviceContainer = styled.div`
   ${(props) => props.theme.shadow.light}
 
   transition: all ${(props) => props.theme.animation.defaultTransition};
-  transition-property: width, height;
+  transition-property: width, height, transform;
 
-  ${(props) => props.isMobilePreview && css`
-    width: 375px;
-    height: 667px;
-  `}
-
-  ${(props) => props.isDesktopPreview && css`
-    width: 100%;
-    height: 66%;
-    min-height: 960px;
-  `}
-
-  ${(props) => props.isTabletPreview && css`
-    width: 100%;
-    height: 100%;
-    max-width: 768px;
-    max-height: 1024px;
-  `}
+  transform-origin: top left;
 `;
 
 const Frame = styled.iframe`

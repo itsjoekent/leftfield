@@ -14,7 +14,7 @@ import {
   resetComponentStyleAttribute,
   selectComponentStyleAttributeForDeviceCascading,
 } from '@editor/features/assembly';
-import { selectDeviceSize } from '@editor/features/previewMode';
+import { selectPreviewDeviceSize } from '@editor/features/previewMode';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
 const iconMap = {
@@ -36,7 +36,7 @@ export default function ResponsiveHint(props) {
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
-  const device = useSelector(selectDeviceSize);
+  const device = useSelector(selectPreviewDeviceSize);
   const notResponsive = get(attribute, 'notResponsive', false);
   const targetDevice = notResponsive ? Responsive.MOBILE_DEVICE : device;
 

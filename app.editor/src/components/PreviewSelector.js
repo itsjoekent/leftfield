@@ -10,7 +10,7 @@ import {
   setDesktopDevice,
   setMobileDevice,
   setTabletDevice,
-  selectDeviceSizeList,
+  selectPreviewDeviceSizeList,
 } from '@editor/features/previewMode';
 
 function PreviewSelector(props) {
@@ -18,7 +18,7 @@ function PreviewSelector(props) {
     isDesktopPreview,
     isMobilePreview,
     isTabletPreview,
-  } = useSelector(selectDeviceSizeList);
+  } = useSelector(selectPreviewDeviceSizeList);
 
   const dispatch = useDispatch();
 

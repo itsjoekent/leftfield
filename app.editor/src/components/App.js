@@ -7,6 +7,30 @@ import Preview from '@editor/components/Preview';
 import PreviewSelector from '@editor/components/PreviewSelector';
 
 function App() {
+  const previewContainerRef = React.useRef(null);
+  const [previewContainerDimensions, setpreviewContainerDimensions] = React.useState(null);
+
+  React.useEffect(() => {
+    function updateDimensions() {
+      const boundingRect = previewContainerRef.current.getBoundingClientRect();
+      setpreviewContainerDimensions([boundingRect.width - 24, boundingRect.height - 24]);
+    }
+
+    function onResize(event) {
+      updateDimensions();
+    }
+
+    if (previewContainerRef.current) {
+      window.addEventListener('resize', onResize);
+
+      if (!previewContainerDimensions) {
+        updateDimensions();
+      }
+
+      return () => window.removeEventListener('resize', onResize);
+    }
+  }, [previewContainerDimensions]);
+
   return (
     <React.Fragment>
       <Page fullWidth minHeight="100vh" align="center">
@@ -15,23 +39,16 @@ function App() {
           justify="center"
           bg={(colors) => colors.mono[100]}
           shadow={(shadows) => shadows.light}
+          padding="12px"
         >
-          <Flex.Row
-            fullWidth
-            maxWidth="1440px"
-            justify="space-between"
-            padding="12px"
-          >
-            <LeftSide />
-            <RightSide>
-              <PreviewSelector />
-            </RightSide>
-          </Flex.Row>
+          <LeftSide />
+          <RightSide>
+            <PreviewSelector />
+          </RightSide>
         </Flex.Row>
         <Flex.Row
           as="main"
           fullWidth
-          maxWidth="1440px"
           justify="space-between"
           flexGrow
           padding="24px"
@@ -40,8 +57,11 @@ function App() {
           <WorkspaceContainer as="section">
             <Workspace />
           </WorkspaceContainer>
-          <PreviewContainer as="section">
-            <Preview />
+          <PreviewContainer
+            as="section"
+            ref={previewContainerRef}
+          >
+            <Preview previewContainerDimensions={previewContainerDimensions} />
           </PreviewContainer>
         </Flex.Row>
       </Page>
@@ -57,7 +77,6 @@ const Page = styled(Flex.Column)`
 
 const LeftSide = styled.div`
   width: calc(40% - 12px);
-  height: 100%;
 
   @media (min-width: 1280px) {
     width: calc(33.33% - 12px);
@@ -66,7 +85,6 @@ const LeftSide = styled.div`
 
 const RightSide = styled.div`
   width: calc(60% - 12px);
-  height: 100%;
 
   @media (min-width: 1280px) {
     width: calc(66.66% - 12px);
@@ -78,8 +96,9 @@ const WorkspaceContainer = styled(LeftSide)`
 `;
 
 const PreviewContainer = styled(RightSide)`
-  min-height: 100%;
-  height: auto;
+  position: relative;
+  overflow: hidden;
+  height: calc(100vh - 96px);
 `;
 
 export default App;

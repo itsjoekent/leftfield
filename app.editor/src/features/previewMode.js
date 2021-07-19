@@ -27,27 +27,26 @@ export const {
 
 export default previewModeSlice.reducer;
 
-// TODO: Rename to "selectPreviewDeviceSize"
-export function selectDeviceSize(state) {
+export function selectPreviewDeviceSize(state) {
   return state.previewMode.deviceSize;
 }
 
-export function selectIsDesktopDeviceSize(state) {
-  return selectDeviceSize(state) === Responsive.DESKTOP_DEVICE;
+export function selectPreviewIsDesktopDeviceSize(state) {
+  return selectPreviewDeviceSize(state) === Responsive.DESKTOP_DEVICE;
 }
 
-export function selectIsMobileDeviceSize(state) {
-  return selectDeviceSize(state) === Responsive.MOBILE_DEVICE;
+export function selectPreviewIsMobileDeviceSize(state) {
+  return selectPreviewDeviceSize(state) === Responsive.MOBILE_DEVICE;
 }
 
-export function selectIsTabletDevice(state) {
-  return selectDeviceSize(state) === Responsive.TABLET_DEVICE;
+export function selectPreviewIsTabletDevice(state) {
+  return selectPreviewDeviceSize(state) === Responsive.TABLET_DEVICE;
 }
 
-export function selectDeviceSizeList(state) {
+export function selectPreviewDeviceSizeList(state) {
   return {
-    isDesktopPreview: selectIsDesktopDeviceSize(state),
-    isMobilePreview: selectIsMobileDeviceSize(state),
-    isTabletPreview: selectIsTabletDevice(state),
+    isDesktopPreview: selectPreviewIsDesktopDeviceSize(state),
+    isMobilePreview: selectPreviewIsMobileDeviceSize(state),
+    isTabletPreview: selectPreviewIsTabletDevice(state),
   };
 }

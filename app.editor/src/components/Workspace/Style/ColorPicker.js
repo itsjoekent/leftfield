@@ -18,7 +18,7 @@ import {
   setComponentCustomStyle,
   setComponentThemeStyle,
 } from '@editor/features/assembly';
-import { selectDeviceSize } from '@editor/features/previewMode';
+import { selectPreviewDeviceSize } from '@editor/features/previewMode';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 import useClickOutside from '@editor/hooks/useClickOutside';
 import parseColorPicker from '@editor/utils/parseColorPicker';
@@ -35,7 +35,7 @@ export default function ColorPicker(props) {
 
   const campaignThemeColors = useSelector(selectCampaignThemeColorsAsSortedArray);
 
-  const previewDevice = useSelector(selectDeviceSize);
+  const previewDevice = useSelector(selectPreviewDeviceSize);
   const notResponsive = get(attribute, 'notResponsive', false);
   const targetDevice = notResponsive ? Responsive.MOBILE_DEVICE : previewDevice;
 

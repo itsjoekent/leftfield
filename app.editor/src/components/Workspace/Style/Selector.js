@@ -9,7 +9,7 @@ import {
   setComponentThemeStyle,
   selectComponentStyle,
 } from '@editor/features/assembly';
-import { selectDeviceSize } from '@editor/features/previewMode';
+import { selectPreviewDeviceSize } from '@editor/features/previewMode';
 import useActiveWorkspaceComponent from '@editor/hooks/useActiveWorkspaceComponent';
 
 export default function Selector(props) {
@@ -29,7 +29,7 @@ export default function Selector(props) {
   );
 
   const campaignTheme = useSelector(selectCampaignTheme);
-  const device = useSelector(selectDeviceSize);
+  const device = useSelector(selectPreviewDeviceSize);
 
   const notResponsive = get(attribute, 'notResponsive', false);
   const targetDevice = notResponsive ? Responsive.MOBILE_DEVICE : device;
