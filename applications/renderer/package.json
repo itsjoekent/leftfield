@@ -2,7 +2,6 @@
   "name": "app.renderer",
   "scripts": {
     "build:development": "NODE_ENV=development webpack --config ./frontends/development/development.config.js --watch",
-    "postinstall": "sh ../.bin/remove-local-peer-deps.sh",
     "serve:development": "serve frontends/bundles/development/dist -p 5001",
     "start": "npm-run-all --parallel serve:development build:development",
     "start:production": "NODE_ENV=production node src/index.js"
@@ -16,8 +15,8 @@
     "lodash.get": "^4.4.2",
     "pino": "^6.11.3",
     "pino-http": "^5.5.0",
-    "pkg.builder": "file:../pkg.builder",
-    "pkg.campaign-components": "file:../pkg.campaign-components",
+    "pkg.builder": "file:../../packages/builder",
+    "pkg.campaign-components": "file:../../packages/campaign-components",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "styled-components": "^5.3.0",
