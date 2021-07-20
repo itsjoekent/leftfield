@@ -6,24 +6,16 @@ Leftfield mono-repo.
 
 You'll need [Docker Desktop](https://www.docker.com/) to run the projects in this repository.
 
-To run an application (`.app`) or api (`.api`) project locally, you can `cd ${directory}` into the directory and run one of the following commands,
+To work on an application, api, or package project locally, you can `cd ${directory}` into the directory and run the following,
 
- - `make local`: Connect to other projects running locally
- - `make staging`: Connect to staging resources
+```sh
+$ make build
+$ make local
+```
 
-To work on a package (`.pkg`) project locally, `cd ${directory}` into the directory and run `make start`.
+For applications, you can also opt to to run `make staging`, which will connect the local application to staging backends. This is useful if you just need to make frontend changes.
 
 All projects afford `make test`.
-
-## Project naming structure
-
-`${type}.${name}`
-
-**Project Type Abbreviations**:
-
-- `api`: Backend API
-- `app`: Frontend static website
-- `pkg`: Re-usable library
 
 ## Deployment
 

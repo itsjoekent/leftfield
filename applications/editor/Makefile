@@ -3,7 +3,7 @@ build:
 
 local:
 		docker run --name app.editor \
-		--rm \
+		--rm -t \
 		-p 5000:5000 \
 		-v $(CURDIR)/../../packages:/usr/code/packages \
 		-v $(CURDIR)/../../environment:/usr/code/environment \

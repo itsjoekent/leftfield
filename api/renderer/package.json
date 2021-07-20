@@ -2,8 +2,8 @@
   "name": "app.renderer",
   "scripts": {
     "build:development": "NODE_ENV=development webpack --config ./frontends/development/development.config.js --watch",
-    "serve:development": "serve frontends/bundles/development/dist -p 5001",
-    "start": "npm-run-all --parallel serve:development build:development",
+    "serve:development": "serve frontends/bundles/development/dist -p 6003",
+    "start:development": "npm-run-all --parallel serve:development build:development",
     "start:production": "NODE_ENV=production node src/index.js"
   },
   "dependencies": {

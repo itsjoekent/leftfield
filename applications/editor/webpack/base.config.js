@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const NODE_ENV = process.env.NODE_ENV;
@@ -32,6 +33,9 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, './template.html'),
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
     }),
   ],
   resolve: {

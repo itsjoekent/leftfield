@@ -114,7 +114,7 @@ export default function Preview(props) {
   return (
     <PreviewSpace>
       <DeviceContainer style={style}>
-        <Frame ref={iframeRef} src="http://localhost:5001/" />
+        <Frame ref={iframeRef} src={process.env.RENDERER_API_URL} />
       </DeviceContainer>
     </PreviewSpace>
   );
