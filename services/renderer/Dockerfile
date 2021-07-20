@@ -1,7 +1,7 @@
 FROM node:16-alpine
 
-WORKDIR /usr/code/api/renderer
-COPY ./ /usr/code/api/renderer
+WORKDIR /usr/code/services/renderer
+COPY ./ /usr/code/services/renderer
 
 RUN npm ci
 

@@ -7,7 +7,7 @@ local:
 		-p 6003:6003 \
 		-v $(CURDIR)/../../packages:/usr/code/packages \
 		-v $(CURDIR)/../../environment:/usr/code/environment \
-		-v $(CURDIR)/src:/usr/code/api/renderer/src \
-		-v $(CURDIR)/frontends:/usr/code/api/renderer/frontends \
+		-v $(CURDIR)/src:/usr/code/services/renderer/src \
+		-v $(CURDIR)/frontends:/usr/code/services/renderer/frontends \
 		svc.renderer.image \
 		npm run start:development
