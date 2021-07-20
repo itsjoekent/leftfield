@@ -1,5 +1,4 @@
 import get from 'lodash.get';
-import { css } from 'styled-components';
 import {
   COLOR_TYPE,
   NUMBER_RANGE_TYPE,
@@ -117,78 +116,78 @@ const TextStyle = {
       ...(get(overrides, LINE_HEIGHT_ATTRIBUTE, {})),
     },
   ]),
-  styling: ({ campaignTheme, styles }) => css`
-    font-family: ${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE, campaignTheme, 'fonts')};
+  styling: ({ theme, styles }) => `
+    font-family: ${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE, theme.campaign, 'fonts')};
     font-size: ${getStyleValue(styles, FONT_SIZE_ATTRIBUTE)}px;
     font-weight: ${getStyleValue(
       styles,
       FONT_WEIGHT_ATTRIBUTE,
-      campaignTheme,
+      theme.campaign,
       `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
     )};
     letter-spacing: ${getStyleValue(styles, LETTER_SPACING_ATTRIBUTE)}px;
     line-height: ${getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE)};
-    color: ${getStyleValue(styles, COLOR_ATTRIBUTE, campaignTheme, 'colors')};
+    color: ${getStyleValue(styles, COLOR_ATTRIBUTE, theme.campaign, 'colors')};
 
-    @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
+    @media (${theme.deviceBreakpoints.tabletUp}) {
       ${applyStyleIf(
         getStyleValue(styles, FONT_SIZE_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`font-size: ${styleValue}px;`,
+        (styleValue) => `font-size: ${styleValue}px;`,
         notZero,
       )}
       ${applyStyleIf(
         getStyleValue(
           styles,
           FONT_WEIGHT_ATTRIBUTE,
-          campaignTheme,
+          theme.campaign,
           `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
           TABLET_DEVICE,
         ),
-        (styleValue) => css`font-weight: ${styleValue};`,
+        (styleValue) => `font-weight: ${styleValue};`,
       )}
       ${applyStyleIf(
         getStyleValue(styles, LETTER_SPACING_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`letter-spacing: ${styleValue}px;`,
+        (styleValue) => `letter-spacing: ${styleValue}px;`,
         notZero,
       )}
       ${applyStyleIf(
         getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`line-height: ${styleValue};`,
+        (styleValue) => `line-height: ${styleValue};`,
       )}
       ${applyStyleIf(
-        getStyleValue(styles, COLOR_ATTRIBUTE, campaignTheme, 'colors', TABLET_DEVICE),
-        (styleValue) => css`color: ${styleValue};`,
+        getStyleValue(styles, COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
+        (styleValue) => `color: ${styleValue};`,
       )}
     }
 
-    @media (${(props) => props.theme.deviceBreakpoints.desktopSmallUp}) {
+    @media (${theme.deviceBreakpoints.desktopSmallUp}) {
       ${applyStyleIf(
         getStyleValue(styles, FONT_SIZE_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => css`font-size: ${styleValue}px;`,
+        (styleValue) => `font-size: ${styleValue}px;`,
         notZero,
       )}
       ${applyStyleIf(
         getStyleValue(
           styles,
           FONT_WEIGHT_ATTRIBUTE,
-          campaignTheme,
+          theme.campaign,
           `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
           DESKTOP_DEVICE,
         ),
-        (styleValue) => css`font-weight: ${styleValue};`,
+        (styleValue) => `font-weight: ${styleValue};`,
       )}
       ${applyStyleIf(
         getStyleValue(styles, LETTER_SPACING_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => css`letter-spacing: ${styleValue}px;`,
+        (styleValue) => `letter-spacing: ${styleValue}px;`,
         notZero,
       )}
       ${applyStyleIf(
         getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => css`line-height: ${styleValue};`,
+        (styleValue) => `line-height: ${styleValue};`,
       )}
       ${applyStyleIf(
-        getStyleValue(styles, COLOR_ATTRIBUTE, campaignTheme, 'colors', DESKTOP_DEVICE),
-        (styleValue) => css`color: ${styleValue};`,
+        getStyleValue(styles, COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
+        (styleValue) => `color: ${styleValue};`,
       )}
     }
   `,

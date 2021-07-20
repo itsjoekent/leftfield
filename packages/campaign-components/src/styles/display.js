@@ -1,5 +1,4 @@
 import get from 'lodash.get';
-import { css } from 'styled-components';
 import { TOGGLE_TYPE } from '@cc/constants/property-types';
 import {
   DESKTOP_DEVICE,
@@ -29,30 +28,30 @@ const DisplayStyle = {
       ...(get(overrides, DISPLAY_ATTRIBUTE, {})),
     },
   ]),
-  styling: ({ styles, defaultDisplayValue = 'block' }) => css`
+  styling: ({ theme, styles, defaultDisplayValue = 'block' }) => `
     ${applyStyleIf(
       getStyleValue(styles, DISPLAY_ATTRIBUTE),
-      (styleValue) => css`display: none;`,
+      (styleValue) => `display: none;`,
       (styleValue) => styleValue === false,
     )}
 
-    @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
+    @media (${theme.deviceBreakpoints.tabletUp}) {
       ${applyStyleIf(
         getStyleValue(styles, DISPLAY_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`display: ${!!styleValue ? defaultDisplayValue : 'none'};`,
+        (styleValue) => `display: ${!!styleValue ? defaultDisplayValue : 'none'};`,
       )}
 
       ${applyStyleIf(
         getStyleValue(styles, DISPLAY_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`display: ${defaultDisplayValue};`,
+        (styleValue) => `display: ${defaultDisplayValue};`,
         (styleValue) => styleValue === true,
       )}
     }
 
-    @media (${(props) => props.theme.deviceBreakpoints.desktopSmallUp}) {
+    @media (${theme.deviceBreakpoints.desktopSmallUp}) {
       ${applyStyleIf(
         getStyleValue(styles, DISPLAY_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => css`display: ${!!styleValue ? defaultDisplayValue : 'none'};`,
+        (styleValue) => `display: ${!!styleValue ? defaultDisplayValue : 'none'};`,
       )}
     }
   `,

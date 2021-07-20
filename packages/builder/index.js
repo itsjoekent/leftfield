@@ -37,6 +37,7 @@ function construct(
     }), {});
 
   const props = {
+    componentClassName: `c-${targetComponentId}`,
     properties: properties || {},
     slots: renderedSlots,
     styles: styles || {},

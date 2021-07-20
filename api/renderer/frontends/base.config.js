@@ -19,6 +19,10 @@ function baseWebpackConfig(bundleId) {
             ]
           },
         },
+        {
+          test: /\.css$/i,
+          use: ['style-loader', 'css-loader'],
+        },
       ],
     },
     output: {

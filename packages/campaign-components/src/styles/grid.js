@@ -1,5 +1,4 @@
 import get from 'lodash.get';
-import { css } from 'styled-components';
 import { NUMBER_RANGE_TYPE } from '@cc/constants/property-types';
 import {
   DESKTOP_DEVICE,
@@ -47,32 +46,32 @@ const GridStyle = {
       ...(get(overrides, SPACING_ATTRIBUTE, {})),
     },
   ]),
-  styling: ({ styles }) => css`
+  styling: ({ styles, theme }) => `
     display: grid;
     grid-template-columns: repeat(${getStyleValue(styles, COLUMNS_ATTRIBUTE)}, 1fr);
     grid-gap: ${getStyleValue(styles, SPACING_ATTRIBUTE)}px;
 
-    @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
+    @media (${theme.deviceBreakpoints.tabletUp}) {
       ${applyStyleIf(
         getStyleValue(styles, COLUMNS_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`grid-template-columns: repeat(${styleValue}, 1fr);`,
+        (styleValue) => `grid-template-columns: repeat(${styleValue}, 1fr);`,
       )}
 
       ${applyStyleIf(
         getStyleValue(styles, SPACING_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`grid-gap: ${styleValue}px;`,
+        (styleValue) => `grid-gap: ${styleValue}px;`,
       )}
     }
 
-    @media (${(props) => props.theme.deviceBreakpoints.desktopSmallUp}) {
+    @media (${theme.deviceBreakpoints.desktopSmallUp}) {
       ${applyStyleIf(
         getStyleValue(styles, COLUMNS_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => css`grid-template-columns: repeat(${styleValue}, 1fr);`,
+        (styleValue) => `grid-template-columns: repeat(${styleValue}, 1fr);`,
       )}
 
       ${applyStyleIf(
         getStyleValue(styles, SPACING_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => css`grid-gap: ${styleValue}px;`,
+        (styleValue) => `grid-gap: ${styleValue}px;`,
       )}
     }
   `,

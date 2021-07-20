@@ -1,5 +1,4 @@
 import get from 'lodash.get';
-import { css } from 'styled-components';
 import {
   COLOR_TYPE,
   NUMBER_RANGE_TYPE,
@@ -98,20 +97,20 @@ const BoxStyle = {
       ...(get(overrides, PADDING_VERTICAL_ATTRIBUTE, {})),
     },
   ]),
-  styling: ({ campaignTheme, styles }) => css`
+  styling: ({ styles, theme }) => `
     ${applyStyleIf(
-      getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, campaignTheme, 'colors'),
-      (styleValue) => css`background-color: ${styleValue};`,
+      getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+      (styleValue) => `background-color: ${styleValue};`,
     )}
 
     ${applyStyleIf(
-      getStyleValue(styles, BORDER_COLOR_ATTRIBUTE, campaignTheme, 'colors'),
-      (styleValue) => css`border-color: ${styleValue};`,
+      getStyleValue(styles, BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+      (styleValue) => `border-color: ${styleValue};`,
     )}
 
     ${applyStyleIf(
       getStyleValue(styles, BORDER_WIDTH_ATTRIBUTE),
-      (styleValue) => css`
+      (styleValue) => `
         border-style: solid;
         border-width: ${styleValue}px;
       `,
@@ -120,13 +119,13 @@ const BoxStyle = {
 
     ${applyStyleIf(
       getStyleValue(styles, BORDER_RADIUS_ATTRIBUTE),
-      (styleValue) => css`border-radius: ${styleValue}px;`,
+      (styleValue) => `border-radius: ${styleValue}px;`,
       notZero,
     )}
 
     ${applyStyleIf(
       getStyleValue(styles, PADDING_HORIZONTAL_ATTRIBUTE),
-      (styleValue) => css`
+      (styleValue) => `
         padding-left: ${styleValue}px;
         padding-right: ${styleValue}px;
       `,
@@ -135,28 +134,28 @@ const BoxStyle = {
 
     ${applyStyleIf(
       getStyleValue(styles, PADDING_VERTICAL_ATTRIBUTE),
-      (styleValue) => css`
+      (styleValue) => `
         padding-top: ${styleValue}px;
         padding-bottom: ${styleValue}px;
       `,
       notZero,
     )}
 
-    @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
+    @media (${theme.deviceBreakpoints.tabletUp}) {
       ${applyStyleIf(
-        getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, campaignTheme, 'colors', TABLET_DEVICE),
-        (styleValue) => css`background-color: ${styleValue};`,
+        getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
+        (styleValue) => `background-color: ${styleValue};`,
       )}
 
       ${applyStyleIf(
-        getStyleValue(styles, BORDER_COLOR_ATTRIBUTE, campaignTheme, 'colors', TABLET_DEVICE),
-        (styleValue) => css`border-color: ${styleValue};`,
+        getStyleValue(styles, BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
+        (styleValue) => `border-color: ${styleValue};`,
         notZero,
       )}
 
       ${applyStyleIf(
         getStyleValue(styles, BORDER_WIDTH_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`
+        (styleValue) => `
           border-style: solid;
           border-width: ${styleValue}px;
         `,
@@ -165,13 +164,13 @@ const BoxStyle = {
 
       ${applyStyleIf(
         getStyleValue(styles, BORDER_RADIUS_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`border-radius: ${styleValue}px;`,
+        (styleValue) => `border-radius: ${styleValue}px;`,
         notZero,
       )}
 
       ${applyStyleIf(
         getStyleValue(styles, PADDING_HORIZONTAL_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`
+        (styleValue) => `
           padding-left: ${styleValue}px;
           padding-right: ${styleValue}px;
         `,
@@ -180,7 +179,7 @@ const BoxStyle = {
 
       ${applyStyleIf(
         getStyleValue(styles, PADDING_VERTICAL_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => css`
+        (styleValue) => `
           padding-top: ${styleValue}px;
           padding-bottom: ${styleValue}px;
         `,
@@ -188,20 +187,20 @@ const BoxStyle = {
       )}
     }
 
-    @media (${(props) => props.theme.deviceBreakpoints.desktopSmallUp}) {
+    @media (${theme.deviceBreakpoints.desktopSmallUp}) {
       ${applyStyleIf(
-        getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, campaignTheme, 'colors', DESKTOP_DEVICE),
-        (styleValue) => css`background-color: ${styleValue};`,
+        getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
+        (styleValue) => `background-color: ${styleValue};`,
       )}
 
       ${applyStyleIf(
-        getStyleValue(styles, BORDER_COLOR_ATTRIBUTE, campaignTheme, 'colors', DESKTOP_DEVICE),
-        (styleValue) => css`border-color: ${styleValue};`,
+        getStyleValue(styles, BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
+        (styleValue) => `border-color: ${styleValue};`,
       )}
 
       ${applyStyleIf(
         getStyleValue(styles, BORDER_WIDTH_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => css`
+        (styleValue) => `
           border-style: solid;
           border-width: ${styleValue}px;
         `,
@@ -210,13 +209,13 @@ const BoxStyle = {
 
       ${applyStyleIf(
         getStyleValue(styles, BORDER_RADIUS_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => css`border-radius: ${styleValue}px;`,
+        (styleValue) => `border-radius: ${styleValue}px;`,
         notZero,
       )}
 
       ${applyStyleIf(
         getStyleValue(styles, PADDING_HORIZONTAL_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => css`
+        (styleValue) => `
           padding-left: ${styleValue}px;
           padding-right: ${styleValue}px;
         `,
@@ -225,7 +224,7 @@ const BoxStyle = {
 
       ${applyStyleIf(
         getStyleValue(styles, PADDING_VERTICAL_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => css`
+        (styleValue) => `
           padding-top: ${styleValue}px;
           padding-bottom: ${styleValue}px;
         `,

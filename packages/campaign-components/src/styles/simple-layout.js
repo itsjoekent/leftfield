@@ -1,5 +1,4 @@
 import get from 'lodash.get';
-import { css } from 'styled-components';
 import {
   COLOR_TYPE,
   NUMBER_RANGE_TYPE,
@@ -35,10 +34,10 @@ const SimpleLayoutStyle = {
       }),
     },
   ],
-  styling: ({ theme, styles }) => css`
+  styling: ({ styles, theme }) => `
     background-color: ${get(theme, `campaign.colors.${getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, MOBILE_DEVICE)}`)};
 
-    @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
+    @media (${theme.deviceBreakpoints.tabletUp}) {
       background-color: ${get(theme, `campaign.colors.${getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, DESKTOP_DEVICE, MOBILE_DEVICE)}`)};
     }
   `,

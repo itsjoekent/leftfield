@@ -70,8 +70,8 @@ export const assemblySlice = createSlice({
     pages: {
       'test': {
         components: {
-          '1': {
-            id: '1',
+          'root': {
+            id: 'root',
             tag: ComponentMeta.Root.tag,
             name: ComponentMeta.Root.tag,
             properties: {},
@@ -82,7 +82,7 @@ export const assemblySlice = createSlice({
         },
         name: 'Test page',
         settings: {},
-        rootComponentId: '1',
+        rootComponentId: 'root',
       },
     },
     siteSettings: {

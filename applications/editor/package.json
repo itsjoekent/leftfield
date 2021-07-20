@@ -32,7 +32,7 @@
     "build:staging": "NODE_ENV=development webpack --config ./webpack/staging.config.js --watch",
     "start:development": "NODE_ENV=development npx webpack serve --config ./webpack/development.config.js",
     "start:staging": "NODE_ENV=development npx webpack serve --config ./webpack/staging.config.js",
-    "start": "npm run start:local-development"
+    "start": "npm run start:development"
   },
   "eslintConfig": {
     "extends": [

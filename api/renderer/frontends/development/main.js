@@ -1,15 +1,26 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+
 import React from 'react';
 import { render } from 'react-dom';
-import { ThemeProvider } from 'styled-components';
 import get from 'lodash.get';
+import md5 from 'md5';
 import Builder from 'pkg.builder';
 import {
   Components,
+  ComponentCss,
   GlobalReset,
+  Languages,
+  compileComponentStyles,
   theme,
 } from 'pkg.campaign-components';
 
+import 'pkg.campaign-components/dist/main.css';
+
+const cssCache = {};
+
 window.addEventListener('message', (event) => {
+  // TODO: this should be the renderer url env ?
   // if (event.origin !== "http://example.org:8080") {
   //   return;
   // }
@@ -32,6 +43,11 @@ window.addEventListener('message', (event) => {
         return;
       }
 
+      const finalTheme = {
+        ...theme,
+        campaign: campaignTheme,
+      };
+
       function recursiveRenderFill(componentId) {
         const component = get(page, `components.${componentId}`);
         if (!component) {
@@ -39,8 +55,37 @@ window.addEventListener('message', (event) => {
           return;
         }
 
+        const tag = get(component, 'tag');
+
         if (!component.render) {
-          page.components[componentId].render = Components[component.tag];
+          page.components[componentId].render = Components[tag];
+        }
+
+        const cssGenerator = ComponentCss[tag]
+        if (!!cssGenerator) {
+          const css = cssGenerator({
+            componentClassName: `c-${componentId}`,
+            theme: finalTheme,
+            properties: component.properties,
+            slots: component.slots,
+            styles: component.styles,
+            language: Languages.US_ENGLISH_LANG,
+          });
+
+          const minifiedCss = compileComponentStyles(css);
+          const hash = md5(minifiedCss);
+
+          if (cssCache[componentId] !== hash) {
+            cssCache[componentId] = hash;
+
+            const element = document.querySelector(`[data-componentstyle="${componentId}"]`);
+
+            if (!!element) {
+              element.replaceChildren(document.createTextNode(minifiedCss));
+            } else {
+              document.head.insertAdjacentHTML('beforeend', `<style data-componentstyle="${componentId}">${minifiedCss}</style>`);
+            }
+          }
         }
 
         if (Object.keys(get(component, 'slots', {})).length) {
@@ -54,17 +99,10 @@ window.addEventListener('message', (event) => {
 
       recursiveRenderFill(get(page, 'rootComponentId'));
 
-      const finalTheme = {
-        ...theme,
-        campaign: campaignTheme,
-      };
-
-      render((
-        <ThemeProvider theme={finalTheme}>
-          <GlobalReset />
-          {Builder(React.createElement, page)}
-        </ThemeProvider>
-      ), document.getElementById('root'));
+      render(
+        Builder(React.createElement, page),
+        document.getElementById('root'),
+      );
     } catch (error) {
       console.error(error);
     }

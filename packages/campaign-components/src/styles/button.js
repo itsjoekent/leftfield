@@ -1,5 +1,4 @@
 import get from 'lodash.get';
-import { css } from 'styled-components';
 import { darken } from 'polished';
 import {
   COLOR_TYPE,
@@ -152,24 +151,24 @@ const ButtonStyle = {
     },
     ...DisplayStyle.attributes(),
   ]),
-  styling: ({ campaignTheme, styles }) => css`
+  styling: ({ theme, styles }) => `
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
     ${DisplayStyle.styling({
-      campaignTheme,
+      theme,
       styles,
       defaultDisplayValue: 'inline-flex',
     })}
 
     ${TextStyle.styling({
-      campaignTheme,
+      theme,
       styles,
     })}
 
     ${BoxStyle.styling({
-      campaignTheme,
+      theme,
       styles,
     })}
 
@@ -182,94 +181,94 @@ const ButtonStyle = {
 
     &:hover, &:active {
       ${applyStyleIf(
-        getStyleValue(styles, HOVER_BACKGROUND_COLOR_ATTRIBUTE, campaignTheme, 'colors'),
-        (styleValue) => css`background-color: ${styleValue};`,
+        getStyleValue(styles, HOVER_BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+        (styleValue) => `background-color: ${styleValue};`,
       )}
 
       ${applyStyleIf(
-        getStyleValue(styles, HOVER_BORDER_COLOR_ATTRIBUTE, campaignTheme, 'colors'),
-        (styleValue) => css`border-color: ${styleValue};`,
+        getStyleValue(styles, HOVER_BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+        (styleValue) => `border-color: ${styleValue};`,
       )}
 
       ${applyStyleIf(
-        getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, campaignTheme, 'colors'),
-        (styleValue) => css`color: ${styleValue};`,
+        getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+        (styleValue) => `color: ${styleValue};`,
       )}
 
       ${applyStyleIf(
-        getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, campaignTheme, 'colors'),
-        (styleValue) => css`color: ${styleValue};`,
+        getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+        (styleValue) => `color: ${styleValue};`,
       )}
 
-      @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
+      @media (${theme.deviceBreakpoints.tabletUp}) {
         ${applyStyleIf(
-          getStyleValue(styles, HOVER_BACKGROUND_COLOR_ATTRIBUTE, campaignTheme, 'colors', TABLET_DEVICE),
-          (styleValue) => css`background-color: ${styleValue};`,
+          getStyleValue(styles, HOVER_BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
+          (styleValue) => `background-color: ${styleValue};`,
         )}
 
         ${applyStyleIf(
-          getStyleValue(styles, HOVER_BORDER_COLOR_ATTRIBUTE, campaignTheme, 'colors', TABLET_DEVICE),
-          (styleValue) => css`border-color: ${styleValue};`,
+          getStyleValue(styles, HOVER_BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
+          (styleValue) => `border-color: ${styleValue};`,
         )}
 
         ${applyStyleIf(
-          getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, campaignTheme, 'colors', TABLET_DEVICE),
-          (styleValue) => css`color: ${styleValue};`,
+          getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
+          (styleValue) => `color: ${styleValue};`,
         )}
       }
 
-      @media (${(props) => props.theme.deviceBreakpoints.desktopSmallUp}) {
+      @media (${theme.deviceBreakpoints.desktopSmallUp}) {
         ${applyStyleIf(
-          getStyleValue(styles, HOVER_BACKGROUND_COLOR_ATTRIBUTE, campaignTheme, 'colors', DESKTOP_DEVICE),
-          (styleValue) => css`background-color: ${styleValue};`,
+          getStyleValue(styles, HOVER_BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
+          (styleValue) => `background-color: ${styleValue};`,
         )}
 
         ${applyStyleIf(
-          getStyleValue(styles, HOVER_BORDER_COLOR_ATTRIBUTE, campaignTheme, 'colors', DESKTOP_DEVICE),
-          (styleValue) => css`border-color: ${styleValue};`,
+          getStyleValue(styles, HOVER_BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
+          (styleValue) => `border-color: ${styleValue};`,
         )}
 
         ${applyStyleIf(
-          getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, campaignTheme, 'colors', DESKTOP_DEVICE),
-          (styleValue) => css`color: ${styleValue};`,
+          getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
+          (styleValue) => `color: ${styleValue};`,
         )}
       }
     }
 
     &:focus {
       ${applyStyleIf(
-        getStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, campaignTheme, 'colors'),
-        (styleValue) => css`
+        getStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+        (styleValue) => `
           outline-style: solid;
           outline-color: transparent;
           box-shadow: 0 0 0 ${getStyleValue(styles, FOCUS_OUTLINE_WIDTH_ATTRIBUTE)}px ${styleValue};
         `,
       )}
 
-      @media (${(props) => props.theme.deviceBreakpoints.tabletUp}) {
+      @media (${theme.deviceBreakpoints.tabletUp}) {
         ${applyStyleIf(
-          getStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, campaignTheme, 'colors', TABLET_DEVICE),
-          (styleValue) => css`
+          getStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
+          (styleValue) => `
             outline-style: solid;
             outline-color: transparent;
             box-shadow: 0 0 0
               ${getCascadingStyleValue(styles, FOCUS_OUTLINE_WIDTH_ATTRIBUTE, null, null, [TABLET_DEVICE, MOBILE_DEVICE])}px
-              ${getCascadingStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, campaignTheme, 'colors', [TABLET_DEVICE, MOBILE_DEVICE])};
+              ${getCascadingStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, theme.campaign, 'colors', [TABLET_DEVICE, MOBILE_DEVICE])};
           `,
           (styleValue) => !!styleValue
             || getStyleValue(styles, FOCUS_OUTLINE_WIDTH_ATTRIBUTE, null, null, TABLET_DEVICE),
         )}
       }
 
-      @media (${(props) => props.theme.deviceBreakpoints.desktopSmallUp}) {
+      @media (${theme.deviceBreakpoints.desktopSmallUp}) {
         ${applyStyleIf(
-          getStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, campaignTheme, 'colors', DESKTOP_DEVICE),
-          (styleValue) => css`
+          getStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
+          (styleValue) => `
             outline-style: solid;
             outline-color: transparent;
             box-shadow: 0 0 0
               ${getCascadingStyleValue(styles, FOCUS_OUTLINE_WIDTH_ATTRIBUTE, null, null, [DESKTOP_DEVICE, TABLET_DEVICE, MOBILE_DEVICE])}px
-              ${getCascadingStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, campaignTheme, 'colors', [DESKTOP_DEVICE, TABLET_DEVICE, MOBILE_DEVICE])};
+              ${getCascadingStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, theme.campaign, 'colors', [DESKTOP_DEVICE, TABLET_DEVICE, MOBILE_DEVICE])};
           `,
           (styleValue) => !!styleValue
             || getStyleValue(styles, FOCUS_OUTLINE_WIDTH_ATTRIBUTE, null, null, DESKTOP_DEVICE),
