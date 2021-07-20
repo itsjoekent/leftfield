@@ -35,24 +35,12 @@ import getPropertyValue from '@cc/utils/getPropertyValue';
 
 export const TAG = 'ActBlueDonateForm';
 
-export const ONE_BUTTON_LAYOUT = {
-  value: 'ONE_BUTTON_LAYOUT',
-  label: 'One Button',
-};
-
-export const MULTI_BUTTON_LAYOUT = {
-  value: 'MULTI_BUTTON_LAYOUT',
-  label: 'Multiple Buttons',
-};
-
-export const LAYOUT_PROPERTY = 'LAYOUT_PROPERTY';
 export const ACTBLUE_FORM_PROPERTY = 'ACTBLUE_FORM_PROPERTY';
 export const ENABLE_EXPRESS_DONATE_PROPERTY = 'ENABLE_EXPRESS_DONATE_PROPERTY';
 export const EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY = 'EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY';
 export const REFCODE_PROPERTY = 'REFCODE_PROPERTY';
 export const CARRY_TRACKING_SOURCE_PROPERTY = 'CARRY_TRACKING_SOURCE_PROPERTY';
 
-export const DONATE_BUTTON_SLOT = 'DONATE_BUTTON_SLOT';
 export const DONATE_BUTTONS_SLOT = 'DONATE_BUTTONS_SLOT';
 export const WIDE_MOBILE_DONATE_BUTTONS_SLOT = 'WIDE_MOBILE_DONATE_BUTTONS_SLOT';
 export const WIDE_DESKTOP_DONATE_BUTTONS_SLOT = 'WIDE_DESKTOP_DONATE_BUTTONS_SLOT';
@@ -72,31 +60,10 @@ const ActBlueDonateFormMeta = {
       includeLayout: [
         { key: GROWS_VERTICALLY, mustBe: true },
       ],
-      conditional: ({ properties }) => getPropertyValue(properties, LAYOUT_PROPERTY) === MULTI_BUTTON_LAYOUT.value,
+      conditional: ({ slots }) => get(slots, `${DONATE_BUTTONS_SLOT}.length`, 0) > 1,
     },
   ],
   properties: [
-    {
-      id: LAYOUT_PROPERTY,
-      label: 'Form Layout',
-      type: CHECKLIST_TYPE,
-      required: true,
-      options: [
-        ONE_BUTTON_LAYOUT,
-        MULTI_BUTTON_LAYOUT,
-      ],
-      dynamicDefaultValue: ({ slot }) => {
-        if (get(slot, `layout.${GROWS_VERTICALLY}`)) {
-          return {
-            [US_ENGLISH_LANG]: MULTI_BUTTON_LAYOUT.value,
-          };
-        }
-
-        return {
-          [US_ENGLISH_LANG]: ONE_BUTTON_LAYOUT.value,
-        };
-      },
-    },
     {
       ...DEFAULT_ACTBLUE_DONATION_FORM.field,
       id: ACTBLUE_FORM_PROPERTY,
@@ -111,7 +78,7 @@ const ActBlueDonateFormMeta = {
       defaultValue: {
         [US_ENGLISH_LANG]: false,
       },
-      conditional: ({ properties }) => getPropertyValue(properties, LAYOUT_PROPERTY) === MULTI_BUTTON_LAYOUT.value,
+      conditional: ({ slots }) => get(slots, `${DONATE_BUTTONS_SLOT}.length`, 0) > 1,
     },
     {
       ...ACTBLUE_EXPRESS_DISCLAIMER_COPY.field,
@@ -137,26 +104,12 @@ const ActBlueDonateFormMeta = {
       label: 'Donate Buttons',
       required: true,
       isList: true,
-      conditional: ({ properties }) => getPropertyValue(properties, LAYOUT_PROPERTY) === MULTI_BUTTON_LAYOUT.value,
       constraints: [
         { includeTrait: [DONATE_BUTTON_TRAIT] },
       ],
       layout: {
         [FILLS_CONTAINER_WIDE]: true,
         [GROWS_VERTICALLY]: true,
-      },
-    },
-    {
-      id: DONATE_BUTTON_SLOT,
-      label: 'Donate Button',
-      required: true,
-      isList: false,
-      conditional: ({ properties }) => getPropertyValue(properties, LAYOUT_PROPERTY) === ONE_BUTTON_LAYOUT.value,
-      constraints: [
-        { include: [DONATE_BUTTON_TRAIT] },
-      ],
-      layout: {
-        [FITS_CONTENT]: true,
       },
     },
   ],
@@ -168,7 +121,6 @@ const ActBlueDonateFormMeta = {
         ...GridStyle.attributes(),
         ...BoxStyle.attributes(),
       ],
-      conditional: ({ properties }) => getPropertyValue(properties, LAYOUT_PROPERTY) === MULTI_BUTTON_LAYOUT.value,
     },
     {
       id: DISCLAIMER_TEXT_STYLE,

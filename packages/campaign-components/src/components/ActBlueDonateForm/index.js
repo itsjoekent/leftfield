@@ -5,7 +5,6 @@ import {
   ONE_BUTTON_LAYOUT,
   MULTI_BUTTON_LAYOUT,
 
-  LAYOUT_PROPERTY,
   ACTBLUE_FORM_PROPERTY,
   ENABLE_EXPRESS_DONATE_PROPERTY,
   EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY,
@@ -13,9 +12,6 @@ import {
   CARRY_TRACKING_SOURCE_PROPERTY,
 
   DONATE_BUTTONS_SLOT,
-  DONATE_BUTTON_SLOT,
-  WIDE_MOBILE_DONATE_BUTTONS_SLOT,
-  WIDE_DESKTOP_DONATE_BUTTONS_SLOT,
 } from '@cc/components/ActBlueDonateForm/meta';
 import {
   initialFundraisingState,
@@ -66,10 +62,16 @@ export default function ActBlueDonateForm(props) {
     buildUrl,
   };
 
-  if (getPropertyValue(properties, LAYOUT_PROPERTY) === ONE_BUTTON_LAYOUT) {
+  const donateButtons = get(slots, DONATE_BUTTONS_SLOT, null);
+
+  if (!donateButtons) {
+    return null;
+  }
+
+  if (donateButtons.length <= 1) {
     return (
       <FundraisingContext.Provider value={fundraisingState}>
-        {get(slots, DONATE_BUTTON_SLOT, null)}
+        {donateButtons}
       </FundraisingContext.Provider>
     );
   }
@@ -77,7 +79,7 @@ export default function ActBlueDonateForm(props) {
   return (
     <FundraisingContext.Provider value={fundraisingState}>
       <div className={componentClassName}>
-        {get(slots, DONATE_BUTTONS_SLOT, null)}
+        {donateButtons}
         {!!getPropertyValue(properties, ENABLE_EXPRESS_DONATE_PROPERTY) && (
           <p className={DISCLAIMER_CLASS_NAME}>
             {getPropertyValue(properties, EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY)}

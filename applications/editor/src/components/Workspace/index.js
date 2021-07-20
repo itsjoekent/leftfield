@@ -84,13 +84,10 @@ export default function Workspace(props) {
           flexGrow
           justifyContent="space-between"
           gridGap="36px"
-          paddingTop="12px"
-          paddingBottom="0px"
           paddingLeft="12px"
-          paddingRight="0px"
           overflowY="scroll"
         >
-          <Flex.Column fullHeight gridGap="12px">
+          <Flex.Column fullHeight gridGap="12px" paddingTop="12px">
             {activeComponentHasProperties && (
               <Tooltip copy="Edit properties" point={Tooltip.LEFT}>
                 <Buttons.IconButton
@@ -148,6 +145,7 @@ export default function Workspace(props) {
           <Flex.Column
             overflowY="scroll"
             gridGap="32px"
+            paddingTop="12px"
             paddingBottom="24px"
             paddingRight="12px"
             fullWidth

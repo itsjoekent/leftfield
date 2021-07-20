@@ -46,6 +46,7 @@ import {
   selectComponentPropertyInheritedFrom,
   selectComponentPropertyInheritedFromForLanguage,
   selectComponentPropertyValue,
+  selectComponentSlots,
   selectComponentStyle,
   selectComponentStyles,
   selectComponentStyleAttribute,
@@ -109,6 +110,7 @@ const TRIGGERS = [
   setComponentThemeStyle.toString(),
   setPageSetting.toString(),
   setSiteSetting.toString(),
+  setTab.toString(),
 ];
 
 function runParliamentarian(
@@ -125,6 +127,7 @@ function runParliamentarian(
 ) {
   const componentTag = selectComponentTag(pageId, componentId)(state);
   const componentPropertyValues = selectComponentProperties(pageId, componentId)(state);
+  const componentSlotValues = selectComponentSlots(pageId, componentId)(state);
 
   const componentMeta = ComponentMeta[componentTag];
   const componentProperties = get(componentMeta, 'properties', []);
@@ -182,7 +185,8 @@ function runParliamentarian(
 
     const result = conditional({
       properties: componentPropertyValuesForConditionals,
-      slot: parentComponentSlotMeta,
+      slots: componentSlotValues,
+      withinSlot: parentComponentSlotMeta,
     });
 
     const appendTo = !!result ? 'visibleProperties' : 'hiddenProperties';
@@ -265,7 +269,8 @@ function runParliamentarian(
     if (dynamicDefaultValue) {
       const dynamicValue = dynamicDefaultValue({
         properties: componentPropertyValuesForConditionals,
-        slot: parentComponentSlotMeta,
+        slots: componentSlotValues,
+        withinSlot: parentComponentSlotMeta,
       });
 
       Object.keys(dynamicValue).forEach((language) => {
@@ -380,7 +385,8 @@ function runParliamentarian(
 
     const result = conditional({
       properties: componentPropertyValuesForConditionals,
-      slot: parentComponentSlotMeta,
+      slots: componentSlotValues,
+      withinSlot: parentComponentSlotMeta,
     });
 
     const appendTo = !!result ? 'visibleStyles' : 'hiddenStyles';
@@ -521,7 +527,7 @@ function runParliamentarian(
 
     const result = conditional({
       properties: componentPropertyValuesForConditionals,
-      slot: parentComponentSlotMeta,
+      withinSlot: parentComponentSlotMeta,
     });
 
     const appendTo = !!result ? 'visibleSlots' : 'hiddenSlots';
