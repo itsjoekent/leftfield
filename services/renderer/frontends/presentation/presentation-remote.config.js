@@ -3,11 +3,12 @@ const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const base = require('../base.config.js');
-const environment = require('../../../../environment/local-development');
+const environment = require('../../../../environment/base-local');
 
 module.exports = merge(
-  base('development'),
+  base('presentation-remote'),
   {
+    devtool: 'source-map',
     entry: path.join(__dirname, 'main.js'),
     output: {
       filename: 'main.js',

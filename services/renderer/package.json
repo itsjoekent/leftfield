@@ -1,10 +1,14 @@
 {
   "name": "app.renderer",
   "scripts": {
-    "build:development": "NODE_ENV=development webpack --config ./frontends/development/development.config.js --watch",
-    "serve:development": "serve frontends/bundles/development/dist -p 6003",
-    "start:development": "npm-run-all --parallel serve:development build:development",
-    "start:production": "NODE_ENV=production node src/index.js"
+    "build-all-frontends": "npm-run-all build:frontend:*",
+    "build:frontend:preview-local": "NODE_ENV=development webpack --config ./frontends/preview/preview-local.config.js",
+    "build:frontend:preview-remote": "NODE_ENV=production webpack --config ./frontends/preview/preview-remote.config.js",
+    "build:frontend:presentation": "NODE_ENV=production webpack --config ./frontends/presentation/presentation-remote.config.js",
+    "watch:frontend:preview-local": "NODE_ENV=development webpack --config ./frontends/preview/preview-local.config.js --watch",
+    "start": "npm-run-all --parallel watch:frontend:preview-local start:local",
+    "start:local": "NODE_ENV=development node src/index",
+    "start:remote": "NODE_ENV=production node src/index"
   },
   "dependencies": {
     "@babel/preset-env": "^7.14.7",

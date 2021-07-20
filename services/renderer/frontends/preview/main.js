@@ -9,7 +9,6 @@ import Builder from 'pkg.builder';
 import {
   Components,
   ComponentCss,
-  GlobalReset,
   Languages,
   compileComponentStyles,
   theme,

@@ -12,6 +12,7 @@ module.exports = merge(base, {
     host: '0.0.0.0',
     hot: true,
   },
+  devtool: 'inline-source-map',
   plugins: [
     // TODO: Fix eslint, see: https://github.com/webpack/webpack-cli/issues/1622
     // new ESLintPlugin(),
