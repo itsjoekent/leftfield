@@ -106,3 +106,6 @@ dist
 ## Custom Application Files
 
 app.renderer/frontends/bundles
+
+# Local Netlify folder
+.netlify

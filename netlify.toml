@@ -1,0 +1,11 @@
+[build]
+publish = "dist/"
+command = "npm run build:local-development"
+framework = "#custom"
+
+[dev]
+publish = "dist/"
+command = "npm start"
+framework = "#custom"
+port = 5000
+targetPort = 5001

@@ -1,0 +1,2 @@
+start:
+	netlify dev
