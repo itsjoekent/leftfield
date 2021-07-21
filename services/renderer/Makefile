@@ -10,7 +10,7 @@ build:
 
 local:
 		docker run --name svc.renderer \
-			--rm -t \
+			--rm -t -i \
 			-p 6003:6003 \
 			-v $(CURDIR)/../../packages:/usr/code/packages \
 			-v $(CURDIR)/../../environment:/usr/code/environment \
