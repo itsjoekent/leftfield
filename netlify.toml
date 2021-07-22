@@ -2,10 +2,22 @@
 publish = "dist/"
 command = "npm run build:local-development"
 framework = "#custom"
+environment = { AWS_LAMBDA_JS_RUNTIME = "nodejs14.x" }
+
+[functions]
+directory = "functions/"
 
 [dev]
 publish = "dist/"
 command = "npm start"
 framework = "#custom"
+environment = { AWS_LAMBDA_JS_RUNTIME = "nodejs14.x" }
 port = 5000
 targetPort = 5001
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Powered-By = "Leftfield"
