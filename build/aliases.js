@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  '@editor': path.resolve(process.cwd(), '/src/editor'),
+  '@product': path.resolve(process.cwd(), '/src/product'),
 
   'pkg.admin-components': path.resolve(process.cwd(), '/packages/admin-components'),
   'pkg.builder': path.resolve(process.cwd(), '/packages/builder'),

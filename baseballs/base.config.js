@@ -31,7 +31,7 @@ module.exports = (prefix) => ({
     ],
   },
   output: {
-    path: path.join(process.cwd(), `/dist/baseballs/${prefix}`),
+    path: path.join(process.cwd(), `/www/baseballs/${prefix}`),
     publicPath: `/baseballs/${prefix}`,
   },
   resolve: {
