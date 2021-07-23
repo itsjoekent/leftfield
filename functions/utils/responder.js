@@ -34,10 +34,12 @@ function respondWithError(error) {
   }
 
   if (process.env.NETLIFY_DEV === 'true' && !!error.message) {
-    errorMessage = error.message;
+    errorMessage = JSON.stringify(error.message);
   }
 
-  console.error(`[error start id="${errorId}"]\n${error}\n[error end id="${errorId}"]`);
+  if ((process.env.NETLIFY_DEV === 'true' || statusCode >= 500) && error instanceof Error) {
+    console.error(`[error start id="${errorId}"]\n${error.stack || error.message}\n[error end id="${errorId}"]`);
+  }
 
   return respondWithSuccess({
     error: {

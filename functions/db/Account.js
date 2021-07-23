@@ -1,4 +1,5 @@
 const dynamoose = require('./');
+const Organization = require('./Organization');
 
 const schema = new dynamoose.Schema({
   'id': {
@@ -10,11 +11,15 @@ const schema = new dynamoose.Schema({
       name: 'emailIndex',
       global: true,
     },
+    set: (value) => value.toLowerCase(),
     type: String,
   },
   'password': String,
+  'organizationId': {
+    type: String,
+  },
 }, {
-  'timestamps': true
+  'timestamps': true,
 });
 
 const options = {
@@ -24,5 +29,9 @@ const options = {
 
 // TODO: Build table name based on environment?
 const Account = dynamoose.model('Accounts', schema, options);
+
+Account.methods.set('findByEmail', async function(email) {
+  return this.query('email').eq(email.toLowerCase()).using('emailIndex').exec();
+});
 
 module.exports = Account;

@@ -53,11 +53,10 @@ const FilledButtonWrapper = styled.button`
   }
 
   &:hover {
-    ${({ buttonFg, theme }) => !!buttonFg && css`background-color: ${buttonFg(theme.colors)};`}
-
-    ${Typography} {
-      ${({ buttonBg, theme }) => !!buttonBg && css`color: ${buttonBg(theme.colors)};`}
-    }
+    ${({ hoverButtonBg, theme }) => !!hoverButtonBg && css`
+      border-color: ${hoverButtonBg(theme.colors)};
+      background-color: ${hoverButtonBg(theme.colors)};
+    `}
   }
 
   ${sharedButtonStyles}
@@ -76,12 +75,7 @@ export function Filled(props) {
   const buttonRef = React.useRef(null);
   const isHovering = useIsHovering(buttonRef);
 
-  const iconColor = rest.buttonFg;
-  const iconHoverColor = rest.buttonBg;
-
-  const finalIconColor = !!IconComponent && isHovering
-    ? (!!iconHoverColor && iconHoverColor(theme.colors))
-    : (!!iconColor && iconColor(theme.colors));
+  const finalIconColor = !!IconComponent && rest.buttonFg(theme.colors);
 
   return (
     <FilledButtonWrapper ref={buttonRef} {...rest}>
@@ -148,7 +142,10 @@ export function Outline(props) {
 }
 
 const TextButtonWrapper = styled.button`
+  text-decoration: none;
+
   ${Typography} {
+    text-decoration: none;
     ${({ buttonFg, theme }) => !!buttonFg && css`color: ${buttonFg(theme.colors)};`}
   }
 

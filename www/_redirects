@@ -1,2 +1,4 @@
 /dashboard/* /product/index.html 200
 /editor/* /product/index.html 200
+/login/* /product/index.html 200
+/signup/* /product/index.html 200

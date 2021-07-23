@@ -38,7 +38,7 @@ module.exports = {
   output: {
     filename: '[name].bundle.js',
     path: path.join(process.cwd(), `www/product`),
-    publicPath: '/product',
+    publicPath: '/product/',
   },
   plugins: [
     new HtmlWebpackPlugin({

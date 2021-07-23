@@ -5,7 +5,7 @@ const base = require('./base.config.js');
 const environment = require(path.join(process.cwd(), 'environment/development'));
 
 module.exports = merge(base, {
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   plugins: [
     // TODO: Fix eslint, see: https://github.com/webpack/webpack-cli/issues/1622
     // new ESLintPlugin(),

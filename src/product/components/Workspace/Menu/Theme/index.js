@@ -63,6 +63,7 @@ export default function Theme(props) {
             iconSize="18px"
             buttonFg={(colors) => colors.mono[100]}
             buttonBg={(colors) => colors.blue[500]}
+            hoverButtonBg={(colors) => colors.blue[700]}
             gridGap="2px"
             paddingVertical="2px"
             paddingHorizontal="4px"

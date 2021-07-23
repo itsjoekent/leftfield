@@ -13,6 +13,7 @@ const Typography = styled.p`
   ${(props) => props.letterSpacing && css`letter-spacing: ${props.letterSpacing};`}
   ${(props) => props.lineHeight && css`line-height: ${props.lineHeight};`}
 
+  ${(props) => props.textAlign && css`text-align: ${props.textAlign};`}
   ${(props) => props.textDecoration && css`text-decoration: ${props.textDecoration};`}
   ${(props) => props.textOverflow && css`text-overflow: ${props.textOverflow};`}
   ${(props) => props.whiteSpace && css`white-space: ${props.whiteSpace};`}

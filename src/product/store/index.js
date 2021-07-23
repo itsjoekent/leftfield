@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import assembly from '@product/features/assembly';
+import auth from '@product/features/auth';
 import modal from '@product/features/modal';
 import previewMode from '@product/features/previewMode';
 import workspace from '@product/features/workspace';
@@ -11,6 +12,7 @@ export default configureStore({
   ],
   reducer: {
     assembly,
+    auth,
     modal,
     previewMode,
     workspace,

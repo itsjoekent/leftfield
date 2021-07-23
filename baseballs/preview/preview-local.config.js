@@ -8,7 +8,7 @@ const environment = require(path.join(process.cwd(), 'environment/development'))
 module.exports = merge(
   base('preview-local'),
   {
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     entry: path.join(__dirname, 'main.js'),
     output: {
       filename: 'main.js',

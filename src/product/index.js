@@ -1,3 +1,4 @@
+import 'whatwg-fetch';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
@@ -11,8 +12,17 @@ import store from '@product/store';
 
 import '@product/index.css';
 
+import { DASHBOARD_ROUTE } from '@product/routes/Dashboard';
+const DashboardPage = React.lazy(() => import('@product/routes/Dashboard'));
+
 import { EDITOR_ROUTE } from '@product/routes/Editor';
-const Editor = React.lazy(() => import('@product/routes/Editor'));
+const EditorPage = React.lazy(() => import('@product/routes/Editor'));
+
+import { LOGIN_ROUTE } from '@product/routes/Login';
+const LoginPage = React.lazy(() => import('@product/routes/Login'));
+
+import { SIGNUP_ROUTE } from '@product/routes/Signup';
+const SignupPage = React.lazy(() => import('@product/routes/Signup'));
 
 ReactDOM.render(
   <React.StrictMode>
@@ -22,7 +32,10 @@ ReactDOM.render(
           <React.Fragment>
             <GlobalReset />
             <Suspense fallback={<div>Loading...</div>}>
-              <Route path={EDITOR_ROUTE} component={Editor} />
+              <Route path={DASHBOARD_ROUTE} component={DashboardPage} />
+              <Route path={EDITOR_ROUTE} component={EditorPage} />
+              <Route path={LOGIN_ROUTE} component={LoginPage} />
+              <Route path={SIGNUP_ROUTE} component={SignupPage} />
             </Suspense>
           </React.Fragment>
         </ThemeProvider>
