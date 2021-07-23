@@ -9,6 +9,7 @@ export default function DefaultLayout(props) {
     children,
     width = '620px',
     title = '',
+    disableClose = false,
   } = props;
 
   const dispatch = useDispatch();
@@ -27,16 +28,17 @@ export default function DefaultLayout(props) {
       }
     }
 
-    if (modalElement) {
+    if (modalElement && !disableClose) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      if (modalElement) {
+      if (modalElement && !disableClose) {
         document.removeEventListener('mousedown', handleClickOutside);
       }
     };
   }, [
+    disableClose,
     dispatch,
   ]);
 
@@ -48,20 +50,22 @@ export default function DefaultLayout(props) {
         role="dialog"
         aria-label={title}
       >
-        <TitleRow
-          justify="flex-end"
-          align="center"
-          padding="6px"
-          bg={(colors) => colors.mono[200]}
-        >
-          <Buttons.IconButton
-            IconComponent={Icons.CloseRound}
-            color={(colors) => colors.mono[600]}
-            hoverColor={(colors) => colors.mono[900]}
-            aria-label="Close dialog"
-            onClick={() => dispatch(closeModal())}
-          />
-        </TitleRow>
+        {!disableClose && (
+          <TitleRow
+            justify="flex-end"
+            align="center"
+            padding="6px"
+            bg={(colors) => colors.mono[200]}
+          >
+            <Buttons.IconButton
+              IconComponent={Icons.CloseRound}
+              color={(colors) => colors.mono[600]}
+              hoverColor={(colors) => colors.mono[900]}
+              aria-label="Close dialog"
+              onClick={() => dispatch(closeModal())}
+            />
+          </TitleRow>
+        )}
         {children}
       </ModalContainer>
     </Backdrop>

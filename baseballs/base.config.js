@@ -1,7 +1,8 @@
 const NODE_ENV = process.env.NODE_ENV;
 
 const path = require('path');
-const aliases = require('../build/aliases');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (prefix) => ({
   mode: NODE_ENV,
@@ -20,7 +21,8 @@ module.exports = (prefix) => ({
       },
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        sideEffects: true,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
         test: /\.(md)$/i,
@@ -34,7 +36,12 @@ module.exports = (prefix) => ({
     path: path.join(process.cwd(), `/www/baseballs/${prefix}`),
     publicPath: `/baseballs/${prefix}`,
   },
-  resolve: {
-    alias: aliases,
-  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].[chunkhash].css',
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, './template.html'),
+    }),
+  ],
 });

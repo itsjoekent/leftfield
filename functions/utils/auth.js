@@ -1,9 +1,10 @@
 const bcrypt = require('bcrypt');
 const { get } = require('lodash');
 const { SignJWT } = require('jose-node-cjs-runtime/jwt/sign');
-const { jwtVerify } = require('jose/jwt/verify');
+const { jwtVerify } = require('jose-node-cjs-runtime/jwt/verify');
 const { promisify } = require('util');
 const crypto = require('crypto');
+const makeApiError = require('./makeApiError');
 const Account = require('../db/Account');
 
 const randomBytes = promisify(crypto.randomBytes);
@@ -66,6 +67,14 @@ async function validateAuthorizationHeader(event) {
 
     const payload = await validateToken(authorizationHeader.replace('Bearer ', ''));
     const account = await Account.findByEmail(payload.sub);
+
+    if (!account) {
+      return makeApiError({
+        error,
+        message: 'Not authorized to perform this action',
+        status: 401,
+      });
+    }
 
     return account;
   } catch (error) {

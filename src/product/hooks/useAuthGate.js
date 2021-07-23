@@ -18,4 +18,6 @@ export default function useAuthGate(redirectTo = LOGIN_ROUTE) {
     location,
     redirectTo,
   ]);
+
+  return isAuthenticated;
 }

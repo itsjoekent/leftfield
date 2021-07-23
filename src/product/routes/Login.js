@@ -11,7 +11,7 @@ import {
 import { FormWizardProvider, FormWizardFields } from 'pkg.form-wizard';
 import { setToken } from '@product/features/auth';
 import useProductApi from '@product/hooks/useProductApi';
-import { DASHBOARD_ROUTE } from '@product/routes/Dashboard';
+import { EDITOR_ROUTE } from '@product/routes/Editor';
 import { SIGNUP_ROUTE } from '@product/routes/Signup';
 
 export const LOGIN_ROUTE = '/login';
@@ -33,7 +33,7 @@ export default function Login() {
       }
 
       dispatch(setToken(get(json, 'token')));
-      setLocation(DASHBOARD_ROUTE);
+      setLocation(EDITOR_ROUTE);
     });
   }
 

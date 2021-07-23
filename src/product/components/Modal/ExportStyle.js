@@ -128,7 +128,6 @@ export default function ExportStyleModal(props) {
             buttonFg={(colors) => colors.mono[100]}
             buttonBg={(colors) => colors.blue[500]}
             hoverButtonBg={(colors) => colors.blue[700]}
-            borderWidth="1px"
             onClick={onAddStyle}
           >
             <Typography

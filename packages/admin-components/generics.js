@@ -1,4 +1,29 @@
-import { css } from 'styled-components';
+import { css, keyframes } from 'styled-components';
+
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const fadeOut = keyframes`
+  from { opacity: 1; }
+  to { opacity: 0; }
+`;
+
+export const animation = css`
+  ${({ theme, transitions }) => !!transitions && css`
+    transition: all ${theme.animation.defaultTransition};
+    transition-property: ${transitions.join(', ')};
+  `}
+
+  ${({ playFadeIn, theme }) => !!playFadeIn && css`
+    animation: ${theme.animation.defaultTransition} ${fadeIn} ease-in forwards;
+  `}
+
+  ${({ playFadeOut, theme }) => !!playFadeOut && css`
+    animation: ${theme.animation.defaultTransition} ${fadeOut} ease-out forwards;
+  `}
+`;
 
 export const border = css`
   ${({ rounded, theme }) => !!rounded && css`border-radius: ${rounded(theme.rounded)};`}
@@ -85,6 +110,12 @@ export const padding = css`
 
 export const position = css`
   ${({ position }) => !!position && css`position: ${position};`}
+  ${({ zIndex, theme }) => !!zIndex && css`z-index: ${zIndex(theme.zIndex)};`}
+  ${({ top }) => !!top && css`top: ${top};`}
+  ${({ bottom }) => !!bottom && css`bottom: ${bottom};`}
+  ${({ left }) => !!left && css`left: ${left};`}
+  ${({ right }) => !!right && css`right: ${right};`}
+  ${({ transform }) => !!transform && css`transform: ${transform};`}
 `;
 
 export const shadow = css`
@@ -106,14 +137,18 @@ export const size = css`
   ${({ fitHeight }) => !!fitHeight && css`height: fit-content;`}
   ${({ fitWidth }) => !!fitWidth && css`width: fit-content;`}
 
+  ${({ specificWidth }) => !!specificWidth && css`width: ${specificWidth};`}
+  ${({ specificHeight }) => !!specificHeight && css`height: ${specificHeight};`}
+
   ${({ minWidth }) => !!minWidth && css`min-width: ${minWidth};`}
   ${({ minHeight }) => !!minHeight && css`min-height: ${minHeight};`}
 
   ${({ maxWidth }) => !!maxWidth && css`max-width: ${maxWidth};`}
-  ${({ maxHeight }) => !!maxHeight && css`max-height: ${maxHeight};`}  
+  ${({ maxHeight }) => !!maxHeight && css`max-height: ${maxHeight};`}
 `;
 
 const all = css`
+  ${animation}
   ${border}
   ${colors}
   ${cursor}

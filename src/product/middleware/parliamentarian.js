@@ -35,6 +35,7 @@ import {
   setCompiledPage,
   setPageSetting,
   setSiteSetting,
+  setWebsiteId,
   wipePropertyValue,
   wipePropertyInheritedFrom,
   wipeSlot,
@@ -111,6 +112,7 @@ const TRIGGERS = [
   setPageSetting.toString(),
   setSiteSetting.toString(),
   setTab.toString(),
+  setWebsiteId.toString(),
 ];
 
 function runParliamentarian(
@@ -666,7 +668,7 @@ const parliamentarian = store => next => action => {
   const appliedState = store.getState();
 
   if (process.env.NODE_ENV === 'development') {
-    console.log('parliamentarian => ', appliedState);
+    console.log('parliamentarian => ', action.type, appliedState);
   }
 
   const pageCompilation = JSON.parse(JSON.stringify(get(appliedState, `assembly.pages.${pageId}`)));

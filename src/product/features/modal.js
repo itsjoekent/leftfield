@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export const CONFIRM_MODAL = 'CONFIRM_MODAL';
 export const ELEMENT_LIBRARY_MODAL = 'ELEMENT_LIBRARY_MODAL';
 export const EXPORT_STYLE_MODAL = 'EXPORT_STYLE_MODAL';
+export const WEBSITE_SELECTOR_MODAL = 'WEBSITE_SELECTOR_MODAL';
 
 export const modalSlice = createSlice({
   name: 'modal',

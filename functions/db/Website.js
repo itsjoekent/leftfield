@@ -9,27 +9,34 @@ const schema = new dynamoose.Schema({
   'organizationId': {
     type: String,
   },
-  name: {
+  'name': {
     type: String,
   },
-  domain: {
+  'domain': {
     type: String,
   },
-  data: {
+  'data': {
     type: Object,
   },
 }, {
+  saveUnknown: [
+    'data.**',
+  ],
   'timestamps': true,
 });
 
 const options = {
   create: true,
   throughput: 'ON_DEMAND',
-  saveUnknown: [
-    'data.**',
-  ],
 };
 
 const Website = dynamoose.model('Websites', schema, options);
+
+Website.methods.set('findById', async function(id) {
+  const websiteQuery = await this.query('id').eq(id).exec();
+  const [website] = websiteQuery;
+
+  return website;
+});
 
 module.exports = Website;

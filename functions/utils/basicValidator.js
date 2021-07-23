@@ -19,7 +19,7 @@ module.exports = async function basicValidator(payload, validations) {
 
     if (!passes) {
       throw makeApiError({
-        message: rrorMessage.replace('{humanName}', humanName || key),
+        message: errorMessage.replace('{humanName}', humanName || key),
         status: errorCode,
       });
     }

@@ -12,6 +12,9 @@ import store from '@product/store';
 
 import '@product/index.css';
 
+const Modal = React.lazy(() => import('@product/components/Modal'));
+const Snacks = React.lazy(() => import('@product/components/Snacks'));
+
 import { DASHBOARD_ROUTE } from '@product/routes/Dashboard';
 const DashboardPage = React.lazy(() => import('@product/routes/Dashboard'));
 
@@ -36,6 +39,10 @@ ReactDOM.render(
               <Route path={EDITOR_ROUTE} component={EditorPage} />
               <Route path={LOGIN_ROUTE} component={LoginPage} />
               <Route path={SIGNUP_ROUTE} component={SignupPage} />
+            </Suspense>
+            <Suspense fallback={null}>
+              <Modal />
+              <Snacks />
             </Suspense>
           </React.Fragment>
         </ThemeProvider>

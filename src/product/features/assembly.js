@@ -96,8 +96,10 @@ export const assemblySlice = createSlice({
     },
     styleLibrary: {},
     templatedFrom: null,
-    // TODO: Move to library?
     theme: theme.campaign,
+    websiteId: null,
+    websiteName: null,
+    websiteDomain: null,
   },
   reducers: {
     addChildComponentToSlot: (state, action) => _addChildComponentToSlot(state, action.payload),
@@ -164,8 +166,6 @@ export const assemblySlice = createSlice({
       const insert = { ...style };
       delete insert.id;
       delete insert.name;
-
-      console.log(insert);
 
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, insert);
     },
@@ -255,6 +255,13 @@ export const assemblySlice = createSlice({
       }
 
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, {});
+    },
+    setAssemblyState: (state, action) => {
+      const { newAssembly } = action.payload;
+
+      Object.keys(newAssembly).forEach((key) => {
+        set(state, key, newAssembly[key]);
+      });
     },
     setCampaignThemeKeyValue: (state, action) => {
       const {
@@ -365,6 +372,10 @@ export const assemblySlice = createSlice({
 
       set(state, `siteSettings.${settingId}.${language}`, value);
     },
+    setWebsiteId: (state, action) => {
+      const { websiteId } = action.payload;
+      set(state, 'websiteId', websiteId);
+    },
     wipePropertyValue: (state, action) => {
       const {
         pageId,
@@ -426,6 +437,7 @@ export const {
   removeChildComponentFromSlot,
   reorderChildComponent,
   resetComponentStyleAttribute,
+  setAssemblyState,
   setCampaignThemeKeyValue,
   setComponentPropertyValue,
   setComponentInheritedFrom,
@@ -435,6 +447,7 @@ export const {
   setCompiledPage,
   setPageSetting,
   setSiteSetting,
+  setWebsiteId,
   wipePropertyValue,
   wipePropertyInheritedFrom,
   wipeSlot,
@@ -738,4 +751,8 @@ export function selectStyleNameFromStyleLibrary(styleId) {
   }
 
   return _selectStyleNameFromStyleLibrary;
+}
+
+export function selectWebsiteId(state) {
+  return get(state, 'assembly.websiteId', null);
 }

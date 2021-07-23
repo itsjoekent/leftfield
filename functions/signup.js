@@ -25,8 +25,8 @@ async function signup(event, context) {
         key: 'email',
         errorMessage: 'Email already in use',
         validationFunction: async function(email) {
-          const accountQuery = await Account.findByEmail(email);
-          return accountQuery.count === 0;
+          const account = await Account.findByEmail(email);
+          return !account;
         },
       },
     ]);
@@ -41,7 +41,6 @@ async function signup(event, context) {
 
     const accountId = uuid();
     const organizationId = uuid();
-    const websiteId = uuid();
 
     const hashedPassword = await passwordHash(password);
 
@@ -49,6 +48,7 @@ async function signup(event, context) {
       Account.transaction.create({
         id: accountId,
         email,
+        firstName,
         password: hashedPassword,
         organizationId,
       }),
@@ -62,11 +62,6 @@ async function signup(event, context) {
             role: ADMIN,
           },
         ],
-      }),
-      Website.transaction.create({
-        id: websiteId,
-        organizationId,
-        name: `${organizationName} Website`,
       }),
     ]);
 
@@ -85,6 +80,8 @@ async function signup(event, context) {
       { 'Set-Cookie': jwtCookie },
     );
   } catch (error) {
+    if (error._apiError) return respondWithError(error);
+
     return respondWithError(makeApiError({
       error,
       message: 'Failed to signup, try again?',

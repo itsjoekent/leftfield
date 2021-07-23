@@ -17,13 +17,11 @@ async function login(event, context) {
 
     const { email, password } = data;
 
-    const accountQuery = await Account.findByEmail(email);
+    const account = await Account.findByEmail(email);
 
-    if (!accountQuery.count) {
+    if (!account) {
       throw makeApiError({ message: 'Incorrect email or password' });
     }
-
-    const [account] = accountQuery;
 
     const isValidPassword = await passwordCompare(password, account.password);
     if (!isValidPassword) {
@@ -45,6 +43,8 @@ async function login(event, context) {
       { 'Set-Cookie': jwtCookie },
     );
   } catch (error) {
+    if (error._apiError) return respondWithError(error);
+
     return respondWithError(makeApiError({
       error,
       message: 'Failed to login, try again?',

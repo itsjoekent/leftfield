@@ -12,7 +12,7 @@ import {
 import { FormWizardProvider, FormWizardFields } from 'pkg.form-wizard';
 import { setToken } from '@product/features/auth';
 import useProductApi from '@product/hooks/useProductApi';
-import { DASHBOARD_ROUTE } from '@product/routes/Dashboard';
+import { EDITOR_ROUTE } from '@product/routes/Editor';
 import { LOGIN_ROUTE } from '@product/routes/Login';
 
 export const SIGNUP_ROUTE = '/signup';
@@ -38,7 +38,7 @@ export default function Signup() {
       }
 
       dispatch(setToken(get(json, 'token')));
-      setLocation(DASHBOARD_ROUTE);
+      setLocation(EDITOR_ROUTE);
     });
   }
 

@@ -1,8 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-const aliases = require(path.join(process.cwd(), 'build/aliases'));
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -13,7 +12,7 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
         sideEffects: true,
       },
       {
@@ -41,6 +40,7 @@ module.exports = {
     publicPath: '/product/',
   },
   plugins: [
+    new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, './template.html'),
     }),
@@ -49,6 +49,8 @@ module.exports = {
     }),
   ],
   resolve: {
-    alias: aliases,
+    alias: {
+      '@product': path.resolve(process.cwd(), '/src/product'),
+    },
   },
 };

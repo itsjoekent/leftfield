@@ -15,6 +15,7 @@ const schema = new dynamoose.Schema({
     type: String,
   },
   'password': String,
+  'firstName': String,
   'organizationId': {
     type: String,
   },
@@ -27,11 +28,20 @@ const options = {
   throughput: 'ON_DEMAND',
 };
 
-// TODO: Build table name based on environment?
 const Account = dynamoose.model('Accounts', schema, options);
 
+Account.methods.set('findById', async function(id) {
+  const accountQuery = await this.query('id').eq(id).exec();
+  const [account] = accountQuery;
+
+  return account;
+});
+
 Account.methods.set('findByEmail', async function(email) {
-  return this.query('email').eq(email.toLowerCase()).using('emailIndex').exec();
+  const accountQuery = await this.query('email').eq(email.toLowerCase()).using('emailIndex').exec();
+  const [account] = accountQuery;
+
+  return account;
 });
 
 module.exports = Account;

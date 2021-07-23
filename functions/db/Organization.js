@@ -31,6 +31,7 @@ const schema = new dynamoose.Schema({
   'websites': {
     type: Array,
     schema: [String],
+    default: [],
   },
 }, {
   'timestamps': true
@@ -42,5 +43,12 @@ const options = {
 };
 
 const Organization = dynamoose.model('Organizations', schema, options);
+
+Organization.methods.set('findById', async function(id) {
+  const organizationQuery = await this.query('id').eq(id).exec();
+  const [organization] = organizationQuery;
+
+  return organization;
+});
 
 module.exports = Organization;
