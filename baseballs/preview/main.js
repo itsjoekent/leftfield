@@ -18,6 +18,30 @@ import 'pkg.campaign-components/css/reset.css';
 
 const cssCache = {};
 
+function ComponentWrapper({ children }) {
+  const componentClassName = children.props.componentClassName;
+
+  React.useEffect(() => {
+    const elements = document.getElementsByClassName(componentClassName);
+    if (!elements.length) return;
+
+    const [element] = elements;
+
+    function handleClick(event) {
+      event.stopPropagation();
+      event.preventDefault();
+
+      const componentId = componentClassName.replace('c-', '');
+      window.parent.postMessage({ type: 'CLICKED', componentId }, '*');
+    }
+
+    element.addEventListener('click', handleClick);
+    return () => element.removeEventListener('click', handleClick);
+  }, [componentClassName]);
+
+  return children;
+}
+
 window.addEventListener('message', (event) => {
   // TODO: this should be the renderer url env ?
   // if (event.origin !== "http://example.org:8080") {
@@ -99,7 +123,7 @@ window.addEventListener('message', (event) => {
       recursiveRenderFill(get(page, 'rootComponentId'));
 
       render(
-        Builder(React.createElement, page),
+        Builder(React.createElement, page, ComponentWrapper),
         document.getElementById('root'),
       );
     } catch (error) {

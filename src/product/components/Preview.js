@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
 import { Responsive } from 'pkg.campaign-components';
@@ -8,7 +9,10 @@ import {
   selectCampaignTheme,
 } from '@product/features/assembly';
 import { selectPreviewDeviceSize } from '@product/features/previewMode';
-import { selectActivePageId } from '@product/features/workspace';
+import {
+  setActiveComponentId,
+  selectActivePageId,
+} from '@product/features/workspace';
 
 const devices = {
   [Responsive.MOBILE_DEVICE]: {
@@ -37,6 +41,8 @@ const devices = {
 export default function Preview(props) {
   const { previewContainerDimensions } = props;
 
+  const dispatch = useDispatch();
+
   const deviceSize = useSelector(selectPreviewDeviceSize);
 
   const pixelRatio = get(devices[deviceSize], 'pixelRatio', 0);
@@ -54,8 +60,16 @@ export default function Preview(props) {
 
   React.useEffect(() => {
     function onMessage(event) {
-      if (event.data.type === 'READY') {
+      const { data } = event;
+      const { type } = data;
+
+      if (type === 'READY') {
         setIsPreviewReady(true);
+      }
+
+      if (type === 'CLICKED') {
+        const { componentId } = data;
+        dispatch(setActiveComponentId({ componentId }));
       }
     }
 

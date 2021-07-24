@@ -617,7 +617,10 @@ function runParliamentarian(
 }
 
 const parliamentarian = store => next => action => {
-  if (RECORD_ASSEMBLY_HISTORY.includes(action.type)) {
+  if (
+    RECORD_ASSEMBLY_HISTORY.includes(action.type)
+    && get(action, `payload.${PARLIAMENTARIAN_ESCAPE_KEY}`, false) === false
+  ) {
     store.dispatch(addPastState());
   }
 
