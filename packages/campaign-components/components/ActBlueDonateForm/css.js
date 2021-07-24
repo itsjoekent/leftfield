@@ -32,6 +32,8 @@ export default function ActBlueFormCSS({
 
   return `
     .${componentClassName} {
+      width: 100%;
+
       ${BoxStyle.styling({
         styles: gridStyles,
         theme,

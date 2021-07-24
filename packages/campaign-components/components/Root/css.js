@@ -15,6 +15,7 @@ export default function RootCSS({
       flex-direction: column;
       width: 100%;
       min-height: 100vh;
+      position: relative;
 
       ${BoxStyle.styling({ theme, styles: backgroundStyle })}
     }

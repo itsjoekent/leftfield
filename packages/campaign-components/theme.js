@@ -87,10 +87,9 @@ const theme = {
       normal: '12px',
     },
   },
-
-  // Provided within some components
-  properties: null,
-  slots: null,
+  zIndexes: {
+    overlay: 100,
+  },
 };
 
 export default theme;

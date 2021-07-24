@@ -1,6 +1,5 @@
 import md5 from 'md5';
 import { get } from 'lodash';
-import { PARLIAMENTARIAN_ESCAPE_KEY } from '@product/constants/parliamentarian';
 import {
   addChildComponentToSlot,
   buildComponent,
@@ -49,6 +48,7 @@ const TRIGGERS = [
   setCampaignThemeKeyValue.toString(),
   setComponentPropertyValue.toString(),
   setComponentInheritedFrom.toString(),
+  setComponentStyle.toString(),
   setComponentCustomStyle.toString(),
   setComponentThemeStyle.toString(),
   setPageSetting.toString(),
@@ -66,7 +66,10 @@ const sync = store => next => action => {
   const state = store.getState();
   const websiteId = selectWebsiteId(state);
 
-  if (!!websiteId && TRIGGERS.includes(action.type)) {
+  if (
+    !!websiteId
+    && TRIGGERS.includes(action.type)
+  ) {
     const compareHash = selectAutoSaveHash(state);
 
     const {

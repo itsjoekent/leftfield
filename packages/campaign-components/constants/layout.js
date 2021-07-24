@@ -5,3 +5,5 @@ export const FITS_CONTENT = 'FITS_CONTENT';
 export const FULL_SCREEN_WIDTH = 'FULL_SCREEN_WIDTH';
 
 export const GROWS_VERTICALLY = 'GROWS_VERTICALLY';
+
+export const IS_RELATIVE = 'IS_RELATIVE';
