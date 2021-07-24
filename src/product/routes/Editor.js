@@ -4,9 +4,11 @@ import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { Flex, Typography } from 'pkg.admin-components';
 import AutoSave from '@product/components/AutoSave';
-import Workspace from '@product/components/Workspace';
+import History from '@product/components/History';
 import Preview from '@product/components/Preview';
 import PreviewSelector from '@product/components/PreviewSelector';
+import PublishButton from '@product/components/PublishButton';
+import Workspace from '@product/components/Workspace';
 import { PARLIAMENTARIAN_BOOTSTRAP_TYPE } from '@product/constants/parliamentarian';
 import {
   selectWebsiteId,
@@ -127,11 +129,19 @@ export default function Editor() {
       >
         <LeftSideNavigation />
         <RightSideNavigation
+          justify="space-between"
           align="center"
-          gridGap="12px"
+          gridGap="24px"
         >
           <PreviewSelector />
-          <AutoSave />
+          <Flex.Row
+            align="center"
+            gridGap="12px"
+          >
+            <AutoSave />
+            <History />
+            <PublishButton />
+          </Flex.Row>
         </RightSideNavigation>
       </Flex.Row>
       <Flex.Row

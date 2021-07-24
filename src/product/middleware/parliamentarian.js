@@ -17,12 +17,14 @@ import {
 } from '@product/constants/inheritance';
 import {
   addChildComponentToSlot,
+  addPastState,
   buildComponent,
   deleteComponentAndDescendants,
   detachStyleReference,
   duplicateComponent,
   exportStyle,
   importStyle,
+  redo,
   removeChildComponentFromSlot,
   reorderChildComponent,
   resetComponentStyleAttribute,
@@ -36,6 +38,7 @@ import {
   setPageSetting,
   setSiteSetting,
   setWebsiteId,
+  undo,
   wipePropertyValue,
   wipePropertyInheritedFrom,
   wipeSlot,
@@ -99,6 +102,7 @@ const TRIGGERS = [
   importStyle.toString(),
   navigateToPast.toString(),
   navigateToFuture.toString(),
+  redo.toString(),
   removeChildComponentFromSlot.toString(),
   reorderChildComponent.toString(),
   resetComponentStyleAttribute.toString(),
@@ -113,6 +117,27 @@ const TRIGGERS = [
   setSiteSetting.toString(),
   setTab.toString(),
   setWebsiteId.toString(),
+  undo.toString(),
+];
+
+const RECORD_ASSEMBLY_HISTORY = [
+  addChildComponentToSlot.toString(),
+  buildComponent.toString(),
+  deleteComponentAndDescendants.toString(),
+  detachStyleReference.toString(),
+  duplicateComponent.toString(),
+  exportStyle.toString(),
+  importStyle.toString(),
+  removeChildComponentFromSlot.toString(),
+  reorderChildComponent.toString(),
+  resetComponentStyleAttribute.toString(),
+  setCampaignThemeKeyValue.toString(),
+  setComponentPropertyValue.toString(),
+  setComponentInheritedFrom.toString(),
+  setComponentCustomStyle.toString(),
+  setComponentThemeStyle.toString(),
+  setPageSetting.toString(),
+  setSiteSetting.toString(),
 ];
 
 function runParliamentarian(
@@ -592,6 +617,10 @@ function runParliamentarian(
 }
 
 const parliamentarian = store => next => action => {
+  if (RECORD_ASSEMBLY_HISTORY.includes(action.type)) {
+    store.dispatch(addPastState());
+  }
+
   const result = next(action);
 
   const shouldRun = TRIGGERS.includes(action.type)

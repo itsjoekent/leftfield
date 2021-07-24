@@ -67,6 +67,7 @@ export const assemblySlice = createSlice({
         'test': {},
       },
     },
+    future: [],
     pages: {
       'test': {
         components: {
@@ -85,6 +86,7 @@ export const assemblySlice = createSlice({
         rootComponentId: 'root',
       },
     },
+    past: [],
     siteSettings: {
       ...defaultSiteSettings,
       [Settings.LANGUAGES.key]: {
@@ -103,6 +105,18 @@ export const assemblySlice = createSlice({
   },
   reducers: {
     addChildComponentToSlot: (state, action) => _addChildComponentToSlot(state, action.payload),
+    addPastState: (state, action) => {
+      const assemblyState = {
+        pages: state.pages,
+        siteSettings: state.siteSettings,
+        styleLibrary: state.styleLibrary,
+        templatedFrom: state.templatedFrom,
+        theme: state.theme,
+      };
+
+      set(state, 'past', [...get(state, 'past', []), assemblyState]);
+      set(state, 'future', []);
+    },
     buildComponent: (state, action) => {
       const {
         componentId,
@@ -221,6 +235,26 @@ export const assemblySlice = createSlice({
       } = action.payload;
 
       set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromStyle: libraryStyleId });
+    },
+    redo: (state, action) => {
+      const futureState = state.future.pop();
+      if (!futureState) {
+        return;
+      }
+
+      const assemblyState = {
+        pages: state.pages,
+        siteSettings: state.siteSettings,
+        styleLibrary: state.styleLibrary,
+        templatedFrom: state.templatedFrom,
+        theme: state.theme,
+      };
+
+      state.past.push(assemblyState);
+
+      Object.keys(futureState).forEach((key) => {
+        set(state, key, futureState[key]);
+      });
     },
     reorderChildComponent: (state, action) => {
       const {
@@ -376,6 +410,26 @@ export const assemblySlice = createSlice({
       const { websiteId } = action.payload;
       set(state, 'websiteId', websiteId);
     },
+    undo: (state, action) => {
+      const previousState = state.past.pop();
+      if (!previousState) {
+        return;
+      }
+
+      const assemblyState = {
+        pages: state.pages,
+        siteSettings: state.siteSettings,
+        styleLibrary: state.styleLibrary,
+        templatedFrom: state.templatedFrom,
+        theme: state.theme,
+      };
+
+      state.future.push(assemblyState);
+
+      Object.keys(previousState).forEach((key) => {
+        set(state, key, previousState[key]);
+      });
+    },
     wipePropertyValue: (state, action) => {
       const {
         pageId,
@@ -428,12 +482,14 @@ export const assemblySlice = createSlice({
 
 export const {
   addChildComponentToSlot,
+  addPastState,
   buildComponent,
   deleteComponentAndDescendants,
   detachStyleReference,
   duplicateComponent,
   exportStyle,
   importStyle,
+  redo,
   removeChildComponentFromSlot,
   reorderChildComponent,
   resetComponentStyleAttribute,
@@ -448,6 +504,7 @@ export const {
   setPageSetting,
   setSiteSetting,
   setWebsiteId,
+  undo,
   wipePropertyValue,
   wipePropertyInheritedFrom,
   wipeSlot,
@@ -755,4 +812,12 @@ export function selectStyleNameFromStyleLibrary(styleId) {
 
 export function selectWebsiteId(state) {
   return get(state, 'assembly.websiteId', null);
+}
+
+export function selectHasUndo(state) {
+  return !!get(state, 'assembly.past', []).length;
+}
+
+export function selectHasRedo(state) {
+  return !!get(state, 'assembly.future', []).length;
 }
