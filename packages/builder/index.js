@@ -1,3 +1,5 @@
+const get = require('lodash/get');
+
 /**
  * Render a page.
  *
@@ -16,12 +18,15 @@ function construct(
   wrapperComponentRender = null,
   key = null,
 ) {
+  const component = page.components[targetComponentId];
+  if (!component) return null;
+
   const {
     properties,
     render,
     slots,
     styles,
-  } = page.components[targetComponentId];
+  } = component;
 
   const renderedSlots = Object
     .keys(slots || {})

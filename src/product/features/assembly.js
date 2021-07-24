@@ -138,8 +138,8 @@ export const assemblySlice = createSlice({
         componentId,
       } = action.payload;
 
-      const childOf = get(state, `pages.${pageId}.components.${componentId}.childOf`, {});
-      const withinSlot = get(state, `pages.${pageId}.components.${componentId}.withinSlot`, {});
+      const childOf = get(state, `pages.${pageId}.components.${componentId}.childOf`, null);
+      const withinSlot = get(state, `pages.${pageId}.components.${componentId}.withinSlot`, null);
 
       if (!!childOf && !!withinSlot) {
         const targetIndex = get(
@@ -189,20 +189,47 @@ export const assemblySlice = createSlice({
         componentId,
       } = action.payload;
 
+      function recursiveDuplicate(
+        targetComponentId,
+        parentComponentId,
+        parentComponentSlot,
+      ) {
+        const duplicateComponentId = uuid();
+        const originalComponent = get(state, `pages.${pageId}.components.${targetComponentId}`);
+
+        const duplicatedComponent = {
+          ...originalComponent,
+          id: duplicateComponentId,
+          slots: {},
+        };
+
+        set(state, `pages.${pageId}.components.${duplicateComponentId}`, duplicatedComponent);
+
+        _addChildComponentToSlot(state, {
+          pageId,
+          componentId: duplicateComponentId,
+          parentComponentId: parentComponentId,
+          slotId: parentComponentSlot,
+        });
+
+        const slots = get(originalComponent, 'slots', {});
+
+        Object.keys(slots).forEach((slotId) => {
+          slots[slotId].forEach((childId) => recursiveDuplicate(
+            childId,
+            duplicateComponentId,
+            slotId,
+          ));
+        });
+      }
+
       const originalComponent = get(state, `pages.${pageId}.components.${componentId}`);
-      const duplicatedComponent = {
-        ...originalComponent,
-        id: uuid(),
-      };
 
-      set(state, `pages.${pageId}.components.${duplicatedComponent.id}`, duplicatedComponent);
-
-      _addChildComponentToSlot(state, {
-        pageId,
-        componentId: duplicatedComponent.id,
-        parentComponentId: get(originalComponent, 'childOf'),
-        slotId: get(originalComponent, 'withinSlot'),
-      });
+      recursiveDuplicate(
+        componentId,
+        get(originalComponent, 'childOf'),
+        get(originalComponent, 'withinSlot'),
+      );
     },
     exportStyle: (state, action) => {
       const {
