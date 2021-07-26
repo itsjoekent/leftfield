@@ -46,6 +46,7 @@ const DonateButtonMeta = {
       help: 'This copy is displayed inside the button',
       type: SHORT_TEXT_TYPE,
       required: true,
+      isTranslatable: true,
       defaultValue: {
         [US_ENGLISH_LANG]: '$5',
       },
@@ -54,7 +55,7 @@ const DonateButtonMeta = {
   styles: [
     {
       id: BUTTON_STYLE,
-      label: 'Button Text Style',
+      label: 'Button Style',
       type: ButtonStyle.key,
       attributes: ButtonStyle.attributes(),
     },

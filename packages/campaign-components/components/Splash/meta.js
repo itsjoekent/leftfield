@@ -76,12 +76,6 @@ const SplashMeta = {
             [MOBILE_DEVICE]: {
               custom: 40,
             },
-            [TABLET_DEVICE]: {
-              custom: 50,
-            },
-            [DESKTOP_DEVICE]: {
-              custom: 60,
-            },
           },
         },
       ],

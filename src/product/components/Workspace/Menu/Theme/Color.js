@@ -19,7 +19,7 @@ export default function Color(props) {
 
   const dispatch = useDispatch();
 
-  const [localColor, setLocalColor] = React.useState(color.value);
+  const [localColor, setLocalColor] = React.useState(null);
   const [isColorPickerOpen, setIsColorPickerOpen] = React.useState(false);
 
   const colorPickerRef = useClickOutside(() => {
@@ -38,7 +38,7 @@ export default function Color(props) {
   }
 
   function onColorChange(value) {
-    setLocalColor(value);
+    setLocalColor(null);
     dispatch(setCampaignThemeKeyValue({
       path: `colors.${color.id}.value`,
       value,
@@ -54,7 +54,7 @@ export default function Color(props) {
 
   return (
     <Flex.Row key={color.id} align="center" gridGap="12px">
-      <Swatch colorValue={localColor} />
+      <Swatch colorValue={localColor || color.value} />
       <Flex.Row
         ref={colorPickerRef}
         flexGrow

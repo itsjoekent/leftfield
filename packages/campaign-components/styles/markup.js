@@ -69,26 +69,28 @@ const MarkupStyle = {
   styling: ({ styles, theme }) => `
     ${TextStyle.styling({ theme, styles })}
 
-    ${applyStyleIf(
-      getStyleValue(styles, BOTTOM_MARGIN_ATTRIBUTE),
-      (styleValue) => `margin-bottom: ${styleValue}px;`,
-      notZero,
-    )}
-
-    @media (${theme.deviceBreakpoints.tabletUp}) {
+    &:not(:last-child) {
       ${applyStyleIf(
-        getStyleValue(styles, BOTTOM_MARGIN_ATTRIBUTE, null, null, TABLET_DEVICE),
+        getStyleValue(styles, BOTTOM_MARGIN_ATTRIBUTE),
         (styleValue) => `margin-bottom: ${styleValue}px;`,
         notZero,
       )}
-    }
 
-    @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-      ${applyStyleIf(
-        getStyleValue(styles, BOTTOM_MARGIN_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `margin-bottom: ${styleValue}px;`,
-        notZero,
-      )}
+      @media (${theme.deviceBreakpoints.tabletUp}) {
+        ${applyStyleIf(
+          getStyleValue(styles, BOTTOM_MARGIN_ATTRIBUTE, null, null, TABLET_DEVICE),
+          (styleValue) => `margin-bottom: ${styleValue}px;`,
+          notZero,
+        )}
+      }
+
+      @media (${theme.deviceBreakpoints.desktopSmallUp}) {
+        ${applyStyleIf(
+          getStyleValue(styles, BOTTOM_MARGIN_ATTRIBUTE, null, null, DESKTOP_DEVICE),
+          (styleValue) => `margin-bottom: ${styleValue}px;`,
+          notZero,
+        )}
+      }      
     }
 
     strong {

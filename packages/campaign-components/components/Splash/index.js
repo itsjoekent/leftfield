@@ -24,7 +24,7 @@ export default function Splash(props) {
   return (
     <div className={componentClassName}>
       <div className={PHOTO_COLUMN_CLASS_NAME}>
-        <img src="https://images.unsplash.com/photo-1578318974843-a022fbc3bd7f?auto=format&fit=crop&w=1226&q=80" alt={getPropertyValue(properties, PHOTO_ALT_PROPERTY, language)} />
+        <img src="https://workingfamilies.org/wp-content/uploads/2020/09/homepage-about.jpg" alt={getPropertyValue(properties, PHOTO_ALT_PROPERTY, language)} />
       </div>
       <div className={CONTENT_COLUMN_CLASS_NAME}>
         {content}

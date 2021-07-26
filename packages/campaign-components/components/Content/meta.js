@@ -87,12 +87,6 @@ const ContentMeta = {
             [MOBILE_DEVICE]: {
               custom: 36,
             },
-            [TABLET_DEVICE]: {
-              custom: 42,
-            },
-            [DESKTOP_DEVICE]: {
-              custom: 56,
-            },
           },
         },
         [FONT_WEIGHT_ATTRIBUTE]: {
@@ -125,12 +119,6 @@ const ContentMeta = {
             [MOBILE_DEVICE]: {
               custom: 28,
             },
-            [TABLET_DEVICE]: {
-              custom: 36,
-            },
-            [DESKTOP_DEVICE]: {
-              custom: 48,
-            },
           },
         },
         [FONT_WEIGHT_ATTRIBUTE]: {
@@ -162,12 +150,6 @@ const ContentMeta = {
           defaultValue: {
             [MOBILE_DEVICE]: {
               custom: 24,
-            },
-            [TABLET_DEVICE]: {
-              custom: 32,
-            },
-            [DESKTOP_DEVICE]: {
-              custom: 36,
             },
           },
         },

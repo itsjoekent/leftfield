@@ -48,7 +48,7 @@ const ButtonStyle = {
           [MOBILE_DEVICE]: {
             inheritFromTheme: getReadableThemeColor(
               campaignTheme,
-              getBrightestCampaignThemeColor(campaignTheme),
+              get(campaignTheme, `colors.${getBrightestCampaignThemeColor(campaignTheme)}.value`),
             ),
           },
         }),
