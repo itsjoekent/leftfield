@@ -2,7 +2,7 @@
 name: Product Bug
 about: Report a bug with the product
 title: ''
-labels: category:product:bug
+labels: category:bug
 assignees: ''
 
 ---
@@ -14,3 +14,6 @@ What is happening, and what is supposed to be happening? What are the steps to r
 ## Environment
 
 Is this happening on a specific environment?
+
+## Tasks
+- [ ] Steps to resolve this bug
