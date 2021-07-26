@@ -2,7 +2,7 @@
 name: Product Feature
 about: Propose a few product feature
 title: ''
-labels: category:product:feature
+labels: category:feature
 assignees: ''
 
 ---
