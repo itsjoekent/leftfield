@@ -2,7 +2,7 @@
 name: Product Tech Debt
 about: Suggest technical improvements to the core product
 title: ''
-labels: category:product:tech-debt
+labels: category:tech-debt
 assignees: ''
 
 ---
