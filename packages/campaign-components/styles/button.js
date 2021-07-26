@@ -28,7 +28,7 @@ import getCascadingStyleValue from 'pkg.campaign-components/utils/getCascadingSt
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 import getThemeValue from 'pkg.campaign-components/utils/getThemeValue';
 
-export const KEY = 'BUTTON_STYLE';
+export const KEY = 'ButtonStyle';
 
 export const HOVER_BACKGROUND_COLOR_ATTRIBUTE = 'HOVER_BACKGROUND_COLOR_ATTRIBUTE';
 export const HOVER_BORDER_COLOR_ATTRIBUTE = 'HOVER_BORDER_COLOR_ATTRIBUTE';

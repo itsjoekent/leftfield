@@ -8,7 +8,7 @@ import {
 import applyStyleIf from 'pkg.campaign-components/utils/applyStyleIf';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 
-export const KEY = 'DISPLAY_STYLE';
+export const KEY = 'DisplayStyle';
 
 export const DISPLAY_ATTRIBUTE = 'DISPLAY_ATTRIBUTE';
 

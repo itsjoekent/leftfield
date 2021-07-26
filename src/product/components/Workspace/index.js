@@ -157,7 +157,7 @@ export default function Workspace(props) {
             )}
             {isActiveTab(STYLES_TAB) && (
               <WorkspaceSection name="Styles">
-                <Flex.Column gridGap="12px">
+                <Flex.Column gridGap="24px">
                   {visibleStyles.map((style) => (
                     <WorkspaceStyleForm key={style.id} styleData={style} />
                   ))}

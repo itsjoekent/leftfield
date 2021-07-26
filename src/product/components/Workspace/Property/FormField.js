@@ -7,6 +7,7 @@ import WorkspacePropertyChecklist from '@product/components/Workspace/Property/C
 import WorkspacePropertyInheritance from '@product/components/Workspace/Property/Inheritance';
 import WorkspacePropertyLabel from '@product/components/Workspace/Property/Label';
 import WorkspacePropertyShortText from '@product/components/Workspace/Property/ShortText';
+import WorkspacePropertyTextMarkup from '@product/components/Workspace/Property/TextMarkup';
 import WorkspacePropertyToggle from '@product/components/Workspace/Property/Toggle';
 import useSiteLanguages from '@product/hooks/useSiteLanguages';
 import isDefined from '@product/utils/isDefined';
@@ -26,6 +27,14 @@ function FormFieldInner(props) {
     <FormFieldInnerContainer gridGap="4px">
       {(() => {
         switch (get(property, 'type')) {
+          case PropertyTypes.CHECKLIST_TYPE: return (
+            <WorkspacePropertyChecklist
+              fieldId={fieldId}
+              language={language}
+              property={property}
+            />
+          );
+
           case PropertyTypes.SHORT_TEXT_TYPE: return (
             <WorkspacePropertyShortText
               fieldId={fieldId}
@@ -34,16 +43,16 @@ function FormFieldInner(props) {
             />
           );
 
-          case PropertyTypes.TOGGLE_TYPE: return (
-            <WorkspacePropertyToggle
+          case PropertyTypes.TEXT_MARKUP: return (
+            <WorkspacePropertyTextMarkup
               fieldId={fieldId}
               language={language}
               property={property}
             />
           );
 
-          case PropertyTypes.CHECKLIST_TYPE: return (
-            <WorkspacePropertyChecklist
+          case PropertyTypes.TOGGLE_TYPE: return (
+            <WorkspacePropertyToggle
               fieldId={fieldId}
               language={language}
               property={property}

@@ -17,6 +17,7 @@ const featuredTraits = [
 
 const recentComponents = [
   ComponentMeta.ActBlueDonateForm,
+  ComponentMeta.Content,
   ComponentMeta.DonateButton,
   ComponentMeta.Splash,
 ];

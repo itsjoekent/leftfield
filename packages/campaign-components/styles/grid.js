@@ -8,7 +8,7 @@ import {
 import applyStyleIf from 'pkg.campaign-components/utils/applyStyleIf';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 
-export const KEY = 'GRID_STYLE';
+export const KEY = 'GridStyle';
 
 export const COLUMNS_ATTRIBUTE = 'COLUMNS_ATTRIBUTE';
 export const SPACING_ATTRIBUTE = 'SPACING_ATTRIBUTE';

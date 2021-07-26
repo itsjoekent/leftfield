@@ -197,12 +197,12 @@ const RightSideNavigation = styled(Flex.Row)`
 
 const WorkspaceContainer = styled(Flex.Column)`
   ${leftSide}
-  height: calc(100vh - 96px);
+  height: calc(100vh - 108px);
 `;
 
 const PreviewContainer = styled(Flex.Column)`
   ${rightSide}
   position: relative;
   overflow: hidden;
-  height: calc(100vh - 96px);
+  height: calc(100vh - 108px);
 `;

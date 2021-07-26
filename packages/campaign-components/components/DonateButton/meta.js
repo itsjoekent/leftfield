@@ -45,6 +45,7 @@ const DonateButtonMeta = {
       label: 'Button Label',
       help: 'This copy is displayed inside the button',
       type: SHORT_TEXT_TYPE,
+      required: true,
       defaultValue: {
         [US_ENGLISH_LANG]: '$5',
       },

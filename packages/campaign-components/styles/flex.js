@@ -11,7 +11,7 @@ import {
 import applyStyleIf, { notZero } from 'pkg.campaign-components/utils/applyStyleIf';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 
-export const KEY = 'FLEX_STYLE';
+export const KEY = 'FlexStyle';
 
 export const DIRECTION_ATTRIBUTE = 'DIRECTION_ATTRIBUTE';
 export const GRID_GAP_ATTRIBUTE = 'GRID_GAP_ATTRIBUTE';

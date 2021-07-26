@@ -16,7 +16,7 @@ import getThemeLabels from 'pkg.campaign-components/utils/getThemeLabels';
 import getThemeValue from 'pkg.campaign-components/utils/getThemeValue';
 import { MAIN_FONT_FAMILY } from 'pkg.campaign-components/theme';
 
-export const KEY = 'TEXT_STYLE';
+export const KEY = 'TextStyle';
 
 export const COLOR_ATTRIBUTE = 'COLOR_ATTRIBUTE';
 export const FONT_FAMILY_ATTRIBUTE = 'FONT_FAMILY_ATTRIBUTE';

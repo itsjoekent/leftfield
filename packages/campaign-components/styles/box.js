@@ -12,7 +12,7 @@ import { getLightestCampaignThemeColor } from 'pkg.campaign-components/utils/cam
 import applyStyleIf, { notZero } from 'pkg.campaign-components/utils/applyStyleIf';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 
-export const KEY = 'BOX_STYLE';
+export const KEY = 'BoxStyle';
 
 export const BACKGROUND_COLOR_ATTRIBUTE = 'BACKGROUND_COLOR_ATTRIBUTE';
 export const BORDER_COLOR_ATTRIBUTE = 'BORDER_COLOR_ATTRIBUTE';

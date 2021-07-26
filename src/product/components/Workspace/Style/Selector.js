@@ -7,6 +7,7 @@ import {
   selectCampaignTheme,
   selectComponentStyleAttributeForDeviceCascading,
   setComponentThemeStyle,
+  setComponentCustomStyle,
   selectComponentStyle,
 } from '@product/features/assembly';
 import { selectPreviewDeviceSize } from '@product/features/previewMode';
@@ -39,8 +40,11 @@ export default function Selector(props) {
     styles: componentStyle,
   };
 
+  const optionsFromTheme = get(attribute, 'optionsFromTheme');
+  const hasOptionsFromTheme = !!optionsFromTheme;
+
   const options = get(attribute, 'options')
-    || get(attribute, 'optionsFromTheme', () => [])(dynamicEvalData);
+    || (hasOptionsFromTheme ? optionsFromTheme(dynamicEvalData) : []);
 
   const attributeValue = useSelector(selectComponentStyleAttributeForDeviceCascading(
     activePageId,
@@ -51,13 +55,19 @@ export default function Selector(props) {
   ));
 
   const inheritFromTheme = get(attributeValue, 'inheritFromTheme', null);
+  const custom = get(attributeValue, 'custom', null);
+
+  const value = inheritFromTheme || custom;
+  const action = hasOptionsFromTheme
+    ? setComponentThemeStyle
+    : setComponentCustomStyle;
 
   return (
     <Select
-      value={find(options, { value: inheritFromTheme })}
+      value={find(options, { value })}
       options={options}
       isDisabled={notResponsive && device !== Responsive.MOBILE_DEVICE}
-      onChange={({ value }) => dispatch(setComponentThemeStyle({
+      onChange={({ value }) => dispatch(action({
         pageId: activePageId,
         componentId: activeComponentId,
         styleId,

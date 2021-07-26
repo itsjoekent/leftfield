@@ -14,6 +14,8 @@ export * as Responsive from 'pkg.campaign-components/constants/responsive';
 
 export * as Settings from 'pkg.campaign-components/constants/settings';
 
+export * as Styles from 'pkg.campaign-components/styles';
+
 export { default as compileComponentStyles } from 'pkg.campaign-components/compileComponentStyles';
 
 export { default as theme } from 'pkg.campaign-components/theme';
