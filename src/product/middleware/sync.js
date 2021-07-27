@@ -18,6 +18,7 @@ import {
   setComponentStyle,
   setComponentCustomStyle,
   setComponentThemeStyle,
+  setMetaValue,
   setPageSetting,
   setSiteSetting,
   undo,
@@ -51,6 +52,7 @@ const TRIGGERS = [
   setComponentStyle.toString(),
   setComponentCustomStyle.toString(),
   setComponentThemeStyle.toString(),
+  setMetaValue.toString(),
   setPageSetting.toString(),
   setSiteSetting.toString(),
   undo.toString(),
@@ -73,6 +75,7 @@ const sync = store => next => action => {
     const compareHash = selectAutoSaveHash(state);
 
     const {
+      meta,
       pages,
       siteSettings,
       styleLibrary,
@@ -81,6 +84,7 @@ const sync = store => next => action => {
     } = state.assembly;
 
     const payload = {
+      meta,
       pages,
       siteSettings,
       styleLibrary,

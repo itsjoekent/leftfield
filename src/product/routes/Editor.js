@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled, { css, ThemeProvider } from 'styled-components';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { Flex, Typography } from 'pkg.admin-components';
@@ -119,52 +119,54 @@ export default function Editor() {
   }
 
   return (
-    <Page fullWidth minHeight="100vh" align="center">
-      <Flex.Row
-        fullWidth
-        justify="center"
-        gridGap="24px"
-        bg={(colors) => colors.mono[100]}
-        shadow={(shadows) => shadows.light}
-        padding="12px"
-      >
-        <LeftSideNavigation />
-        <RightSideNavigation
-          justify="space-between"
-          align="center"
+    <ThemeProvider theme={(theme) => ({ ...theme, navHeight: 60 })}>
+      <Page fullWidth minHeight="100vh" align="center">
+        <Flex.Row
+          fullWidth
+          justify="center"
           gridGap="24px"
+          bg={(colors) => colors.mono[100]}
+          shadow={(shadows) => shadows.light}
+          padding="12px"
         >
-          <PreviewSelector />
-          <Flex.Row
+          <LeftSideNavigation />
+          <RightSideNavigation
+            justify="space-between"
             align="center"
-            gridGap="12px"
+            gridGap="24px"
           >
-            <AutoSave />
-            <History />
-            <PublishButton />
-          </Flex.Row>
-        </RightSideNavigation>
-      </Flex.Row>
-      <Flex.Row
-        as="main"
-        fullWidth
-        justify="space-between"
-        flexGrow
-        gridGap="24px"
-        padding="24px"
-        minHeight="0"
-      >
-        <WorkspaceContainer as="section">
-          <Workspace />
-        </WorkspaceContainer>
-        <PreviewContainer
-          as="section"
-          ref={previewContainerRef}
+            <PreviewSelector />
+            <Flex.Row
+              align="center"
+              gridGap="12px"
+            >
+              <AutoSave />
+              <History />
+              <PublishButton />
+            </Flex.Row>
+          </RightSideNavigation>
+        </Flex.Row>
+        <Flex.Row
+          as="main"
+          fullWidth
+          justify="space-between"
+          flexGrow
+          gridGap="24px"
+          padding="24px"
+          minHeight="0"
         >
-          <Preview previewContainerDimensions={previewContainerDimensions} />
-        </PreviewContainer>
-      </Flex.Row>
-    </Page>
+          <WorkspaceContainer as="section">
+            <Workspace />
+          </WorkspaceContainer>
+          <PreviewContainer
+            as="section"
+            ref={previewContainerRef}
+          >
+            <Preview previewContainerDimensions={previewContainerDimensions} />
+          </PreviewContainer>
+        </Flex.Row>
+      </Page>
+    </ThemeProvider>
   );
 }
 
@@ -196,12 +198,12 @@ const RightSideNavigation = styled(Flex.Row)`
 
 const WorkspaceContainer = styled(Flex.Column)`
   ${leftSide}
-  height: calc(100vh - 108px);
+  height: ${({ theme }) => css`calc(100vh - ${(24 * 2) + theme.navHeight}px);`}
 `;
 
 const PreviewContainer = styled(Flex.Column)`
   ${rightSide}
   position: relative;
   overflow: hidden;
-  height: calc(100vh - 108px);
+  height: ${({ theme }) => css`calc(100vh - ${(24 * 2) + theme.navHeight}px);`}
 `;

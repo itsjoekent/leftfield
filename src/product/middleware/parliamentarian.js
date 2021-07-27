@@ -3,7 +3,6 @@ import { find, get, isEmpty, set } from 'lodash';
 import {
   ComponentMeta,
   Languages,
-  PropertyTypes,
   Responsive,
   Settings,
 } from 'pkg.campaign-components';
@@ -63,7 +62,7 @@ import {
   selectPageRootComponentId,
   selectPageSettings,
   selectSiteSettings,
-  selectStyleFromStyleLibrary,
+  selectStyleAttributesFromStyleLibrary,
 } from '@product/features/assembly';
 import {
   setActiveComponentId,
@@ -464,31 +463,6 @@ function runParliamentarian(
           || isDefined(get(attributeValue, 'custom'));
       }
 
-      if (
-        action.type === setCampaignThemeKeyValue.toString()
-        && get(action, 'payload.path', '').endsWith('isDeleted')
-        && get(action, 'payload.value', false)
-        && get(attribute, 'type') === PropertyTypes.COLOR_TYPE
-      ) {
-        const attribute = selectComponentStyleAttribute(pageId, componentId, styleId, attributeId)(state)
-
-        Object.keys(attribute).forEach((device) => {
-          const inheritFromTheme = get(getAttributeValue(device), 'inheritFromTheme');
-          const themeColor = get(campaignTheme, `colors.${inheritFromTheme}`);
-
-          if (isDefined(inheritFromTheme) && get(themeColor, 'isDeleted', false)) {
-            queueDispatch(setComponentStyle({
-              pageId,
-              componentId,
-              styleId,
-              attributeId,
-              device,
-              value: { custom: get(themeColor, 'value') },
-            }));
-          }
-        });
-      }
-
       const defaultAttributeValue = dynamicDefaultThemeValue
         ? dynamicDefaultThemeValue({ campaignTheme })
         : defaultValue;
@@ -752,10 +726,7 @@ const parliamentarian = store => next => action => {
         set(
           pageCompilation,
           `components.${componentId}.styles.${styleId}`,
-          {
-            ...selectStyleFromStyleLibrary(inheritsFromStyle)(appliedState),
-            name: '',
-          },
+          selectStyleAttributesFromStyleLibrary(inheritsFromStyle)(appliedState),
         );
       }
     });

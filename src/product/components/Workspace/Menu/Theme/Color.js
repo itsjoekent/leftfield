@@ -1,5 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { withTheme } from 'styled-components';
+import { Draggable } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import { ChromePicker } from 'react-color';
 import {
@@ -8,14 +9,15 @@ import {
   Icons,
   Inputs,
   Tooltip,
+  Typography,
 } from 'pkg.admin-components';
-import { setCampaignThemeKeyValue } from '@product/features/assembly';
+import { setCampaignThemeKeyValue, setMetaValue } from '@product/features/assembly';
 import { setModal, CONFIRM_MODAL } from '@product/features/modal';
 import useClickOutside from '@product/hooks/useClickOutside';
 import parseColorPicker from '@product/utils/parseColorPicker';
 
-export default function Color(props) {
-  const { color } = props;
+function Color(props) {
+  const { index, color, theme } = props;
 
   const dispatch = useDispatch();
 
@@ -45,68 +47,100 @@ export default function Color(props) {
     }));
   }
 
-  function onDelete() {
+  function onArchive() {
     dispatch(setCampaignThemeKeyValue({
-      path: `colors.${color.id}.isDeleted`,
+      path: `colors.${color.id}.isArchived`,
       value: true,
+    }));
+
+    dispatch(setMetaValue({
+      index,
+      op: '$PULL',
+      path: 'colorSortOrder',
     }));
   }
 
+  const swatchColor = localColor || color.value || '#FFF';
+
   return (
-    <Flex.Row key={color.id} align="center" gridGap="12px">
-      <Swatch colorValue={localColor || color.value} />
-      <Flex.Row
-        ref={colorPickerRef}
-        flexGrow
-        align="center"
-        gridGap="6px"
-        position="relative"
-      >
-        <Inputs.DefaultText
-          onChange={onNameChange}
-          value={color.label}
-        />
-        <Tooltip copy="Edit color" point={Tooltip.UP_RIGHT_ALIGNED}>
-          <Buttons.IconButton
-            IconComponent={Icons.EditFill}
-            color={(colors) => colors.mono[500]}
-            hoverColor={(colors) => colors.blue[500]}
-            aria-label="Edit color"
-            onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
-          />
-        </Tooltip>
-        <Tooltip copy="Delete color" point={Tooltip.UP_RIGHT_ALIGNED}>
-          <Buttons.IconButton
-            IconComponent={Icons.TrashFill}
-            color={(colors) => colors.mono[500]}
-            hoverColor={(colors) => colors.red[500]}
-            aria-label="Delete color"
-            onClick={() => dispatch(setModal({
-              type: CONFIRM_MODAL,
-              props: {
-                header: 'Are you sure you want to delete this color from the theme?',
-                subheader: 'This action is not reversible.',
-                confirmButtonLabel: 'Delete color',
-                confirmButtonIconName: 'TrashFill',
-                isDangerous: true,
-                onConfirm: onDelete,
-              },
-            }))}
-          />
-        </Tooltip>
-        {isColorPickerOpen && (
-          <ColorPickerWrapper>
-            <ChromePicker
-              color={localColor || '#FFFFFF'}
-              onChange={(output) => setLocalColor(parseColorPicker(output))}
-              onChangeComplete={(output) => onColorChange(parseColorPicker(output))}
+    <Draggable draggableId={color.id} index={index}>
+      {(provided, snapshot) => {
+        // Fix weird issue with using `transform` in a parent element.
+        if (snapshot.isDragging) {
+          provided.draggableProps.style.top = provided.draggableProps.style.top - theme.navHeight;
+        }
+
+        return (
+          <Flex.Row
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            align="center"
+            gridGap="12px"
+            padding="6px"
+            bg={(colors) => colors.mono[100]}
+            rounded={(radius) => radius.default}
+            shadow={(shadows) => shadows.light}
+          >
+            <Swatch
+              {...provided.dragHandleProps}
+              colorValue={swatchColor}
             />
-          </ColorPickerWrapper>
-        )}
-      </Flex.Row>
-    </Flex.Row>
+            <Flex.Row
+              ref={colorPickerRef}
+              flexGrow
+              align="center"
+              gridGap="6px"
+              position="relative"
+            >
+              <Inputs.DefaultText
+                onChange={onNameChange}
+                value={color.label}
+              />
+              <Buttons.Text
+                buttonFg={(colors) => colors.mono[500]}
+                hoverButtonFg={(colors) => colors.mono[700]}
+                onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
+              >
+                <Typography fontStyle="medium" fontSize="14px">
+                  Edit
+                </Typography>
+              </Buttons.Text>
+              <Buttons.Text
+                buttonFg={(colors) => colors.mono[500]}
+                hoverButtonFg={(colors) => colors.red[500]}
+                onClick={() => dispatch(setModal({
+                  type: CONFIRM_MODAL,
+                  props: {
+                    header: 'Are you sure you want to archive this color?',
+                    confirmButtonLabel: 'Archive color',
+                    confirmButtonIconName: 'ArchiveFill',
+                    isDangerous: true,
+                    onConfirm: onArchive,
+                  },
+                }))}
+              >
+                <Typography fontStyle="medium" fontSize="14px">
+                  Archive
+                </Typography>
+              </Buttons.Text>
+              {isColorPickerOpen && (
+                <ColorPickerWrapper>
+                  <ChromePicker
+                    color={swatchColor}
+                    onChange={(output) => setLocalColor(parseColorPicker(output))}
+                    onChangeComplete={(output) => onColorChange(parseColorPicker(output))}
+                  />
+                </ColorPickerWrapper>
+              )}
+            </Flex.Row>
+          </Flex.Row>
+        );
+      }}
+    </Draggable>
   );
 }
+
+export default withTheme(Color);
 
 const Swatch = styled.span`
   display: block;

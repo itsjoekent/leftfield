@@ -47,6 +47,9 @@ export const workspaceSlice = createSlice({
       state.tab = tab;
     },
     setActivePageId: (state, action) => {
+      state.isComponentTreeOpen = false;
+      state.isSettingsMenuOpen = false;
+      
       const { payload: { pageId } } = action;
       if (pageId === state.activePageId) return;
 
@@ -61,9 +64,11 @@ export const workspaceSlice = createSlice({
       }
 
       state.activePageId = pageId;
-      state.isComponentTreeOpen = false;
     },
     setActiveComponentId: (state, action) => {
+      state.isComponentTreeOpen = false;
+      state.isSettingsMenuOpen = false;
+
       const { payload: { componentId } } = action;
       if (componentId === state.activeComponentId) return;
 
@@ -78,7 +83,6 @@ export const workspaceSlice = createSlice({
       }
 
       state.activeComponentId = componentId;
-      state.isComponentTreeOpen = false;
     },
     setIsComponentTreeOpen: (state, action) => {
       state.isComponentTreeOpen = action.payload;

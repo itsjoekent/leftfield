@@ -55,14 +55,6 @@ const theme = {
         },
       },
     },
-    meta: {
-      colorSortOrder: [
-        'blue',
-        'red',
-        'black',
-        'white',
-      ],
-    },
   },
 
   deviceBreakpoints: {

@@ -68,6 +68,10 @@ export const assemblySlice = createSlice({
       },
     },
     future: [],
+    meta: {
+      colorSortOrder: Object.keys(theme.campaign.colors),
+      styleSortOrder: [],
+    },
     pages: {
       'test': {
         components: {
@@ -244,10 +248,10 @@ export const assemblySlice = createSlice({
 
       const libraryStyleId = uuid();
       const libraryStyle = {
-        ...style,
         id: libraryStyleId,
         type: styleType,
         name: styleName,
+        attributes: style,
       };
 
       set(state, `styleLibrary.${libraryStyleId}`, libraryStyle);
@@ -311,7 +315,7 @@ export const assemblySlice = createSlice({
 
       const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
       if (isDefined(inheritsFromStyle)) {
-        set(state, `styleLibrary.${inheritsFromStyle}.${attributeId}.${device}`, {});
+        set(state, `styleLibrary.${inheritsFromStyle}.attributes.${attributeId}.${device}`, {});
         return;
       }
 
@@ -368,7 +372,7 @@ export const assemblySlice = createSlice({
 
       const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
       if (isDefined(inheritsFromStyle)) {
-        set(state, `styleLibrary.${inheritsFromStyle}.${attributeId}.${device}`, value);
+        set(state, `styleLibrary.${inheritsFromStyle}.attributes.${attributeId}.${device}`, value);
         return;
       }
 
@@ -386,7 +390,7 @@ export const assemblySlice = createSlice({
 
       const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
       if (isDefined(inheritsFromStyle)) {
-        set(state, `styleLibrary.${inheritsFromStyle}.${attributeId}.${device}`, { custom: value });
+        set(state, `styleLibrary.${inheritsFromStyle}.attributes.${attributeId}.${device}`, { custom: value });
         return;
       }
 
@@ -404,7 +408,7 @@ export const assemblySlice = createSlice({
 
       const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
       if (isDefined(inheritsFromStyle)) {
-        set(state, `styleLibrary.${inheritsFromStyle}.${attributeId}.${device}`, { inheritFromTheme: value });
+        set(state, `styleLibrary.${inheritsFromStyle}.attributes.${attributeId}.${device}`, { inheritFromTheme: value });
         return;
       }
 
@@ -413,6 +417,38 @@ export const assemblySlice = createSlice({
     setCompiledPage: (state, action) => {
       const { pageId, compilation } = action.payload;
       set(state, `compiled.pages.${pageId}`, compilation);
+    },
+    setMetaValue: (state, action) => {
+      const { op, path, value } = action.payload;
+
+      if (!!op) {
+        switch (op) {
+          case '$PULL': {
+            const { index } = action.payload;
+
+            const sourceArray = get(selectMeta({ assembly: state }), path, []);
+            sourceArray.splice(index, 1);
+
+            set(state, `meta.${path}`, sourceArray);
+            return;
+          }
+
+          case '$REORDER': {
+            const { fromIndex, toIndex } = action.payload;
+
+            const sourceArray = get(selectMeta({ assembly: state }), path, []);
+            const [target] = sourceArray.splice(fromIndex, 1);
+            sourceArray.splice(toIndex, 0, target);
+
+            set(state, `meta.${path}`, sourceArray);
+            return;
+          }
+
+          default: return;
+        }
+      }
+
+      set(state, `meta.${path}`, value);
     },
     setPageSetting: (state, action) => {
       const {
@@ -528,6 +564,7 @@ export const {
   setComponentCustomStyle,
   setComponentThemeStyle,
   setCompiledPage,
+  setMetaValue,
   setPageSetting,
   setSiteSetting,
   setWebsiteId,
@@ -548,25 +585,21 @@ export function selectCampaignThemeColors(state) {
   return get(selectCampaignTheme(state), 'colors');
 }
 
-export function selectCampaignThemeColorsAsArray(state) {
-  const colors = get(selectCampaignTheme(state), 'colors', {});
-
-  return Object.keys(colors)
-    .map((colorId) => ({ ...colors[colorId], id: colorId }))
-    .filter(({ isDeleted }) => !isDeleted);
+export function selectMeta(state) {
+  return get(state, 'assembly.meta', {});
 }
 
-export function selectCampaignThemeColorSortOrder(state) {
-  return get(selectCampaignTheme(state), 'meta.colorSortOrder', []);
+export function selectMetaColorSortOrder(state) {
+  return get(selectMeta(state), 'colorSortOrder', []);
 }
 
 export function selectCampaignThemeColorsAsSortedArray(state) {
-  const colorSortOrder = selectCampaignThemeColorSortOrder(state);
+  const colorSortOrder = selectMetaColorSortOrder(state);
   const colors = selectCampaignThemeColors(state);
 
   return colorSortOrder
     .map((colorId) => ({ ...colors[colorId], id: colorId }))
-    .filter(({ isDeleted }) => !isDeleted);
+    .filter(({ isArchived }) => !isArchived);
 }
 
 export function selectSiteSettings(state) {
@@ -737,7 +770,7 @@ export function selectComponentStyle(pageId, componentId, styleId) {
     const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)(state);
 
     if (isDefined(inheritsFromStyle)) {
-      return selectStyleFromStyleLibrary(inheritsFromStyle, styleId)(state);
+      return selectStyleAttributesFromStyleLibrary(inheritsFromStyle, styleId)(state);
     }
 
     return get(selectComponentStyles(pageId, componentId)(state), styleId, {});
@@ -835,6 +868,14 @@ export function selectStyleNameFromStyleLibrary(styleId) {
   }
 
   return _selectStyleNameFromStyleLibrary;
+}
+
+export function selectStyleAttributesFromStyleLibrary(styleId) {
+  function _selectStyleAttributesFromStyleLibrary(state) {
+    return get(selectStyleFromStyleLibrary(styleId)(state), 'attributes', {});
+  }
+
+  return _selectStyleAttributesFromStyleLibrary;
 }
 
 export function selectWebsiteId(state) {

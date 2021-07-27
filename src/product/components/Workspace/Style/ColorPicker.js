@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { get } from 'lodash';
+import { find, get } from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { ChromePicker } from 'react-color';
 import { Responsive } from 'pkg.campaign-components';
@@ -10,6 +10,7 @@ import {
   Grid,
   Icons,
   Typography,
+  useAdminTheme,
 } from 'pkg.admin-components';
 import {
   resetComponentStyleAttribute,
@@ -47,7 +48,10 @@ export default function ColorPicker(props) {
     targetDevice,
   ));
 
+  const inheritFromTheme = get(attributeValue, 'inheritFromTheme');
+
   const dispatch = useDispatch();
+  const adminTheme = useAdminTheme();
 
   const isCustom = !!get(attributeValue, 'custom');
   const customColorValue = get(attributeValue, 'custom', '#FFF');
@@ -78,7 +82,7 @@ export default function ColorPicker(props) {
   }
 
   function onThemeClick(colorId) {
-    if (get(attributeValue, 'inheritFromTheme') === colorId) {
+    if (inheritFromTheme === colorId) {
       resetColor();
       return;
     }
@@ -106,14 +110,33 @@ export default function ColorPicker(props) {
 
   const customColorButtonLabel = localCustomColor ? 'Edit custom color' : 'Add custom color';
 
+  const isArchivedColor = !!inheritFromTheme
+    && !find(campaignThemeColors, { id: inheritFromTheme });
+
   return (
     <Flex.Column gridGap="12px">
+      {!!isArchivedColor && (
+        <Flex.Row align="center" gridGap="2px">
+          <Icons.AlarmFill
+            width={20}
+            height={20}
+            color={adminTheme.colors.red[500]}
+          />
+          <Typography
+            fontStyle="medium"
+            fontSize="14px"
+            fg={(colors) => colors.red[500]}
+          >
+            Using an archived color
+          </Typography>
+        </Flex.Row>
+      )}
       <Grid fullWidth columns="1fr 1fr" gap="12px">
         {campaignThemeColors.map((color) => {
           const colorId = get(color, 'id');
           const colorValue = get(color, 'value', '#FFF');
           const label = get(color, 'label', 'N/A');
-          const isSelected = get(attributeValue, 'inheritFromTheme') === colorId;
+          const isSelected = inheritFromTheme === colorId;
 
           return (
             <Buttons.Outline

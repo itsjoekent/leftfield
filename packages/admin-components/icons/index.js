@@ -8,6 +8,7 @@ export { default as AddSquare } from './addsquare';
 export { default as AddSquareFill } from './addsquarefill';
 export { default as AddSquareLight } from './addsquarelight';
 export { default as Alarm } from './alarm';
+export { default as AlarmFill } from './alarmfill';
 export { default as Alarmclock } from './alarmclock';
 export { default as AlarmclockFill } from './alarmclockfill';
 export { default as AlarmclockLight } from './alarmclocklight';
