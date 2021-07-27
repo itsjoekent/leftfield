@@ -23,6 +23,7 @@ export const PADDING_VERTICAL_ATTRIBUTE = 'PADDING_VERTICAL_ATTRIBUTE';
 
 const BoxStyle = {
   key: KEY,
+  humanName: 'Box Style',
   attributes: (overrides) => ([
     {
       id: BACKGROUND_COLOR_ATTRIBUTE,

@@ -2,6 +2,7 @@ import md5 from 'md5';
 import { get } from 'lodash';
 import {
   addChildComponentToSlot,
+  archivePreset,
   buildComponent,
   deleteComponentAndDescendants,
   detachStyleReference,
@@ -18,6 +19,7 @@ import {
   setComponentStyle,
   setComponentCustomStyle,
   setComponentThemeStyle,
+  setPresetName,
   setMetaValue,
   setPageSetting,
   setSiteSetting,
@@ -36,6 +38,7 @@ import {
 
 const TRIGGERS = [
   addChildComponentToSlot.toString(),
+  archivePreset.toString(),
   buildComponent.toString(),
   deleteComponentAndDescendants.toString(),
   detachStyleReference.toString(),
@@ -52,6 +55,7 @@ const TRIGGERS = [
   setComponentStyle.toString(),
   setComponentCustomStyle.toString(),
   setComponentThemeStyle.toString(),
+  setPresetName.toString(),
   setMetaValue.toString(),
   setPageSetting.toString(),
   setSiteSetting.toString(),
@@ -78,7 +82,7 @@ const sync = store => next => action => {
       meta,
       pages,
       siteSettings,
-      styleLibrary,
+      stylePresets,
       templatedFrom,
       theme,
     } = state.assembly;
@@ -87,7 +91,7 @@ const sync = store => next => action => {
       meta,
       pages,
       siteSettings,
-      styleLibrary,
+      stylePresets,
       templatedFrom,
       theme,
     };

@@ -70,7 +70,7 @@ export const assemblySlice = createSlice({
     future: [],
     meta: {
       colorSortOrder: Object.keys(theme.campaign.colors),
-      styleSortOrder: [],
+      presetSortOrder: {},
     },
     pages: {
       'test': {
@@ -100,7 +100,7 @@ export const assemblySlice = createSlice({
         ],
       },
     },
-    styleLibrary: {},
+    stylePresets: {},
     templatedFrom: null,
     theme: theme.campaign,
     websiteId: null,
@@ -113,13 +113,17 @@ export const assemblySlice = createSlice({
       const assemblyState = {
         pages: state.pages,
         siteSettings: state.siteSettings,
-        styleLibrary: state.styleLibrary,
+        stylePresets: state.stylePresets,
         templatedFrom: state.templatedFrom,
         theme: state.theme,
       };
 
       set(state, 'past', [...get(state, 'past', []), assemblyState]);
       set(state, 'future', []);
+    },
+    archivePreset: (state, action) => {
+      const { presetId } = action.payload;
+      set(state, `stylePresets.${presetId}.isArchived`, true);
     },
     buildComponent: (state, action) => {
       const {
@@ -239,6 +243,7 @@ export const assemblySlice = createSlice({
       const {
         pageId,
         componentId,
+        presetId,
         styleId,
         styleType,
         styleName,
@@ -246,26 +251,25 @@ export const assemblySlice = createSlice({
 
       const style = selectComponentStyle(pageId, componentId, styleId)({ assembly: state });
 
-      const libraryStyleId = uuid();
-      const libraryStyle = {
-        id: libraryStyleId,
+      const preset = {
+        id: presetId,
         type: styleType,
         name: styleName,
         attributes: style,
       };
 
-      set(state, `styleLibrary.${libraryStyleId}`, libraryStyle);
-      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromStyle: libraryStyleId });
+      set(state, `stylePresets.${presetId}`, preset);
+      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromPreset: presetId });
     },
     importStyle: (state, action) => {
       const {
         pageId,
         componentId,
         styleId,
-        libraryStyleId,
+        presetId,
       } = action.payload;
 
-      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromStyle: libraryStyleId });
+      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromPreset: presetId });
     },
     redo: (state, action) => {
       const futureState = state.future.pop();
@@ -276,7 +280,7 @@ export const assemblySlice = createSlice({
       const assemblyState = {
         pages: state.pages,
         siteSettings: state.siteSettings,
-        styleLibrary: state.styleLibrary,
+        stylePresets: state.stylePresets,
         templatedFrom: state.templatedFrom,
         theme: state.theme,
       };
@@ -313,9 +317,9 @@ export const assemblySlice = createSlice({
         device,
       } = action.payload;
 
-      const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
-      if (isDefined(inheritsFromStyle)) {
-        set(state, `styleLibrary.${inheritsFromStyle}.attributes.${attributeId}.${device}`, {});
+      const inheritsFromPreset = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      if (isDefined(inheritsFromPreset)) {
+        set(state, `stylePresets.${inheritsFromPreset}.attributes.${attributeId}.${device}`, {});
         return;
       }
 
@@ -370,9 +374,9 @@ export const assemblySlice = createSlice({
         value,
       } = action.payload;
 
-      const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
-      if (isDefined(inheritsFromStyle)) {
-        set(state, `styleLibrary.${inheritsFromStyle}.attributes.${attributeId}.${device}`, value);
+      const inheritsFromPreset = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      if (isDefined(inheritsFromPreset)) {
+        set(state, `stylePresets.${inheritsFromPreset}.attributes.${attributeId}.${device}`, value);
         return;
       }
 
@@ -388,9 +392,9 @@ export const assemblySlice = createSlice({
         value,
       } = action.payload;
 
-      const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
-      if (isDefined(inheritsFromStyle)) {
-        set(state, `styleLibrary.${inheritsFromStyle}.attributes.${attributeId}.${device}`, { custom: value });
+      const inheritsFromPreset = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      if (isDefined(inheritsFromPreset)) {
+        set(state, `stylePresets.${inheritsFromPreset}.attributes.${attributeId}.${device}`, { custom: value });
         return;
       }
 
@@ -406,9 +410,9 @@ export const assemblySlice = createSlice({
         value,
       } = action.payload;
 
-      const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
-      if (isDefined(inheritsFromStyle)) {
-        set(state, `styleLibrary.${inheritsFromStyle}.attributes.${attributeId}.${device}`, { inheritFromTheme: value });
+      const inheritsFromPreset = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      if (isDefined(inheritsFromPreset)) {
+        set(state, `stylePresets.${inheritsFromPreset}.attributes.${attributeId}.${device}`, { inheritFromTheme: value });
         return;
       }
 
@@ -417,6 +421,10 @@ export const assemblySlice = createSlice({
     setCompiledPage: (state, action) => {
       const { pageId, compilation } = action.payload;
       set(state, `compiled.pages.${pageId}`, compilation);
+    },
+    setPresetName: (state, action) => {
+      const { presetId, name } = action.payload;
+      set(state, `stylePresets.${presetId}.name`, name);
     },
     setMetaValue: (state, action) => {
       const { op, path, value } = action.payload;
@@ -433,10 +441,20 @@ export const assemblySlice = createSlice({
             return;
           }
 
+          case '$PUSH': {
+            const { item } = action.payload;
+
+            const sourceArray = get(selectMeta({ assembly: state }), path, []);
+            sourceArray.push(item);
+
+            set(state, `meta.${path}`, sourceArray);
+            return;
+          }
+
           case '$REORDER': {
             const { fromIndex, toIndex } = action.payload;
 
-            const sourceArray = get(selectMeta({ assembly: state }), path, []);
+            const sourceArray = [...get(selectMeta({ assembly: state }), path, [])];
             const [target] = sourceArray.splice(fromIndex, 1);
             sourceArray.splice(toIndex, 0, target);
 
@@ -482,7 +500,7 @@ export const assemblySlice = createSlice({
       const assemblyState = {
         pages: state.pages,
         siteSettings: state.siteSettings,
-        styleLibrary: state.styleLibrary,
+        stylePresets: state.stylePresets,
         templatedFrom: state.templatedFrom,
         theme: state.theme,
       };
@@ -546,6 +564,7 @@ export const assemblySlice = createSlice({
 export const {
   addChildComponentToSlot,
   addPastState,
+  archivePreset,
   buildComponent,
   deleteComponentAndDescendants,
   detachStyleReference,
@@ -564,6 +583,7 @@ export const {
   setComponentCustomStyle,
   setComponentThemeStyle,
   setCompiledPage,
+  setPresetName,
   setMetaValue,
   setPageSetting,
   setSiteSetting,
@@ -593,6 +613,14 @@ export function selectMetaColorSortOrder(state) {
   return get(selectMeta(state), 'colorSortOrder', []);
 }
 
+export function selectMetaPresetSortOrder(styleType) {
+  function _selectMetaStyleSortOrder(state) {
+    return get(selectMeta(state), `presetSortOrder.${styleType}`, []);
+  }
+
+  return _selectMetaStyleSortOrder;
+}
+
 export function selectCampaignThemeColorsAsSortedArray(state) {
   const colorSortOrder = selectMetaColorSortOrder(state);
   const colors = selectCampaignThemeColors(state);
@@ -600,6 +628,31 @@ export function selectCampaignThemeColorsAsSortedArray(state) {
   return colorSortOrder
     .map((colorId) => ({ ...colors[colorId], id: colorId }))
     .filter(({ isArchived }) => !isArchived);
+}
+
+export function selectPresetsWithType(type) {
+  function _selectPresetsWithType(state) {
+    const stylePresets = selectPresets(state);
+    const presets = Object.keys(stylePresets)
+      .map((styleId) => stylePresets[styleId])
+      .filter((preset) => !preset.isArchived && preset.type === type);
+
+    return presets;
+  }
+
+  return _selectPresetsWithType;
+}
+
+export function selectPresetsOfTypeSortedAsArray(styleType) {
+  function _selectPresetsOfTypeSortedAsArray(state) {
+    const presetSortOrder = selectMetaPresetSortOrder(styleType)(state);
+
+    return presetSortOrder
+      .map((presetId) => selectPreset(presetId)(state))
+      .filter((preset) => !get(preset, 'isArchived', false));
+  }
+
+  return _selectPresetsOfTypeSortedAsArray;
 }
 
 export function selectSiteSettings(state) {
@@ -759,7 +812,7 @@ export function selectComponentStyles(pageId, componentId) {
 
 export function selectComponentStyleInheritsFrom(pageId, componentId, styleId) {
   function _selectComponentStyleInheritsFrom(state) {
-    return get(selectComponentStyles(pageId, componentId)(state), `${styleId}.inheritsFromStyle`, null);
+    return get(selectComponentStyles(pageId, componentId)(state), `${styleId}.inheritsFromPreset`, null);
   }
 
   return _selectComponentStyleInheritsFrom;
@@ -767,10 +820,10 @@ export function selectComponentStyleInheritsFrom(pageId, componentId, styleId) {
 
 export function selectComponentStyle(pageId, componentId, styleId) {
   function _selectComponentStyle(state) {
-    const inheritsFromStyle = selectComponentStyleInheritsFrom(pageId, componentId, styleId)(state);
+    const inheritsFromPreset = selectComponentStyleInheritsFrom(pageId, componentId, styleId)(state);
 
-    if (isDefined(inheritsFromStyle)) {
-      return selectStyleAttributesFromStyleLibrary(inheritsFromStyle, styleId)(state);
+    if (isDefined(inheritsFromPreset)) {
+      return selectStyleAttributesFromPreset(inheritsFromPreset, styleId)(state);
     }
 
     return get(selectComponentStyles(pageId, componentId)(state), styleId, {});
@@ -850,32 +903,32 @@ export function selectCompiledPage(pageId) {
   return _selectCompiledPage;
 }
 
-export function selectStyleLibrary(state) {
-  return get(state, 'assembly.styleLibrary', {});
+export function selectPresets(state) {
+  return get(state, 'assembly.stylePresets', {});
 }
 
-export function selectStyleFromStyleLibrary(styleId) {
-  function _selectStyleFromStyleLibrary(state) {
-    return get(selectStyleLibrary(state), styleId, {});
+export function selectPreset(styleId) {
+  function _selectPreset(state) {
+    return get(selectPresets(state), styleId, {});
   }
 
-  return _selectStyleFromStyleLibrary;
+  return _selectPreset;
 }
 
-export function selectStyleNameFromStyleLibrary(styleId) {
-  function _selectStyleNameFromStyleLibrary(state) {
-    return get(selectStyleFromStyleLibrary(styleId)(state), 'name', null);
+export function selectPresetName(styleId) {
+  function _selectPresetName(state) {
+    return get(selectPreset(styleId)(state), 'name', null);
   }
 
-  return _selectStyleNameFromStyleLibrary;
+  return _selectPresetName;
 }
 
-export function selectStyleAttributesFromStyleLibrary(styleId) {
-  function _selectStyleAttributesFromStyleLibrary(state) {
-    return get(selectStyleFromStyleLibrary(styleId)(state), 'attributes', {});
+export function selectStyleAttributesFromPreset(styleId) {
+  function _selectStyleAttributesFromPreset(state) {
+    return get(selectPreset(styleId)(state), 'attributes', {});
   }
 
-  return _selectStyleAttributesFromStyleLibrary;
+  return _selectStyleAttributesFromPreset;
 }
 
 export function selectWebsiteId(state) {

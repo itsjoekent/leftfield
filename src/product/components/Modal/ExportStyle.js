@@ -1,4 +1,5 @@
 import React from 'react';
+import { v4 as uuid } from 'uuid';
 import { useDispatch } from 'react-redux';
 import {
   Buttons,
@@ -7,7 +8,7 @@ import {
   Typography,
 } from 'pkg.admin-components';
 import ModalDefaultLayout from '@product/components/Modal/DefaultLayout';
-import { exportStyle } from '@product/features/assembly';
+import { exportStyle, setMetaValue } from '@product/features/assembly';
 import { closeModal } from '@product/features/modal';
 
 export default function ExportStyleModal(props) {
@@ -40,12 +41,21 @@ export default function ExportStyleModal(props) {
 
     dispatch(closeModal());
 
+    const presetId = uuid();
+
     dispatch(exportStyle({
       pageId,
       componentId,
+      presetId,
       styleId,
       styleType,
       styleName,
+    }));
+
+    dispatch(setMetaValue({
+      item: presetId,
+      op: '$PUSH',
+      path: `presetSortOrder.${styleType}`,
     }));
   }
 

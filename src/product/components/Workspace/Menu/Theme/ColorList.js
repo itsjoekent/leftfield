@@ -55,6 +55,7 @@ export default function ColorList() {
     <Flex.Column gridGap="16px">
       <Flex.Row align="center" justify="space-between">
         <Typography
+          as="h3"
           fontStyle="bold"
           fontSize="16px"
           fg={(colors) => colors.mono[700]}

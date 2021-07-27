@@ -6,9 +6,7 @@ import { ChromePicker } from 'react-color';
 import {
   Buttons,
   Flex,
-  Icons,
   Inputs,
-  Tooltip,
   Typography,
 } from 'pkg.admin-components';
 import { setCampaignThemeKeyValue, setMetaValue } from '@product/features/assembly';

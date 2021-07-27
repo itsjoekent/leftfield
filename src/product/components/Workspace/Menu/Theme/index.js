@@ -10,7 +10,7 @@ export default function Theme(props) {
 
   return (
     <WorkspaceMenuAccordion
-      title="Campaign Theme"
+      title="Theme"
       isExpanded={isExpanded}
       setIsExpanded={setIsExpanded}
     >

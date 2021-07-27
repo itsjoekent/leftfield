@@ -14,6 +14,7 @@ export const SPACING_ATTRIBUTE = 'SPACING_ATTRIBUTE';
 
 const GridStyle = {
   key: KEY,
+  humanName: 'Grid Style',
   attributes: (overrides) => ([
     {
       id: COLUMNS_ATTRIBUTE,

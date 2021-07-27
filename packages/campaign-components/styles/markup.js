@@ -29,6 +29,7 @@ export const BOTTOM_MARGIN_ATTRIBUTE = 'BOTTOM_MARGIN_ATTRIBUTE';
 
 const MarkupStyle = {
   key: KEY,
+  humanName: 'Markup Style',
   attributes: (textOverrides, overrides) => ([
     ...TextStyle.attributes(textOverrides),
     {
@@ -68,7 +69,7 @@ const MarkupStyle = {
     },
   ]),
   styling: ({ applyStyleIfChanged, styles, theme }) => `
-    ${TextStyle.styling({ applyStyleIf, theme, styles })}
+    ${TextStyle.styling({ applyStyleIfChanged, theme, styles })}
 
     &:not(:last-child) {
       ${responsiveStyleGenerator(

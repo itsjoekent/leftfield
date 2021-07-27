@@ -8,6 +8,7 @@ import {
   Typography,
 } from 'pkg.admin-components';
 import WorkspaceMenuPageSettings from '@product/components/Workspace/Menu/PageSettings';
+import WorkspaceMenuPresets from '@product/components/Workspace/Menu/Presets';
 import WorkspaceMenuSiteSettings from '@product/components/Workspace/Menu/SiteSettings';
 import WorkspaceMenuTheme from '@product/components/Workspace/Menu/Theme';
 import {
@@ -17,14 +18,14 @@ import {
 
 const CAMPAIGN_THEME_MENU = 'CAMPAIGN_THEME_MENU';
 const PAGE_SETTINGS_MENU = 'PAGE_SETTINGS_MENU';
+const PRESETS_MENU = 'PRESETS_MENU';
 const SITE_SETTINGS_MENU = 'SITE_SETTINGS_MENU';
-const STYLE_LIBRARY_MENU = 'STYLE_LIBRARY_MENU';
 
 const menus = [
   [PAGE_SETTINGS_MENU, WorkspaceMenuPageSettings],
   [SITE_SETTINGS_MENU, WorkspaceMenuSiteSettings],
   [CAMPAIGN_THEME_MENU, WorkspaceMenuTheme],
-  // [STYLE_LIBRARY_MENU, React.Fragment],
+  [PRESETS_MENU, WorkspaceMenuPresets],
 ];
 
 export default function Menu() {

@@ -14,6 +14,7 @@ export const DISPLAY_ATTRIBUTE = 'DISPLAY_ATTRIBUTE';
 
 const DisplayStyle = {
   key: KEY,
+  humanName: 'Display Style',
   attributes: (overrides) => ([
     {
       id: DISPLAY_ATTRIBUTE,

@@ -1,19 +1,23 @@
 import React from 'react';
-import styled from 'styled-components';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  Block,
   Buttons,
   Icons,
   Flex,
   Tooltip,
   Typography,
+  useAdminTheme,
 } from 'pkg.admin-components';
 import WorkspaceStyleAttribute from '@product/components/Workspace/Style/Attribute';
 import WorkspaceStyleLabel from '@product/components/Workspace/Style/Label';
-import WorkspaceStyleLibrarySelector from '@product/components/Workspace/Style/LibrarySelector';
+import WorkspaceStylePresetSelector from '@product/components/Workspace/Style/PresetSelector';
 import WorkspaceStyleResponsiveHint from '@product/components/Workspace/Style/ResponsiveHint';
-import { selectComponentStyleInheritsFrom } from '@product/features/assembly';
+import {
+  selectComponentStyleInheritsFrom,
+  selectPreset,
+} from '@product/features/assembly';
 import {
   setModal,
   EXPORT_STYLE_MODAL,
@@ -31,14 +35,21 @@ export default function StyleForm(props) {
   const attributes = get(styleData, 'attributes', []);
 
   const dispatch = useDispatch();
+  const adminTheme = useAdminTheme();
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
 
-  const inheritsFromStyle = useSelector(selectComponentStyleInheritsFrom(
+  const inheritsFromPresetId = useSelector(selectComponentStyleInheritsFrom(
     activePageId,
     activeComponentId,
     styleId,
   ));
+
+  const inheritsFromPreset = useSelector(selectPreset(inheritsFromPresetId));
+  const isArchivedPreset = !!get(inheritsFromPreset, 'isArchived', false);
+
+  const isExportable = !isDefined(inheritsFromPresetId)
+    || (isDefined(inheritsFromPresetId) && !!isArchivedPreset);
 
   return (
     <Flex.Column
@@ -62,21 +73,37 @@ export default function StyleForm(props) {
             {help}
           </Typography>
         )}
+        {!!isArchivedPreset && (
+          <Flex.Row align="center" gridGap="2px">
+            <Icons.AlarmFill
+              width={20}
+              height={20}
+              color={adminTheme.colors.red[500]}
+            />
+            <Typography
+              fontStyle="medium"
+              fontSize="14px"
+              fg={(colors) => colors.red[500]}
+            >
+              The {get(inheritsFromPreset, 'name', 'Unnamed')} preset is archived
+            </Typography>
+          </Flex.Row>
+        )}
         {!!type && (
           <Flex.Row gridGap="12px" align="center">
-            <LibrarySelectorWrapper>
-              <WorkspaceStyleLibrarySelector
+            <Block flexGrow>
+              <WorkspaceStylePresetSelector
                 styleId={styleId}
                 styleType={type}
               />
-            </LibrarySelectorWrapper>
-            <Tooltip copy="Export this style" point={Tooltip.UP_RIGHT_ALIGNED}>
+            </Block>
+            <Tooltip copy="Export preset" point={Tooltip.UP_RIGHT_ALIGNED}>
               <Buttons.IconButton
                 IconComponent={Icons.Export}
-                color={(colors) => isDefined(inheritsFromStyle) ? colors.mono[500] : colors.blue[500]}
+                color={(colors) => isExportable ? colors.blue[500] : colors.mono[500]}
                 hoverColor={(colors) => colors.blue[800]}
-                aria-label="Export this style"
-                disabled={isDefined(inheritsFromStyle)}
+                aria-label="Export preset"
+                disabled={!isExportable}
                 onClick={() => dispatch(setModal({
                   type: EXPORT_STYLE_MODAL,
                   props: {
@@ -118,7 +145,3 @@ export default function StyleForm(props) {
     </Flex.Column>
   );
 }
-
-const LibrarySelectorWrapper = styled.div`
-  flex-grow: 1;
-`;

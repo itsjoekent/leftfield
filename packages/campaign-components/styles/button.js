@@ -41,6 +41,7 @@ export const TRANSITION_ATTRIBUTE = 'TRANSITION_ATTRIBUTE';
 
 const ButtonStyle = {
   key: KEY,
+  humanName: 'Button Style',
   attributes: (textOverrides, boxOverrides) => ([
     ...TextStyle.attributes({
       ...(textOverrides || {}),

@@ -27,6 +27,7 @@ export const LINE_HEIGHT_ATTRIBUTE = 'LINE_HEIGHT_ATTRIBUTE';
 
 const TextStyle = {
   key: KEY,
+  humanName: 'Text Style',
   attributes: (overrides) => ([
     {
       id: COLOR_ATTRIBUTE,

@@ -6,7 +6,7 @@ import {
   detachStyleReference,
   importStyle,
   selectComponentStyleInheritsFrom,
-  selectStyleLibrary,
+  selectPresetsOfTypeSortedAsArray,
 } from '@product/features/assembly';
 import useActiveWorkspaceComponent from '@product/hooks/useActiveWorkspaceComponent';
 
@@ -15,7 +15,7 @@ const CUSTOM_OPTION = {
   value: 'CUSTOM_OPTION',
 };
 
-export default function LibrarySelector(props) {
+export default function PresetSelector(props) {
   const {
     styleId,
     styleType,
@@ -25,27 +25,15 @@ export default function LibrarySelector(props) {
 
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
 
-  const styleLibrary = useSelector(selectStyleLibrary);
-  const inheritsFromStyle = useSelector(selectComponentStyleInheritsFrom(activePageId, activeComponentId, styleId));
-
-  const availableStyles = Object.keys(styleLibrary).reduce((acc, styleId) => {
-    const style = styleLibrary[styleId];
-    if (styleType !== style.type) {
-      return acc;
-    }
-
-    return [
-      ...acc,
-      style,
-    ];
-  }, []);
+  const availableStyles = useSelector(selectPresetsOfTypeSortedAsArray(styleType));
+  const inheritsFromPreset = useSelector(selectComponentStyleInheritsFrom(activePageId, activeComponentId, styleId));
 
   const availableStylesAsOptions = availableStyles.map((style) => ({
     value: style.id,
     label: style.name,
   }));
 
-  const selectorValue = find(availableStylesAsOptions, { value: inheritsFromStyle })
+  const selectorValue = find(availableStylesAsOptions, { value: inheritsFromPreset })
     || CUSTOM_OPTION;
 
   function onChange({ value }) {
@@ -63,7 +51,7 @@ export default function LibrarySelector(props) {
       pageId: activePageId,
       componentId: activeComponentId,
       styleId,
-      libraryStyleId: value,
+      presetId: value,
     }));
   }
 

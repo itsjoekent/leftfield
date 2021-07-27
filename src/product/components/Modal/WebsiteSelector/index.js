@@ -33,7 +33,7 @@ export default function WebsiteSelector() {
   return (
     <ModalDefaultLayout
       width="600px"
-      title="Element Library"
+      title="Websites"
       disableClose
     >
       <Flex.Column fullWidth bg={(colors) => colors.mono[100]}>

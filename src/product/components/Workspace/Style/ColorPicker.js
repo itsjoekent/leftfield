@@ -127,7 +127,7 @@ export default function ColorPicker(props) {
             fontSize="14px"
             fg={(colors) => colors.red[500]}
           >
-            Using an archived color
+            Using an archived theme color
           </Typography>
         </Flex.Row>
       )}

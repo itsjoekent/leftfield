@@ -31,6 +31,7 @@ export const FLEX_NO_WRAP = 'nowrap';
 
 const FlexStyle = {
   key: KEY,
+  humanName: 'Flex Style',
   attributes: (overrides) => ([
     {
       id: DIRECTION_ATTRIBUTE,

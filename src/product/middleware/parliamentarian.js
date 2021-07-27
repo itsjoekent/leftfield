@@ -62,7 +62,7 @@ import {
   selectPageRootComponentId,
   selectPageSettings,
   selectSiteSettings,
-  selectStyleAttributesFromStyleLibrary,
+  selectStyleAttributesFromPreset,
 } from '@product/features/assembly';
 import {
   setActiveComponentId,
@@ -716,17 +716,17 @@ const parliamentarian = store => next => action => {
     });
 
     Object.keys(previewComponentStyles).forEach((styleId) => {
-      const inheritsFromStyle = selectComponentStyleInheritsFrom(
+      const inheritsFromPreset = selectComponentStyleInheritsFrom(
         pageId,
         componentId,
         styleId,
       )(appliedState);
 
-      if (isDefined(inheritsFromStyle)) {
+      if (isDefined(inheritsFromPreset)) {
         set(
           pageCompilation,
           `components.${componentId}.styles.${styleId}`,
-          selectStyleAttributesFromStyleLibrary(inheritsFromStyle)(appliedState),
+          selectStyleAttributesFromPreset(inheritsFromPreset)(appliedState),
         );
       }
     });
