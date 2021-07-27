@@ -123,6 +123,7 @@ export default function Editor() {
       <Flex.Row
         fullWidth
         justify="center"
+        gridGap="24px"
         bg={(colors) => colors.mono[100]}
         shadow={(shadows) => shadows.light}
         padding="12px"
@@ -149,6 +150,7 @@ export default function Editor() {
         fullWidth
         justify="space-between"
         flexGrow
+        gridGap="24px"
         padding="24px"
         minHeight="0"
       >
@@ -173,6 +175,7 @@ const Page = styled(Flex.Column)`
 
 const leftSide = css`
   width: calc(40% - 12px);
+  max-width: 450px;
 
   @media (min-width: 1280px) {
     width: calc(33.33% - 12px);
@@ -180,11 +183,7 @@ const leftSide = css`
 `;
 
 const rightSide = css`
-  width: calc(60% - 12px);
-
-  @media (min-width: 1280px) {
-    width: calc(66.66% - 12px);
-  }
+  flex-grow: 1;
 `;
 
 const LeftSideNavigation = styled(Flex.Row)`
