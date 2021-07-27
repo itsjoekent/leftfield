@@ -16,6 +16,7 @@ import {
 } from 'pkg.campaign-components/utils/campaignThemeFontSelectors';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 import getThemeLabels from 'pkg.campaign-components/utils/getThemeLabels';
+import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 
 export const KEY = 'MarkupStyle';
 
@@ -36,7 +37,7 @@ const MarkupStyle = {
       type: SELECT_TYPE,
       optionsFromTheme: ({ campaignTheme, styles }) => getThemeLabels(
         campaignTheme,
-        `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
+        `fontWeights.${getStyleValue({ styles, attribute: FONT_FAMILY_ATTRIBUTE })}`,
       ),
       dynamicDefaultThemeValue: ({ campaignTheme }) => ({
         [MOBILE_DEVICE]: {
@@ -66,66 +67,33 @@ const MarkupStyle = {
       ...(get(overrides, BOTTOM_MARGIN_ATTRIBUTE, {})),
     },
   ]),
-  styling: ({ styles, theme }) => `
-    ${TextStyle.styling({ theme, styles })}
+  styling: ({ applyStyleIfChanged, styles, theme }) => `
+    ${TextStyle.styling({ applyStyleIf, theme, styles })}
 
     &:not(:last-child) {
-      ${applyStyleIf(
-        getStyleValue(styles, BOTTOM_MARGIN_ATTRIBUTE),
+      ${responsiveStyleGenerator(
+        applyStyleIfChanged,
+        theme,
+        {
+          styles,
+          attribute: BOTTOM_MARGIN_ATTRIBUTE,
+        },
         (styleValue) => `margin-bottom: ${styleValue}px;`,
-        notZero,
       )}
-
-      @media (${theme.deviceBreakpoints.tabletUp}) {
-        ${applyStyleIf(
-          getStyleValue(styles, BOTTOM_MARGIN_ATTRIBUTE, null, null, TABLET_DEVICE),
-          (styleValue) => `margin-bottom: ${styleValue}px;`,
-          notZero,
-        )}
-      }
-
-      @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-        ${applyStyleIf(
-          getStyleValue(styles, BOTTOM_MARGIN_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-          (styleValue) => `margin-bottom: ${styleValue}px;`,
-          notZero,
-        )}
-      }      
     }
 
     strong {
-      font-weight: ${getStyleValue(
-        styles,
-        BOLD_WEIGHT_ATTRIBUTE,
-        theme.campaign,
-        `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
-      )};
-
-      @media (${theme.deviceBreakpoints.tabletUp}) {
-        ${applyStyleIf(
-          getStyleValue(
-            styles,
-            BOLD_WEIGHT_ATTRIBUTE,
-            theme.campaign,
-            `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
-            TABLET_DEVICE,
-          ),
-          (styleValue) => `font-weight: ${styleValue};`,
-        )}
-      }
-
-      @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-        ${applyStyleIf(
-          getStyleValue(
-            styles,
-            BOLD_WEIGHT_ATTRIBUTE,
-            theme.campaign,
-            `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
-            DESKTOP_DEVICE,
-          ),
-          (styleValue) => `font-weight: ${styleValue};`,
-        )}
-      }
+      ${responsiveStyleGenerator(
+        applyStyleIfChanged,
+        theme,
+        {
+          styles,
+          attribute: BOLD_WEIGHT_ATTRIBUTE,
+          theme,
+          themePath: `campaign.fontWeights.${getStyleValue({ styles, attribute: FONT_FAMILY_ATTRIBUTE })}`,
+        },
+        (styleValue) => `margin-bottom: ${styleValue}px;`,
+      )}
     }
 
     em {

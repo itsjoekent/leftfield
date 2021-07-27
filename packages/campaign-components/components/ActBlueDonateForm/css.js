@@ -14,8 +14,10 @@ import BoxStyle from 'pkg.campaign-components/styles/box';
 import GridStyle, { COLUMNS_ATTRIBUTE } from 'pkg.campaign-components/styles/grid';
 import TextStyle from 'pkg.campaign-components/styles/text';
 import applyStyleIf from 'pkg.campaign-components/utils/applyStyleIf';
+import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
 import getPropertyValue from 'pkg.campaign-components/utils/getPropertyValue';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
+import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 
 export const DISCLAIMER_CLASS_NAME = 'actblue-form-disclaimer';
 
@@ -27,6 +29,8 @@ export default function ActBlueFormCSS({
   styles,
   language,
 }) {
+  const applyStyleIfChanged = applyStyleIfChangedGenerator();
+
   const gridStyles = get(styles, GRID_STYLE, {});
   const textDisclaimerStyles = get(styles, DISCLAIMER_TEXT_STYLE, {});
 
@@ -35,11 +39,13 @@ export default function ActBlueFormCSS({
       width: 100%;
 
       ${BoxStyle.styling({
+        applyStyleIfChanged,
         styles: gridStyles,
         theme,
       })}
 
       ${GridStyle.styling({
+        applyStyleIfChanged,
         styles: gridStyles,
         theme,
       })}
@@ -48,35 +54,33 @@ export default function ActBlueFormCSS({
         getPropertyValue(properties, ENABLE_EXPRESS_DONATE_PROPERTY, language),
         `
           .${DISCLAIMER_CLASS_NAME} {
-            ${TextStyle.styling({ theme, styles: textDisclaimerStyles })}
+            ${TextStyle.styling({
+              applyStyleIfChanged,
+              theme,
+              styles: textDisclaimerStyles,
+            })}
 
             text-align: center;
-            grid-column: span ${getStyleValue(gridStyles, COLUMNS_ATTRIBUTE)};
-            margin-top: ${getStyleValue(textDisclaimerStyles, DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE)}px;
 
-            @media (${theme.deviceBreakpoints.tabletUp}) {
-              ${applyStyleIf(
-                getStyleValue(gridStyles, COLUMNS_ATTRIBUTE, null, null, TABLET_DEVICE),
-                (styleValue) => `grid-column: span ${styleValue};`,
-              )}
+            ${responsiveStyleGenerator(
+              applyStyleIfChanged,
+              theme,
+              {
+                styles: gridStyles,
+                attribute: COLUMNS_ATTRIBUTE,
+              },
+              (styleValue) => `grid-column: span ${styleValue};`,
+            )}
 
-              ${applyStyleIf(
-                getStyleValue(textDisclaimerStyles, DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE, null, null, TABLET_DEVICE),
-                (styleValue) => `margin-top: ${styleValue}px;`,
-              )}
-            }
-
-            @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-              ${applyStyleIf(
-                getStyleValue(gridStyles, COLUMNS_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-                (styleValue) => `grid-column: span ${styleValue};`,
-              )}
-
-              ${applyStyleIf(
-                getStyleValue(textDisclaimerStyles, DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-                (styleValue) => `margin-top: ${styleValue}px;`,
-              )}
-            }
+            ${responsiveStyleGenerator(
+              applyStyleIfChanged,
+              theme,
+              {
+                styles: textDisclaimerStyles,
+                attribute: DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE,
+              },
+              (styleValue) => `margin-top: ${styleValue}px;`,
+            )}
           }
         `,
         (value) => value === true,

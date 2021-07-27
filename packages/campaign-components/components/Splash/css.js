@@ -12,6 +12,8 @@ import BoxStyle from 'pkg.campaign-components/styles/box';
 import FlexStyle from 'pkg.campaign-components/styles/flex';
 import applyStyleIf from 'pkg.campaign-components/utils/applyStyleIf';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
+import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
+import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 
 export const PHOTO_COLUMN_CLASS_NAME = 'photo-column';
 export const CONTENT_COLUMN_CLASS_NAME = 'content-column';
@@ -21,6 +23,8 @@ export default function SplashCSS({
   theme,
   styles,
 }) {
+  const applyStyleIfChanged = applyStyleIfChangedGenerator();
+
   const contentStyles = get(styles, CONTENT_STYLE, {});
   const photoStyles = get(styles, PHOTO_STYLE, {});
 
@@ -46,11 +50,13 @@ export default function SplashCSS({
         flex-grow: 1;
 
         ${BoxStyle.styling({
+          applyStyleIfChanged,
           styles: contentStyles,
           theme,
         })}
 
         ${FlexStyle.styling({
+          applyStyleIfChanged,
           styles: contentStyles,
           theme,
         })}
@@ -62,25 +68,20 @@ export default function SplashCSS({
 
       .${PHOTO_COLUMN_CLASS_NAME} {
         display: flex;
-        flex: 0 0 ${getStyleValue(photoStyles, PHOTO_SIZE_ATTRIBUTE)}%;
+
+        ${responsiveStyleGenerator(
+          applyStyleIfChanged,
+          theme,
+          {
+            styles: photoStyles,
+            attribute: PHOTO_SIZE_ATTRIBUTE,
+          },
+          (styleValue) => `flex: 0 0 ${styleValue}%;`,
+        )}
 
         img {
           object-fit: cover;
           object-position: right;
-        }
-
-        @media (${theme.deviceBreakpoints.tabletUp}) {
-          ${applyStyleIf(
-            getStyleValue(photoStyles, PHOTO_SIZE_ATTRIBUTE, null, null, TABLET_DEVICE),
-            (styleValue) => `flex: 0 0 ${styleValue}%;`,
-          )}
-        }
-
-        @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-          ${applyStyleIf(
-            getStyleValue(photoStyles, PHOTO_SIZE_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-            (styleValue) => `flex: 0 0 ${styleValue}%;`,
-          )}
         }
       }
     }

@@ -8,8 +8,7 @@ import {
   MOBILE_DEVICE,
   TABLET_DEVICE,
 } from 'pkg.campaign-components/constants/responsive';
-import applyStyleIf, { notZero } from 'pkg.campaign-components/utils/applyStyleIf';
-import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
+import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 
 export const KEY = 'FlexStyle';
 
@@ -115,74 +114,58 @@ const FlexStyle = {
       ...(get(overrides, JUSTIFY_ATTRIBUTE, {})),
     },
   ]),
-  styling: ({ styles, theme }) => `
+  styling: ({ applyStyleIfChanged, styles, theme }) => `
     display: flex;
-    flex-direction: ${getStyleValue(styles, DIRECTION_ATTRIBUTE)};
-    align-items: ${getStyleValue(styles, ALIGN_ATTRIBUTE)};
-    justify-content: ${getStyleValue(styles, JUSTIFY_ATTRIBUTE)};
-    flex-wrap: ${getStyleValue(styles, WRAP_ATTRIBUTE)};
 
-    ${applyStyleIf(
-      getStyleValue(styles, GRID_GAP_ATTRIBUTE),
-      (styleValue) => `grid-gap: ${styleValue}px;`,
-      notZero,
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: DIRECTION_ATTRIBUTE,
+      },
+      (styleValue) => `flex-direction: ${styleValue};`,
     )}
 
-    @media (${theme.deviceBreakpoints.tabletUp}) {
-      ${applyStyleIf(
-        getStyleValue(styles, DIRECTION_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `flex-direction: ${styleValue};`,
-      )}
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: ALIGN_ATTRIBUTE,
+      },
+      (styleValue) => `align-items: ${styleValue};`,
+    )}
 
-      ${applyStyleIf(
-        getStyleValue(styles, ALIGN_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `align-items: ${styleValue};`,
-      )}
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: JUSTIFY_ATTRIBUTE,
+      },
+      (styleValue) => `justify-content: ${styleValue};`,
+    )}
 
-      ${applyStyleIf(
-        getStyleValue(styles, JUSTIFY_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `justify-content: ${styleValue};`,
-      )}
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: WRAP_ATTRIBUTE,
+      },
+      (styleValue) => `flex-wrap: ${styleValue};`,
+    )}
 
-      ${applyStyleIf(
-        getStyleValue(styles, WRAP_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `flex-wrap: ${styleValue};`,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, GRID_GAP_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `grid-gap: ${styleValue}px;`,
-        notZero,
-      )}
-    }
-
-    @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-      ${applyStyleIf(
-        getStyleValue(styles, DIRECTION_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `flex-direction: ${styleValue};`,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, ALIGN_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `align-items: ${styleValue};`,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, JUSTIFY_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `justify-content: ${styleValue};`,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, WRAP_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `flex-wrap: ${styleValue};`,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, GRID_GAP_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `grid-gap: ${styleValue}px;`,
-        notZero,
-      )}
-    }
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: GRID_GAP_ATTRIBUTE,
+      },
+      (styleValue) => `grid-gap: ${styleValue}px;`,
+    )}
   `,
 };
 

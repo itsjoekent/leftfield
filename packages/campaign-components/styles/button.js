@@ -23,10 +23,11 @@ import {
   getBrightestCampaignThemeColor,
   getReadableThemeColor,
 } from 'pkg.campaign-components/utils/campaignThemeColorSelectors';
-import applyStyleIf from 'pkg.campaign-components/utils/applyStyleIf';
+import applyStyleIf, { isStyleDefined } from 'pkg.campaign-components/utils/applyStyleIf';
 import getCascadingStyleValue from 'pkg.campaign-components/utils/getCascadingStyleValue';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 import getThemeValue from 'pkg.campaign-components/utils/getThemeValue';
+import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 
 export const KEY = 'ButtonStyle';
 
@@ -151,23 +152,26 @@ const ButtonStyle = {
     },
     ...DisplayStyle.attributes(),
   ]),
-  styling: ({ theme, styles }) => `
+  styling: ({ applyStyleIfChanged, theme, styles }) => `
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
     ${DisplayStyle.styling({
+      applyStyleIfChanged,
       theme,
       styles,
       defaultDisplayValue: 'inline-flex',
     })}
 
     ${TextStyle.styling({
+      applyStyleIfChanged,
       theme,
       styles,
     })}
 
     ${BoxStyle.styling({
+      applyStyleIfChanged,
       theme,
       styles,
     })}
@@ -176,68 +180,55 @@ const ButtonStyle = {
     text-align: center;
     cursor: pointer;
 
-    transition: all ${getStyleValue(styles, TRANSITION_ATTRIBUTE) / 10}s;
+    transition: all ${getStyleValue({ styles, attribute: TRANSITION_ATTRIBUTE }) / 10}s;
     transition-property: background-color, border, box-shadow, color;
 
     &:hover, &:active {
-      ${applyStyleIf(
-        getStyleValue(styles, HOVER_BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+      ${responsiveStyleGenerator(
+        applyStyleIfChanged,
+        theme,
+        {
+          styles,
+          attribute: HOVER_BACKGROUND_COLOR_ATTRIBUTE,
+          theme,
+          themePath: 'campaign.colors',
+        },
         (styleValue) => `background-color: ${styleValue};`,
       )}
 
-      ${applyStyleIf(
-        getStyleValue(styles, HOVER_BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+      ${responsiveStyleGenerator(
+        applyStyleIfChanged,
+        theme,
+        {
+          styles,
+          attribute: HOVER_BORDER_COLOR_ATTRIBUTE,
+          theme,
+          themePath: 'campaign.colors',
+        },
         (styleValue) => `border-color: ${styleValue};`,
       )}
 
-      ${applyStyleIf(
-        getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+      ${responsiveStyleGenerator(
+        applyStyleIfChanged,
+        theme,
+        {
+          styles,
+          attribute: HOVER_TEXT_COLOR_ATTRIBUTE,
+          theme,
+          themePath: 'campaign.colors',
+        },
         (styleValue) => `color: ${styleValue};`,
       )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
-        (styleValue) => `color: ${styleValue};`,
-      )}
-
-      @media (${theme.deviceBreakpoints.tabletUp}) {
-        ${applyStyleIf(
-          getStyleValue(styles, HOVER_BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
-          (styleValue) => `background-color: ${styleValue};`,
-        )}
-
-        ${applyStyleIf(
-          getStyleValue(styles, HOVER_BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
-          (styleValue) => `border-color: ${styleValue};`,
-        )}
-
-        ${applyStyleIf(
-          getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
-          (styleValue) => `color: ${styleValue};`,
-        )}
-      }
-
-      @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-        ${applyStyleIf(
-          getStyleValue(styles, HOVER_BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
-          (styleValue) => `background-color: ${styleValue};`,
-        )}
-
-        ${applyStyleIf(
-          getStyleValue(styles, HOVER_BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
-          (styleValue) => `border-color: ${styleValue};`,
-        )}
-
-        ${applyStyleIf(
-          getStyleValue(styles, HOVER_TEXT_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
-          (styleValue) => `color: ${styleValue};`,
-        )}
-      }
     }
 
     &:focus {
       ${applyStyleIf(
-        getStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+        getStyleValue({
+          styles,
+          attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
+          theme,
+          themePath: 'campaign.colors'
+        }),
         (styleValue) => `
           outline-style: solid;
           outline-color: transparent;
@@ -247,31 +238,67 @@ const ButtonStyle = {
 
       @media (${theme.deviceBreakpoints.tabletUp}) {
         ${applyStyleIf(
-          getStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
+          getStyleValue({
+            styles,
+            attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
+            theme,
+            themePath: 'campaign.colors',
+            device: TABLET_DEVICE,
+          }),
           (styleValue) => `
             outline-style: solid;
             outline-color: transparent;
-            box-shadow: 0 0 0
-              ${getCascadingStyleValue(styles, FOCUS_OUTLINE_WIDTH_ATTRIBUTE, null, null, [TABLET_DEVICE, MOBILE_DEVICE])}px
-              ${getCascadingStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, theme.campaign, 'colors', [TABLET_DEVICE, MOBILE_DEVICE])};
+            box-shadow: 0 0 0 ${getCascadingStyleValue({
+              styles,
+              attribute: FOCUS_OUTLINE_WIDTH_ATTRIBUTE,
+              devices: [TABLET_DEVICE, MOBILE_DEVICE],
+            })}px ${getCascadingStyleValue({
+              styles,
+              attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
+              theme,
+              themePath: 'campaign.colors',
+              devices: [TABLET_DEVICE, MOBILE_DEVICE],
+            })};
           `,
-          (styleValue) => !!styleValue
-            || getStyleValue(styles, FOCUS_OUTLINE_WIDTH_ATTRIBUTE, null, null, TABLET_DEVICE),
+          (styleValue) => isStyleDefined(styleValue)
+            || isStyleDefined(getStyleValue({
+              styles,
+              attribute: FOCUS_OUTLINE_WIDTH_ATTRIBUTE,
+              device: TABLET_DEVICE,
+            })),
         )}
       }
 
       @media (${theme.deviceBreakpoints.desktopSmallUp}) {
         ${applyStyleIf(
-          getStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
+          getStyleValue({
+            styles,
+            attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
+            theme,
+            themePath: 'campaign.colors',
+            device: DESKTOP_DEVICE,
+          }),
           (styleValue) => `
             outline-style: solid;
             outline-color: transparent;
-            box-shadow: 0 0 0
-              ${getCascadingStyleValue(styles, FOCUS_OUTLINE_WIDTH_ATTRIBUTE, null, null, [DESKTOP_DEVICE, TABLET_DEVICE, MOBILE_DEVICE])}px
-              ${getCascadingStyleValue(styles, FOCUS_OUTLINE_COLOR_ATTRIBUTE, theme.campaign, 'colors', [DESKTOP_DEVICE, TABLET_DEVICE, MOBILE_DEVICE])};
+            box-shadow: 0 0 0 ${getCascadingStyleValue({
+              styles,
+              attribute: FOCUS_OUTLINE_WIDTH_ATTRIBUTE,
+              devices: [DESKTOP_DEVICE, TABLET_DEVICE, MOBILE_DEVICE],
+            })}px ${getCascadingStyleValue({
+              styles,
+              attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
+              theme,
+              themePath: 'campaign.colors',
+              devices: [DESKTOP_DEVICE, TABLET_DEVICE, MOBILE_DEVICE],
+            })};
           `,
           (styleValue) => !!styleValue
-            || getStyleValue(styles, FOCUS_OUTLINE_WIDTH_ATTRIBUTE, null, null, DESKTOP_DEVICE),
+            || getStyleValue({
+              styles,
+              attribute: FOCUS_OUTLINE_WIDTH_ATTRIBUTE,
+              device: DESKTOP_DEVICE,
+            }),
         )}
       }
     }

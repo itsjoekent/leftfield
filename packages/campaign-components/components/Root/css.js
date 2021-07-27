@@ -1,12 +1,14 @@
 import get from 'lodash/get';
 import { BACKGROUND_STYLE } from 'pkg.campaign-components/components/Root/meta';
 import BoxStyle from 'pkg.campaign-components/styles/box';
+import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
 
 export default function RootCSS({
   componentClassName,
   theme,
   styles,
 }) {
+  const applyStyleIfChanged = applyStyleIfChangedGenerator();
   const backgroundStyle = get(styles, BACKGROUND_STYLE, {});
 
   return `
@@ -17,7 +19,11 @@ export default function RootCSS({
       min-height: 100vh;
       position: relative;
 
-      ${BoxStyle.styling({ theme, styles: backgroundStyle })}
+      ${BoxStyle.styling({
+        applyStyleIfChanged,
+        styles: backgroundStyle,
+        theme,
+      })}
     }
   `;
 }

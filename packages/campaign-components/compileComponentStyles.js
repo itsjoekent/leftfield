@@ -3,7 +3,7 @@ const csso = require('csso');
 
 export default function compileComponentStyles(css) {
   const compiled = serialize(compile(css), stringify);
-  const minified = csso.minify(compiled).css;
+  const minified = csso.minify(compiled, { forceMediaMerge: true }).css;
 
   return minified;
 }

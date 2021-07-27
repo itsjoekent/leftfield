@@ -5,8 +5,7 @@ import {
   MOBILE_DEVICE,
   TABLET_DEVICE,
 } from 'pkg.campaign-components/constants/responsive';
-import applyStyleIf from 'pkg.campaign-components/utils/applyStyleIf';
-import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
+import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 
 export const KEY = 'GridStyle';
 
@@ -46,34 +45,28 @@ const GridStyle = {
       ...(get(overrides, SPACING_ATTRIBUTE, {})),
     },
   ]),
-  styling: ({ styles, theme }) => `
+  styling: ({ applyStyleIfChanged, styles, theme }) => `
     display: grid;
-    grid-template-columns: repeat(${getStyleValue(styles, COLUMNS_ATTRIBUTE)}, 1fr);
-    grid-gap: ${getStyleValue(styles, SPACING_ATTRIBUTE)}px;
 
-    @media (${theme.deviceBreakpoints.tabletUp}) {
-      ${applyStyleIf(
-        getStyleValue(styles, COLUMNS_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `grid-template-columns: repeat(${styleValue}, 1fr);`,
-      )}
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: COLUMNS_ATTRIBUTE,
+      },
+      (styleValue) => `grid-template-columns: repeat(${styleValue}, 1fr);`,
+    )}
 
-      ${applyStyleIf(
-        getStyleValue(styles, SPACING_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `grid-gap: ${styleValue}px;`,
-      )}
-    }
-
-    @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-      ${applyStyleIf(
-        getStyleValue(styles, COLUMNS_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `grid-template-columns: repeat(${styleValue}, 1fr);`,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, SPACING_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `grid-gap: ${styleValue}px;`,
-      )}
-    }
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: SPACING_ATTRIBUTE,
+      },
+      (styleValue) => `grid-gap: ${styleValue}px;`,
+    )}
   `,
 };
 

@@ -28,29 +28,37 @@ const DisplayStyle = {
       ...(get(overrides, DISPLAY_ATTRIBUTE, {})),
     },
   ]),
-  styling: ({ theme, styles, defaultDisplayValue = 'block' }) => `
+  styling: ({
+    defaultDisplayValue = 'block',
+    theme,
+    styles,
+  }) => `
     ${applyStyleIf(
-      getStyleValue(styles, DISPLAY_ATTRIBUTE),
-      (styleValue) => `display: none;`,
-      (styleValue) => styleValue === false,
+      getStyleValue({
+        styles,
+        attribute: DISPLAY_ATTRIBUTE,
+      }),
+      (styleValue) => `display: ${!!styleValue ? defaultDisplayValue : 'none'};`,
     )}
 
     @media (${theme.deviceBreakpoints.tabletUp}) {
       ${applyStyleIf(
-        getStyleValue(styles, DISPLAY_ATTRIBUTE, null, null, TABLET_DEVICE),
+        getStyleValue({
+          styles,
+          attribute: DISPLAY_ATTRIBUTE,
+          device: TABLET_DEVICE,
+        }),
         (styleValue) => `display: ${!!styleValue ? defaultDisplayValue : 'none'};`,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, DISPLAY_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `display: ${defaultDisplayValue};`,
-        (styleValue) => styleValue === true,
       )}
     }
 
     @media (${theme.deviceBreakpoints.desktopSmallUp}) {
       ${applyStyleIf(
-        getStyleValue(styles, DISPLAY_ATTRIBUTE, null, null, DESKTOP_DEVICE),
+        getStyleValue({
+          styles,
+          attribute: DISPLAY_ATTRIBUTE,
+          device: DESKTOP_DEVICE,
+        }),
         (styleValue) => `display: ${!!styleValue ? defaultDisplayValue : 'none'};`,
       )}
     }

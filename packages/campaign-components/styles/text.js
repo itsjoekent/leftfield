@@ -9,11 +9,11 @@ import {
   MOBILE_DEVICE,
   TABLET_DEVICE,
 } from 'pkg.campaign-components/constants/responsive';
-import applyStyleIf, { notZero } from 'pkg.campaign-components/utils/applyStyleIf';
 import { getDarkestCampaignThemeColor } from 'pkg.campaign-components/utils/campaignThemeColorSelectors';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 import getThemeLabels from 'pkg.campaign-components/utils/getThemeLabels';
 import getThemeValue from 'pkg.campaign-components/utils/getThemeValue';
+import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 import { MAIN_FONT_FAMILY } from 'pkg.campaign-components/theme';
 
 export const KEY = 'TextStyle';
@@ -72,7 +72,7 @@ const TextStyle = {
       type: SELECT_TYPE,
       optionsFromTheme: ({ campaignTheme, styles }) => getThemeLabels(
         campaignTheme,
-        `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
+        `fontWeights.${getStyleValue({ styles, attribute: FONT_FAMILY_ATTRIBUTE })}`,
       ),
       dynamicDefaultThemeValue: ({ campaignTheme }) => ({
         [MOBILE_DEVICE]: {
@@ -116,80 +116,67 @@ const TextStyle = {
       ...(get(overrides, LINE_HEIGHT_ATTRIBUTE, {})),
     },
   ]),
-  styling: ({ theme, styles }) => `
-    font-family: ${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE, theme.campaign, 'fonts')};
-    font-size: ${getStyleValue(styles, FONT_SIZE_ATTRIBUTE)}px;
-    font-weight: ${getStyleValue(
+  styling: ({ applyStyleIfChanged, theme, styles }) => `
+    font-family: ${getStyleValue({
       styles,
-      FONT_WEIGHT_ATTRIBUTE,
-      theme.campaign,
-      `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
-    )};
-    letter-spacing: ${getStyleValue(styles, LETTER_SPACING_ATTRIBUTE)}px;
-    line-height: ${getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE)};
-    color: ${getStyleValue(styles, COLOR_ATTRIBUTE, theme.campaign, 'colors')};
+      attribute: FONT_FAMILY_ATTRIBUTE,
+      theme,
+      themePath: 'campaign.fonts'
+    })};
 
-    @media (${theme.deviceBreakpoints.tabletUp}) {
-      ${applyStyleIf(
-        getStyleValue(styles, FONT_SIZE_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `font-size: ${styleValue}px;`,
-        notZero,
-      )}
-      ${applyStyleIf(
-        getStyleValue(
-          styles,
-          FONT_WEIGHT_ATTRIBUTE,
-          theme.campaign,
-          `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
-          TABLET_DEVICE,
-        ),
-        (styleValue) => `font-weight: ${styleValue};`,
-      )}
-      ${applyStyleIf(
-        getStyleValue(styles, LETTER_SPACING_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `letter-spacing: ${styleValue}px;`,
-        notZero,
-      )}
-      ${applyStyleIf(
-        getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `line-height: ${styleValue};`,
-      )}
-      ${applyStyleIf(
-        getStyleValue(styles, COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
-        (styleValue) => `color: ${styleValue};`,
-      )}
-    }
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: FONT_SIZE_ATTRIBUTE,
+      },
+      (styleValue) => `font-size: ${styleValue}px;`,
+    )}
 
-    @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-      ${applyStyleIf(
-        getStyleValue(styles, FONT_SIZE_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `font-size: ${styleValue}px;`,
-        notZero,
-      )}
-      ${applyStyleIf(
-        getStyleValue(
-          styles,
-          FONT_WEIGHT_ATTRIBUTE,
-          theme.campaign,
-          `fontWeights.${getStyleValue(styles, FONT_FAMILY_ATTRIBUTE)}`,
-          DESKTOP_DEVICE,
-        ),
-        (styleValue) => `font-weight: ${styleValue};`,
-      )}
-      ${applyStyleIf(
-        getStyleValue(styles, LETTER_SPACING_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `letter-spacing: ${styleValue}px;`,
-        notZero,
-      )}
-      ${applyStyleIf(
-        getStyleValue(styles, LINE_HEIGHT_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `line-height: ${styleValue};`,
-      )}
-      ${applyStyleIf(
-        getStyleValue(styles, COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
-        (styleValue) => `color: ${styleValue};`,
-      )}
-    }
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: FONT_WEIGHT_ATTRIBUTE,
+        theme,
+        themePath: `campaign.fontWeights.${getStyleValue({ styles, attribute: FONT_FAMILY_ATTRIBUTE })}`,
+      },
+      (styleValue) => `font-weight: ${styleValue};`,
+    )}
+
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: LETTER_SPACING_ATTRIBUTE,
+      },
+      (styleValue) => `letter-spacing: ${styleValue}px;`,
+    )}
+
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: LINE_HEIGHT_ATTRIBUTE,
+      },
+      (styleValue) => `line-height: ${styleValue};`,
+    )}
+
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: COLOR_ATTRIBUTE,
+        theme,
+        themePath: 'campaign.colors',
+      },
+      (styleValue) => `color: ${styleValue};`,
+    )}
   `,
 };
 

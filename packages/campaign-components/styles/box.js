@@ -9,8 +9,7 @@ import {
   TABLET_DEVICE,
 } from 'pkg.campaign-components/constants/responsive';
 import { getLightestCampaignThemeColor } from 'pkg.campaign-components/utils/campaignThemeColorSelectors';
-import applyStyleIf, { notZero } from 'pkg.campaign-components/utils/applyStyleIf';
-import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
+import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 
 export const KEY = 'BoxStyle';
 
@@ -97,140 +96,79 @@ const BoxStyle = {
       ...(get(overrides, PADDING_VERTICAL_ATTRIBUTE, {})),
     },
   ]),
-  styling: ({ styles, theme }) => `
-    ${applyStyleIf(
-      getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+  styling: ({ applyStyleIfChanged, styles, theme }) => `
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: BACKGROUND_COLOR_ATTRIBUTE,
+        theme,
+        themePath: 'campaign.colors',
+      },
       (styleValue) => `background-color: ${styleValue};`,
     )}
 
-    ${applyStyleIf(
-      getStyleValue(styles, BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors'),
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: BORDER_COLOR_ATTRIBUTE,
+        theme,
+        themePath: 'campaign.colors',
+      },
       (styleValue) => `border-color: ${styleValue};`,
     )}
 
-    ${applyStyleIf(
-      getStyleValue(styles, BORDER_WIDTH_ATTRIBUTE),
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: BORDER_WIDTH_ATTRIBUTE,
+      },
       (styleValue) => `
         border-style: solid;
         border-width: ${styleValue}px;
       `,
-      notZero,
     )}
 
-    ${applyStyleIf(
-      getStyleValue(styles, BORDER_RADIUS_ATTRIBUTE),
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: BORDER_RADIUS_ATTRIBUTE,
+      },
       (styleValue) => `border-radius: ${styleValue}px;`,
-      notZero,
     )}
 
-    ${applyStyleIf(
-      getStyleValue(styles, PADDING_HORIZONTAL_ATTRIBUTE),
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: PADDING_HORIZONTAL_ATTRIBUTE,
+      },
       (styleValue) => `
         padding-left: ${styleValue}px;
         padding-right: ${styleValue}px;
       `,
-      notZero,
     )}
 
-    ${applyStyleIf(
-      getStyleValue(styles, PADDING_VERTICAL_ATTRIBUTE),
+    ${responsiveStyleGenerator(
+      applyStyleIfChanged,
+      theme,
+      {
+        styles,
+        attribute: PADDING_VERTICAL_ATTRIBUTE,
+      },
       (styleValue) => `
         padding-top: ${styleValue}px;
         padding-bottom: ${styleValue}px;
       `,
-      notZero,
     )}
-
-    @media (${theme.deviceBreakpoints.tabletUp}) {
-      ${applyStyleIf(
-        getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
-        (styleValue) => `background-color: ${styleValue};`,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors', TABLET_DEVICE),
-        (styleValue) => `border-color: ${styleValue};`,
-        notZero,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, BORDER_WIDTH_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `
-          border-style: solid;
-          border-width: ${styleValue}px;
-        `,
-        notZero,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, BORDER_RADIUS_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `border-radius: ${styleValue}px;`,
-        notZero,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, PADDING_HORIZONTAL_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `
-          padding-left: ${styleValue}px;
-          padding-right: ${styleValue}px;
-        `,
-        notZero,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, PADDING_VERTICAL_ATTRIBUTE, null, null, TABLET_DEVICE),
-        (styleValue) => `
-          padding-top: ${styleValue}px;
-          padding-bottom: ${styleValue}px;
-        `,
-        notZero,
-      )}
-    }
-
-    @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-      ${applyStyleIf(
-        getStyleValue(styles, BACKGROUND_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
-        (styleValue) => `background-color: ${styleValue};`,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, BORDER_COLOR_ATTRIBUTE, theme.campaign, 'colors', DESKTOP_DEVICE),
-        (styleValue) => `border-color: ${styleValue};`,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, BORDER_WIDTH_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `
-          border-style: solid;
-          border-width: ${styleValue}px;
-        `,
-        notZero,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, BORDER_RADIUS_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `border-radius: ${styleValue}px;`,
-        notZero,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, PADDING_HORIZONTAL_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `
-          padding-left: ${styleValue}px;
-          padding-right: ${styleValue}px;
-        `,
-        notZero,
-      )}
-
-      ${applyStyleIf(
-        getStyleValue(styles, PADDING_VERTICAL_ATTRIBUTE, null, null, DESKTOP_DEVICE),
-        (styleValue) => `
-          padding-top: ${styleValue}px;
-          padding-bottom: ${styleValue}px;
-        `,
-        notZero,
-      )}
-    }
   `,
 };
 
