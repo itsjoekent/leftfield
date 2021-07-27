@@ -136,6 +136,7 @@ export const assemblySlice = createSlice({
         id: componentId,
         tag: componentTag,
         name: ComponentMeta[componentTag].name,
+        version: ComponentMeta[componentTag].version || '0',
       };
 
       set(state, `pages.${pageId}.components.${insert.id}`, insert);

@@ -19,6 +19,7 @@ export const BACKGROUND_STYLE = 'BACKGROUND_STYLE';
 const RootMeta = {
   tag: TAG,
   name: 'Root Page Element',
+  version: '1',
   shortDescription: 'Contains all page elements',
   devOnly: true,
   traits: [

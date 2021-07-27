@@ -31,6 +31,7 @@ export const PHOTO_SIZE_ATTRIBUTE = 'PHOTO_SIZE_ATTRIBUTE';
 const SplashMeta = {
   tag: TAG,
   name: 'Splash',
+  version: '1',
   shortDescription: 'Full page layout with a photo and content',
   placementConstraints: [
     {

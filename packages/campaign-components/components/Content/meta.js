@@ -32,6 +32,7 @@ export const HEADER_4_STYLE = 'HEADER_4_STYLE';
 const ContentMeta = {
   tag: TAG,
   name: 'Content',
+  version: '1',
   shortDescription: 'Add text markup',
   properties: [
     {

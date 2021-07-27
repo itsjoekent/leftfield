@@ -19,6 +19,7 @@ export const BUTTON_STYLE = 'BUTTON_STYLE';
 const DonateButtonMeta = {
   tag: TAG,
   name: 'Donate Button',
+  version: '1',
   shortDescription: 'Send supporters to your donate forms',
   documentation: '',
   traits: [

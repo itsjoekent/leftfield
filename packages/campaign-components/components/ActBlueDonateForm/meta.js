@@ -53,6 +53,7 @@ export const DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE = 'DISCLAIMER_TEXT_TOP_MARGIN_
 const ActBlueDonateFormMeta = {
   tag: TAG,
   name: 'ActBlue Donate Form',
+  version: '1',
   shortDescription: 'Container for ActBlue donate button(s)',
   documentation,
   placementConstraints: [
