@@ -14,13 +14,70 @@ import {
   FormWizardField,
   formActions,
 } from 'pkg.form-wizard';
-import { setCampaignThemeKeyValue } from '@product/features/assembly';
+import {
+  selectCampaignThemeFontWeights,
+  setCampaignThemeKeyValue,
+} from '@product/features/assembly';
 import { setModal } from '@product/features/modal';
+
+function FontWeightInput(props) {
+  const {
+    inputLabel,
+    label,
+    weight,
+    fontWeightId,
+    fontWeights,
+    setFontWeights,
+  } = props;
+
+  const isChecked = !!get(fontWeights, `${fontWeightId}.value`, null);
+
+  function onChange() {
+    if (isChecked) {
+      setFontWeights((state) => {
+        const copy = { ...state };
+        delete copy[fontWeightId];
+
+        return copy;
+      });
+    } else {
+      setFontWeights((state) => {
+        const copy = { ...state };
+        copy[fontWeightId] = {
+          label,
+          value: weight,
+        };
+
+        return copy;
+      });
+    }
+  }
+
+  return (
+    <Flex.Row gridGap="2px" paddingVertical="2px" onClick={onChange}>
+      <input
+        type="checkbox"
+        aria-label={label}
+        checked={isChecked}
+        onChange={onChange}
+      />
+      <Typography
+        as="label"
+        fontStyle="regular"
+        fontSize="14px"
+        fg={(colors) => colors.mono[700]}
+      >
+        {inputLabel}
+      </Typography>
+    </Flex.Row>
+  );
+}
 
 const fields = [
   { id: 'fontLabel', label: 'Font Label' },
   { id: 'fontFamily', label: 'Font Family' },
   { id: 'fontHtml', label: 'Embed Code' },
+  { id: 'fontWeights', label: 'Font Weights' },
 ];
 
 export default function ManualScreen(props) {
@@ -28,10 +85,12 @@ export default function ManualScreen(props) {
   const fontId = get(font, 'id');
 
   const dispatch = useDispatch();
+  const themeFontWeights = useSelector(selectCampaignThemeFontWeights(fontId));
 
   const [fontLabel, setFontLabel] = React.useState(get(font, 'label', ''));
   const [fontFamily, setFontFamily] = React.useState(get(font, 'value', ''));
   const [fontHtml, setFontHtml] = React.useState(get(font, 'html', ''));
+  const [fontWeights, setFontWeights] = React.useState(themeFontWeights);
 
   const formApiRef = React.useRef(null);
 
@@ -45,12 +104,15 @@ export default function ManualScreen(props) {
     const html = get(font, 'html', '');
     setFontHtml(html);
 
+    setFontWeights(themeFontWeights);
+
     if (formApiRef.current) {
       formApiRef.current.dispatch(formActions.setValue('fontLabel', label));
       formApiRef.current.dispatch(formActions.setValue('fontFamily', value));
       formApiRef.current.dispatch(formActions.setValue('fontHtml', html));
+      formApiRef.current.dispatch(formActions.setValue('fontWeights', themeFontWeights));
     }
-  }, [fontId]);
+  }, [fontId, themeFontWeights]);
 
   function onSave() {
     const saveTo = fontId || uuid();
@@ -65,10 +127,10 @@ export default function ManualScreen(props) {
         },
       }));
 
-      // dispatch(setCampaignThemeKeyValue({
-      //   path: `fontWeights.${saveTo}`,
-      //   value: headerWeights,
-      // }));
+      dispatch(setCampaignThemeKeyValue({
+        path: `fontWeights.${saveTo}`,
+        value: fontWeights,
+      }));
 
       if (!fontId) {
         dispatch(setMetaValue({
@@ -192,6 +254,114 @@ export default function ManualScreen(props) {
                 </Flex.Column>
               )}
             </FormWizardField>
+            <FormWizardField fieldId="fontWeights">
+              {(field) => (
+                <Flex.Column gridGap="6px">
+                  <Flex.Column gridGap="2px">
+                    <Typography
+                      as="label"
+                      fontStyle="bold"
+                      fontSize="14px"
+                      letterSpacing="2%"
+                      fg={(colors) => colors.mono[700]}
+                      {...field.labelProps}
+                    />
+                    <Typography
+                      fontStyle="regular"
+                      fontSize="12px"
+                      fg={(colors) => colors.mono[700]}
+                    >
+                      Make sure to only pick the font weights you selected in your font host
+                    </Typography>
+                  </Flex.Column>
+                  <Grid fullWidth columns="1fr 1fr 1fr" gap="12px">
+                    <FontWeightInput
+                      inputLabel="Thin (100)"
+                      label="Thin"
+                      weight={100}
+                      fontWeightId="thin"
+                      fontWeights={fontWeights}
+                      setFontWeights={setFontWeights}
+                    />
+                    <FontWeightInput
+                      inputLabel="Extra Light (200)"
+                      label="Extra Light"
+                      weight={200}
+                      fontWeightId="extraLight"
+                      fontWeights={fontWeights}
+                      setFontWeights={setFontWeights}
+                    />
+                    <FontWeightInput
+                      inputLabel="Light (300)"
+                      label="Light"
+                      weight={300}
+                      fontWeightId="light"
+                      fontWeights={fontWeights}
+                      setFontWeights={setFontWeights}
+                    />
+                    <FontWeightInput
+                      inputLabel="Normal (400)"
+                      label="Normal"
+                      weight={400}
+                      fontWeightId="normal"
+                      fontWeights={fontWeights}
+                      setFontWeights={setFontWeights}
+                    />
+                    <FontWeightInput
+                      inputLabel="Medium (500)"
+                      label="Medium"
+                      weight={500}
+                      fontWeightId="medium"
+                      fontWeights={fontWeights}
+                      setFontWeights={setFontWeights}
+                    />
+                    <FontWeightInput
+                      inputLabel="Semi Bold (600)"
+                      label="Semi Bold"
+                      weight={600}
+                      fontWeightId="semiBold"
+                      fontWeights={fontWeights}
+                      setFontWeights={setFontWeights}
+                    />
+                    <FontWeightInput
+                      inputLabel="Bold (700)"
+                      label="Bold"
+                      weight={700}
+                      fontWeightId="bold"
+                      fontWeights={fontWeights}
+                      setFontWeights={setFontWeights}
+                    />
+                    <FontWeightInput
+                      inputLabel="Extra Bold (800)"
+                      weight={800}
+                      fontWeightId="extraBold"
+                      fontWeights={fontWeights}
+                      setFontWeights={setFontWeights}
+                    />
+                    <FontWeightInput
+                      inputLabel="Black (900)"
+                      label="Black"
+                      weight={900}
+                      fontWeightId="black"
+                      fontWeights={fontWeights}
+                      setFontWeights={setFontWeights}
+                    />
+                  </Grid>
+                </Flex.Column>
+              )}
+            </FormWizardField>
+            <Buttons.Filled
+              type="submit"
+              paddingVertical="4px"
+              paddingHorizontal="8px"
+              buttonFg={(colors) => colors.mono[100]}
+              buttonBg={(colors) => colors.blue[500]}
+              hoverButtonBg={(colors) => colors.blue[700]}
+            >
+              <Typography fontStyle="medium" fontSize="16px">
+                {!!fontId ? 'Save font' : 'Add font'}
+              </Typography>
+            </Buttons.Filled>
           </Flex.Column>
         )}
       </FormWizardProvider>

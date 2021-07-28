@@ -80,7 +80,7 @@ export default function StarterScreen(props) {
       <Buttons.Text
         buttonFg={(colors) => colors.blue[500]}
         hoverButtonFg={(colors) => colors.blue[800]}
-        onClick={() => setScreen(CUSTOM_SCREEN)}
+        onClick={() => setScreen(ADD_CUSTOM_SCREEN)}
       >
         <Typography fontStyle="medium" fontSize="14px">
           Add a custom font

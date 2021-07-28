@@ -637,6 +637,14 @@ export function selectCampaignThemeFontsAsSortedArray(state) {
     .filter(({ isArchived }) => !isArchived);
 }
 
+export function selectCampaignThemeFontWeights(fontId) {
+  function _selectCampaignThemeFontWeights(state) {
+    return get(selectCampaignTheme(state), `fontWeights.${fontId}`, {});
+  }
+
+  return _selectCampaignThemeFontWeights;
+}
+
 export function selectMeta(state) {
   return get(state, 'assembly.meta', {});
 }
