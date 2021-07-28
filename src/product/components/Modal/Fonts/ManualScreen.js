@@ -17,6 +17,7 @@ import {
 import {
   selectCampaignThemeFontWeights,
   setCampaignThemeKeyValue,
+  setMetaValue,
 } from '@product/features/assembly';
 import { setModal } from '@product/features/modal';
 
@@ -87,43 +88,30 @@ export default function ManualScreen(props) {
   const dispatch = useDispatch();
   const themeFontWeights = useSelector(selectCampaignThemeFontWeights(fontId));
 
-  const [fontLabel, setFontLabel] = React.useState(get(font, 'label', ''));
-  const [fontFamily, setFontFamily] = React.useState(get(font, 'value', ''));
-  const [fontHtml, setFontHtml] = React.useState(get(font, 'html', ''));
   const [fontWeights, setFontWeights] = React.useState(themeFontWeights);
 
   const formApiRef = React.useRef(null);
 
   React.useEffect(() => {
-    const label = get(font, 'label', '');
-    setFontLabel(label);
-
-    const value = get(font, 'value', '');
-    setFontFamily(value);
-
-    const html = get(font, 'html', '');
-    setFontHtml(html);
-
     setFontWeights(themeFontWeights);
 
     if (formApiRef.current) {
-      formApiRef.current.dispatch(formActions.setValue('fontLabel', label));
-      formApiRef.current.dispatch(formActions.setValue('fontFamily', value));
-      formApiRef.current.dispatch(formActions.setValue('fontHtml', html));
-      formApiRef.current.dispatch(formActions.setValue('fontWeights', themeFontWeights));
+      formApiRef.current.dispatch(formActions.setValue('fontLabel', get(font, 'label', '')));
+      formApiRef.current.dispatch(formActions.setValue('fontFamily', get(font, 'value', '')));
+      formApiRef.current.dispatch(formActions.setValue('fontHtml', get(font, 'html', '')));
     }
-  }, [fontId, themeFontWeights]);
+  }, [fontId, Object.keys(themeFontWeights || {}).length]);
 
-  function onSave() {
+  function onSave({ values }) {
     const saveTo = fontId || uuid();
 
     batch(() => {
       dispatch(setCampaignThemeKeyValue({
         path: `fonts.${saveTo}`,
         value: {
-          label: fontLabel,
-          value: fontFamily,
-          html: fontHtml,
+          label: values.fontLabel,
+          value: values.fontFamily,
+          html: values.fontHtml,
         },
       }));
 
