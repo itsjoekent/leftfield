@@ -52,5 +52,17 @@ module.exports = {
     alias: {
       '@product': path.resolve(process.cwd(), '/src/product'),
     },
+    fallback: {
+      'fs': false,
+      'tls': false,
+      'net': false,
+      'os': false,
+      'path': false,
+      'zlib': false,
+      'http': false,
+      'https': false,
+      'stream': false,
+      'crypto': false,
+    },
   },
 };

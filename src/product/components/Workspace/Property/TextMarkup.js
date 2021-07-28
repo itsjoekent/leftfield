@@ -40,23 +40,21 @@ export default function TextMarkup(props) {
     }
 
     const blankStringified = JSON.stringify(BLANK_DEFAULT);
-    const isBlank = JSON.stringify(richTextRef.current.value) === blankStringified;
+    const valueStringified = JSON.stringify(richTextRef.current.value);
+
+    const isBlank = valueStringified === blankStringified;
     const isContentBlank = content === blankStringified;
 
-    if (inheritedFrom || (!!content && isBlank && !isContentBlank)) {
+    if (
+      !!inheritedFrom
+      || (!!content && isBlank && !isContentBlank)
+      || (!!content && valueStringified !== content)
+    ) {
       richTextRef.current.setValue(JSON.parse(content));
     }
   }, [
     content,
     inheritedFrom,
-  ]);
-
-  React.useEffect(() => {
-    if (richTextRef.current && !!activeComponentId) {
-      richTextRef.current.setValue(BLANK_DEFAULT);
-    }
-  }, [
-    activeComponentId,
   ]);
 
   function onChange(value) {

@@ -14,6 +14,20 @@ module.exports = merge(
     },
     plugins: [
       new webpack.DefinePlugin(environment),
+      new webpack.ProvidePlugin({
+        process: 'process/browser',
+      }),
     ],
+    resolve: {
+      fallback: {
+        os: require.resolve('os-browserify/browser'),
+        path: require.resolve('path-browserify'),
+        http: require.resolve('stream-http'),
+        https: require.resolve('https-browserify'),
+        fs: false,
+        buffer: require.resolve('buffer/'),
+        util: require.resolve('util/')
+      },
+    },
   },
 );

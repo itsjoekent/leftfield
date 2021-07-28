@@ -24,7 +24,7 @@ export default function Splash(props) {
   return (
     <div className={componentClassName}>
       <div className={PHOTO_COLUMN_CLASS_NAME}>
-        <img src="https://workingfamilies.org/wp-content/uploads/2020/09/homepage-about.jpg" alt={getPropertyValue(properties, PHOTO_ALT_PROPERTY, language)} />
+        <img src="https://charliecrist.com/wp-content/uploads/2020/07/HH2-1.jpg" alt={getPropertyValue(properties, PHOTO_ALT_PROPERTY, language)} />
       </div>
       <div className={CONTENT_COLUMN_CLASS_NAME}>
         {content}

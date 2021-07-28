@@ -10,7 +10,6 @@ import {
 } from 'pkg.campaign-components/constants/responsive';
 import BoxStyle from 'pkg.campaign-components/styles/box';
 import FlexStyle from 'pkg.campaign-components/styles/flex';
-import applyStyleIf from 'pkg.campaign-components/utils/applyStyleIf';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
 import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
@@ -68,18 +67,31 @@ export default function SplashCSS({
 
       .${PHOTO_COLUMN_CLASS_NAME} {
         display: flex;
+        width: 100%;
 
-        ${responsiveStyleGenerator(
-          applyStyleIfChanged,
-          theme,
-          {
-            styles: photoStyles,
-            attribute: PHOTO_SIZE_ATTRIBUTE,
-          },
-          (styleValue) => `flex: 0 0 ${styleValue}%;`,
+        ${applyStyleIfChanged(
+          { styles: photoStyles, attribute: PHOTO_SIZE_ATTRIBUTE },
+          (styleValue) => `height: ${styleValue}%;`,
         )}
 
+        @media (${theme.deviceBreakpoints.tabletUp}) {
+          ${applyStyleIfChanged(
+            { styles: photoStyles, attribute: PHOTO_SIZE_ATTRIBUTE, device: TABLET_DEVICE },
+            (styleValue) => `height: ${styleValue}%;`,
+          )}
+        }
+
+        @media (${theme.deviceBreakpoints.desktopSmallUp}) {
+          height: 100%;
+
+          ${applyStyleIfChanged(
+            { styles: photoStyles, attribute: PHOTO_SIZE_ATTRIBUTE, device: DESKTOP_DEVICE },
+            (styleValue) => `width: ${styleValue}%;`,
+          )}
+        }
+
         img {
+          width: 100%;
           object-fit: cover;
           object-position: right;
         }
