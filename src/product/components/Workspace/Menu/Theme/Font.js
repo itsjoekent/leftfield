@@ -11,7 +11,7 @@ import {
   Typography,
 } from 'pkg.admin-components';
 import { setCampaignThemeKeyValue, setMetaValue } from '@product/features/assembly';
-import { setModal, CONFIRM_MODAL } from '@product/features/modal';
+import { setModal, CONFIRM_MODAL, FONTS_MODAL } from '@product/features/modal';
 
 function Font(props) {
   const { index, font, theme } = props;
@@ -67,6 +67,18 @@ function Font(props) {
                 onChange={onNameChange}
                 value={font.label}
               />
+              <Buttons.Text
+                buttonFg={(colors) => colors.mono[500]}
+                hoverButtonFg={(colors) => colors.mono[700]}
+                onClick={() => dispatch(setModal({
+                  type: FONTS_MODAL,
+                  props: { font },
+                }))}
+              >
+                <Typography fontStyle="medium" fontSize="14px">
+                  Edit
+                </Typography>
+              </Buttons.Text>
               <Buttons.Text
                 buttonFg={(colors) => colors.mono[500]}
                 hoverButtonFg={(colors) => colors.red[500]}

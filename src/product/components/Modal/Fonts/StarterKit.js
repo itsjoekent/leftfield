@@ -24,7 +24,7 @@ const FontHoist = createGlobalStyle`
   .${({ name }) => name}-starter-kit-p {
     font-family: ${({ paragraphFontFamily }) => paragraphFontFamily};
     font-weight: 400;
-    font-size: 18px;
+    font-size: 16px;
     text-align: left;
   }
 `;
@@ -109,6 +109,7 @@ export default function StarterKit(props) {
   return (
     <Flex.Column
       role="button"
+      justify="space-between"
       bg={(colors) => colors.mono[100]}
       borderColor={(colors) => colors.mono[100]}
       borderWidth="1px"

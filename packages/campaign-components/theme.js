@@ -28,7 +28,7 @@ const theme = {
     fonts: {
       [DEFAULT_FONT_FAMILY]: {
         label: 'Roboto',
-        value: `'Roboto', sans-serif;`,
+        value: `'Roboto', sans-serif`,
         html: `<style>@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap');</style>`,
       },
     },

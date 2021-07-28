@@ -51,6 +51,14 @@ export default function TextMarkup(props) {
     inheritedFrom,
   ]);
 
+  React.useEffect(() => {
+    if (richTextRef.current && !!activeComponentId) {
+      richTextRef.current.setValue(BLANK_DEFAULT);
+    }
+  }, [
+    activeComponentId,
+  ]);
+
   function onChange(value) {
     if (field) {
       field.setFieldValue(JSON.stringify(value));

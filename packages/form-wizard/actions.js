@@ -12,3 +12,9 @@ export function setIsFocused(fieldId, isFocused) {
     set(state, `isFocused.${fieldId}`, isFocused);
   }
 }
+
+export function clearForm() {
+  return function _clearForm(state) {
+    set(state, 'values', {});
+  }
+}
