@@ -12,12 +12,16 @@ export default function Styles(props) {
 
   return (
     <WorkspaceMenuAccordion
-      title="Styles"
+      title="Presets"
       isExpanded={isExpanded}
       setIsExpanded={setIsExpanded}
     >
       <Flex.Column gridGap="12px">
-        {Object.keys(CampaignComponentStyles).map((styleKey) => (
+        {[
+          CampaignComponentStyles.ButtonStyle.key,
+          CampaignComponentStyles.MarkupStyle.key,
+          CampaignComponentStyles.TextStyle.key,
+        ].map((styleKey) => (
           <WorkspaceMenuPresetsList key={styleKey} styleKey={styleKey} />
         ))}
       </Flex.Column>

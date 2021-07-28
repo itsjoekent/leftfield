@@ -30,10 +30,6 @@ export default function List(props) {
     }));
   }
 
-  if (!presets.length) {
-    return null;
-  }
-
   return (
     <Flex.Column gridGap="6px">
       <Typography
@@ -42,25 +38,36 @@ export default function List(props) {
         fontSize="16px"
         fg={(colors) => colors.mono[700]}
       >{humanName}</Typography>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="theme-presets">
-          {(provided, snapshot) => (
-            <Flex.Column
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              gridGap="6px"
-              bg={(colors) => snapshot.isDraggingOver ? colors.purple[100] : colors.mono[200]}
-              padding="6px"
-              rounded={(radius) => radius.default}
-            >
-              {presets.map((preset, index) => (
-                <WorkspaceMenuPresetItem key={preset.id} preset={preset} index={index} />
-              ))}
-              {provided.placeholder}
-            </Flex.Column>
-          )}
-        </Droppable>
-      </DragDropContext>
+      {!presets.length && (
+        <Typography
+          fontStyle="light"
+          fontSize="14px"
+          fg={(colors) => colors.mono[600]}
+        >
+          No presets defined
+        </Typography>
+      )}
+      {!!presets.length && (
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="theme-presets">
+            {(provided, snapshot) => (
+              <Flex.Column
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                gridGap="6px"
+                bg={(colors) => snapshot.isDraggingOver ? colors.purple[100] : colors.mono[200]}
+                padding="6px"
+                rounded={(radius) => radius.default}
+              >
+                {presets.map((preset, index) => (
+                  <WorkspaceMenuPresetItem key={preset.id} preset={preset} index={index} />
+                ))}
+                {provided.placeholder}
+              </Flex.Column>
+            )}
+          </Droppable>
+        </DragDropContext>
+      )}
     </Flex.Column>
   );
 }

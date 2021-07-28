@@ -1,6 +1,8 @@
 import React from 'react';
+import { Flex } from 'pkg.admin-components';
 import WorkspaceMenuAccordion from '@product/components/Workspace/Menu/Accordion';
 import WorkspaceMenuThemeColorList from '@product/components/Workspace/Menu/Theme/ColorList';
+import WorkspaceMenuThemeFontList from '@product/components/Workspace/Menu/Theme/FontList';
 
 export default function Theme(props) {
   const {
@@ -14,7 +16,10 @@ export default function Theme(props) {
       isExpanded={isExpanded}
       setIsExpanded={setIsExpanded}
     >
-      <WorkspaceMenuThemeColorList />
+      <Flex.Column gridGap="24px">
+        <WorkspaceMenuThemeColorList />
+        <WorkspaceMenuThemeFontList />
+      </Flex.Column>
     </WorkspaceMenuAccordion>
   );
 }

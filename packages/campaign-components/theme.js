@@ -27,30 +27,27 @@ const theme = {
     },
     fonts: {
       [DEFAULT_FONT_FAMILY]: {
-        label: 'Helvetica',
-        value: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+        label: 'Roboto',
+        value: `'Roboto', sans-serif;`,
+        html: `<style>@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap');</style>`,
       },
     },
     fontWeights: {
       [DEFAULT_FONT_FAMILY]: {
         light: {
           label: 'Light',
-          value: 200,
+          value: 300,
         },
         normal: {
           label: 'Normal',
           value: 400,
         },
-        medium: {
-          label: 'Medium',
-          value: 600,
-        },
         bold: {
           label: 'Bold',
           value: 700,
         },
-        extraBold: {
-          label: 'Extra Bold',
+        black: {
+          label: 'Black',
           value: 900,
         },
       },

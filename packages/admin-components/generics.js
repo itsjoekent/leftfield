@@ -27,10 +27,11 @@ export const animation = css`
 
 export const border = css`
   ${({ rounded, theme }) => !!rounded && css`border-radius: ${rounded(theme.rounded)};`}
+  ${({ noBorder }) => !!noBorder && css`border: none;`}
   ${({ borderWidth, borderColor, theme }) => !!borderWidth && !!borderColor && css`border: ${borderWidth} solid ${borderColor(theme.colors)};`}
-  ${({ hoverBorderColor, theme }) => !!hoverBorderColor && css`
+  ${({ borderWidth, hoverBorderColor, theme }) => !!hoverBorderColor && css`
     &:hover {
-      border-color: ${hoverBorderColor(theme.colors)};
+      border: ${borderWidth} solid ${hoverBorderColor(theme.colors)};
     }
   `}
 `;
@@ -122,7 +123,7 @@ export const shadow = css`
   ${({ shadow, theme }) => !!shadow && shadow(theme.shadow)}
   ${({ hoverShadow, theme }) => !!hoverShadow && css`
     &:hover {
-      shadow: ${hoverShadow(theme.shadow)};
+      ${hoverShadow(theme.shadow)};
     }
   `}
 `;

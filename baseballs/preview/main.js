@@ -17,6 +17,7 @@ import {
 import 'pkg.campaign-components/css/reset.css';
 
 const cssCache = {};
+const fontCache = {};
 
 function ComponentWrapper({ children }) {
   const componentClassName = children.props.componentClassName;
@@ -70,6 +71,28 @@ window.addEventListener('message', (event) => {
         ...theme,
         campaign: campaignTheme,
       };
+
+      Object.keys(get(campaignTheme, 'fonts', {})).forEach((fontId) => {
+        const fontHtml = get(campaignTheme, `fonts.${fontId}.html`, '');
+        const cachedFont = fontCache[fontId];
+
+        if (!!fontHtml && (!cachedFont || cachedFont !== fontHtml)) {
+          const existingElements = document.querySelectorAll(`[data-fontid="${fontId}"]`);
+          for (const existingElement of existingElements) {
+            existingElement.remove();
+          }
+
+          const parser = new DOMParser();
+          const fontElements = parser.parseFromString(`<head>${fontHtml}</head>`, 'text/html').head.children;
+
+          for (const fontElement of fontElements) {
+            fontElement.setAttribute('data-fontid', fontId);
+            document.head.append(fontElement);
+          }
+
+          fontCache[fontId] = fontHtml;
+        }
+      });
 
       function recursiveRenderFill(componentId) {
         const component = get(page, `components.${componentId}`);

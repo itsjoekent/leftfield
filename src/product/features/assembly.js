@@ -70,6 +70,7 @@ export const assemblySlice = createSlice({
     future: [],
     meta: {
       colorSortOrder: Object.keys(theme.campaign.colors),
+      fontSortOrder: Object.keys(theme.campaign.fonts),
       presetSortOrder: {},
     },
     pages: {
@@ -606,6 +607,36 @@ export function selectCampaignThemeColors(state) {
   return get(selectCampaignTheme(state), 'colors');
 }
 
+export function selectCampaignThemeColorsAsSortedArray(state) {
+  const colorSortOrder = selectMetaColorSortOrder(state);
+  const colors = selectCampaignThemeColors(state);
+
+  return colorSortOrder
+    .map((colorId) => ({ ...colors[colorId], id: colorId }))
+    .filter(({ isArchived }) => !isArchived);
+}
+
+export function selectCampaignThemeFont(fontId) {
+  function _selectCampaignThemeFont(state) {
+    return get(selectCampaignTheme(state), `fonts.${fontId}`, {});
+  }
+
+  return _selectCampaignThemeFont;
+}
+
+function selectCampaignThemeFonts(state) {
+  return get(selectCampaignTheme(state), 'fonts');
+}
+
+export function selectCampaignThemeFontsAsSortedArray(state) {
+  const fontSortOrder = selectMetaFontSortOrder(state);
+  const fonts = selectCampaignThemeFonts(state);
+
+  return fontSortOrder
+    .map((fontId) => ({ ...fonts[fontId], id: fontId }))
+    .filter(({ isArchived }) => !isArchived);
+}
+
 export function selectMeta(state) {
   return get(state, 'assembly.meta', {});
 }
@@ -614,21 +645,16 @@ export function selectMetaColorSortOrder(state) {
   return get(selectMeta(state), 'colorSortOrder', []);
 }
 
+export function selectMetaFontSortOrder(state) {
+  return get(selectMeta(state), 'fontSortOrder', []);
+}
+
 export function selectMetaPresetSortOrder(styleType) {
   function _selectMetaStyleSortOrder(state) {
     return get(selectMeta(state), `presetSortOrder.${styleType}`, []);
   }
 
   return _selectMetaStyleSortOrder;
-}
-
-export function selectCampaignThemeColorsAsSortedArray(state) {
-  const colorSortOrder = selectMetaColorSortOrder(state);
-  const colors = selectCampaignThemeColors(state);
-
-  return colorSortOrder
-    .map((colorId) => ({ ...colors[colorId], id: colorId }))
-    .filter(({ isArchived }) => !isArchived);
 }
 
 export function selectPresetsWithType(type) {

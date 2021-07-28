@@ -93,7 +93,7 @@ const MarkupStyle = {
           theme,
           themePath: `campaign.fontWeights.${getStyleValue({ styles, attribute: FONT_FAMILY_ATTRIBUTE })}`,
         },
-        (styleValue) => `margin-bottom: ${styleValue}px;`,
+        (styleValue) => `font-weight: ${styleValue};`,
       )}
     }
 
