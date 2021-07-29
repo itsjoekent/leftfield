@@ -61,6 +61,7 @@ import {
   selectComponentSlot,
   selectPageRootComponentId,
   selectPageSettings,
+  selectPresetsOfTypeSortedAsArray,
   selectSiteSettings,
   selectStyleAttributesFromPreset,
 } from '@product/features/assembly';
@@ -434,10 +435,32 @@ function runParliamentarian(
   }
 
   // @NOTE
-  // Step: Set default values for all visible styles.
+  // Step: Set default values for all visible styles OR pick default preset.
 
   visibleStyles.forEach((style) => {
     const styleId = style.id;
+    const styleType = get(style, 'type', null);
+
+    const hasStyleValue = !isEmpty(
+      selectComponentStyle(pageId, componentId, styleId)(state)
+    );
+
+    if (!hasStyleValue) {
+      const presets = selectPresetsOfTypeSortedAsArray(styleType)(state);
+
+      if (!!presets && !!presets.length) {
+        const apply = presets[0];
+
+        queueDispatch(importStyle({
+          pageId,
+          componentId,
+          styleId,
+          presetId: get(apply, 'id'),
+        }));
+
+        return;
+      }
+    }
 
     get(style, 'attributes', []).forEach((attribute) => {
       const attributeId = attribute.id;

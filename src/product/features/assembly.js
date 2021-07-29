@@ -665,11 +665,23 @@ export function selectMetaPresetSortOrder(styleType) {
   return _selectMetaStyleSortOrder;
 }
 
+export function selectPresets(state) {
+  return get(state, 'assembly.stylePresets', {});
+}
+
+export function selectPreset(styleId) {
+  function _selectPreset(state) {
+    return get(selectPresets(state), styleId, {});
+  }
+
+  return _selectPreset;
+}
+
 export function selectPresetsWithType(type) {
   function _selectPresetsWithType(state) {
     const stylePresets = selectPresets(state);
     const presets = Object.keys(stylePresets)
-      .map((styleId) => stylePresets[styleId])
+      .map((presetId) => stylePresets[presetId])
       .filter((preset) => !preset.isArchived && preset.type === type);
 
     return presets;
@@ -936,18 +948,6 @@ export function selectCompiledPage(pageId) {
   }
 
   return _selectCompiledPage;
-}
-
-export function selectPresets(state) {
-  return get(state, 'assembly.stylePresets', {});
-}
-
-export function selectPreset(styleId) {
-  function _selectPreset(state) {
-    return get(selectPresets(state), styleId, {});
-  }
-
-  return _selectPreset;
 }
 
 export function selectPresetName(styleId) {

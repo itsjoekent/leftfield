@@ -48,6 +48,21 @@ export default function StyleForm(props) {
   const inheritsFromPreset = useSelector(selectPreset(inheritsFromPresetId));
   const isArchivedPreset = !!get(inheritsFromPreset, 'isArchived', false);
 
+  const [isLocked, setIsLocked] = React.useState(!!inheritsFromPresetId || !!isArchivedPreset);
+
+  React.useEffect(() => {
+    if (!!inheritsFromPresetId && !isArchivedPreset) {
+      setIsLocked(true);
+    }
+
+    if (!inheritsFromPresetId || isArchivedPreset) {
+      setIsLocked(false);
+    }
+  }, [
+    inheritsFromPresetId,
+    isArchivedPreset,
+  ]);
+
   const isExportable = !isDefined(inheritsFromPresetId)
     || (isDefined(inheritsFromPresetId) && !!isArchivedPreset);
 
@@ -97,28 +112,44 @@ export default function StyleForm(props) {
                 styleType={type}
               />
             </Block>
-            <Tooltip copy="Export preset" point={Tooltip.UP_RIGHT_ALIGNED}>
-              <Buttons.IconButton
-                IconComponent={Icons.Export}
-                color={(colors) => isExportable ? colors.blue[500] : colors.mono[500]}
-                hoverColor={(colors) => colors.blue[800]}
-                aria-label="Export preset"
-                disabled={!isExportable}
-                onClick={() => dispatch(setModal({
-                  type: EXPORT_STYLE_MODAL,
-                  props: {
-                    pageId: activePageId,
-                    componentId: activeComponentId,
-                    styleId,
-                    styleType: type,
-                  },
-                }))}
-              />
-            </Tooltip>
+            {isExportable && (
+              <Tooltip copy="Export preset" point={Tooltip.UP_RIGHT_ALIGNED}>
+                <Buttons.IconButton
+                  IconComponent={Icons.Export}
+                  color={(colors) => isExportable ? colors.blue[500] : colors.mono[500]}
+                  hoverColor={(colors) => colors.blue[800]}
+                  aria-label="Export preset"
+                  disabled={!isExportable}
+                  onClick={() => dispatch(setModal({
+                    type: EXPORT_STYLE_MODAL,
+                    props: {
+                      pageId: activePageId,
+                      componentId: activeComponentId,
+                      styleId,
+                      styleType: type,
+                    },
+                  }))}
+                />
+              </Tooltip>
+            )}
+            {!!inheritsFromPresetId && !isArchivedPreset && (
+              <Tooltip
+                copy={isLocked ? 'Unlock style editor' : 'Lock style editor'}
+                point={Tooltip.UP_RIGHT_ALIGNED}
+              >
+                <Buttons.IconButton
+                  IconComponent={isLocked ? Icons.LockFill : Icons.UnlockFill}
+                  color={(colors) => colors.mono[500]}
+                  hoverColor={(colors) => colors.mono[700]}
+                  aria-label={isLocked ? 'Unlock style editor' : 'Lock style editor'}
+                  onClick={() => setIsLocked(!isLocked)}
+                />
+              </Tooltip>
+            )}
           </Flex.Row>
         )}
       </Flex.Column>
-      {attributes.map((attribute) => (
+      {!isLocked && attributes.map((attribute) => (
         <React.Fragment key={get(attribute, 'id')}>
           <Flex.Row
             role="separator"
