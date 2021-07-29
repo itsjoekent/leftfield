@@ -4,19 +4,19 @@ Leftfield mono-repo.
 
 ## Getting Started
 
-You'll need [Docker Desktop](https://www.docker.com/) to run the projects in this repository.
+You'll need the following installed locally,
 
-To work on an application, api, or package project locally, you can `cd ${directory}` into the directory and run the following,
+- [nvm](https://github.com/nvm-sh/nvm) (or manually install Node/NPM)
+- [Netlify CLI](https://docs.netlify.com/cli/get-started/)
+
+Run the following commands,
 
 ```sh
-$ make build
-$ make local
+$ netlify login
+$ nvm use 14
+$ npm install
 ```
 
-For applications, you can also opt to to run `make staging`, which will connect the local application to staging backends. This is useful if you just need to make frontend changes.
+In one terminal window, run `make dev`, in another terminal window, run `npm start`
 
-All projects afford `make test`.
-
-## Deployment
-
-## Preferred Technologies
+To interact with the product, use the url provided by the `make dev` terminal.
