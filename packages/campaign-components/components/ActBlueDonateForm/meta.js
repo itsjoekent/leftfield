@@ -121,26 +121,10 @@ const ActBlueDonateFormMeta = {
       attributes: [
         ...GridStyle.attributes(),
         ...BoxStyle.attributes(),
-      ],
-    },
-    {
-      id: DISCLAIMER_TEXT_STYLE,
-      label: 'Disclaimer Text Style',
-      type: TextStyle.key,
-      attributes: [
-        ...TextStyle.attributes({
-          [FONT_SIZE_ATTRIBUTE]: {
-            defaultValue: {
-              [MOBILE_DEVICE]: {
-                custom: 12,
-              },
-            },
-          },
-        }),
         {
           id: DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE,
           label: 'Express Disclaimer Top Spacing',
-          help: 'Space between the disclaimer copy and the donate button grid',
+          help: 'Space between the express disclaimer copy and the donate button grid',
           type: NUMBER_RANGE_TYPE,
           min: 2,
           max: 24,
@@ -150,8 +134,22 @@ const ActBlueDonateFormMeta = {
               custom: 6,
             },
           },
-        }
+        },
       ],
+    },
+    {
+      id: DISCLAIMER_TEXT_STYLE,
+      label: 'Disclaimer Text Style',
+      type: TextStyle.key,
+      attributes: TextStyle.attributes({
+        [FONT_SIZE_ATTRIBUTE]: {
+          defaultValue: {
+            [MOBILE_DEVICE]: {
+              custom: 12,
+            },
+          },
+        },
+      }),
       conditional: ({ properties }) => !!getPropertyValue(properties, ENABLE_EXPRESS_DONATE_PROPERTY),
     },
   ],

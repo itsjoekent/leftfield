@@ -76,7 +76,7 @@ export default function ActBlueFormCSS({
               applyStyleIfChanged,
               theme,
               {
-                styles: textDisclaimerStyles,
+                styles: gridStyles,
                 attribute: DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE,
               },
               (styleValue) => `margin-top: ${styleValue}px;`,

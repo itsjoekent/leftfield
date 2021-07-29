@@ -87,6 +87,19 @@ export const LANGUAGES = {
   },
 };
 
+export const PAID_FOR_BY_COMMITTEE = {
+  key: 'PAID_FOR_BY_COMMITTEE',
+  field: {
+    label: 'Paid for by committee',
+    help: 'FEC mandated disclaimer on any public communication made by a political committee',
+    isTranslatable: true,
+    defaultValue: {
+      [US_ENGLISH_LANG]: 'Paid for by {your committee name}',
+    },
+    type: SHORT_TEXT_TYPE,
+  },
+};
+
 function appendSetting(setting) {
   return { ...setting.field, id: setting.key };
 }
@@ -97,6 +110,7 @@ export const SiteSettings = [
   appendSetting(DEFAULT_ACTBLUE_DONATION_FORM),
   appendSetting(DEFAULT_ACTBLUE_REFCODE),
   appendSetting(LANGUAGES),
+  appendSetting(PAID_FOR_BY_COMMITTEE),
 ];
 
 export const PageSettings = [

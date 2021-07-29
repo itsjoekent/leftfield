@@ -18,12 +18,17 @@ import DisplayStyle from 'pkg.campaign-components/styles/display';
 import TextStyle, {
   COLOR_ATTRIBUTE,
   FONT_SIZE_ATTRIBUTE,
+  FONT_WEIGHT_ATTRIBUTE,
 } from 'pkg.campaign-components/styles/text';
 import {
   getBrightestCampaignThemeColor,
   getReadableThemeColor,
 } from 'pkg.campaign-components/utils/campaignThemeColorSelectors';
 import applyStyleIf, { isStyleDefined } from 'pkg.campaign-components/utils/applyStyleIf';
+import {
+  getDefaultFontFamily,
+  getCampaignThemeFontWeightNearest,
+} from 'pkg.campaign-components/utils/campaignThemeFontSelectors';
 import getCascadingStyleValue from 'pkg.campaign-components/utils/getCascadingStyleValue';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 import getThemeValue from 'pkg.campaign-components/utils/getThemeValue';
@@ -57,6 +62,17 @@ const ButtonStyle = {
       },
       [FONT_SIZE_ATTRIBUTE]: {
         max: 48,
+      },
+      [FONT_WEIGHT_ATTRIBUTE]: {
+        dynamicDefaultThemeValue: ({ campaignTheme }) => ({
+          [MOBILE_DEVICE]: {
+            inheritFromTheme: getCampaignThemeFontWeightNearest(
+              campaignTheme,
+              getDefaultFontFamily(campaignTheme),
+              700,
+            ),
+          },
+        }),
       },
     }),
     ...BoxStyle.attributes({
