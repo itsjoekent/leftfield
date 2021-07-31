@@ -18,19 +18,20 @@ import { LOGIN_ROUTE } from '@product/routes/Login';
 export const SIGNUP_ROUTE = '/signup';
 
 export default function Signup() {
-  const [isSigningUp, setIsSigningUp] = React.useState(false);
   const [formError, setFormError] = React.useState(null);
   const hitApi = useProductApi(false);
 
   const [, setLocation] = useLocation();
   const dispatch = useDispatch();
 
+  const [isLoading, setIsLoading] = React.useState(false);
+
   function onSignup({ values }) {
-    setIsSigningUp(true);
+    setIsLoading(true);
     setFormError(null);
 
     hitApi('post', 'signup', values, ({ status, json }) => {
-      setIsSigningUp(false);
+      setIsLoading(false);
 
       if (get(json, 'error')) {
         setFormError(get(json, 'error.message', 'Encountered error signing up, try again?'));
@@ -186,7 +187,6 @@ export default function Signup() {
                 </Typography>
               )}
               <Buttons.Filled
-                disabled={isSigningUp}
                 type="submit"
                 fullWidth
                 buttonFg={(colors) => colors.mono[100]}
@@ -194,6 +194,7 @@ export default function Signup() {
                 hoverButtonBg={(colors) => colors.blue[700]}
                 paddingVertical="4px"
                 paddingHorizontal="8px"
+                isLoading={isLoading}
               >
                 <Typography fontStyle="medium" fontSize="14px">
                   Sign up

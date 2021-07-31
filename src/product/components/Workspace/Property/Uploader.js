@@ -28,6 +28,8 @@ export default function Uploader(props) {
   const dispatch = useDispatch();
   const hitApi = useProductApi();
 
+  const [isUploading, setIsUploading] = React.useState(false);
+
   const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
 
   const getPropertyValue = useGetPropertyValue(activePageId, activeComponentId);
@@ -56,6 +58,7 @@ export default function Uploader(props) {
 
   function onError(error) {
     console.error(error);
+    setIsUploading(false);
     dispatch(pushSnack({
       message: 'Error uploading image',
       type: SPICY_SNACK,
@@ -63,6 +66,8 @@ export default function Uploader(props) {
   }
 
   async function onUpload(event) {
+    setIsUploading(true);
+
     try {
       const { fileData, mimeType } = event;
 
@@ -82,6 +87,7 @@ export default function Uploader(props) {
             const { url: value } = json;
 
             setFieldValue(value);
+            setIsUploading(false);
           }
         },
       );
@@ -109,6 +115,7 @@ export default function Uploader(props) {
             buttonFg={(colors) => colors.mono[100]}
             buttonBg={(colors) => colors.blue[500]}
             hoverButtonBg={(colors) => colors.blue[700]}
+            isLoading={isUploading}
             {...buttonProps}
           >
             <Typography

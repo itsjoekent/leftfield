@@ -23,10 +23,15 @@ export default function Login() {
   const [, setLocation] = useLocation();
   const dispatch = useDispatch();
 
+  const [isLoading, setIsLoading] = React.useState(false);
+
   function onLogin({ values }) {
     const { email, password } = values;
+    setIsLoading(true);
 
     hitApi('post', 'login', { email, password }, ({ status, json }) => {
+      setIsLoading(false);
+
       if (get(json, 'error')) {
         setFormError(get(json, 'error.message', 'Encountered error logging in, try again?'));
         return;
@@ -138,6 +143,7 @@ export default function Login() {
                 hoverButtonBg={(colors) => colors.blue[700]}
                 paddingVertical="4px"
                 paddingHorizontal="8px"
+                isLoading={isLoading}
               >
                 <Typography fontStyle="medium" fontSize="14px">
                   Log in
