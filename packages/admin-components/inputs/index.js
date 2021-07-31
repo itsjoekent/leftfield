@@ -34,4 +34,5 @@ export const DefaultText = styled(Text)`
 `;
 
 export { default as Checklist } from 'pkg.admin-components/inputs/Checklist';
+export { default as FileUploader } from 'pkg.admin-components/inputs/FileUploader';
 export { default as Toggle } from 'pkg.admin-components/inputs/Toggle';

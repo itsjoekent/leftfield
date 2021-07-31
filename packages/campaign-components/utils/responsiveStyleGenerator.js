@@ -11,6 +11,26 @@ export default function responsiveStyleGenerator(
   const getStyleValueArgs = rest[0];
   const applyStyleIfChangedRest = rest.slice(1);
 
+  if (Array.isArray(getStyleValueArgs)) {
+    return `
+      ${applyStyleIfChanged(...rest)}
+
+      @media (${theme.deviceBreakpoints.tabletUp}) {
+        ${applyStyleIfChanged(
+          getStyleValueArgs.map((styleArgs) => ({ ...styleArgs, device: TABLET_DEVICE })),
+          ...applyStyleIfChangedRest,
+        )}
+      }
+
+      @media (${theme.deviceBreakpoints.desktopSmallUp}) {
+        ${applyStyleIfChanged(
+          getStyleValueArgs.map((styleArgs) => ({ ...styleArgs, device: DESKTOP_DEVICE })),
+          ...applyStyleIfChangedRest,
+        )}
+      }
+    `;
+  }
+
   return `
     ${applyStyleIfChanged(...rest)}
 

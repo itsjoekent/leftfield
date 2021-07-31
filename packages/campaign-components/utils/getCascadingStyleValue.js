@@ -1,3 +1,4 @@
+import { MOBILE_DEVICE } from 'pkg.campaign-components/constants/responsive';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 
 export default function getCascadingStyleValue({

@@ -24,7 +24,6 @@ import {
   getBrightestCampaignThemeColor,
   getReadableThemeColor,
 } from 'pkg.campaign-components/utils/campaignThemeColorSelectors';
-import applyStyleIf, { isStyleDefined } from 'pkg.campaign-components/utils/applyStyleIf';
 import {
   getDefaultFontFamily,
   getCampaignThemeFontWeightNearest,
@@ -239,85 +238,27 @@ const ButtonStyle = {
     }
 
     &:focus {
-      ${applyStyleIf(
-        getStyleValue({
-          styles,
-          attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
-          theme,
-          themePath: 'campaign.colors'
-        }),
+      ${responsiveStyleGenerator(
+        applyStyleIfChanged,
+        theme,
+        [
+          {
+            styles,
+            attribute: FOCUS_OUTLINE_WIDTH_ATTRIBUTE,
+          },
+          {
+            styles,
+            theme,
+            themePath: 'campaign.colors',
+            attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
+          },
+        ],
         (styleValue) => `
           outline-style: solid;
           outline-color: transparent;
-          box-shadow: 0 0 0 ${getStyleValue(styles, FOCUS_OUTLINE_WIDTH_ATTRIBUTE)}px ${styleValue};
+          box-shadow: 0 0 0 ${styleValue[0]}px ${styleValue[1]};
         `,
       )}
-
-      @media (${theme.deviceBreakpoints.tabletUp}) {
-        ${applyStyleIf(
-          getStyleValue({
-            styles,
-            attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
-            theme,
-            themePath: 'campaign.colors',
-            device: TABLET_DEVICE,
-          }),
-          (styleValue) => `
-            outline-style: solid;
-            outline-color: transparent;
-            box-shadow: 0 0 0 ${getCascadingStyleValue({
-              styles,
-              attribute: FOCUS_OUTLINE_WIDTH_ATTRIBUTE,
-              devices: [TABLET_DEVICE, MOBILE_DEVICE],
-            })}px ${getCascadingStyleValue({
-              styles,
-              attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
-              theme,
-              themePath: 'campaign.colors',
-              devices: [TABLET_DEVICE, MOBILE_DEVICE],
-            })};
-          `,
-          (styleValue) => isStyleDefined(styleValue)
-            || isStyleDefined(getStyleValue({
-              styles,
-              attribute: FOCUS_OUTLINE_WIDTH_ATTRIBUTE,
-              device: TABLET_DEVICE,
-            })),
-        )}
-      }
-
-      @media (${theme.deviceBreakpoints.desktopSmallUp}) {
-        ${applyStyleIf(
-          getStyleValue({
-            styles,
-            attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
-            theme,
-            themePath: 'campaign.colors',
-            device: DESKTOP_DEVICE,
-          }),
-          (styleValue) => `
-            outline-style: solid;
-            outline-color: transparent;
-            box-shadow: 0 0 0 ${getCascadingStyleValue({
-              styles,
-              attribute: FOCUS_OUTLINE_WIDTH_ATTRIBUTE,
-              devices: [DESKTOP_DEVICE, TABLET_DEVICE, MOBILE_DEVICE],
-            })}px ${getCascadingStyleValue({
-              styles,
-              attribute: FOCUS_OUTLINE_COLOR_ATTRIBUTE,
-              theme,
-              themePath: 'campaign.colors',
-              devices: [DESKTOP_DEVICE, TABLET_DEVICE, MOBILE_DEVICE],
-            })};
-          `,
-          (styleValue) => !!styleValue
-            || getStyleValue({
-              styles,
-              attribute: FOCUS_OUTLINE_WIDTH_ATTRIBUTE,
-              device: DESKTOP_DEVICE,
-            }),
-        )}
-      }
     }
   `,
 };

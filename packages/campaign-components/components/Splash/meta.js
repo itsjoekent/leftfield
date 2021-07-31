@@ -7,6 +7,8 @@ import {
 import {
   NUMBER_RANGE_TYPE,
   SHORT_TEXT_TYPE,
+  SELECT_TYPE,
+  UPLOAD_TYPE,
 } from 'pkg.campaign-components/constants/property-types';
 import {
   DESKTOP_DEVICE,
@@ -20,6 +22,7 @@ import FlexStyle from 'pkg.campaign-components/styles/flex';
 export const TAG = 'Splash';
 
 export const PHOTO_ALT_PROPERTY = 'PHOTO_ALT_PROPERTY';
+export const PHOTO_SOURCE_PROPERTY = 'PHOTO_SOURCE_PROPERTY';
 
 export const CONTENT_SLOT = 'CONTENT_SLOT';
 
@@ -27,6 +30,14 @@ export const CONTENT_STYLE = 'CONTENT_STYLE';
 export const PHOTO_STYLE = 'PHOTO_STYLE';
 
 export const PHOTO_SIZE_ATTRIBUTE = 'PHOTO_SIZE_ATTRIBUTE';
+export const PHOTO_HORIZONTAL_POSITION = 'PHOTO_HORIZONTAL_POSITION';
+export const PHOTO_VERTICAL_POSITION = 'PHOTO_VERTICAL_POSITION';
+
+export const POSITION_TOP = 'top';
+export const POSITION_BOTTOM = 'bottom';
+export const POSITION_LEFT = 'left';
+export const POSITION_RIGHT = 'right';
+export const POSITION_CENTER = 'center';
 
 const SplashMeta = {
   tag: TAG,
@@ -39,6 +50,18 @@ const SplashMeta = {
     },
   ],
   properties: [
+    {
+      id: PHOTO_SOURCE_PROPERTY,
+      label: 'Image',
+      help: 'Upload the highest resolution image you have, Leftfield will automatically crop and compress your media',
+      type: UPLOAD_TYPE,
+      allow: [
+        'image/avif',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+      ],
+    },
     {
       id: PHOTO_ALT_PROPERTY,
       label: 'Photo Alt Text',
@@ -76,6 +99,36 @@ const SplashMeta = {
           defaultValue: {
             [MOBILE_DEVICE]: {
               custom: 40,
+            },
+          },
+        },
+        {
+          id: PHOTO_VERTICAL_POSITION,
+          label: 'Vertical Position',
+          type: SELECT_TYPE,
+          options: [
+            { label: 'Top', value: POSITION_TOP },
+            { label: 'Center', value: POSITION_CENTER },
+            { label: 'Bottom', value: POSITION_BOTTOM },
+          ],
+          defaultValue: {
+            [MOBILE_DEVICE]: {
+              custom: POSITION_TOP,
+            },
+          },
+        },
+        {
+          id: PHOTO_HORIZONTAL_POSITION,
+          label: 'Horizontal Position',
+          type: SELECT_TYPE,
+          options: [
+            { label: 'Left', value: POSITION_LEFT },
+            { label: 'Center', value: POSITION_CENTER },
+            { label: 'Right', value: POSITION_RIGHT },
+          ],
+          defaultValue: {
+            [MOBILE_DEVICE]: {
+              custom: POSITION_LEFT,
             },
           },
         },

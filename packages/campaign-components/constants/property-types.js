@@ -14,4 +14,6 @@ export const TEXT_MARKUP = 'TEXT_MARKUP';
 
 export const TOGGLE_TYPE = 'TOGGLE_TYPE';
 
+export const UPLOAD_TYPE = 'UPLOAD_TYPE';
+
 export const URL_TYPE = 'URL_TYPE';

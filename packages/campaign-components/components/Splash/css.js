@@ -3,6 +3,8 @@ import {
   CONTENT_STYLE,
   PHOTO_STYLE,
   PHOTO_SIZE_ATTRIBUTE,
+  PHOTO_HORIZONTAL_POSITION,
+  PHOTO_VERTICAL_POSITION,
 } from 'pkg.campaign-components/components/Splash/meta';
 import {
   DESKTOP_DEVICE,
@@ -92,8 +94,18 @@ export default function SplashCSS({
 
         img {
           width: 100%;
+          height: 100%;
           object-fit: cover;
-          object-position: right;
+
+          ${responsiveStyleGenerator(
+            applyStyleIfChanged,
+            theme,
+            [
+              { styles: photoStyles, attribute: PHOTO_VERTICAL_POSITION },
+              { styles: photoStyles, attribute: PHOTO_HORIZONTAL_POSITION },
+            ],
+            (styleValue) => `object-position: ${styleValue[0]} ${styleValue[1]};`,
+          )}
         }
       }
     }

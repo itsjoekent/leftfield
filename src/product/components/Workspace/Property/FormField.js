@@ -9,6 +9,7 @@ import WorkspacePropertyLabel from '@product/components/Workspace/Property/Label
 import WorkspacePropertyShortText from '@product/components/Workspace/Property/ShortText';
 import WorkspacePropertyTextMarkup from '@product/components/Workspace/Property/TextMarkup';
 import WorkspacePropertyToggle from '@product/components/Workspace/Property/Toggle';
+import WorkspacePropertyUploader from '@product/components/Workspace/Property/Uploader';
 import useSiteLanguages from '@product/hooks/useSiteLanguages';
 import isDefined from '@product/utils/isDefined';
 
@@ -53,6 +54,14 @@ function FormFieldInner(props) {
 
           case PropertyTypes.TOGGLE_TYPE: return (
             <WorkspacePropertyToggle
+              fieldId={fieldId}
+              language={language}
+              property={property}
+            />
+          );
+
+          case PropertyTypes.UPLOAD_TYPE: return (
+            <WorkspacePropertyUploader
               fieldId={fieldId}
               language={language}
               property={property}

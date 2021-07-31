@@ -5,6 +5,7 @@ import WorkspaceStyleColorPicker from '@product/components/Workspace/Style/Color
 import WorkspaceStyleNumberRange from '@product/components/Workspace/Style/NumberRange';
 import WorkspaceStyleSelector from '@product/components/Workspace/Style/Selector';
 import WorkspaceStyleToggle from '@product/components/Workspace/Style/Toggle';
+import WorkspaceStyleUploader from '@product/components/Workspace/Style/Uploader';
 
 export default function Attribute(props) {
   const {
@@ -36,6 +37,13 @@ export default function Attribute(props) {
 
     case PropertyTypes.TOGGLE_TYPE: return (
       <WorkspaceStyleToggle
+        styleId={styleId}
+        attribute={attribute}
+      />
+    );
+
+    case PropertyTypes.UPLOAD_TYPE: return (
+      <WorkspaceStyleUploader
         styleId={styleId}
         attribute={attribute}
       />
