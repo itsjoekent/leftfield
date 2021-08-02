@@ -28,6 +28,7 @@
     "pkg.cf-image-url": "file:packages/cf-image-url",
     "pkg.form-wizard": "file:packages/form-wizard",
     "polished": "^4.1.3",
+    "qs": "^6.10.1",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",
     "react-color": "^2.19.3",

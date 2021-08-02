@@ -8,6 +8,7 @@ import {
   CONFIRM_MODAL,
   ELEMENT_LIBRARY_MODAL,
   EXPORT_STYLE_MODAL,
+  FILE_SELECTOR,
   FONTS_MODAL,
   WEBSITE_SELECTOR_MODAL,
 } from '@product/features/modal';
@@ -16,6 +17,7 @@ const componentFileMap = {
   [CONFIRM_MODAL]: async () => import('./Confirm'),
   [ELEMENT_LIBRARY_MODAL]: async () => import('./ElementLibrary'),
   [EXPORT_STYLE_MODAL]: async () => import('./ExportStyle'),
+  [FILE_SELECTOR]: async () => import('./FileSelector'),
   [FONTS_MODAL]: async () => import('./Fonts'),
   [WEBSITE_SELECTOR_MODAL]: async () => import('./WebsiteSelector'),
 };

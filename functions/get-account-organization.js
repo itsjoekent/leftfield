@@ -20,7 +20,7 @@ async function getAccountOrganization(event, context) {
 
     return respondWithSuccess({
       account: transformAccount(account),
-      organization: transformOrganization(organization),
+      organization: transformOrganization(organization, account),
     });
   } catch (error) {
     if (error._apiError) return respondWithError(error);

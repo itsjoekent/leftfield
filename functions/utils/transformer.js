@@ -1,8 +1,11 @@
+const { get } = require('lodash');
+
 function transformAccount(account) {
   const {
     id,
     email,
     firstName,
+    lastName,
     organizationId,
   } = account;
 
@@ -10,26 +13,72 @@ function transformAccount(account) {
     id,
     email,
     firstName,
+    lastName,
     organizationId,
   };
 }
 
-function transformOrganization(organization) {
+function transformFile(file, requestingAccount = null) {
+  if (
+    !!file.organizationId
+    && (
+      !requestingAccount
+      || file.organizationId !== requestingAccount.organizationId
+    )
+  ) {
+    return null;
+  }
+
+  let {
+    id,
+    organizationId,
+    name,
+    uploadedBy,
+    lastUpdatedBy,
+    fileSize,
+    createdAt,
+    updatedAt,
+  } = file;
+
+  if (typeof lastUpdatedBy === 'object') {
+    lastUpdatedBy = transformAccount(lastUpdatedBy);
+  }
+
+  if (typeof uploadedBy === 'object') {
+    uploadedBy = transformAccount(uploadedBy);
+  }
+
+  return {
+    id,
+    organizationId,
+    name,
+    uploadedBy,
+    lastUpdatedBy,
+    fileSize,
+    createdAt,
+    updatedAt,
+  };
+}
+
+function transformOrganization(organization, requestingAccount = null) {
   const {
     id,
     name,
+    searchKey,
     size,
     team,
     websites,
   } = organization;
 
-  return {
+  const response = {
     id,
     name,
     size,
     team,
     websites,
   };
+
+  return response;
 }
 
 function transformWebsite(website) {

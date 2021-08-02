@@ -25,8 +25,9 @@ export default function FileUploader(props) {
 
   async function onChange(event) {
     const { target: { files } } = event;
+
     const file = files[0];
-    const { type } = file;
+    const { name, type } = file;
 
     if (accepts.length && !accepts.includes(type)) {
       setError('This file type is not accepted');
@@ -41,14 +42,21 @@ export default function FileUploader(props) {
     const reader = new FileReader();
     reader.onload = function() {
       const binary = reader.result.split(';base64,')[1];
-      onUpload({ fileData: binary, mimeType: type });
+
+      onUpload({
+        fileData: binary,
+        mimeType: type,
+        originalFileName: name,
+      });
+
+      event.target.value = '';
     }
 
     reader.readAsDataURL(file);
   }
 
   return (
-    <Column gridGap="2px">
+    <Column gridGap="6px">
       <input
         ref={fileRef}
         onChange={onChange}

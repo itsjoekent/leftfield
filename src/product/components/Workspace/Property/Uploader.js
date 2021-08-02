@@ -13,6 +13,7 @@ import {
 import {
   selectComponentPropertyInheritedFromForLanguage,
 } from '@product/features/assembly';
+import { setModal, FILE_SELECTOR } from '@product/features/modal';
 import { pushSnack, SPICY_SNACK } from '@product/features/snacks';
 import useActiveWorkspaceComponent from '@product/hooks/useActiveWorkspaceComponent';
 import useGetPropertyValue from '@product/hooks/useGetPropertyValue';
@@ -69,7 +70,11 @@ export default function Uploader(props) {
     setIsUploading(true);
 
     try {
-      const { fileData, mimeType } = event;
+      const {
+        fileData,
+        mimeType,
+        originalFileName,
+      } = event;
 
       const imageId = uuid();
 
@@ -77,17 +82,18 @@ export default function Uploader(props) {
         'post',
         'upload-file',
         {
-          imageName: imageId,
-          targetBucket: 'assets',
-          mimeType,
           fileData,
+          fileName: imageId,
+          originalFileName,
+          mimeType,
+          targetBucket: 'assets',
         },
         ({ ok, json }) => {
+          setIsUploading(false);
+
           if (ok) {
             const { url: value } = json;
-
             setFieldValue(value);
-            setIsUploading(false);
           }
         },
       );
@@ -123,6 +129,32 @@ export default function Uploader(props) {
               fontSize="14px"
             >
               Upload
+            </Typography>
+          </Buttons.Filled>
+          <Buttons.Filled
+            type="button"
+            IconComponent={Icons.BookOpen}
+            iconSize={20}
+            gridGap="2px"
+            paddingVertical="2px"
+            paddingHorizontal="6px"
+            buttonFg={(colors) => colors.mono[700]}
+            buttonBg={(colors) => colors.mono[300]}
+            hoverButtonBg={(colors) => colors.mono[400]}
+            fullWidth
+            onClick={() => dispatch(setModal({
+              type: FILE_SELECTOR,
+              props: {
+                accepts: allow,
+                onSelect: ({ fileUrl }) => setFieldValue(fileUrl),
+              },
+            }))}
+          >
+            <Typography
+              fontStyle="bold"
+              fontSize="14px"
+            >
+              Media
             </Typography>
           </Buttons.Filled>
         </Flex.Row>

@@ -103,12 +103,12 @@ export function Filled(props) {
   const buttonRef = React.useRef(null);
   const isHovering = useIsHovering(buttonRef);
 
-  const finalIconColor = !!IconComponent && rest.buttonFg(theme.colors);
   const FinalIconComponent = isLoading ? Loading : IconComponent;
+  const finalIconColor = !!FinalIconComponent && rest.buttonFg(theme.colors);
 
   return (
     <FilledButtonWrapper ref={buttonRef} isLoading={isLoading} {...rest}>
-      {!!IconComponent && (
+      {!!FinalIconComponent && (
         <FinalIconComponent
           width={iconSize}
           height={iconSize}

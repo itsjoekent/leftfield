@@ -10,12 +10,14 @@ const schema = new dynamoose.Schema({
     index: {
       name: 'emailIndex',
       global: true,
+      project: true,
     },
     set: (value) => value.toLowerCase(),
     type: String,
   },
   'password': String,
   'firstName': String,
+  'lastName': String,
   'organizationId': {
     type: String,
   },

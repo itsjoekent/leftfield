@@ -28,6 +28,8 @@ export default function Uploader(props) {
   const dispatch = useDispatch();
   const hitApi = useProductApi();
 
+  const [isUploading, setIsUploading] = React.useState(false);
+
   const {
     activePageId,
     activeComponentId,
@@ -47,6 +49,7 @@ export default function Uploader(props) {
 
   function onError(error) {
     console.error(error);
+    setIsUploading(false);
     dispatch(pushSnack({
       message: 'Error uploading image',
       type: SPICY_SNACK,
@@ -54,8 +57,14 @@ export default function Uploader(props) {
   }
 
   async function onUpload(event) {
+    setIsUploading(true);
+
     try {
-      const { fileData, mimeType } = event;
+      const {
+        fileData,
+        mimeType,
+        originalFileName,
+      } = event;
 
       const imageId = uuid();
 
@@ -63,12 +72,15 @@ export default function Uploader(props) {
         'post',
         'upload-file',
         {
-          imageName: imageId,
-          targetBucket: 'assets',
-          mimeType,
           fileData,
+          fileName: imageId,
+          originalFileName,
+          mimeType,
+          targetBucket: 'assets',
         },
         ({ ok, json }) => {
+          setIsUploading(false);
+
           if (ok) {
             const { url: value } = json;
 

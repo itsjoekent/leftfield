@@ -13,7 +13,12 @@ export default function useProductApi(
   const dispatch = useDispatch();
   const [, setLocation] = useLocation();
 
-  async function hitApi(method, functionName, payload, onResponse = () => {}) {
+  async function hitApi(
+    method = '',
+    functionName = '',
+    payload = null,
+    onResponse = () => {},
+  ) {
     const url = `/.netlify/functions/${functionName}`;
 
     try {
@@ -42,7 +47,23 @@ export default function useProductApi(
         return;
       }
 
-      const json = await response.json();
+      let json = null;
+
+      try {
+        json = await response.json();
+      } catch (error) {
+        console.error(error);
+
+        if (triggerSnacks) {
+          dispatch(pushSnack({
+            message: 'Encountered unexpected error, try again?',
+            type: SPICY_SNACK,
+          }));
+        }
+
+        onResponse({ status, json, ok });
+        return;
+      }
 
       if (status >= 400) {
         const returnedErrorMessage = get(json, 'error.message');

@@ -61,6 +61,7 @@ const SplashMeta = {
         'image/png',
         'image/webp',
       ],
+      required: true,
     },
     {
       id: PHOTO_ALT_PROPERTY,
@@ -113,7 +114,7 @@ const SplashMeta = {
           ],
           defaultValue: {
             [MOBILE_DEVICE]: {
-              custom: POSITION_TOP,
+              custom: POSITION_CENTER,
             },
           },
         },
@@ -128,7 +129,7 @@ const SplashMeta = {
           ],
           defaultValue: {
             [MOBILE_DEVICE]: {
-              custom: POSITION_LEFT,
+              custom: POSITION_RIGHT,
             },
           },
         },

@@ -28,7 +28,6 @@ import {
   getDefaultFontFamily,
   getCampaignThemeFontWeightNearest,
 } from 'pkg.campaign-components/utils/campaignThemeFontSelectors';
-import getCascadingStyleValue from 'pkg.campaign-components/utils/getCascadingStyleValue';
 import getStyleValue from 'pkg.campaign-components/utils/getStyleValue';
 import getThemeValue from 'pkg.campaign-components/utils/getThemeValue';
 import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
