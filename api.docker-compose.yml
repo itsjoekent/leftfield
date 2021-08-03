@@ -1,0 +1,31 @@
+version: '3.3'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api.dockerfile
+    command: npm run start:api:development
+    depends_on:
+      - mongo
+    ports:
+      - "5001:5001"
+    environment:
+      - AUTH_TOKEN_SECRET=270336f7f365e82bc9fd4b6f3a0ddeda80e4e576637b81432698ae9e4c3100d2
+      - DOMAIN=localhost
+      - FILES_BASE_DOMAIN=https://files-dev.getleftfield.com
+      - MONGODB_URL=mongodb://admin:secret@mongo:27017
+      - NODE_ENV=development
+      - PORT=5001
+    volumes:
+      - ./api:/usr/src/code/api:cached
+
+  mongo:
+    image: mongo:4
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    logging:
+        driver: none

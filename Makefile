@@ -1,5 +1,3 @@
-dev:
-	netlify dev --live
-
-start:
-	npm start
+start-api:
+	docker-compose -f api.docker-compose.yml build
+	docker-compose -f api.docker-compose.yml up

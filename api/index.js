@@ -1,0 +1,73 @@
+const NODE_ENV = process.env.NODE_ENV;
+const PORT = process.env.PORT;
+
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+if (NODE_ENV === 'development') {
+  require(path.join(process.cwd(), 'environment/development.api'));
+}
+
+const cors = require('cors');
+const express = require('express');
+const pino = require('pino');
+const pinoHttps = require('pino-http');
+
+const mongoose = require('./db');
+const routeWrapper = require('./utils/routeWrapper');
+
+const app = express();
+
+const logger = pino({
+  prettyPrint: NODE_ENV !== 'production',
+});
+
+const httpLogger = pinoHttps({ logger });
+
+app.use(httpLogger);
+app.use(express.json());
+app.use(cors());
+
+app.use(function (req, res, next) {
+  res.setHeader('X-Powered-By', 'Leftfield');
+  next();
+});
+
+(async function () {
+  try {
+    app.post('/file', routeWrapper('upload-file'));
+    app.post('/login', routeWrapper('login'));
+    app.get('/organization/files', routeWrapper('get-organization-files'));
+    app.get('/profile', routeWrapper('get-profile'));
+    app.post('/signup', routeWrapper('signup'));
+    app.post('/website', routeWrapper('create-website'));
+    app.get('/website/:websiteId', routeWrapper('get-website'));
+    app.put('/website/:websiteId', routeWrapper('update-website'));
+
+    function listen() {
+      if (NODE_ENV === 'development') {
+        https.createServer({
+          key: fs.readFileSync(path.join(__dirname, '/certs/tls.key')),
+          cert: fs.readFileSync(path.join(__dirname, '/certs/tls.cert')),
+        }, app).listen(PORT);
+      } else {
+        app.listen(PORT);
+      }
+
+      logger.info(`Listening on port:${PORT}`);
+    }
+
+    const db = mongoose.connection;
+
+    db.on('error', (error) => {
+      throw error;
+    });
+
+    db.once('open', listen);
+  } catch (error) {
+    logger.error('Fatal startup error, exiting...');
+    logger.error(error);
+    process.exit(1);
+  }
+})();

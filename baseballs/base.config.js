@@ -33,7 +33,7 @@ module.exports = (prefix) => ({
     ],
   },
   output: {
-    path: path.join(process.cwd(), `/www/baseballs/${prefix}`),
+    path: path.join(process.cwd(), `/static/www/baseballs/${prefix}`),
     publicPath: `/baseballs/${prefix}`,
   },
   plugins: [

@@ -19,17 +19,16 @@ pids
 node_modules/
 
 # dotenv environment variables file
-.env
-.env.test
+environment/.env.*.api
 
 # product build output
-www/*
-!www/_redirects
-!www/404.html
-!www/500.html
+static/www/*
+!static/www/404.html
+!static/www/500.html
 
-# Local Netlify dev
-.netlify
+# API SSL Certs
+api/certs/tls.key
+api/certs/tls.cert
 
 # Cloudflare Worker build output
 dist
