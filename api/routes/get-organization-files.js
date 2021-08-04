@@ -39,7 +39,7 @@ async function getOrganizationFiles(request, response) {
     name || null,
     startAt || null,
     sortOn || 'updatedAt',
-    sortDirection || 1,
+    sortDirection || -1,
   );
 
   return respondWithSuccess(response, {

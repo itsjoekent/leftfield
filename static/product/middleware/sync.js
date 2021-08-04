@@ -1,5 +1,11 @@
 import md5 from 'md5';
-import { get } from 'lodash';
+import { find, get } from 'lodash';
+import { ComponentMeta, Settings } from 'pkg.campaign-components';
+import {
+  PAGE_SETTINGS,
+  SETTING_LABELS,
+  SITE_SETTINGS,
+} from '@product/constants/inheritance';
 import {
   addChildComponentToSlot,
   archivePreset,
@@ -32,6 +38,7 @@ import {
   selectComponentName,
   selectComponentSlot,
   selectComponentStyleInheritsFrom,
+  selectComponentTag,
   selectPageName,
   selectPresetName,
   selectWebsiteId,
@@ -70,6 +77,36 @@ const TRIGGERS = [
   wipeSlot.toString(),
   wipeStyle.toString(),
 ];
+
+function getPropertyName(pageId, componentId, propertyId, state) {
+  return get(
+    find(
+      get(
+        ComponentMeta[selectComponentTag(pageId, componentId)(state)],
+        'properties',
+        {},
+      ),
+      { id: propertyId },
+    ),
+    'label',
+    'property',
+  );
+}
+
+function getStyleName(pageId, componentId, styleId, state) {
+  return get(
+    find(
+      get(
+        ComponentMeta[selectComponentTag(pageId, componentId)(state)],
+        'styles',
+        {},
+      ),
+      { id: styleId },
+    ),
+    'label',
+    'style',
+  );
+}
 
 const ACTION_DESCRIPTIONS = {
   [addChildComponentToSlot.toString()]: ({ action, state }) => {
@@ -128,9 +165,65 @@ const ACTION_DESCRIPTIONS = {
 
     return `Reordered ${childName} in ${parentComponentName}`;
   },
-  // [resetComponentStyleAttribute]: ({ action, state }) => {
-  //   const componentName = selectComponentName(action.pageId, action.componentId)(state);
-  // },
+  [resetComponentStyleAttribute]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const styleName = getStyleName(action.payload.pageId, action.payload.componentId, action.payload.styleId, state);
+
+    return `Reset ${componentName} ${styleName} style`;
+  },
+  [setCampaignThemeKeyValue.toString()]: () => {
+    return 'Updated theme';
+  },
+  [setComponentPropertyValue.toString()]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const propertyName = getPropertyName(action.payload.pageId, action.payload.componentId, action.payload.propertyId, state);
+
+    return `Updated ${componentName} ${propertyName}`;
+  },
+  [setComponentInheritedFrom.toString()]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const propertyName = getPropertyName(action.payload.pageId, action.payload.componentId, action.payload.propertyId, state);
+
+    return `Updated ${componentName} ${propertyName} to use ${SETTING_LABELS[action.payload.value]}`;
+  },
+  [setComponentStyle.toString()]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const styleName = getStyleName(action.payload.pageId, action.payload.componentId, action.payload.styleId, state);
+
+    return `Updated ${componentName} ${styleName} style`;
+  },
+  [setComponentCustomStyle.toString()]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const styleName = getStyleName(action.payload.pageId, action.payload.componentId, action.payload.styleId, state);
+
+    return `Updated ${componentName} ${styleName} style`;
+  },
+  [setComponentThemeStyle.toString()]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const styleName = getStyleName(action.payload.pageId, action.payload.componentId, action.payload.styleId, state);
+
+    return `Updated ${componentName} ${styleName} style`;
+  },
+  [setPresetName.toString()]: ({ action, priorState }) => {
+    const name = action.payload.name;
+    const priorName = selectPresetName(action.payload.presetId)(priorState);
+
+    return `Renamed "${priorName}" preset to ${name}`;
+  },
+  [setMetaValue.toString()]: () => {
+    return 'Updated theme';
+  },
+  [setPageSetting.toString()]: ({ action, state }) => {
+    const pageName = selectPageName(action.payload.pageId)(state);
+    const name = get(Settings[action.payload.settingId], 'field.label', 'setting');
+
+    return `Updated ${pageName} ${name} setting`;
+  },
+  [setSiteSetting.toString()]: ({ action }) => {
+    const name = get(Settings[action.payload.settingId], 'field.label', 'setting');
+    return `Updated ${name} site setting`;
+  },
+  [undo.toString()]: () => 'Undo',
 };
 
 const sync = store => next => action => {
@@ -169,6 +262,7 @@ const sync = store => next => action => {
 
     if (compareHash !== versionHash) {
       const descriptionGenerator = ACTION_DESCRIPTIONS[action.type];
+      console.log(action.type);
       const description = descriptionGenerator
         ? descriptionGenerator({ action, state, priorState })
         : null;

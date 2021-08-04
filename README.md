@@ -18,5 +18,4 @@ $ npm start
 $ make start-api
 ```
 
-- finish `sync` descriptors
 - get file modal working

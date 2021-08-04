@@ -58,7 +58,7 @@ schema.statics.findAllForOrganization = function(
   name = null,
   startAt = null,
   sortOn = 'updatedAt',
-  sortDirection = 1,
+  sortDirection = -1,
   limit = 25,
 ) {
   const query = { organization: organizationId };
@@ -72,11 +72,12 @@ schema.statics.findAllForOrganization = function(
   }
 
   if (startAt) {
-    query['_id'] = { '$gt': mongoose.Types.ObjectId(startAt) };
+    const operator = sortDirection > 1 ? '$gt' : '$lt';
+    query['_id'] = { [operator]: mongoose.Types.ObjectId(startAt) };
   }
 
-  return this.find(query).sort({ [sortOn]: sortDirection }).limit(limit);
-});
+  return this.find(query).sort({ [sortOn]: sortDirection }).limit(limit).exec();
+};
 
 const File = mongoose.model('File', schema);
 

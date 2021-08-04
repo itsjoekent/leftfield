@@ -10,7 +10,7 @@ const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID;
 const CF_NAMESPACE_ID = process.env.CF_NAMESPACE_ID;
 const CF_API_KEY = process.env.CF_API_KEY;
 
-const FILES_BASE_DOMAIN = process.env.FILES_BASE_DOMAIN;
+const FILES_DOMAIN = process.env.FILES_DOMAIN;
 
 async function upload(
   key,
@@ -53,7 +53,7 @@ async function upload(
     });
   }
 
-  return `${FILES_BASE_DOMAIN}/file/${key}`;
+  return `${FILES_DOMAIN}/file/${key}`;
 }
 
 module.exports = { upload };

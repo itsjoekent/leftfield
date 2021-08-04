@@ -8,12 +8,17 @@ function transformAccount(account, requestingAccount = null) {
     lastName,
   } = account;
 
-  return {
+  const data = {
     id: _id.toString(),
-    email,
     firstName,
     lastName,
   };
+
+  if (requestingAccount && _id.equals(requestingAccount._id)) {
+    data.email = email;
+  }
+
+  return data;
 }
 
 function transformAssembly(assembly, requestingAccount = null) {
@@ -47,7 +52,9 @@ function transformFile(file, requestingAccount = null) {
   const {
     _id,
     name,
+    fileKey,
     fileSize,
+    fileType,
     createdAt,
     updatedAt,
   } = file;
@@ -62,7 +69,9 @@ function transformFile(file, requestingAccount = null) {
     name,
     uploadedBy,
     lastUpdatedBy,
+    fileKey,
     fileSize,
+    fileType,
     createdAt,
     updatedAt,
   };
@@ -108,6 +117,8 @@ function transformWebsite(website, requestingAccount = null) {
 
 module.exports = {
   transformAccount,
+  transformAssembly,
+  transformFile,
   transformOrganization,
   transformWebsite,
 };

@@ -146,7 +146,7 @@ export default function Uploader(props) {
               type: FILE_SELECTOR,
               props: {
                 accepts: allow,
-                onSelect: ({ fileUrl }) => setFieldValue(fileUrl),
+                onSelect: ({ fileKey }) => setFieldValue(`${process.env.FILES_DOMAIN}/file/${fileKey}`),
               },
             }))}
           >

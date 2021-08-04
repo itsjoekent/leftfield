@@ -21,7 +21,10 @@ export const autoSaveSlice = createSlice({
       state.latestRevision = action.payload.data;
       state.lastUpdated = Date.now();
       state.revisionHash = action.payload.hash;
-      state.revisionDescription.push(action.payload.description);
+
+      if (!state.revisionDescription.includes(action.payload.description)) {
+        state.revisionDescription.push(action.payload.description);
+      }
     },
   },
 });

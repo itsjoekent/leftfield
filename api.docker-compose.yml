@@ -14,7 +14,7 @@ services:
       - AUTH_TOKEN_SECRET=270336f7f365e82bc9fd4b6f3a0ddeda80e4e576637b81432698ae9e4c3100d2
       - DOMAIN=localhost
       - FRONTEND_URL=https://localhost:5000
-      - FILES_BASE_DOMAIN=https://files-dev.getleftfield.com
+      - FILES_DOMAIN=https://files-dev.getleftfield.com
       - MONGODB_URL=mongodb://admin:secret@mongo:27017
       - NODE_ENV=development
       - PORT=5001

@@ -27,7 +27,7 @@ const httpLogger = pinoHttps({ logger });
     const server = https.createServer(httpsOptions, (request, response) => {
       httpLogger(request, response);
 
-      handler(request, response, {
+      const serveOptions = {
         cleanUrls: true,
         directoryListing: NODE_ENV !== 'production',
         public: path.join(__dirname, 'www'),
@@ -39,7 +39,23 @@ const httpLogger = pinoHttps({ logger });
           { source: '/signup', destination: '/product/index.html' },
         ],
         trailingSlash: false,
-      })
+      };
+
+      if (NODE_ENV !== 'production') {
+        serveOptions.headers = [
+          {
+            source: '**/*.*',
+            headers: [
+              {
+                key: 'Cache-Control',
+                value: 'no-cache',
+              },
+            ],
+          },
+        ];
+      }
+
+      handler(request, response, serveOptions);
     });
 
     server.listen(PORT);

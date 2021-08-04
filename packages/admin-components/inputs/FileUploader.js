@@ -46,7 +46,7 @@ export default function FileUploader(props) {
       onUpload({
         fileData: binary,
         mimeType: type,
-        originalFileName: name,
+        originalFileName: name.split('.')[0],
       });
 
       event.target.value = '';

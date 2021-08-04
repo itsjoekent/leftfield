@@ -87,7 +87,7 @@ const SplashMeta = {
   styles: [
     {
       id: PHOTO_STYLE,
-      label: 'Splash Photo',
+      label: 'Photo',
       attributes: [
         {
           id: PHOTO_SIZE_ATTRIBUTE,
@@ -137,7 +137,7 @@ const SplashMeta = {
     },
     {
       id: CONTENT_STYLE,
-      label: 'Splash Content',
+      label: 'Content',
       attributes: [
         ...BoxStyle.attributes(),
         ...FlexStyle.attributes(),

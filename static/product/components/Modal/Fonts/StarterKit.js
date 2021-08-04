@@ -109,6 +109,7 @@ export default function StarterKit(props) {
   return (
     <Flex.Column
       role="button"
+      tabIndex="0"
       justify="space-between"
       bg={(colors) => colors.mono[100]}
       borderColor={(colors) => colors.mono[100]}
@@ -118,6 +119,7 @@ export default function StarterKit(props) {
       hoverShadow={() => 'box-shadow: none;'}
       rounded={(radius) => radius.default}
       padding="0px"
+      transitions={['box-shadow', 'border']}
       onClick={addFonts}
       cursor="pointer"
     >

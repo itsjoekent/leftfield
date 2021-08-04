@@ -19,7 +19,7 @@ async function uploadFile(request, response) {
     { key: 'fileData' },
   ]);
 
-  const account = await validateAuthorizationHeader(event);
+  const account = await validateAuthorizationHeader(request);
   if (account._apiError) throw account;
 
   const {

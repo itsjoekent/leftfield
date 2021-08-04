@@ -44,7 +44,7 @@ schema.statics.findAllForOrganization = function(
   name = null,
   startAt = null,
   sortOn = 'updatedAt',
-  sortDirection = 1,
+  sortDirection = -1,
   limit = 25,
 ) {
   const query = { organization: organizationId };
