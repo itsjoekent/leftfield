@@ -4,6 +4,7 @@ const initialState = {
   latestRevision: null,
   lastUpdated: null,
   revisionHash: null,
+  revisionDescription: [],
 };
 
 export const autoSaveSlice = createSlice({
@@ -13,11 +14,14 @@ export const autoSaveSlice = createSlice({
     clear: (state) => {
       state.latestRevision = initialState.latestRevision;
       state.lastUpdated = initialState.lastUpdated;
+      state.revisionHash = initialState.revisionHash;
+      state.revisionDescription = initialState.revisionDescription;
     },
     pushRevision: (state, action) => {
       state.latestRevision = action.payload.data;
       state.lastUpdated = Date.now();
       state.revisionHash = action.payload.hash;
+      state.revisionDescription.push(action.payload.description);
     },
   },
 });

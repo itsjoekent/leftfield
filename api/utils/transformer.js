@@ -16,6 +16,26 @@ function transformAccount(account, requestingAccount = null) {
   };
 }
 
+function transformAssembly(assembly, requestingAccount = null) {
+  const {
+    _id,
+    organization,
+    description,
+    createdBy,
+    data,
+    createdAt,
+  } = assembly;
+
+  return {
+    id: _id.toString(),
+    organization: transformOrganization(organization, requestingAccount),
+    description,
+    createdBy: transformAccount(createdBy, requestingAccount),
+    data,
+    createdAt,
+  };
+}
+
 function transformFile(file, requestingAccount = null) {
   if (!!file.organization && (
     !requestingAccount
@@ -71,6 +91,8 @@ function transformWebsite(website, requestingAccount = null) {
     name,
     domain,
     data,
+    draftVersion,
+    publishedVersion,
   } = website;
 
   return {
@@ -79,6 +101,8 @@ function transformWebsite(website, requestingAccount = null) {
     name,
     domain,
     data,
+    draftVersion: draftVersion ? transformAssembly(draftVersion, requestingAccount) : null,
+    publishedVersion: publishedVersion ? transformAssembly(publishedVersion, requestingAccount) : null,
   };
 }
 

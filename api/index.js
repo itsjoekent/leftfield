@@ -27,7 +27,11 @@ const httpLogger = pinoHttps({ logger });
 
 app.use(httpLogger);
 app.use(express.json());
-app.use(cors());
+
+app.use(cors({
+  credentials: true,
+  origin: process.env.FRONTEND_URL,
+}));
 
 app.use(function (req, res, next) {
   res.setHeader('X-Powered-By', 'Leftfield');
@@ -39,6 +43,7 @@ app.use(function (req, res, next) {
     app.post('/file', routeWrapper('upload-file'));
     app.post('/login', routeWrapper('login'));
     app.get('/organization/files', routeWrapper('get-organization-files'));
+    app.get('/organization/websites', routeWrapper('get-organization-websites'));
     app.get('/profile', routeWrapper('get-profile'));
     app.post('/signup', routeWrapper('signup'));
     app.post('/website', routeWrapper('create-website'));

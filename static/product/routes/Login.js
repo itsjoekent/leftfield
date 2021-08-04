@@ -39,7 +39,7 @@ export default function Login() {
 
       dispatch(setToken(get(json, 'token')));
       setLocation(EDITOR_ROUTE);
-    });
+    }, { credentials: 'include' });
   }
 
   const fields = [

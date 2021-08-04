@@ -5,7 +5,7 @@ import {
   archivePreset,
   buildComponent,
   deleteComponentAndDescendants,
-  detachStyleReference,
+  detachPreset,
   duplicateComponent,
   exportStyle,
   importStyle,
@@ -29,6 +29,11 @@ import {
   wipeSlot,
   wipeStyle,
 
+  selectComponentName,
+  selectComponentSlot,
+  selectComponentStyleInheritsFrom,
+  selectPageName,
+  selectPresetName,
   selectWebsiteId,
 } from '@product/features/assembly';
 import {
@@ -41,7 +46,7 @@ const TRIGGERS = [
   archivePreset.toString(),
   buildComponent.toString(),
   deleteComponentAndDescendants.toString(),
-  detachStyleReference.toString(),
+  detachPreset.toString(),
   duplicateComponent.toString(),
   exportStyle.toString(),
   importStyle.toString(),
@@ -66,7 +71,70 @@ const TRIGGERS = [
   wipeStyle.toString(),
 ];
 
+const ACTION_DESCRIPTIONS = {
+  [addChildComponentToSlot.toString()]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const parentComponentName = selectComponentName(action.payload.pageId, action.payload.parentComponentId)(state);
+
+    return `Added ${componentName} to ${parentComponentName}`;
+  },
+  [archivePreset.toString()]: ({ action, state }) => {
+    const presetName = selectPresetName(action.payload.presetId)(state);
+    return `Archived ${presetName}`;
+  },
+  [buildComponent.toString()]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    return `Created ${componentName}`;
+  },
+  [deleteComponentAndDescendants.toString()]: ({ action, priorState }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(priorState);
+    return `Deleted ${componentName}`;
+  },
+  [detachPreset.toString()]: ({ action, state, priorState }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const presetId = selectComponentStyleInheritsFrom(action.payload.pageId, action.payload.componentId)(priorState);
+    const presetName = selectPresetName(presetId)(state);
+
+    return `Removed ${presetName} from ${componentName}`;
+  },
+  [duplicateComponent.toString()]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    return `Duplicated ${componentName}`;
+  },
+  [exportStyle.toString()]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const presetName = selectPresetName(action.payload.presetId)(state);
+
+    return `Created ${presetName} and applied to ${componentName}`;
+  },
+  [importStyle.toString()]: ({ action, state }) => {
+    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const presetName = selectPresetName(action.payload.presetId)(state);
+
+    return `Applied ${presetName} to ${componentName}`;
+  },
+  [redo.toString()]: () => 'Redo',
+  [removeChildComponentFromSlot.toString()]: ({ action, state, priorState }) => {
+    const parentComponentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const slot = selectComponentSlot(action.payload.pageId, action.payload.componentId, action.payload.slotId)(priorState);
+    const childName = selectComponentName(action.payload.pageId, slot[action.payload.targetIndex])(state);
+
+    return `Removed ${childName} from ${parentComponentName}`;
+  },
+  [reorderChildComponent.toString()]: ({ action, state }) => {
+    const parentComponentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const slot = selectComponentSlot(action.payload.pageId, action.payload.componentId, action.payload.slotId)(priorState);
+    const childName = selectComponentName(action.payload.pageId, slot[action.payload.fromIndex])(state);
+
+    return `Reordered ${childName} in ${parentComponentName}`;
+  },
+  // [resetComponentStyleAttribute]: ({ action, state }) => {
+  //   const componentName = selectComponentName(action.pageId, action.componentId)(state);
+  // },
+};
+
 const sync = store => next => action => {
+  const priorState = store.getState();
   const result = next(action);
 
   const state = store.getState();
@@ -96,9 +164,20 @@ const sync = store => next => action => {
       theme,
     };
 
-    const versionHash = md5(JSON.stringify(payload));
+    const stringified = JSON.stringify(payload);
+    const versionHash = md5(stringified);
+
     if (compareHash !== versionHash) {
-      store.dispatch(pushRevision({ data: payload, hash: versionHash }));
+      const descriptionGenerator = ACTION_DESCRIPTIONS[action.type];
+      const description = descriptionGenerator
+        ? descriptionGenerator({ action, state, priorState })
+        : null;
+
+      store.dispatch(pushRevision({
+        data: stringified,
+        hash: versionHash,
+        description,
+      }));
     }
   }
 

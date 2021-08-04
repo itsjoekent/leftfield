@@ -10,7 +10,7 @@ export default function AutoSave() {
   const hitApi = useProductApi();
 
   const websiteId = useSelector(selectWebsiteId);
-  const { latestRevision } = useSelector(selectAutoSave);
+  const { latestRevision, revisionDescription } = useSelector(selectAutoSave);
 
   const [isSaving, setIsSaving] = React.useState(false);
 
@@ -18,11 +18,19 @@ export default function AutoSave() {
     if (!latestRevision) return;
 
     setIsSaving(true);
+
+    const descriptionStringified = revisionDescription
+      .filter((line) => !!line)
+      .join(', ');
+
     const timeoutId = setTimeout(() => {
       hitApi(
         'put',
-        `/update-website/${websiteId}`,
-        { updatedVersion: latestRevision },
+        `/website/${websiteId}`,
+        {
+          updatedVersion: latestRevision,
+          description: descriptionStringified,
+        },
         () => {
           dispatch(clear());
           setIsSaving(false);
@@ -31,7 +39,7 @@ export default function AutoSave() {
     }, 1500);
 
     return () => clearTimeout(timeoutId);
-  }, [websiteId, latestRevision]);
+  }, [websiteId, latestRevision, revisionDescription]);
 
   return (
     <Typography

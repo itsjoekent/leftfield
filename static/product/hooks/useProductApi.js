@@ -18,6 +18,7 @@ export default function useProductApi(
     route = '',
     payload = null,
     onResponse = () => {},
+    options = {},
   ) {
     const url = `${process.env.API_DOMAIN}${route}`;
 
@@ -28,6 +29,7 @@ export default function useProductApi(
           'content-type': 'application/json',
           'authorization': `Bearer ${authToken}`,
         },
+        ...options,
       };
 
       if (payload && method.toLowerCase() !== 'get') {
@@ -49,20 +51,22 @@ export default function useProductApi(
 
       let json = null;
 
-      try {
-        json = await response.json();
-      } catch (error) {
-        console.error(error);
+      if (response.headers.get('content-type').includes('application/json')) {
+        try {
+          json = await response.json();
+        } catch (error) {
+          console.error(error);
 
-        if (triggerSnacks) {
-          dispatch(pushSnack({
-            message: 'Encountered unexpected error, try again?',
-            type: SPICY_SNACK,
-          }));
+          if (triggerSnacks) {
+            dispatch(pushSnack({
+              message: 'Encountered unexpected error, try again?',
+              type: SPICY_SNACK,
+            }));
+          }
+
+          onResponse({ status, json, ok });
+          return;
         }
-
-        onResponse({ status, json, ok });
-        return;
       }
 
       if (status >= 400) {

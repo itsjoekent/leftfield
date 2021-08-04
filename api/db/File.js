@@ -1,4 +1,6 @@
 const mongoose = require('./');
+const Account = require('./Account');
+const Organization = require('./Organization');
 
 const schema = new mongoose.Schema({
   'organization': {
@@ -37,19 +39,20 @@ schema.index({ 'name': 'text' });
 schema.index({ 'createdAt': 1 });
 schema.index({ 'updatedAt': 1 });
 
-schema.pre('find', function() {
+function populate() {
   this.populate('organization')
     .populate('uploadedBy')
     .populate('lastUpdatedBy');
-});
+}
 
-const File = mongoose.model('File', schema);
+schema.pre('find', populate);
+schema.pre('findOne', populate);
 
-File.statics.findByFileKey = function(fileKey) {
+schema.statics.findByFileKey = function(fileKey) {
   return this.findOne({ fileKey });
 };
 
-File.statics.findAllForOrganization = function(
+schema.statics.findAllForOrganization = function(
   organizationId = null,
   fileTypes = null,
   name = null,
@@ -58,10 +61,10 @@ File.statics.findAllForOrganization = function(
   sortDirection = 1,
   limit = 25,
 ) {
-  const query = { organizationId };
+  const query = { organization: organizationId };
 
   if (name) {
-    query['$text'] = { '$search': name, '$caseSensitive': true };
+    query['$text'] = { '$search': name, '$caseSensitive': false };
   }
 
   if (fileTypes) {
@@ -74,5 +77,7 @@ File.statics.findAllForOrganization = function(
 
   return this.find(query).sort({ [sortOn]: sortDirection }).limit(limit);
 });
+
+const File = mongoose.model('File', schema);
 
 module.exports = File;

@@ -8,7 +8,7 @@ async function getProfile(request, response) {
   const account = await validateAuthorizationHeader(request);
   if (account._apiError) throw account;
 
-  const payload = { account: transformAccount(account) };
+  const payload = { account: transformAccount(account, account) };
 
   const organization = await Organization.findById(account.organization._id);
   if (organization) {

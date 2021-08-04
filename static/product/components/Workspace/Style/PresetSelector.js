@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { find } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  detachStyleReference,
+  detachPreset,
   importStyle,
   selectComponentStyleInheritsFrom,
   selectPresetsOfTypeSortedAsArray,
@@ -38,7 +38,7 @@ export default function PresetSelector(props) {
 
   function onChange({ value }) {
     if (value === CUSTOM_OPTION.value) {
-      dispatch(detachStyleReference({
+      dispatch(detachPreset({
         pageId: activePageId,
         componentId: activeComponentId,
         styleId,

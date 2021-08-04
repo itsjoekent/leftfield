@@ -52,13 +52,15 @@ async function signup(request, response) {
     lastLoggedIn: Date.now(),
   });
 
+  const isLocalHost = process.env.DOMAIN.includes('localhost');
+
   const jwt = await signToken(email);
   const jwtCookie = cookie.serialize(AUTH_TOKEN_COOKIE, jwt, {
     path: '/',
     secure: true,
     sameSite: 'lax',
-    maxAge: ms('7 days'),
-    domain: process.env.DOMAIN,
+    maxAge: ms('7 days') / 1000,
+    domain: isLocalHost ? '' : process.env.DOMAIN,
   });
 
   return respondWithSuccess(

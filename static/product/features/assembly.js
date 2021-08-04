@@ -178,7 +178,7 @@ export const assemblySlice = createSlice({
 
       recursiveDelete(componentId);
     },
-    detachStyleReference: (state, action) => {
+    detachPreset: (state, action) => {
       const {
         pageId,
         componentId,
@@ -569,7 +569,7 @@ export const {
   archivePreset,
   buildComponent,
   deleteComponentAndDescendants,
-  detachStyleReference,
+  detachPreset,
   duplicateComponent,
   exportStyle,
   importStyle,

@@ -1,4 +1,5 @@
 const mongoose = require('./');
+const Organization = require('./Organization');
 
 const schema = new mongoose.Schema({
   'email': {
@@ -20,9 +21,12 @@ const schema = new mongoose.Schema({
   timestamps: true,
 });
 
-schema.pre('find', function() {
+function populate() {
   this.populate('organization');
-});
+}
+
+schema.pre('find', populate);
+schema.pre('findOne', populate);
 
 schema.statics.findByEmail = function (email) {
   return this.findOne({ email: email.toLowerCase() });

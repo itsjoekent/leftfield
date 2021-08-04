@@ -24,10 +24,7 @@ async function createWebsite(request, response) {
   });
 
   return respondWithSuccess(response, {
-    website: transformWebsite({
-      ...website,
-      organization,
-    }, account),
+    website: transformWebsite({ ...website.toObject(), organization }, account),
   });
 }
 

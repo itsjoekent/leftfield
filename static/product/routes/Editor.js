@@ -56,22 +56,23 @@ export default function Editor() {
     }
 
     if (!!organization) {
-      if (get(organization, 'websites.length', 0) === 1) {
-        const websiteId = organization.websites[0];
+      hitApi('get', '/organization/websites', null, ({ json, ok }) => {
+        if (ok && !cancel) {
+          const websites = get(json, 'websites', []);
 
-        hitApi('get', `/website/${websiteId}`, null, ({ json, ok }) => {
-          if (ok && !cancel) {
+          if (websites.length) {
+            const [website] = websites;
+            const websiteId = get(website, 'id');
+            const data = JSON.parse(get(website, 'draftVersion.data', '{}'));
+
             dispatch(setAssemblyState({
-              newAssembly: {
-                websiteId,
-                ...get(json, 'website.data', {}),
-              },
+              newAssembly: { websiteId, ...data },
             }));
+          } else {
+            dispatch(setModal({ type: WEBSITE_SELECTOR_MODAL }));
           }
-        });
-      } else {
-        dispatch(setModal({ type: WEBSITE_SELECTOR_MODAL }));
-      }
+        }
+      });
     }
 
     return () => cancel = true;
