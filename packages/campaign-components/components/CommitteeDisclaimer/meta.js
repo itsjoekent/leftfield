@@ -29,6 +29,7 @@ const CommitteeDisclaimerMeta = {
   tag: TAG,
   name: 'Committee Disclaimer',
   shortDescription: 'FEC mandated disclaimer',
+  version: '1',
   properties: [
     {
       ...PAID_FOR_BY_COMMITTEE.field,
