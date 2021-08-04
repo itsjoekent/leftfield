@@ -10,6 +10,9 @@ const pinoHttps = require('pino-http');
 
 const logger = pino({
   prettyPrint: NODE_ENV !== 'production',
+  redact: NODE_ENV === 'production' ? [
+    'req.headers.cookie',
+  ] : [],
 });
 
 const httpLogger = pinoHttps({ logger });

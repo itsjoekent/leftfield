@@ -262,7 +262,6 @@ const sync = store => next => action => {
 
     if (compareHash !== versionHash) {
       const descriptionGenerator = ACTION_DESCRIPTIONS[action.type];
-      console.log(action.type);
       const description = descriptionGenerator
         ? descriptionGenerator({ action, state, priorState })
         : null;

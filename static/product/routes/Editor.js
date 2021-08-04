@@ -47,31 +47,39 @@ export default function Editor() {
     let cancel = false;
 
     if (!organization) {
-      hitApi('get', '/profile', null, ({ json, ok }) => {
-        if (ok && !cancel) {
-          dispatch(setAccount(get(json, 'account')));
-          dispatch(setOrganization(get(json, 'organization')));
-        }
+      hitApi({
+        method: 'get',
+        route: '/profile',
+        onResponse: ({ json, ok }) => {
+          if (ok && !cancel) {
+            dispatch(setAccount(get(json, 'account')));
+            dispatch(setOrganization(get(json, 'organization')));
+          }
+        },
       });
     }
 
     if (!!organization) {
-      hitApi('get', '/organization/websites', null, ({ json, ok }) => {
-        if (ok && !cancel) {
-          const websites = get(json, 'websites', []);
+      hitApi({
+        method: 'get',
+        route: '/organization/websites',
+        onResponse: ({ json, ok }) => {
+          if (ok && !cancel) {
+            const websites = get(json, 'websites', []);
 
-          if (websites.length) {
-            const [website] = websites;
-            const websiteId = get(website, 'id');
-            const data = JSON.parse(get(website, 'draftVersion.data', '{}'));
+            if (websites.length) {
+              const [website] = websites;
+              const websiteId = get(website, 'id');
+              const data = JSON.parse(get(website, 'draftVersion.data', '{}'));
 
-            dispatch(setAssemblyState({
-              newAssembly: { websiteId, ...data },
-            }));
-          } else {
-            dispatch(setModal({ type: WEBSITE_SELECTOR_MODAL }));
+              dispatch(setAssemblyState({
+                newAssembly: { websiteId, ...data },
+              }));
+            } else {
+              dispatch(setModal({ type: WEBSITE_SELECTOR_MODAL }));
+            }
           }
-        }
+        },
       });
     }
 

@@ -29,17 +29,24 @@ export default function Login() {
     const { email, password } = values;
     setIsLoading(true);
 
-    hitApi('post', '/login', { email, password }, ({ status, json }) => {
-      setIsLoading(false);
+    hitApi({
+      method: 'post',
+      route: '/login',
+      payload: { email, password },
+      options: { credentials: 'include' },
+      onResponse: ({ status, json }) => {
+        setIsLoading(false);
 
-      if (get(json, 'error')) {
-        setFormError(get(json, 'error.message', 'Encountered error logging in, try again?'));
-        return;
-      }
+        if (get(json, 'error')) {
+          setFormError(get(json, 'error.message', 'Encountered error logging in, try again?'));
+          return;
+        }
 
-      dispatch(setToken(get(json, 'token')));
-      setLocation(EDITOR_ROUTE);
-    }, { credentials: 'include' });
+        dispatch(setToken(get(json, 'token')));
+        setLocation(EDITOR_ROUTE);
+      },
+      onFatalError: () => setIsLoading(false),
+    });
   }
 
   const fields = [

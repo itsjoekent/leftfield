@@ -21,6 +21,10 @@ const app = express();
 
 const logger = pino({
   prettyPrint: NODE_ENV !== 'production',
+  redact: NODE_ENV === 'production' ? [
+    'req.headers.cookie',
+    'req.headers.authorization',
+  ] : [],
 });
 
 const httpLogger = pinoHttps({ logger });

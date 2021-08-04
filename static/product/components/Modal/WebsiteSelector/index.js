@@ -18,15 +18,24 @@ export default function WebsiteSelector() {
   const [isBuiding, setIsBuilding] = React.useState(false);
 
   function onCreateBlank() {
+    if (isBuiding) {
+      return;
+    }
+
     setIsBuilding(true);
 
-    hitApi('post', '/website', null, ({ json, ok }) => {
-      setIsBuilding(false);
+    hitApi({
+      method: 'post',
+      route: '/website',
+      onResponse: ({ json, ok }) => {
+        setIsBuilding(false);
 
-      if (ok) {
-        dispatch(setWebsiteId({ websiteId: get(json, 'website.id') }));
-        dispatch(setModal({ type: null }));
-      }
+        if (ok) {
+          dispatch(setWebsiteId({ websiteId: get(json, 'website.id') }));
+          dispatch(setModal({ type: null }));
+        }
+      },
+      onFatalError: () => setIsBuilding(false),
     });
   }
 
@@ -38,12 +47,12 @@ export default function WebsiteSelector() {
     >
       <Flex.Column fullWidth bg={(colors) => colors.mono[100]}>
         <Buttons.Filled
-          disabled={isBuiding}
           paddingVertical="4px"
           paddingHorizontal="8px"
           buttonFg={(colors) => colors.mono[100]}
           buttonBg={(colors) => colors.blue[500]}
           hoverButtonBg={(colors) => colors.blue[700]}
+          isLoading={isBuiding}
           onClick={onCreateBlank}
         >
           <Typography

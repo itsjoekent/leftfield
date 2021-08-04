@@ -9,6 +9,7 @@ import {
 import { Languages, PropertyTypes } from 'pkg.campaign-components';
 import { useFormField, FormWizardField } from 'pkg.form-wizard';
 import WorkspaceFieldLabel from '@product/components/Workspace/FieldLabel';
+import WorkspaceUploadField from '@product/components/Workspace/UploadField';
 import useSiteLanguages from '@product/hooks/useSiteLanguages';
 
 export default function FormField(props) {
@@ -70,6 +71,18 @@ export default function FormField(props) {
                         />
                       );
                     };
+
+                    case PropertyTypes.UPLOAD_TYPE: {
+                      const allow = get(setting, 'allow', []);
+
+                      return (
+                        <WorkspaceUploadField
+                          allow={allow}
+                          imageSource={field.value}
+                          setImageSource={(source) => field.setFieldValue(source)}
+                        />
+                      );
+                    }
 
                     default: return null;
                   }

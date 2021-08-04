@@ -1,5 +1,4 @@
 import React from 'react';
-import qs from 'qs';
 import { get, uniqBy } from 'lodash';
 import { useDispatch } from 'react-redux';
 import {
@@ -58,11 +57,11 @@ export default function FileSelector(props) {
         queryParams.startAt = [...searchResults].pop().id;
       }
 
-      await hitApi(
-        'get',
-        `/organization/files?${qs.stringify(queryParams)}`,
-        null,
-        ({ ok, json }) => {
+      hitApi({
+        method: 'get',
+        route: '/organization/files',
+        query: queryParams,
+        onResponse: ({ ok, json }) => {
           if (ok) {
             setSearchResults((existing) => uniqBy(
               [...existing, ...get(json, 'files', [])],
@@ -71,8 +70,9 @@ export default function FileSelector(props) {
           }
 
           setIsRequesting(false);
-        }
-      );
+        },
+        onFatalError: () => setIsRequesting(false),
+      });
     } catch (error) {
       console.error(error);
 

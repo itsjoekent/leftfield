@@ -8,6 +8,7 @@ import {
   SELECT_TYPE,
   SHORT_TEXT_TYPE,
   TOGGLE_TYPE,
+  UPLOAD_TYPE,
   URL_TYPE,
 } from 'pkg.campaign-components/constants/property-types';
 
@@ -87,6 +88,21 @@ export const LANGUAGES = {
   },
 };
 
+export const META_IMAGE = {
+  key: 'META_IMAGE',
+  field: {
+    label: 'Meta Image',
+    help: 'Upload the highest resolution image you have, Leftfield will automatically crop and compress',
+    type: UPLOAD_TYPE,
+    allow: [
+      'image/avif',
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+    ],
+  },
+};
+
 export const PAID_FOR_BY_COMMITTEE = {
   key: 'PAID_FOR_BY_COMMITTEE',
   field: {
@@ -110,6 +126,7 @@ export const SiteSettings = [
   appendSetting(DEFAULT_ACTBLUE_DONATION_FORM),
   appendSetting(DEFAULT_ACTBLUE_REFCODE),
   appendSetting(LANGUAGES),
+  appendSetting(META_IMAGE),
   appendSetting(PAID_FOR_BY_COMMITTEE),
 ];
 
@@ -118,4 +135,5 @@ export const PageSettings = [
   appendSetting(ACTBLUE_EXPRESS_DISCLAIMER_COPY),
   appendSetting(DEFAULT_ACTBLUE_DONATION_FORM),
   appendSetting(DEFAULT_ACTBLUE_REFCODE),
+  appendSetting(META_IMAGE),
 ];

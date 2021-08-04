@@ -1,3 +1,4 @@
+import qs from 'qs';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'wouter';
@@ -13,14 +14,16 @@ export default function useProductApi(
   const dispatch = useDispatch();
   const [, setLocation] = useLocation();
 
-  async function hitApi(
+  async function hitApi({
     method = '',
     route = '',
     payload = null,
+    query = null,
     onResponse = () => {},
+    onFatalError = () => {},
     options = {},
-  ) {
-    const url = `${process.env.API_DOMAIN}${route}`;
+  }) {
+    const url = `${process.env.API_DOMAIN}${route}${query ? `?${qs.stringify(query)}` : ''}`;
 
     try {
       const fetchOptions = {
@@ -94,6 +97,10 @@ export default function useProductApi(
         message: 'Encountered unexpected error, try again?',
         type: SPICY_SNACK,
       }));
+
+      if (!!onFatalError) {
+        onFatalError(error);
+      }
     }
   }
 

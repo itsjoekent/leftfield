@@ -697,7 +697,7 @@ const parliamentarian = store => next => action => {
   const appliedState = store.getState();
 
   if (process.env.NODE_ENV === 'development') {
-    console.log('parliamentarian => ', action.type, appliedState);
+    console.log('parliamentarian => ', action.type, action.payload, appliedState);
   }
 
   const pageCompilation = JSON.parse(JSON.stringify(get(appliedState, `assembly.pages.${pageId}`)));

@@ -30,16 +30,23 @@ export default function Signup() {
     setIsLoading(true);
     setFormError(null);
 
-    hitApi('post', '/signup', values, ({ status, json }) => {
-      setIsLoading(false);
+    hitApi({
+      method: 'post',
+      route: '/signup',
+      payload: values,
+      options: { credentials: 'include' },
+      onResponse: ({ status, json }) => {
+        setIsLoading(false);
 
-      if (get(json, 'error')) {
-        setFormError(get(json, 'error.message', 'Encountered error signing up, try again?'));
-        return;
-      }
+        if (get(json, 'error')) {
+          setFormError(get(json, 'error.message', 'Encountered error signing up, try again?'));
+          return;
+        }
 
-      dispatch(setToken(get(json, 'token')));
-      setLocation(EDITOR_ROUTE);
+        dispatch(setToken(get(json, 'token')));
+        setLocation(EDITOR_ROUTE);
+      },
+      onFatalError: () => setIsLoading(false),
     });
   }
 

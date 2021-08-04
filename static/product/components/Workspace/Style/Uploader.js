@@ -10,14 +10,13 @@ import {
   Inputs,
   Typography,
 } from 'pkg.admin-components';
+import WorkspaceUploadField from '@product/components/Workspace/UploadField';
 import {
   selectComponentStyleAttributeForDeviceCascading,
   setComponentCustomStyle,
 } from '@product/features/assembly';
 import { selectPreviewDeviceSize } from '@product/features/previewMode';
-import { pushSnack, SPICY_SNACK } from '@product/features/snacks';
 import useActiveWorkspaceComponent from '@product/hooks/useActiveWorkspaceComponent';
-import useProductApi from '@product/hooks/useProductApi';
 
 export default function Uploader(props) {
   const { styleId, attribute } = props;
@@ -26,9 +25,6 @@ export default function Uploader(props) {
   const allow = get(attribute, 'allow', []);
 
   const dispatch = useDispatch();
-  const hitApi = useProductApi();
-
-  const [isUploading, setIsUploading] = React.useState(false);
 
   const {
     activePageId,
@@ -47,90 +43,20 @@ export default function Uploader(props) {
     targetDevice,
   ));
 
-  function onError(error) {
-    console.error(error);
-    setIsUploading(false);
-    dispatch(pushSnack({
-      message: 'Error uploading image',
-      type: SPICY_SNACK,
-    }));
-  }
-
-  async function onUpload(event) {
-    setIsUploading(true);
-
-    try {
-      const {
-        fileData,
-        mimeType,
-        originalFileName,
-      } = event;
-
-      const imageId = uuid();
-
-      await hitApi(
-        'post',
-        '/file',
-        {
-          fileData,
-          fileName: imageId,
-          originalFileName,
-          mimeType,
-          targetBucket: 'assets',
-        },
-        ({ ok, json }) => {
-          setIsUploading(false);
-
-          if (ok) {
-            const { url: value } = json;
-
-            dispatch(setComponentCustomStyle({
-              pageId: activePageId,
-              componentId: activeComponentId,
-              styleId,
-              attributeId,
-              device: targetDevice,
-              value,
-            }));
-          }
-        },
-      );
-    } catch (error) {
-      onError(error);
-    }
-  }
-
-  const src = get(attributeValue, 'custom', '');
+  const imageSource = get(attributeValue, 'custom', '');
 
   return (
-    <Inputs.FileUploader
-      accepts={allow}
-      onError={onError}
-      onUpload={onUpload}
-      src={src}
-    >
-      {(buttonProps) => (
-        <Flex.Row gridGap="6px">
-          <Buttons.Filled
-            IconComponent={Icons.Upload}
-            iconSize={20}
-            gridGap="2px"
-            paddingVertical="2px"
-            paddingHorizontal="6px"
-            buttonFg={(colors) => colors.mono[100]}
-            buttonBg={(colors) => colors.blue[500]}
-            hoverButtonBg={(colors) => colors.blue[700]}
-            {...buttonProps}
-          >
-            <Typography
-              fontStyle="bold"
-              fontSize="14px"
-            >
-              Upload
-            </Typography>
-          </Buttons.Filled>
-        </Flex.Row>
-      )}
-    </Inputs.FileUploader>
+    <WorkspaceUploadField
+      allow={allow}
+      imageSource={imageSource}
+      setImageSource={(source) => dispatch(setComponentCustomStyle({
+        pageId: activePageId,
+        componentId: activeComponentId,
+        styleId,
+        attributeId,
+        device: targetDevice,
+        value: source,
+      }))}
+    />
   );
 }

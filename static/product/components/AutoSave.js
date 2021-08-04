@@ -24,18 +24,19 @@ export default function AutoSave() {
       .join(', ');
 
     const timeoutId = setTimeout(() => {
-      hitApi(
-        'put',
-        `/website/${websiteId}`,
-        {
+      hitApi({
+        method: 'put',
+        route: `/website/${websiteId}`,
+        payload: {
           updatedVersion: latestRevision,
           description: descriptionStringified,
         },
-        () => {
+        onResponse: () => {
           dispatch(clear());
           setIsSaving(false);
         },
-      );
+        onFatalError: () => setIsSaving(false),
+      });
     }, 1500);
 
     return () => clearTimeout(timeoutId);
