@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { get } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { useDispatch } from 'react-redux';
 import { Flex, Grid } from 'pkg.admin-components';
@@ -13,15 +14,11 @@ import { closeModal } from '@product/features/modal';
 
 const featuredTraits = [
   { label: 'Fundraising', trait: 'FUNDRAISING_TRAIT' },
+  { label: 'Content', trait: 'CONTENT_TRAIT' },
 ];
 
-const recentComponents = [
-  ComponentMeta.ActBlueDonateForm,
-  ComponentMeta.CommitteeDisclaimer,
-  ComponentMeta.Content,
-  ComponentMeta.DonateButton,
-  ComponentMeta.Splash,
-];
+const allComponents = Object.keys(ComponentMeta).map((tag) => ComponentMeta[tag])
+  .filter((meta) => !get(meta, 'devOnly', false));
 
 export default function ElementLibraryModal(props) {
   const {
@@ -58,7 +55,7 @@ export default function ElementLibraryModal(props) {
   return (
     <ModalDefaultLayout
       width="600px"
-      title="Element Library"
+      title="Component Library"
     >
       <ModalContainer fullWidth bg={(colors) => colors.mono[100]}>
         <Flex.Column fullWidth padding="24px" gridGap="12px">
@@ -84,9 +81,9 @@ export default function ElementLibraryModal(props) {
           gridGap="12px"
           overflowY="scroll"
         >
-          <ComponentsGroupTitle>Recent</ComponentsGroupTitle>
+          <ComponentsGroupTitle>Components</ComponentsGroupTitle>
           <Grid fullWidth columns="1fr 1fr" gap="12px">
-            {recentComponents.map((meta) => (
+            {allComponents.map((meta) => (
               <ComponentCard
                 key={meta.tag}
                 componentMeta={meta}

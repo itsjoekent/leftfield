@@ -17,6 +17,8 @@ export const BLANK_DEFAULT = [{ type: 'paragraph', children: [{ text: '' }] }];
 export default function RichText(props) {
   const {
     apiRef = null,
+    hideMarks = false,
+    inlineOnly = false,
     initialState = BLANK_DEFAULT,
     onChange,
   } = props;
@@ -32,11 +34,13 @@ export default function RichText(props) {
     }
   }, [value]);
 
-  function onChangeWrapper(value) {
-    setValue(value);
+  function onChangeWrapper(updatedValue) {
+    if (JSON.stringify(value) !== JSON.stringify(updatedValue)) {
+      setValue(updatedValue);
 
-    if (onChange) {
-      onChange(value);
+      if (onChange) {
+        onChange(updatedValue);
+      }
     }
   }
 
@@ -57,41 +61,49 @@ export default function RichText(props) {
           padding="4px"
           bg={(colors) => colors.mono[200]}
         >
-          <RichTextMarkButton
-            format="bold"
-            icon="Bold"
-            label="Toggle bold text"
-          />
-          <RichTextMarkButton
-            format="italic"
-            icon="Italic"
-            label="Toggle italic text"
-          />
-          <RichTextMarkButton
-            format="underline"
-            icon="Underline"
-            label="Toggle underline text"
-          />
-          <RichTextBlockButton
-            format="heading-one"
-            icon="Header1"
-            label="Toggle heading level one"
-          />
-          <RichTextBlockButton
-            format="heading-two"
-            icon="Header2"
-            label="Toggle heading level two"
-          />
-          <RichTextBlockButton
-            format="heading-three"
-            icon="Header3"
-            label="Toggle heading level three"
-          />
-          <RichTextBlockButton
-            format="heading-four"
-            icon="Header4"
-            label="Toggle heading level four"
-          />
+          {!hideMarks && (
+            <React.Fragment>
+              <RichTextMarkButton
+                format="bold"
+                icon="Bold"
+                label="Toggle bold text"
+              />
+              <RichTextMarkButton
+                format="italic"
+                icon="Italic"
+                label="Toggle italic text"
+              />
+              <RichTextMarkButton
+                format="underline"
+                icon="Underline"
+                label="Toggle underline text"
+              />
+            </React.Fragment>
+          )}
+          {!inlineOnly && (
+            <React.Fragment>
+              <RichTextBlockButton
+                format="heading-one"
+                icon="Header1"
+                label="Toggle heading level one"
+              />
+              <RichTextBlockButton
+                format="heading-two"
+                icon="Header2"
+                label="Toggle heading level two"
+              />
+              <RichTextBlockButton
+                format="heading-three"
+                icon="Header3"
+                label="Toggle heading level three"
+              />
+              <RichTextBlockButton
+                format="heading-four"
+                icon="Header4"
+                label="Toggle heading level four"
+              />
+            </React.Fragment>
+          )}
         </Flex.Row>
         <Block padding="6px">
           <Editable

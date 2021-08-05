@@ -65,8 +65,10 @@ export default function TextMarkup(props) {
 
   return (
     <RichText
-      onChange={onChange}
       apiRef={richTextRef}
+      hideMarks={get(property, 'hideMarks', false)}
+      inlineOnly={get(property, 'inlineOnly', false)}
+      onChange={onChange}
     />
   );
 }

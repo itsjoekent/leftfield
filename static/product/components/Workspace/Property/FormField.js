@@ -6,6 +6,7 @@ import { Languages, PropertyTypes } from 'pkg.campaign-components';
 import WorkspacePropertyChecklist from '@product/components/Workspace/Property/Checklist';
 import WorkspacePropertyInheritance from '@product/components/Workspace/Property/Inheritance';
 import WorkspacePropertyLabel from '@product/components/Workspace/Property/Label';
+import WorkspacePropertyNumberRange from '@product/components/Workspace/Property/NumberRange';
 import WorkspacePropertyShortText from '@product/components/Workspace/Property/ShortText';
 import WorkspacePropertyTextMarkup from '@product/components/Workspace/Property/TextMarkup';
 import WorkspacePropertyToggle from '@product/components/Workspace/Property/Toggle';
@@ -27,53 +28,39 @@ function FormFieldInner(props) {
   return (
     <FormFieldInnerContainer gridGap="4px">
       {(() => {
+        const commonFieldProps = {
+          fieldId,
+          language,
+          property,
+        };
+
         switch (get(property, 'type')) {
           case PropertyTypes.CHECKLIST_TYPE: return (
-            <WorkspacePropertyChecklist
-              fieldId={fieldId}
-              language={language}
-              property={property}
-            />
+            <WorkspacePropertyChecklist {...commonFieldProps} />
+          );
+
+          case PropertyTypes.NUMBER_RANGE_TYPE: return (
+            <WorkspacePropertyNumberRange {...commonFieldProps} />
           );
 
           case PropertyTypes.SHORT_TEXT_TYPE: return (
-            <WorkspacePropertyShortText
-              fieldId={fieldId}
-              language={language}
-              property={property}
-            />
+            <WorkspacePropertyShortText {...commonFieldProps} />
           );
 
           case PropertyTypes.TEXT_MARKUP: return (
-            <WorkspacePropertyTextMarkup
-              fieldId={fieldId}
-              language={language}
-              property={property}
-            />
+            <WorkspacePropertyTextMarkup {...commonFieldProps} />
           );
 
           case PropertyTypes.TOGGLE_TYPE: return (
-            <WorkspacePropertyToggle
-              fieldId={fieldId}
-              language={language}
-              property={property}
-            />
+            <WorkspacePropertyToggle {...commonFieldProps} />
           );
 
           case PropertyTypes.UPLOAD_TYPE: return (
-            <WorkspacePropertyUploader
-              fieldId={fieldId}
-              language={language}
-              property={property}
-            />
+            <WorkspacePropertyUploader {...commonFieldProps} />
           );
 
           default: return (
-            <WorkspacePropertyShortText
-              fieldId={fieldId}
-              language={language}
-              property={property}
-            />
+            <WorkspacePropertyShortText {...commonFieldProps} />
           );
         }
       })()}

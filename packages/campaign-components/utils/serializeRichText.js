@@ -1,7 +1,7 @@
 import escapeHtml from 'escape-html';
 import { Text } from 'slate';
 
-export default function serializeRichText(value) {
+export default function serializeRichText(value, inline = false) {
   function serializeNode(node) {
     if (Text.isText(node)) {
       let string = escapeHtml(node.text);
@@ -23,6 +23,10 @@ export default function serializeRichText(value) {
 
     const children = (Array.isArray(node) ? node : node.children)
       .map((childNode) => serializeNode(childNode)).join('');
+
+    if (inline) {
+      return children;
+    }
 
     switch (node.type) {
       case 'heading-one':

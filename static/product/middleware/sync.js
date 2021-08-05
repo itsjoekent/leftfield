@@ -158,7 +158,7 @@ const ACTION_DESCRIPTIONS = {
 
     return `Removed ${childName} from ${parentComponentName}`;
   },
-  [reorderChildComponent.toString()]: ({ action, state }) => {
+  [reorderChildComponent.toString()]: ({ action, state, priorState }) => {
     const parentComponentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
     const slot = selectComponentSlot(action.payload.pageId, action.payload.componentId, action.payload.slotId)(priorState);
     const childName = selectComponentName(action.payload.pageId, slot[action.payload.fromIndex])(state);

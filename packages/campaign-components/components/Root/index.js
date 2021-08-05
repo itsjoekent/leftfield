@@ -3,7 +3,7 @@ import get from 'lodash/get';
 import { SECTIONS_SLOT } from 'pkg.campaign-components/components/Root/meta';
 
 export default function Root(props) {
-  const { slots, componentClassName } = props;
+  const { componentClassName, slots } = props;
 
   return (
     <div className={componentClassName}>
