@@ -1,0 +1,16 @@
+name = "files"
+type = "webpack"
+route = "files-dev.getleftfield.com/*"
+zone_id = "74a79ea058c69d674be8fb12449c0982"
+usage_model = "bundled"
+workers_dev = true
+kv_namespaces = [
+  { binding = "FILES_NAMESPACE", id = "1deb1c26ecd34f4781a4816f18cf2a8c", preview_id = "1deb1c26ecd34f4781a4816f18cf2a8c" }
+]
+vars = { FILES_ENDPOINT = "https://files-dev.getleftfield.com", NODE_ENV = "development" }
+
+# [env.production]
+# route = "files.getleftfield.com/*"
+# kv_namespaces = [
+#   { binding = "FILES_NAMESPACE", id = "1deb1c26ecd34f4781a4816f18cf2a8c" }
+# ]

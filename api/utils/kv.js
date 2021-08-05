@@ -1,6 +1,4 @@
 const fetch = require('node-fetch');
-const FormData = require('form-data');
-const md5 = require('md5');
 
 const makeApiError = require('./makeApiError');
 
@@ -12,36 +10,31 @@ const CF_API_KEY = process.env.CF_API_KEY;
 
 const FILES_DOMAIN = process.env.FILES_DOMAIN;
 
-async function upload(
+async function put(
+  fileSize,
+  hash,
   key,
-  value,
   mimeType = 'text/plain',
-  uploadedBy = null,
 ) {
   const now = Date.now();
-  const etag = md5(value);
 
   const meta = JSON.stringify({
     createdAt: now,
+    etag: hash,
+    fileSize,
     lastModifiedAt: now,
-    etag,
     mimeType,
-    uploadedBy,
   });
-
-  const formData = new FormData();
-  formData.append('value', value);
-  formData.append('metadata', meta);
 
   const keyEncoded = encodeURIComponent(key);
 
   const response = await fetch(`${BASE_PATH}/${CF_ACCOUNT_ID}/storage/kv/namespaces/${CF_NAMESPACE_ID}/values/${keyEncoded}`, {
     headers: {
       'Authorization': `Bearer ${CF_API_KEY}`,
-      'Content-Type': `multipart/form-data; charset=utf-8; boundary=${formData.getBoundary()}`,
+      'Content-Type': 'text/plain',
     },
     method: 'PUT',
-    body: formData,
+    body: meta,
   });
 
   if (!response.ok) {
@@ -52,8 +45,6 @@ async function upload(
       status: 500,
     });
   }
-
-  return `${FILES_DOMAIN}/file/${key}`;
 }
 
-module.exports = { upload };
+module.exports = { put };

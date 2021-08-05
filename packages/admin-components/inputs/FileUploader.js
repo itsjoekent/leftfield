@@ -1,5 +1,6 @@
 import React from 'react';
 import mime from 'mime/lite';
+import md5 from 'md5';
 import { Column } from 'pkg.admin-components/Flex';
 import Typography from 'pkg.admin-components/Typography';
 
@@ -44,7 +45,9 @@ export default function FileUploader(props) {
       const binary = reader.result.split(';base64,')[1];
 
       onUpload({
-        fileData: binary,
+        file,
+        fileSize: binary.length,
+        hash: md5(binary),
         mimeType: type,
         originalFileName: name.split('.')[0],
       });

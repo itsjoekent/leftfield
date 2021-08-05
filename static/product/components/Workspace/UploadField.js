@@ -1,6 +1,5 @@
 import React from 'react';
 import { get } from 'lodash';
-import { v4 as uuid } from 'uuid';
 import { useDispatch } from 'react-redux';
 import {
   Buttons,
@@ -38,29 +37,43 @@ export default function Uploader(props) {
     setIsUploading(true);
 
     const {
-      fileData,
+      file,
+      fileSize,
+      hash,
       mimeType,
       originalFileName,
     } = event;
-
-    const imageId = uuid();
 
     hitApi({
       method: 'post',
       route: '/file',
       payload: {
-        fileData,
-        fileName: imageId,
-        originalFileName,
+        fileSize,
+        hash,
         mimeType,
+        originalFileName,
         targetBucket: 'assets',
       },
       onResponse: ({ ok, json }) => {
-        setIsUploading(false);
-
         if (ok) {
-          const { url: value } = json;
-          setImageSource(value);
+          const { key, uploadUrls, url } = json;
+
+          Promise.all(uploadUrls.map((signedUrl) => fetch(signedUrl, {
+            method: 'put',
+            headers: {
+              'Content-Type': 'application/octet-stream',
+              'x-amz-acl': 'public-read',
+            },
+            body: file,
+          }))).then(() => {
+            setImageSource(url);
+            setIsUploading(false);
+          }).catch((error) => {
+            setIsUploading(false);
+            onError(error);
+          });
+        } else {
+          setIsUploading(false);
         }
       },
       onFatalError: () => setIsUploading(false),

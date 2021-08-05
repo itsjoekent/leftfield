@@ -1,10 +1,12 @@
+const { v4: uuid } = require('uuid');
 const File = require('../db/File');
 const Organization = require('../db/Organization');
 const { validateAuthorizationHeader } = require('../utils/auth');
 const basicValidator = require('../utils/basicValidator');
-const { upload } = require('../utils/kv');
+const { put } = require('../utils/kv');
 const makeApiError = require('../utils/makeApiError');
 const { respondWithSuccess } = require('../utils/responder');
+const { getSignedUploadUrls } = require('../utils/spaces');
 
 const Website = require('../db/Website');
 
@@ -12,22 +14,24 @@ async function uploadFile(request, response) {
   const { body } = request;
 
   await basicValidator(body, [
-    { key: 'originalFileName' },
-    { key: 'fileName' },
-    { key: 'targetBucket' },
+    { key: 'hash' },
+    { key: 'fileSize' },
     { key: 'mimeType' },
-    { key: 'fileData' },
+    { key: 'originalFileName' },
+    { key: 'targetBucket' },
   ]);
 
   const account = await validateAuthorizationHeader(request);
   if (account._apiError) throw account;
 
   const {
-    originalFileName,
-    fileName,
+    hash,
+    fileSize,
     mimeType,
-    fileData,
+    originalFileName,
   } = body;
+
+  const fileName = uuid();
 
   const targetBucket = body.targetBucket.toLowerCase();
   let folder = null;
@@ -51,20 +55,24 @@ async function uploadFile(request, response) {
   }
 
   const key = `${targetBucket}/${folder}/${fileName}`;
+  const url = `${process.env.FILES_DOMAIN}/file/${key}`;
 
-  const url = await upload(key, fileData, mimeType, account._id);
+  const uploadUrls = getSignedUploadUrls(key);
 
-  await File.create({
-    organization: targetBucket === 'assets' ? account.organization._id : null,
-    name: originalFileName.substring(0, 256),
-    uploadedBy: account._id,
-    lastUpdatedBy: account._id,
-    fileKey: key,
-    fileSize: fileData.length,
-    fileType: mimeType,
-  });
+  await Promise.all([
+    put(hash, fileSize, key, mimeType),
+    File.create({
+      organization: targetBucket === 'assets' ? account.organization._id : null,
+      name: originalFileName.substring(0, 256),
+      uploadedBy: account._id,
+      lastUpdatedBy: account._id,
+      fileKey: key,
+      fileSize,
+      fileType: mimeType,
+    }),
+  ]);
 
-  return respondWithSuccess(response, { url });
+  return respondWithSuccess(response, { key, uploadUrls, url });
 }
 
 module.exports = uploadFile;
