@@ -33,3 +33,5 @@ api/certs/tls.cert
 # Cloudflare Worker build output
 dist
 worker
+
+.DS_Store

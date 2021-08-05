@@ -36,13 +36,27 @@ function getNormalizedHostAndPath(request) {
   };
 }
 
+/**
+ * Run a fetch against a URL
+ * If the status is a server error, run a second fetch.
+ *
+ * @param {String} firstUrl
+ * @param {String} secondUrl
+ * @return {Response}
+ */
+async function fetchWithRetry(firstUrl, secondUrl, stopAfter = 400) {
+  const firstResponse = await fetch(firstUrl);
+  if (firstResponse.status < stopAfter) {
+    return [firstResponse, firstUrl];
+  }
+
+  const secondResponse = await fetch(secondUrl);
+  return [secondResponse, secondUrl];
+}
+
 addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event.request));
 });
-
-function Uint8ArrayFromBase64(base64) {
-  return Uint8Array.from(atob(base64), (v) => v.charCodeAt(0));
-}
 
 async function handleFileRequest(request) {
   const { pathname } = getNormalizedHostAndPath(request);
@@ -83,15 +97,46 @@ async function handleFileRequest(request) {
     });
   }
 
-  // TODO: Pick bucket based on distance OR retry if request fails
-  const spacesResponse = await fetch(`https://leftfield-files-ny-development.nyc3.digitaloceanspaces.com/${key}`);
+  let spacesResponse = null;
+  let servedFrom = null;
+
+  const eastSpacesUrl = `${NY_SPACE}/${key}`;
+  const westSpacesUrl = `${SF_SPACE}/${key}`;
+
+  const urlLabelTable = {
+    [eastSpacesUrl]: 'NY',
+    [westSpacesUrl]: 'SF',
+  };
+
+  let firstUrl = eastSpacesUrl;
+  let secondUrl = westSpacesUrl;
+
+  if (request.cf) {
+    const { longitude } = request.cf;
+    const isEast = longitude >= -100 && longitude <= 60;
+
+    firstUrl = isEast ? eastSpacesUrl : westSpacesUrl;
+    secondUrl = isEast ? westSpacesUrl : eastSpacesUrl;
+  }
+
+  const [fetchResponse, used] = await fetchWithRetry(firstUrl, secondUrl);
+  spacesResponse = fetchResponse;
+  servedFrom = urlLabelTable[used];
+
+  // TODO: Handle spaces response 4xx & 5xx
 
   return new Response(spacesResponse.body, {
-    headers: fileHeaders,
+    headers: {
+      ...fileHeaders,
+      'X-Leftfield-Served-From': servedFrom,
+    },
   });
 }
 
 // Uint8ArrayFromBase64(value)
+// function Uint8ArrayFromBase64(base64) {
+//   return Uint8Array.from(atob(base64), (v) => v.charCodeAt(0));
+// }
 
 /**
  * Respond with hello worker text

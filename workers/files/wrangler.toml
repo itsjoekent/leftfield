@@ -7,7 +7,11 @@ workers_dev = true
 kv_namespaces = [
   { binding = "FILES_NAMESPACE", id = "1deb1c26ecd34f4781a4816f18cf2a8c", preview_id = "1deb1c26ecd34f4781a4816f18cf2a8c" }
 ]
-vars = { FILES_ENDPOINT = "https://files-dev.getleftfield.com", NODE_ENV = "development" }
+
+[vars]
+NY_SPACE = "https://leftfield-files-ny-development.nyc3.digitaloceanspaces.com"
+SF_SPACE = "https://leftfield-files-sf-development.sfo3.digitaloceanspaces.com"
+NODE_ENV = "development"
 
 # [env.production]
 # route = "files.getleftfield.com/*"
