@@ -10,12 +10,15 @@ export default function Paragraph(props) {
 
   const language = useLanguage();
   const richText = getPropertyValue(properties, COPY_PROPERTY, language) || '';
-  const html = serializeRichText(richText, true);
 
-  return (
-    <p
-      className={componentClassName}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
+  const html = serializeRichText({
+    value: richText,
+    blockClassName: componentClassName,
+  });
+
+  return serializeRichText({
+    value: richText,
+    blockClassName: componentClassName,
+    renderToElement: true,
+  });
 }

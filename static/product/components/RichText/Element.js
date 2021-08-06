@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography } from 'pkg.admin-components';
+import RichTextLinkElement from '@product/components/RichText/LinkElement';
 
 export default function Element(props) {
   const { attributes, children, element: { type } } = props;
@@ -47,6 +48,12 @@ export default function Element(props) {
       >
         <span {...attributes}>{children}</span>
       </Typography>
+    );
+
+    case 'link': return (
+      <RichTextLinkElement attributes={attributes}>
+        {children}
+      </RichTextLinkElement>
     );
 
     case 'paragraph':

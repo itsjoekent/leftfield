@@ -12,9 +12,10 @@ export default function Fonts(props) {
   const { font } = props;
 
   const [screen, setScreen] = React.useState(!!get(font, 'value') ? EDIT_SCREEN : STARTER_SCREEN);
+  const title = [STARTER_SCREEN, ADD_CUSTOM_SCREEN].includes(screen) ? 'Add new font' : 'Edit font';
 
   return (
-    <ModalDefaultLayout title="Manage font" width="800px">
+    <ModalDefaultLayout title={title} width="800px">
       {screen === STARTER_SCREEN && (
         <StarterScreen setScreen={setScreen} />
       )}

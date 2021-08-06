@@ -42,6 +42,7 @@ export default function useFormField(fieldId) {
   const inputProps = {
     id: inputHtmlId,
     'aria-labelledby': labelHtmlId,
+    placeholder: field.placeholder || '',
     value,
     onChange,
     onFocus: () => dispatch(setIsFocused(fieldId, true)),

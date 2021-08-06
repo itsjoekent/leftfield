@@ -13,7 +13,7 @@ export default function Header(props) {
   const level = getPropertyValue(properties, LEVEL_PROPERTY) || 1;
 
   const richText = getPropertyValue(properties, COPY_PROPERTY, language) || '';
-  const html = serializeRichText(richText, true);
+  const html = serializeRichText({ value: richText, inline: true });
 
   const headerProps = {
     className: componentClassName,

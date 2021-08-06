@@ -10,6 +10,7 @@ import { Block, Flex } from 'pkg.admin-components';
 import RichTextBlockButton from '@product/components/RichText/BlockButton';
 import RichTextElement from '@product/components/RichText/Element';
 import RichTextLeaf from '@product/components/RichText/Leaf';
+import RichTextLinkButton, { withLinks } from '@product/components/RichText/LinkButton';
 import RichTextMarkButton from '@product/components/RichText/MarkButton';
 
 export const BLANK_DEFAULT = [{ type: 'paragraph', children: [{ text: '' }] }];
@@ -19,14 +20,20 @@ export default function RichText(props) {
     apiRef = null,
     hideMarks = false,
     inlineOnly = false,
+    allowLinks = true,
     initialState = BLANK_DEFAULT,
     onChange,
   } = props;
 
   const [value, setValue] = React.useState(BLANK_DEFAULT);
+
   const renderElement = React.useCallback((props) => <RichTextElement {...props} />, []);
   const renderLeaf = React.useCallback((props) => <RichTextLeaf {...props} />, []);
-  const editor = React.useMemo(() => withHistory(withReact(createEditor())), []);
+
+  const editor = React.useMemo(
+    () => withLinks(withHistory(withReact(createEditor()))),
+    [],
+  );
 
   React.useEffect(() => {
     if (!!apiRef) {
@@ -53,12 +60,14 @@ export default function RichText(props) {
       <Flex.Column
         borderWidth="1px"
         borderColor={(colors) => colors.mono[400]}
-        rounded={(radius) => radius.default}
+        rounded={(radius) => radius.extra}
+        overflow="hidden"
       >
         <Flex.Row
           align="center"
+          gridGap="4px"
           wrap="wrap"
-          padding="4px"
+          padding="6px"
           bg={(colors) => colors.mono[200]}
         >
           {!hideMarks && (
@@ -79,6 +88,9 @@ export default function RichText(props) {
                 label="Toggle underline text"
               />
             </React.Fragment>
+          )}
+          {!!allowLinks && (
+            <RichTextLinkButton />
           )}
           {!inlineOnly && (
             <React.Fragment>

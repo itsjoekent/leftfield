@@ -5,6 +5,7 @@ import {
   selectModalType,
   selectModalProps,
 
+  ADD_LINK_MODAL,
   CONFIRM_MODAL,
   ELEMENT_LIBRARY_MODAL,
   EXPORT_STYLE_MODAL,
@@ -14,6 +15,7 @@ import {
 } from '@product/features/modal';
 
 const componentFileMap = {
+  [ADD_LINK_MODAL]: async () => import('./AddLink'),
   [CONFIRM_MODAL]: async () => import('./Confirm'),
   [ELEMENT_LIBRARY_MODAL]: async () => import('./ElementLibrary'),
   [EXPORT_STYLE_MODAL]: async () => import('./ExportStyle'),

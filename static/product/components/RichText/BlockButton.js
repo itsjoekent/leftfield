@@ -12,10 +12,11 @@ const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 function isBlockActive(editor, format) {
   const [match] = Editor.nodes(editor, {
     match: (node) => !Editor.isEditor(node)
-      && SlateElement.isElement(node) && node.type === format,
+      && SlateElement.isElement(node)
+      && node.type === format,
   });
 
-  return !!match
+  return !!match;
 }
 
 function toggleBlock(editor, format) {

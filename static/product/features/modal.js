@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+export const ADD_LINK_MODAL = 'ADD_LINK_MODAL';
 export const CONFIRM_MODAL = 'CONFIRM_MODAL';
 export const ELEMENT_LIBRARY_MODAL = 'ELEMENT_LIBRARY_MODAL';
 export const EXPORT_STYLE_MODAL = 'EXPORT_STYLE_MODAL';

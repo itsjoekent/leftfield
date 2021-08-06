@@ -1,7 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { Buttons, Flex, Icons } from 'pkg.admin-components';
+import {
+  Buttons,
+  Flex,
+  Icons,
+  Typography,
+} from 'pkg.admin-components';
 import { closeModal } from '@product/features/modal';
 
 export default function DefaultLayout(props) {
@@ -52,11 +57,19 @@ export default function DefaultLayout(props) {
       >
         {!disableClose && (
           <TitleRow
-            justify="flex-end"
+            justify="space-between"
             align="center"
-            padding="6px"
-            bg={(colors) => colors.mono[200]}
+            padding="12px"
+            bg={(colors) => colors.mono[100]}
           >
+            <Typography
+              as="h2"
+              fontStyle="bold"
+              fontSize="16px"
+              fg={(colors) => colors.mono[700]}
+            >
+              {title}
+            </Typography>
             <Buttons.IconButton
               IconComponent={Icons.CloseRound}
               color={(colors) => colors.mono[600]}
@@ -93,9 +106,12 @@ const ModalContainer = styled(Flex.Column)`
   width: ${(props) => props.width};
   background: none;
   ${(props) => props.theme.shadow.light};
+  border-radius: ${(props) => props.theme.rounded.default};
+  overflow: hidden;
 `;
 
 const TitleRow = styled(Flex.Row)`
   border-top-right-radius: ${(props) => props.theme.rounded.default};
   border-top-left-radius: ${(props) => props.theme.rounded.default};
+  border-bottom: 1px solid ${(props) => props.theme.colors.mono[700]};
 `;
