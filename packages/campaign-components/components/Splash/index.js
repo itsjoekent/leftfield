@@ -35,10 +35,9 @@ export default function Splash(props) {
   );
 
   const srcset = [
-    `${CfImageUrl(fileUrl, { width: '410px' })} 410w`,
-    `${CfImageUrl(fileUrl, { width: '720px' })} 720w`,
-    `${CfImageUrl(fileUrl, { width: '1024px' })} 1024w`,
-    `${CfImageUrl(fileUrl, { width: '1440px' })} 1440w`,
+    `${CfImageUrl(fileUrl, { width: '720px' })} 410w`,
+    `${CfImageUrl(fileUrl, { width: '1024px' })} 720w`,
+    `${CfImageUrl(fileUrl, { width: '1440px' })} 1024w`,
   ].join(',\n');
 
   return (

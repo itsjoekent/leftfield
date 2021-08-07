@@ -44,7 +44,8 @@ export default function Selector(props) {
   const hasOptionsFromTheme = !!optionsFromTheme;
 
   const options = get(attribute, 'options')
-    || (hasOptionsFromTheme ? optionsFromTheme(dynamicEvalData) : []);
+    || (hasOptionsFromTheme ? optionsFromTheme(dynamicEvalData) : [])
+      .filter((option) => !!get(option, 'label', null) && !!get(option, 'value', null));
 
   const attributeValue = useSelector(selectComponentStyleAttributeForDeviceCascading(
     activePageId,

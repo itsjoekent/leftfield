@@ -68,6 +68,7 @@ export default function TextMarkup(props) {
       apiRef={richTextRef}
       hideMarks={get(property, 'hideMarks', false)}
       inlineOnly={get(property, 'inlineOnly', false)}
+      allowLinks={get(property, 'allowLinks', true)}
       onChange={onChange}
     />
   );

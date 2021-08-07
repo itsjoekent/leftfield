@@ -34,6 +34,7 @@ const HeaderMeta = {
       label: 'Copy',
       type: TEXT_MARKUP,
       inlineOnly: true,
+      allowLinks: false,
       required: true,
       defaultValue: {
         [US_ENGLISH_LANG]: '',

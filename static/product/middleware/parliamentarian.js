@@ -54,6 +54,7 @@ import {
   selectComponentStyles,
   selectComponentStyleAttribute,
   selectComponentStyleAttributeForDevice,
+  selectComponentStyleAttributeForDeviceCascading,
   selectComponentStyleInheritsFrom,
   selectComponentTag,
   selectComponentsParentComponentId,
@@ -65,6 +66,7 @@ import {
   selectSiteSettings,
   selectStyleAttributesFromPreset,
 } from '@product/features/assembly';
+import { selectPreviewDeviceSize } from '@product/features/previewMode';
 import {
   setActiveComponentId,
   setActivePageId,
@@ -146,6 +148,7 @@ function runParliamentarian(
   state,
   pageId,
   componentId,
+  previewDevice,
   pageSettings,
   siteSettings,
   campaignTheme,
@@ -400,12 +403,35 @@ function runParliamentarian(
   } = get(componentMeta, 'styles', []).reduce((acc, style) => {
     const conditional = get(style, 'conditional', null);
 
+    const attributes = get(style, 'attributes', []).filter((attribute) => {
+      const hideIf = get(attribute, 'hideIf', null);
+      if (!hideIf) {
+        return true;
+      }
+
+      const { compare, test } = hideIf;
+      const compareValue = selectComponentStyleAttributeForDeviceCascading(
+        pageId,
+        componentId,
+        style.id,
+        compare,
+        previewDevice,
+      )(state);
+
+      return !test(compareValue);
+    });
+
+    const finalStyle = {
+      ...style,
+      attributes,
+    };
+
     if (!conditional) {
       return {
         ...acc,
         visibleStyles: [
           ...acc.visibleStyles,
-          style,
+          finalStyle,
         ],
       };
     }
@@ -422,7 +448,7 @@ function runParliamentarian(
       ...acc,
       [appendTo]: [
         ...acc[appendTo],
-        style,
+        finalStyle,
       ],
     };
   }, {
@@ -646,6 +672,8 @@ const parliamentarian = store => next => action => {
     return result;
   }
 
+  const previewDevice = selectPreviewDeviceSize(state);
+
   const pageSettings = selectPageSettings(pageId)(state);
   const siteSettings = selectSiteSettings(state);
   const campaignTheme = selectCampaignTheme(state);
@@ -662,6 +690,7 @@ const parliamentarian = store => next => action => {
     state,
     pageId,
     componentId,
+    previewDevice,
     pageSettings,
     siteSettings,
     campaignTheme,
@@ -676,6 +705,7 @@ const parliamentarian = store => next => action => {
       state,
       pageId,
       action.payload.componentId,
+      previewDevice,
       pageSettings,
       siteSettings,
       campaignTheme,
