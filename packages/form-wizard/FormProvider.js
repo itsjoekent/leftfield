@@ -1,6 +1,8 @@
 import React from 'react';
 import produce from 'immer';
+import get from 'lodash/get';
 import FormContext, { initialFormContextValue } from 'pkg.form-wizard/FormContext';
+import { setHasSubmittedOnce, setValidation } from 'pkg.form-wizard/actions';
 
 export default function FormProvider(props) {
   const {
@@ -22,6 +24,8 @@ export default function FormProvider(props) {
     initialFormContextValue,
   );
 
+  const { hasSubmittedOnce, validations, values } = form;
+
   React.useEffect(() => {
     if (apiRef) {
       apiRef.current = {
@@ -35,6 +39,25 @@ export default function FormProvider(props) {
     form,
   ]);
 
+  React.useEffect(() => {
+    (fields || []).forEach((field) => {
+      const validate = get(field, 'validate', null);
+
+      if (validate) {
+        const fieldId = get(field, 'id');
+        const validation = validate(get(values, fieldId));
+
+        if (validation !== get(validations, fieldId)) {
+          dispatch(setValidation(fieldId, validation));
+        }
+      }
+    });
+  }, [
+    JSON.stringify(fields),
+    validations,
+    values,
+  ]);
+
   const contextValue = {
     ...form,
     formName: name,
@@ -44,13 +67,23 @@ export default function FormProvider(props) {
     onFieldSave,
   };
 
+  const validationMessages = Object.values(validations)
+    .filter((validation) => typeof validation === 'string' && !!validation.length);
+
+  const submitButtonProps = {
+    type: 'submit',
+    disabled: !!validationMessages.length,
+  };
+
   function providerFormOnSubmit(event) {
     event.preventDefault();
 
+    if (!hasSubmittedOnce) {
+      dispatch(setHasSubmittedOnce(true));
+    }
+
     if (onFormSubmit) {
-      onFormSubmit({
-        values: form.values,
-      });
+      onFormSubmit({ values });
     }
   }
 
@@ -61,6 +94,9 @@ export default function FormProvider(props) {
           id: `form-${name}`,
           onSubmit: providerFormOnSubmit,
         },
+        hasSubmittedOnce,
+        submitButtonProps,
+        validationMessages,
       })}
     </FormContext.Provider>
   );

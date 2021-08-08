@@ -6,6 +6,7 @@ export const initialFormContextValue = {
   values: {},
   isFocused: {},
   validations: {},
+  hasSubmittedOnce: false,
   dispatch: () => {},
   onFormSubmit: () => {},
   onFieldSave: () => {},

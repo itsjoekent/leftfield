@@ -75,10 +75,25 @@ function FontWeightInput(props) {
 }
 
 const fields = [
-  { id: 'fontLabel', label: 'Font Label' },
-  { id: 'fontFamily', label: 'Font Family' },
-  { id: 'fontHtml', label: 'Embed Code' },
-  { id: 'fontWeights', label: 'Font Weights' },
+  {
+    id: 'fontLabel',
+    label: 'Font Label',
+    validate: (value) => (!value || !value.length) && 'Font label is required',
+  },
+  {
+    id: 'fontFamily',
+    label: 'Font Family',
+    validate: (value) => (!value || !value.length) && 'Font family is required',
+  },
+  {
+    id: 'fontHtml',
+    label: 'Embed Code',
+    validate: (value) => (!value || !value.length) && 'Embed code is required',
+  },
+  {
+    id: 'fontWeights',
+    label: 'Font Weights',
+  },
 ];
 
 export default function ManualScreen(props) {
@@ -101,6 +116,20 @@ export default function ManualScreen(props) {
       formApiRef.current.dispatch(formActions.setValue('fontHtml', get(font, 'html', '')));
     }
   }, [fontId, Object.keys(themeFontWeights || {}).length]);
+
+  React.useEffect(() => {
+    if (formApiRef.current) {
+      const hasWeights = !!Object.values(fontWeights).length;
+      const fontWeightsValidation = !hasWeights && 'At least one font weight is required';
+
+      const currentValidation = get(formApiRef.current.getFormState(), 'validations.fontWeights');
+      if (fontWeightsValidation !== currentValidation) {
+        formApiRef.current.dispatch(
+          formActions.setValidation('fontWeights', fontWeightsValidation),
+        );
+      }
+    }
+  }, [fontWeights]);
 
   function onSave({ values }) {
     const saveTo = fontId || uuid();
@@ -139,26 +168,25 @@ export default function ManualScreen(props) {
       padding="24px"
       bg={(colors) => colors.mono[100]}
     >
-      <Flex.Column gridGap="6px">
-        <Typography
-          as="h2"
-          fontStyle="bold"
-          fontSize="22px"
-          fg={(colors) => colors.mono[700]}
-        >
-          {!!fontId ? 'Edit font configuration' : 'Add a new font'}
-        </Typography>
-        <Typography>
-          Add custom fonts from Google Fonts, Adobe Typekit, Fonts.com, and more.
-        </Typography>
-      </Flex.Column>
+      <Typography
+        fontStyle="regular"
+        fontSize="16px"
+        fg={(colors) => colors.mono[700]}
+      >
+        Add custom fonts from Google Fonts, Adobe Typekit, Fonts.com, and more.
+      </Typography>
       <FormWizardProvider
         name="font"
         fields={fields}
         onFormSubmit={onSave}
         apiRef={formApiRef}
       >
-        {({ formProps }) => (
+        {({
+          formProps,
+          hasSubmittedOnce,
+          submitButtonProps,
+          validationMessages,
+        }) => (
           <Flex.Column as="form" gridGap="24px" {...formProps}>
             <Grid fullWidth columns="1fr 1fr" gap="24px">
               <FormWizardField fieldId="fontLabel">
@@ -339,17 +367,26 @@ export default function ManualScreen(props) {
               )}
             </FormWizardField>
             <Buttons.Filled
-              type="submit"
               paddingVertical="4px"
               paddingHorizontal="8px"
               buttonFg={(colors) => colors.mono[100]}
               buttonBg={(colors) => colors.blue[500]}
               hoverButtonBg={(colors) => colors.blue[700]}
+              {...submitButtonProps}
             >
               <Typography fontStyle="medium" fontSize="16px">
                 {!!fontId ? 'Save font' : 'Add font'}
               </Typography>
             </Buttons.Filled>
+            {!!validationMessages.length && hasSubmittedOnce && (
+              <Typography
+                fontStyle="regular"
+                fontSize="14px"
+                fg={(colors) => colors.red[500]}
+              >
+                {validationMessages.join(', ')}
+              </Typography>
+            )}
           </Flex.Column>
         )}
       </FormWizardProvider>

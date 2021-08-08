@@ -1,8 +1,9 @@
 import get from 'lodash/get';
 import { useFormContext } from 'pkg.form-wizard/FormContext';
 import {
-  setValue,
   setIsFocused,
+  setValidation,
+  setValue,
 } from 'pkg.form-wizard/actions';
 
 export default function useFormField(fieldId) {
@@ -60,12 +61,14 @@ export default function useFormField(fieldId) {
   };
 
   return {
+    field,
     id: fieldId,
     inputProps,
     inputStylingProps,
     labelProps,
-    field,
+    validation: get(validations, fieldId, null),
     value,
+    setFieldValidation: (validation) => dispatch(setValidation(fieldId, validation)),
     setFieldValue: setValueWrapper,
   };
 }
