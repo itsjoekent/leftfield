@@ -43,6 +43,10 @@ const attributes = [
   {
     id: UNDERLINE_COLOR_ATTRIBUTE,
     label: 'Underline Color',
+    hideIf: {
+      compare: ENABLE_UNDERLINE_ATTRIBUTE,
+      test: (attribute) => get(attribute, 'custom', UNDERLINE_DISABLE) === UNDERLINE_DISABLE,
+    },
     type: COLOR_TYPE,
   },
   {
@@ -82,11 +86,22 @@ const attributes = [
   },
 ];
 
-const hoverAttributes = attributes.map((attribute) => ({
-  ...attribute,
-  id: `${attribute.id}_${ON_HOVER}`,
-  label: `${attribute.label} (On Hover)`,
-}));
+const hoverAttributes = attributes.map((attribute) => {
+  const hoverAttribute = {
+    ...attribute,
+    id: `${attribute.id}_${ON_HOVER}`,
+    label: `${attribute.label} (On Hover)`,
+  };
+
+  if (attribute.hideIf) {
+    hoverAttribute.hideIf = {
+      compare: `${ENABLE_UNDERLINE_ATTRIBUTE}_${ON_HOVER}`,
+      test: attribute.hideIf.test,
+    };
+  }
+
+  return hoverAttribute;
+});
 
 function underlineStyle(styleValue) {
   const [
@@ -169,6 +184,18 @@ const LinkStyle = {
     )}
 
     &:hover {
+      ${responsiveStyleGenerator(
+        applyStyleIfChanged,
+        theme,
+        {
+          styles,
+          attribute: `${TEXT_COLOR_ATTRIBUTE}_${ON_HOVER}`,
+          theme,
+          themePath: 'campaign.colors',
+        },
+        (styleValue) => `color: ${styleValue};`,
+      )}
+
       ${responsiveStyleGenerator(
         applyStyleIfChanged,
         theme,
