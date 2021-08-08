@@ -14,11 +14,14 @@ import {
 } from 'pkg.form-wizard';
 import ModalDefaultLayout from '@product/components/Modal/DefaultLayout';
 import { closeModal } from '@product/features/modal';
+import isTrue from '@product/utils/isTrue';
 
 export default function AddLink(props) {
   const {
-    href,
-    includeTextField,
+    href = '',
+    openInNewTab = false,
+    includeTextField = false,
+    includeNewTabField = false,
     onInsert,
   } = props;
 
@@ -49,16 +52,26 @@ export default function AddLink(props) {
     if (href !== get(formApiRef.current.getFormState(), 'values.href', null)) {
       formApiRef.current.dispatch(formActions.setValue('href', href));
     }
+
+    if (openInNewTab !== get(formApiRef.current.getFormState(), 'values.openInNewTab', false)) {
+      formApiRef.current.dispatch(formActions.setValue('openInNewTab', openInNewTab));
+    }
   }, [
     href,
+    openInNewTab,
   ]);
 
   const fields = [];
+
   if (includeTextField) {
     fields.push({ id: 'text', label: 'Link text' });
   }
 
   fields.push({ id: 'href', label: 'Link target', placeholder: 'https://iwillvote.org' });
+
+  if (includeNewTabField) {
+    fields.push({ id: 'openInNewTab', label: 'Open New Tab' });
+  }
 
   return (
     <ModalDefaultLayout title={title} width="400px">
@@ -77,7 +90,26 @@ export default function AddLink(props) {
             {...formProps}
           >
             <FormWizardFields>
-              {(field) => (
+              {(field) => field.id === 'openInNewTab' ? (
+                <Flex.Row
+                  gridGap="2px"
+                  paddingVertical="2px"
+                  onClick={() => field.setFieldValue(!field.value)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isTrue(field.value)}
+                    {...field.inputProps}
+                  />
+                  <Typography
+                    as="label"
+                    fontStyle="regular"
+                    fontSize="14px"
+                    fg={(colors) => colors.mono[700]}
+                    {...field.labelProps}
+                  />
+                </Flex.Row>
+              ) : (
                 <Flex.Column gridGap="2px">
                   <Typography
                     as="label"

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { get } from 'lodash';
 import {
   Editor,
   Element as SlateElement,
@@ -8,6 +9,7 @@ import {
 import { useSlate } from 'slate-react';
 import { Typography } from 'pkg.admin-components';
 import { setModal, ADD_LINK_MODAL } from '@product/features/modal';
+import isTrue from '@product/utils/isTrue';
 
 function getLink(editor) {
   const [match] = Editor.nodes(editor, {
@@ -28,10 +30,10 @@ export default function LinkElement(props) {
   const onClick = React.useCallback(() => {
     const link = getLink(editor);
 
-    function onInsert({ href }) {
+    function onInsert({ href, openInNewTab }) {
       Transforms.setNodes(
         editor,
-        { url: href },
+        { url: href, openInNewTab },
         {
           at: link[1],
         },
@@ -45,9 +47,11 @@ export default function LinkElement(props) {
     dispatch(setModal({
       type: ADD_LINK_MODAL,
       props: {
+        includeNewTabField: true,
         includeTextField: false,
-        href: link[0].url,
+        href: get(link[0], 'url', ''),
         onInsert,
+        openInNewTab: isTrue(get(link[0], 'openInNewTab', false)),
       },
     }));
   }, [editor]);

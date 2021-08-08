@@ -11,6 +11,7 @@ import {
 import { useSlate } from 'slate-react';
 import { Buttons, Icons } from 'pkg.admin-components';
 import { setModal, ADD_LINK_MODAL } from '@product/features/modal';
+import isTrue from '@product/utils/isTrue';
 
 function getLink(editor) {
   const [match] = Editor.nodes(editor, {
@@ -76,13 +77,16 @@ export default function LinkButton() {
       return;
     }
 
+    const openInNewTab = isTrue(get(link[0], 'openInNewTab', false));
+
     const selection = editor.selection;
     const isExpanded = Range.isExpanded(editor.selection);
     const includeTextField = !isExpanded;
 
-    function onInsert({ href, text }) {
+    function onInsert({ href, text, openInNewTab }) {
       if (isExpanded) {
         const element = {
+          openInNewTab,
           type: 'link',
           url: href,
         };
@@ -92,9 +96,10 @@ export default function LinkButton() {
         Transforms.collapse(editor, { edge: 'end' });
       } else {
         const element = {
+          children: [{ text: text || href }],
+          openInNewTab,
           type: 'link',
           url: href,
-          children: [{ text: text || href }],
         };
 
         Transforms.insertNodes(editor, element);
@@ -104,9 +109,11 @@ export default function LinkButton() {
     dispatch(setModal({
       type: ADD_LINK_MODAL,
       props: {
+        includeNewTabField: true,
         includeTextField,
         href: '',
         onInsert,
+        openInNewTab,
       },
     }));
   }

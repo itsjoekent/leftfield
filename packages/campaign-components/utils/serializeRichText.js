@@ -1,7 +1,9 @@
 import escapeHtml from 'escape-html';
+import get from 'lodash/get';
 import md5 from 'md5';
 import { createElement } from 'react';
 import { Text } from 'slate';
+import isTrue from 'pkg.campaign-components/utils/isTrue';
 
 const PureText = ({ children }) => children;
 
@@ -68,12 +70,21 @@ export default function serializeRichText({
 
     if (node.type === 'link') {
       const href = escapeHtml(node.url);
+      const openInNewTab = isTrue(get(node, 'openInNewTab'), false);
 
       if (renderToElement) {
-        return createElement('a', { href, key }, children);
+        const anchorProps = { href, key };
+
+        if (openInNewTab) {
+          anchorProps.target = '_blank';
+          anchorProps.rel = 'noopener noreferrer';
+        }
+
+        return createElement('a', anchorProps, children);
       }
 
-      return `<a href="${href}">${children}</a>`;
+      const anchorAttributes = `href="${href}" ${openInNewTab ? 'target="_blank" rel="noopener noreferrer"' : ''}`;
+      return `<a ${anchorAttributes}>${children}</a>`;
     }
 
     if (inline) {

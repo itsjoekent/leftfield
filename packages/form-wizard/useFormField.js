@@ -60,6 +60,7 @@ export default function useFormField(fieldId) {
   };
 
   return {
+    id: fieldId,
     inputProps,
     inputStylingProps,
     labelProps,
