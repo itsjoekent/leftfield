@@ -1,5 +1,9 @@
 import get from 'lodash/get';
-import { PARAGRAPH_STYLE } from 'pkg.campaign-components/components/Paragraph/meta';
+import {
+  PARAGRAPH_STYLE,
+  PARAGRAPH_LINK_STYLE,
+} from 'pkg.campaign-components/components/Paragraph/meta';
+import LinkStyle from 'pkg.campaign-components/styles/link';
 import MarkupStyle from 'pkg.campaign-components/styles/markup';
 import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
 
@@ -10,6 +14,7 @@ export default function ParagraphCSS({
 }) {
   const applyStyleIfChanged = applyStyleIfChangedGenerator();
   const paragraphStyle = get(styles, PARAGRAPH_STYLE, {});
+  const paragraphLinkStyle = get(styles, PARAGRAPH_LINK_STYLE, {});
 
   return `
     .${componentClassName} {
@@ -18,6 +23,14 @@ export default function ParagraphCSS({
         theme,
         styles: paragraphStyle,
       })}
+
+      a {
+        ${LinkStyle.styling({
+          applyStyleIfChanged,
+          theme,
+          styles: paragraphLinkStyle,
+        })}
+      }
     }
   `;
 }

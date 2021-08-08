@@ -4,11 +4,7 @@ import {
   NUMBER_RANGE_TYPE,
   SELECT_TYPE,
 } from 'pkg.campaign-components/constants/property-types';
-import {
-  DESKTOP_DEVICE,
-  MOBILE_DEVICE,
-  TABLET_DEVICE,
-} from 'pkg.campaign-components/constants/responsive';
+import { MOBILE_DEVICE } from 'pkg.campaign-components/constants/responsive';
 import { getLightestCampaignThemeColor } from 'pkg.campaign-components/utils/campaignThemeColorSelectors';
 import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 

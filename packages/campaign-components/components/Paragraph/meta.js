@@ -3,6 +3,7 @@ import { US_ENGLISH_LANG } from 'pkg.campaign-components/constants/languages';
 import { TEXT_MARKUP } from 'pkg.campaign-components/constants/property-types';
 import { MOBILE_DEVICE } from 'pkg.campaign-components/constants/responsive';
 import { CONTENT_TRAIT } from 'pkg.campaign-components/constants/traits';
+import LinkStyle from 'pkg.campaign-components/styles/link';
 import MarkupStyle, { BOTTOM_MARGIN_ATTRIBUTE } from 'pkg.campaign-components/styles/markup';
 import { FONT_WEIGHT_ATTRIBUTE } from 'pkg.campaign-components/styles/text';
 import {
@@ -15,6 +16,7 @@ export const TAG = 'Paragraph';
 export const COPY_PROPERTY = 'COPY_PROPERTY';
 
 export const PARAGRAPH_STYLE = 'PARAGRAPH_STYLE';
+export const PARAGRAPH_LINK_STYLE = 'PARAGRAPH_LINK_STYLE';
 
 const ParagraphMeta = {
   tag: TAG,
@@ -58,6 +60,12 @@ const ParagraphMeta = {
           }),
         },
       }),
+    },
+    {
+      id: PARAGRAPH_LINK_STYLE,
+      label: 'Link Style',
+      type: LinkStyle.key,
+      attributes: LinkStyle.attributes(),
     },
   ],
   traits: [
