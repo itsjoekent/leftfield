@@ -32,8 +32,21 @@ function ComponentWrapper({ children }) {
       event.stopPropagation();
       event.preventDefault();
 
-      const componentId = componentClassName.replace('c-', '');
-      window.parent.postMessage({ type: 'CLICKED', componentId }, '*');
+      // Sometimes clicks on child elements (eg: anchor in a div)
+      // are attributed to the parent?
+      // This ensures the proper component is always opended.
+      const lastElement = event.path.find((clickedElement) => (
+        clickedElement.className.split(' ')
+          .some((className) => className.includes('c-'))
+      ));
+
+      if (lastElement) {
+        const componentId = lastElement.className.split(' ')
+          .find((className) => className.includes('c-'))
+          .replace('c-', '');
+
+        window.parent.postMessage({ type: 'CLICKED', componentId }, '*');
+      }
     }
 
     element.addEventListener('click', handleClick);

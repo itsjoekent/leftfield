@@ -17,6 +17,7 @@ import {
   initialFundraisingState,
   FundraisingContext,
 } from 'pkg.campaign-components/context/Fundraising';
+import useClientOnly from 'pkg.campaign-components/hooks/useClientOnly';
 import useLanguage from 'pkg.campaign-components/hooks/useLanguage';
 import getPropertyValue from 'pkg.campaign-components/utils/getPropertyValue';
 import makeActBlueLink from 'pkg.campaign-components/utils/makeActBlueLink';
@@ -29,9 +30,10 @@ export default function ActBlueDonateForm(props) {
     slots,
   } = props;
 
+  const isClient = useClientOnly();
   const language = useLanguage();
 
-  function buildUrl(amount) {
+  const buildUrl = React.useCallback((amount) => {
     const baseUrl = getPropertyValue(properties, ACTBLUE_FORM_PROPERTY, language);
     let params = {};
 
@@ -43,19 +45,19 @@ export default function ActBlueDonateForm(props) {
       params['refcode'] = getPropertyValue(properties, REFCODE_PROPERTY);
     }
 
-    if (!!getPropertyValue(properties, CARRY_TRACKING_SOURCE_PROPERTY)) {
+    if (!!amount) {
+      params['amount'] = amount;
+    }
+
+    if (isClient && !!getPropertyValue(properties, CARRY_TRACKING_SOURCE_PROPERTY)) {
       params = {
         ...params,
         ...mapSourceToRefcode(),
       };
     }
 
-    if (!!amount) {
-      params['amount'] = amount;
-    }
-
     return makeActBlueLink(baseUrl, params);
-  }
+  }, [isClient]);
 
   const fundraisingState = {
     ...initialFundraisingState,
