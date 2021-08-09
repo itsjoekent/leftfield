@@ -88,6 +88,18 @@ export const LANGUAGES = {
   },
 };
 
+export const META_DESCRIPTION = {
+  key: 'META_DESCRIPTION',
+  field: {
+    label: 'Meta Description',
+    help: 'Shows under title in social media preview cards',
+    defaultValue: {
+      [US_ENGLISH_LANG]: '',
+    },
+    type: SHORT_TEXT_TYPE,
+  },
+};
+
 export const META_IMAGE = {
   key: 'META_IMAGE',
   field: {
@@ -100,6 +112,18 @@ export const META_IMAGE = {
       'image/png',
       'image/webp',
     ],
+  },
+};
+
+export const META_TITLE = {
+  key: 'META_TITLE',
+  field: {
+    label: 'Meta Title',
+    help: 'Shows in social media preview cards',
+    defaultValue: {
+      [US_ENGLISH_LANG]: '',
+    },
+    type: SHORT_TEXT_TYPE,
   },
 };
 
@@ -127,6 +151,8 @@ export const SiteSettings = [
   appendSetting(DEFAULT_ACTBLUE_REFCODE),
   appendSetting(LANGUAGES),
   appendSetting(META_IMAGE),
+  appendSetting(META_TITLE),
+  appendSetting(META_DESCRIPTION),
   appendSetting(PAID_FOR_BY_COMMITTEE),
 ];
 
@@ -136,4 +162,6 @@ export const PageSettings = [
   appendSetting(DEFAULT_ACTBLUE_DONATION_FORM),
   appendSetting(DEFAULT_ACTBLUE_REFCODE),
   appendSetting(META_IMAGE),
+  appendSetting(META_TITLE),
+  appendSetting(META_DESCRIPTION),
 ];
