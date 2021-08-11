@@ -1,6 +1,8 @@
 const mongoose = require('./');
-const Assembly = require('./Assembly');
+const Account = require('./Account');
+const DataContainer = require('../db/DataContainer');
 const Organization = require('./Organization');
+const Snapshot = require('./Snapshot');
 
 const schema = new mongoose.Schema({
   'organization': {
@@ -14,22 +16,27 @@ const schema = new mongoose.Schema({
   'domain': {
     type: String,
   },
-  'draftVersion': {
+  'draftSnapshot': {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Assembly',
+    ref: 'Snapshot',
   },
-  'publishedVersion': {
+  'publishedSnapshot': {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Assembly',
+    ref: 'Snapshot',
+  },
+  'lastPublishedAt': {
+    type: Number,
+  },
+  'lastPublishedBy': {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Account',
   },
 }, {
   timestamps: true,
 });
 
 function populate() {
-  this.populate('organization')
-    .populate('draftVersion')
-    .populate('publishedVersion');
+  this.populate('organization').populate('lastPublishedBy');
 }
 
 schema.pre('find', populate);
@@ -39,25 +46,51 @@ schema.index({ 'name': 'text' });
 schema.index({ 'createdAt': 1 });
 schema.index({ 'updatedAt': 1 });
 
-schema.statics.findAllForOrganization = function(
+schema.statics.findAllForOrganization = function({
   organizationId = null,
   name = null,
   startAt = null,
   sortOn = 'updatedAt',
   sortDirection = -1,
   limit = 25,
-) {
-  const query = { organization: organizationId };
+  fillDraftSnapshot = false,
+  fillSnapshotRoute = null,
+}) {
+  const findQuery = { organization: organizationId };
 
   if (name) {
-    query['$text'] = { '$search': name, '$caseSensitive': false };
+    findQuery['$text'] = { '$search': name, '$caseSensitive': false };
   }
 
   if (startAt) {
-    query['_id'] = { '$gt': mongoose.Types.ObjectId(startAt) };
+    findQuery['_id'] = { '$gt': mongoose.Types.ObjectId(startAt) };
   }
 
-  return this.find(query).sort({ [sortOn]: sortDirection }).limit(limit).exec();
+  let query = this.find(findQuery);
+
+  if (fillDraftSnapshot) {
+    const populate = {
+      path: 'draftSnapshot',
+      model: Snapshot,
+      populate: [
+        {
+          path: 'assembly',
+          model: DataContainer,
+        },
+      ],
+    };
+
+    if (fillSnapshotRoute) {
+      populate.populate.push({
+        path: `pages.${fillSnapshotRoute}`,
+        model: DataContainer,
+      });
+    }
+
+    query = query.populate(populate);
+  }
+
+  return query.sort({ [sortOn]: sortDirection }).limit(limit).exec();
 };
 
 const Website = mongoose.model('Website', schema);

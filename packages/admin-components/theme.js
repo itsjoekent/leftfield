@@ -107,6 +107,7 @@ const theme = {
   },
   shadow: {
     light: 'box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);',
+    strong: 'box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);',
   },
   zIndex: {
     modal: 100,

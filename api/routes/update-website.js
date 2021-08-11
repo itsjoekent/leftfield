@@ -1,26 +1,35 @@
 const { get } = require('lodash');
 const mongoose = require('../db');
-const Assembly = require('../db/Assembly');
+const DataContainer = require('../db/DataContainer');
+const Snapshot = require('../db/Snapshot');
 const Website = require('../db/Website');
 const { validateAuthorizationHeader } = require('../utils/auth');
-const basicValidator = require('../utils/basicValidator');
+const isLengthyString = require('../utils/isLengthyString');
 const makeApiError = require('../utils/makeApiError');
-const { respondWithEmptySuccess } = require('../utils/responder');
+const { respondWithSuccess } = require('../utils/responder');
 
 async function updateWebsite(request, response) {
   const { body, params: { websiteId } } = request;
 
-  await basicValidator(body, [
-    { key: 'updatedVersion' },
-    { key: 'description' },
-  ]);
-
   const account = await validateAuthorizationHeader(request);
   if (account._apiError) throw account;
 
-  const { updatedVersion, description } = body;
+  const {
+    updatedData = {},
+    description = '',
+  } = body;
 
-  const website = await Website.findById(mongoose.Types.ObjectId(websiteId)).exec();
+  if (!isLengthyString(updatedData)) {
+    throw makeApiError({ message: 'Missing updatedData', status: 400 });
+  }
+
+  const { pages: updatedPages, ...updatedAssembly } = JSON.parse(updatedData);
+
+  const website = await Website
+    .findById(mongoose.Types.ObjectId(websiteId))
+    .populate('draftSnapshot')
+    .exec();
+
   if (!website) {
     throw makeApiError({ message: 'This website does not exist', status: 404 });
   }
@@ -29,45 +38,52 @@ async function updateWebsite(request, response) {
     throw makeApiError({ message: 'You do not have access to this website', status: 401 });
   }
 
-  const updatedVersionData = JSON.parse(updatedVersion);
-  const draftData = website.draftVersion ? JSON.parse(website.draftVersion.data) : {};
+  const snapshotFields = {
+    assembly: website.draftSnapshot?.assembly?._id || null,
+    pages: website.draftSnapshot?.pages || {},
+  };
 
-  function merge(path) {
-    return {
-      ...get(draftData, path, {}),
-      ...get(updatedVersionData, path, {}),
-    };
+  if (!!updatedAssembly) {
+    const assembly = await DataContainer.create({
+      organization: account.organization._id,
+      website: website._id,
+      data: JSON.stringify(updatedAssembly),
+    });
+
+    snapshotFields.assembly = assembly._id;
   }
 
-  const mergedPageData = Object
-    .keys(get(updatedVersionData, 'pages', {}))
-    .reduce((acc, pageId) => ({
-      ...acc,
-      [pageId]: merge(`pages.${pageId}`),
-    }), {});
+  if (!!updatedPages && !!Object.keys(updatedPages || {}).length) {
+    const pages = await Promise.all(
+      Object.keys(updatedPages).map(async (pageId) => {
+        const data = updatedPages[pageId];
 
-  const mergedData = JSON.stringify({
-    meta: merge('meta'),
-    siteSettings: merge('siteSettings'),
-    stylePresets: merge('stylePresets'),
-    templatedFrom: merge('templatedFrom'),
-    theme: merge('theme'),
-    pages: {
-      ...get(draftData, 'pages', {}),
-      ...mergedPageData,
-    },
-  });
+        const page = await DataContainer.create({
+          organization: account.organization._id,
+          website: website._id,
+          data: JSON.stringify(data),
+        });
 
-  const assembly = await Assembly.create({
+        return { page, data };
+      })
+    );
+
+    pages.forEach(({ page, data }) => snapshotFields.pages[data.route] = page._id);
+  }
+
+  const snapshot = await Snapshot.create({
     organization: account.organization._id,
-    description,
+    website: website._id,
     createdBy: account._id,
-    data: mergedData,
+    description,
+    ...snapshotFields,
   });
 
-  await Website.update({ _id: websiteId }, { draftVersion: assembly._id });
+  await Website.updateOne({ _id: website._id }, { draftSnapshot: snapshot._id });
 
-  return respondWithEmptySuccess(response);
+  return respondWithSuccess(response, {
+    snapshotId: snapshot._id.toString(),
+  });
 }
 
 module.exports = updateWebsite;

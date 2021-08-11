@@ -1,8 +1,12 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { Typography } from 'pkg.admin-components';
 import { selectWebsiteId } from '@product/features/assembly';
-import { clear, selectAutoSave } from '@product/features/autoSave';
+import {
+  clearUpdates,
+  setSnapshotId,
+  selectSnapshotUpdate,
+} from '@product/features/snapshot';
 import useProductApi from '@product/hooks/useProductApi';
 
 export default function AutoSave() {
@@ -10,16 +14,16 @@ export default function AutoSave() {
   const hitApi = useProductApi();
 
   const websiteId = useSelector(selectWebsiteId);
-  const { latestRevision, revisionDescription } = useSelector(selectAutoSave);
+  const { data, description } = useSelector(selectSnapshotUpdate);
 
   const [isSaving, setIsSaving] = React.useState(false);
 
   React.useEffect(() => {
-    if (!latestRevision) return;
+    if (!data || !websiteId) return;
 
     setIsSaving(true);
 
-    const descriptionStringified = revisionDescription
+    const descriptionStringified = description
       .filter((line) => !!line)
       .join(', ');
 
@@ -28,11 +32,17 @@ export default function AutoSave() {
         method: 'put',
         route: `/website/${websiteId}`,
         payload: {
-          updatedVersion: latestRevision,
+          updatedData: data,
           description: descriptionStringified,
         },
-        onResponse: () => {
-          dispatch(clear());
+        onResponse: ({ json, ok }) => {
+          if (ok) {
+            batch(() => {
+              dispatch(clearUpdates());
+              dispatch(setSnapshotId(json.snapshotId));
+            });
+          }
+
           setIsSaving(false);
         },
         onFatalError: () => setIsSaving(false),
@@ -40,7 +50,7 @@ export default function AutoSave() {
     }, 1500);
 
     return () => clearTimeout(timeoutId);
-  }, [websiteId, latestRevision, revisionDescription]);
+  }, [websiteId, data, description]);
 
   return (
     <Typography

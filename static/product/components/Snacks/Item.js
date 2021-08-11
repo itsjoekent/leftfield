@@ -45,8 +45,8 @@ export default function Item(props) {
       gridGap="6px"
       padding="6px"
       rounded={(radius) => radius.default}
-      shadow={(shadows) => shadows.light}
-      bg={(colors) => isSpicy ? colors.red[300] : colors.mono[100]}
+      shadow={(shadows) => shadows.strong}
+      bg={(colors) => isSpicy ? colors.red[300] : colors.blue[500]}
       transitions={['transform']}
       style={{ transform: `translateY(-${translate}px)` }}
       playFadeIn={fadeIn && !fadeOut}
@@ -55,7 +55,7 @@ export default function Item(props) {
       <Typography
         fontStyle="medium"
         fontSize="16px"
-        fg={(colors) => isSpicy ? colors.mono[100] : colors.mono[700]}
+        fg={(colors) => colors.mono[100]}
         overflow="hidden"
         textOverflow="ellipsis"
         whiteSpace="nowrap"
@@ -66,8 +66,8 @@ export default function Item(props) {
         IconComponent={Icons.CloseRound}
         width={20}
         height={20}
-        color={(colors) => isSpicy ? colors.mono[100] : colors.mono[700]}
-        hoverColor={(colors) => isSpicy ? colors.mono[200] : colors.mono[900]}
+        color={(colors) => colors.mono[100]}
+        hoverColor={(colors) => colors.mono[700]}
         aria-label="Close notification"
         onClick={() => dispatch(eatSnack(id))}
       />

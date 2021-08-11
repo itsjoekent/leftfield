@@ -3,7 +3,7 @@ const File = require('../db/File');
 const Organization = require('../db/Organization');
 const { validateAuthorizationHeader } = require('../utils/auth');
 const basicValidator = require('../utils/basicValidator');
-const { put } = require('../utils/kv');
+const { put } = require('../utils/cloudflareKeyValue');
 const makeApiError = require('../utils/makeApiError');
 const { respondWithSuccess } = require('../utils/responder');
 const { getSignedUploadUrls } = require('../utils/spaces');
@@ -60,7 +60,13 @@ async function uploadFile(request, response) {
   const uploadUrls = getSignedUploadUrls(key);
 
   await Promise.all([
-    put(hash, fileSize, key, mimeType),
+    put(
+      process.env.CF_FILES_NAMESPACE_ID,
+      hash,
+      fileSize,
+      key,
+      mimeType,
+    ),
     File.create({
       organization: targetBucket === 'assets' ? account.organization._id : null,
       name: originalFileName.substring(0, 256),

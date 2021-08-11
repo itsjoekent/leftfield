@@ -5,12 +5,9 @@ const schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Organization',
   },
-  'description': {
-    type: String,
-  },
-  createdBy: {
+  'website': {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Account',
+    ref: 'Website',
   },
   data: {
     type: String,
@@ -22,8 +19,6 @@ const schema = new mongoose.Schema({
   },
 });
 
-schema.index({ 'createdAt': 1 });
+const DataContainer = mongoose.model('DataContainer', schema);
 
-const Assembly = mongoose.model('Assembly', schema);
-
-module.exports = Assembly;
+module.exports = DataContainer;

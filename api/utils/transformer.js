@@ -1,6 +1,11 @@
 const { get } = require('lodash');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 function transformAccount(account, requestingAccount = null) {
+  if (ObjectId.isValid(account)) {
+    return account.toString();
+  }
+
   const {
     _id,
     email,
@@ -21,27 +26,33 @@ function transformAccount(account, requestingAccount = null) {
   return data;
 }
 
-function transformAssembly(assembly, requestingAccount = null) {
+function transformDataContainer(dataContainer, requestingAccount = null) {
+  if (ObjectId.isValid(dataContainer)) {
+    return dataContainer.toString();
+  }
+
   const {
     _id,
     organization,
-    description,
-    createdBy,
+    website,
     data,
     createdAt,
-  } = assembly;
+  } = dataContainer;
 
   return {
     id: _id.toString(),
     organization: transformOrganization(organization, requestingAccount),
-    description,
-    createdBy: transformAccount(createdBy, requestingAccount),
-    data,
+    website: transformWebsite(website, requestingAccount),
+    data: JSON.parse(data || '{}'),
     createdAt,
   };
 }
 
 function transformFile(file, requestingAccount = null) {
+  if (ObjectId.isValid(file)) {
+    return file.toString();
+  }
+
   if (!!file.organization && (
     !requestingAccount
     || !file.organization._id.equals(requestingAccount.organization._id)
@@ -78,6 +89,10 @@ function transformFile(file, requestingAccount = null) {
 }
 
 function transformOrganization(organization, requestingAccount = null) {
+  if (ObjectId.isValid(organization)) {
+    return organization.toString();
+  }
+
   const {
     _id,
     name,
@@ -93,15 +108,52 @@ function transformOrganization(organization, requestingAccount = null) {
   return response;
 }
 
+function transformSnapshot(snapshot, requestingAccount = null) {
+  if (ObjectId.isValid(snapshot)) {
+    return snapshot.toString();
+  }
+
+  const {
+    _id,
+    assembly,
+    description,
+    createdAt,
+    createdBy,
+    organization,
+    website,
+  } = snapshot;
+
+  const pages = Object.keys(snapshot.pages || {}).reduce((acc, route) => ({
+    ...acc,
+    [route]: transformDataContainer(snapshot.pages[route], requestingAccount),
+  }), {});
+
+  return {
+    id: _id.toString(),
+    organization: transformOrganization(organization, requestingAccount),
+    website: transformWebsite(website, requestingAccount),
+    assembly: transformDataContainer(assembly, requestingAccount),
+    pages,
+    description,
+    createdBy: transformAccount(createdBy, requestingAccount),
+    createdAt,
+  };
+}
+
 function transformWebsite(website, requestingAccount = null) {
+  if (ObjectId.isValid(website)) {
+    return website.toString();
+  }
+
   const {
     _id,
     organization,
     name,
     domain,
-    data,
-    draftVersion,
-    publishedVersion,
+    draftSnapshot,
+    publishedSnapshot,
+    lastPublishedAt,
+    lastPublishedBy,
   } = website;
 
   return {
@@ -109,15 +161,21 @@ function transformWebsite(website, requestingAccount = null) {
     organization: transformOrganization(organization, requestingAccount),
     name,
     domain,
-    data,
-    draftVersion: draftVersion ? transformAssembly(draftVersion, requestingAccount) : null,
-    publishedVersion: publishedVersion ? transformAssembly(publishedVersion, requestingAccount) : null,
+    draftSnapshot: draftSnapshot
+      ? transformSnapshot(draftSnapshot, requestingAccount)
+      : null,
+    publishedSnapshot: publishedSnapshot
+      ? transformSnapshot(publishedSnapshot, requestingAccount)
+      : null,
+    lastPublishedAt,
+    lastPublishedBy: lastPublishedBy
+      ? transformAccount(lastPublishedBy, requestingAccount)
+      : null,
   };
 }
 
 module.exports = {
   transformAccount,
-  transformAssembly,
   transformFile,
   transformOrganization,
   transformWebsite,

@@ -1,8 +1,6 @@
 const mongoose = require('../db');
 const Website = require('../db/Website');
 const { validateAuthorizationHeader } = require('../utils/auth');
-const basicValidator = require('../utils/basicValidator');
-const getPathParams = require('../utils/getPathParams');
 const makeApiError = require('../utils/makeApiError');
 const { respondWithSuccess } = require('../utils/responder');
 const { transformWebsite } = require('../utils/transformer');
@@ -17,7 +15,7 @@ async function getWebsite(request, response) {
   const account = await validateAuthorizationHeader(event);
   if (account._apiError) throw account;
 
-  const website = await Website.findById(mongoose.Types.ObjectId(websiteId));
+  const website = await Website.findById(mongoose.Types.ObjectId(websiteId)).exec();
   if (!website) {
     throw makeApiError({ message: 'This website does not exist', status: 404 });
   }

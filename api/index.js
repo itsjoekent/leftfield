@@ -11,22 +11,13 @@ if (NODE_ENV === 'development') {
 
 const cors = require('cors');
 const express = require('express');
-const pino = require('pino');
 const pinoHttps = require('pino-http');
 
 const mongoose = require('./db');
+const logger = require('./utils/logger');
 const routeWrapper = require('./utils/routeWrapper');
 
 const app = express();
-
-const logger = pino({
-  prettyPrint: NODE_ENV !== 'production',
-  redact: NODE_ENV === 'production' ? [
-    'req.headers.cookie',
-    'req.headers.authorization',
-  ] : [],
-});
-
 const httpLogger = pinoHttps({ logger });
 
 app.use(httpLogger);
@@ -55,6 +46,7 @@ app.use(function (req, res, next) {
     app.post('/website', routeWrapper('create-website'));
     app.get('/website/:websiteId', routeWrapper('get-website'));
     app.put('/website/:websiteId', routeWrapper('update-website'));
+    app.post('/website/:websiteId/publish', routeWrapper('publish-website'));
 
     function listen() {
       if (NODE_ENV === 'development') {

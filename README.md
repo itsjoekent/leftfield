@@ -17,5 +17,3 @@ $ npm start
 # Launch api
 $ make start-api
 ```
-
-- get file modal working

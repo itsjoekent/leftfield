@@ -44,9 +44,9 @@ import {
   selectWebsiteId,
 } from '@product/features/assembly';
 import {
-  pushRevision,
-  selectAutoSaveHash,
-} from '@product/features/autoSave';
+  pushUpdate,
+  selectSnapshotUpdateHash,
+} from '@product/features/snapshot';
 
 const TRIGGERS = [
   addChildComponentToSlot.toString(),
@@ -237,7 +237,7 @@ const sync = store => next => action => {
     !!websiteId
     && TRIGGERS.includes(action.type)
   ) {
-    const compareHash = selectAutoSaveHash(state);
+    const compareHash = selectSnapshotUpdateHash(state);
 
     const {
       meta,
@@ -248,7 +248,7 @@ const sync = store => next => action => {
       theme,
     } = state.assembly;
 
-    const payload = {
+    const data = {
       meta,
       pages,
       siteSettings,
@@ -257,21 +257,12 @@ const sync = store => next => action => {
       theme,
     };
 
-    const stringified = JSON.stringify(payload);
-    const versionHash = md5(stringified);
+    const descriptionGenerator = ACTION_DESCRIPTIONS[action.type];
+    const description = descriptionGenerator
+      ? descriptionGenerator({ action, state, priorState })
+      : null;
 
-    if (compareHash !== versionHash) {
-      const descriptionGenerator = ACTION_DESCRIPTIONS[action.type];
-      const description = descriptionGenerator
-        ? descriptionGenerator({ action, state, priorState })
-        : null;
-
-      store.dispatch(pushRevision({
-        data: stringified,
-        hash: versionHash,
-        description,
-      }));
-    }
+    store.dispatch(pushUpdate({ data, description }));
   }
 
   return result;

@@ -63,6 +63,11 @@ export default function Editor() {
       hitApi({
         method: 'get',
         route: '/organization/websites',
+        query: {
+          updatedAt: -1,
+          fillDraftSnapshot: true,
+          fillSnapshotRoute: '/',
+        },
         onResponse: ({ json, ok }) => {
           if (ok && !cancel) {
             const websites = get(json, 'websites', []);
@@ -70,7 +75,16 @@ export default function Editor() {
             if (websites.length) {
               const [website] = websites;
               const websiteId = get(website, 'id');
-              const data = JSON.parse(get(website, 'draftVersion.data', '{}'));
+
+              const data = get(website, 'draftSnapshot.assembly.data', {});
+
+              if (get(website, 'draftSnapshot.pages.data', null)) {
+                const pages = get(website, 'draftSnapshot.pages.data', {});
+
+                if (Object.keys(pages).length) {
+                  data.pages = pages;
+                }
+              }
 
               dispatch(setAssemblyState({
                 newAssembly: { websiteId, ...data },

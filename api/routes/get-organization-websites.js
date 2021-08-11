@@ -1,5 +1,6 @@
 const Website = require('../db/Website');
 const { validateAuthorizationHeader } = require('../utils/auth');
+const isTrueString = require('../utils/isTrueString');
 const makeApiError = require('../utils/makeApiError');
 const { respondWithSuccess } = require('../utils/responder');
 const { transformWebsite } = require('../utils/transformer');
@@ -13,6 +14,8 @@ async function getOrganizationWebsites(request, response) {
     sortOn,
     sortDirection,
     startAt,
+    fillDraftSnapshot,
+    fillSnapshotRoute,
   } = request.query;
 
   if (sortOn && !['createdAt', 'updatedAt'].includes(sortOn)) {
@@ -32,13 +35,17 @@ async function getOrganizationWebsites(request, response) {
     });
   }
 
-  const websites = await Website.findAllForOrganization(
-    account.organization._id,
-    name || null,
-    startAt || null,
-    sortOn || 'updatedAt',
-    sortDirection || -1,
-  );
+  const options = {
+    organizationId: account.organization._id,
+    name,
+    sortOn,
+    sortDirection,
+    startAt,
+    fillDraftSnapshot: isTrueString(fillDraftSnapshot),
+    fillSnapshotRoute,
+  };
+
+  const websites = await Website.findAllForOrganization(options);
 
   return respondWithSuccess(response, {
     websites: websites.map((website) => transformWebsite(website, account)),

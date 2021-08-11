@@ -27,7 +27,7 @@ async function login(request, response) {
     throw makeApiError({ message: 'Incorrect password', status: 401 });
   }
 
-  await Account.update(
+  await Account.updateOne(
     { _id: account._id },
     { lastLoggedIn: Date.now() },
   );
