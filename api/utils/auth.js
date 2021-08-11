@@ -40,18 +40,27 @@ async function passwordCompare(plaintext, hashed) {
   }
 }
 
-async function signToken(email, claims = {}, expiration = '7 days') {
-  return await new SignJWT(claims)
+async function signToken({
+  subject,
+  subjectType,
+  claims = {},
+  expiration = '7 days',
+  prefix = 'p',
+}) {
+  const jwt = await new SignJWT(claims)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setIssuer('leftfield')
-    .setSubject(email)
+    .setSubject(`${subjectType}_${subject}`)
     .setExpirationTime('7 days')
     .sign(secretKey);
+
+  return `lf${prefix}_${jwt}`;
 }
 
 async function validateToken(token) {
-  const { payload } = await jwtVerify(token, secretKey, { issuer: 'leftfield' });
+  const jwt = token.split(/_(.+)/)[1];
+  const { payload } = await jwtVerify(jwt, secretKey, { issuer: 'leftfield' });
   return payload;
 }
 
@@ -66,17 +75,26 @@ async function validateAuthorizationHeader(request) {
     }
 
     const payload = await validateToken(authorizationHeader.replace('Bearer ', ''));
-    const account = await Account.findByEmail(payload.sub);
+    const [subjectType, subject] = payload.sub.split(/_(.+)/);
 
-    if (!account) {
-      return makeApiError({
-        error,
-        message: 'Not authorized to perform this action',
-        status: 401,
-      });
+    if (subjectType === 'email') {
+      const account = await Account.findByEmail(subject);
+
+      if (!account) {
+        return makeApiError({
+          error,
+          message: 'Not authorized to perform this action',
+          status: 401,
+        });
+      }
+
+      return account;
     }
 
-    return account;
+    return makeApiError({
+      message: 'Not authorized to perform this action',
+      status: 401,
+    });
   } catch (error) {
     return makeApiError({
       error,

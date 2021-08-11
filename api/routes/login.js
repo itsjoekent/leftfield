@@ -34,7 +34,11 @@ async function login(request, response) {
 
   const isLocalHost = process.env.DOMAIN.includes('localhost');
 
-  const jwt = await signToken(account.email);
+  const jwt = await signToken({
+    subject: account.email,
+    subjectType: 'email',
+  });
+
   const jwtCookie = cookie.serialize(AUTH_TOKEN_COOKIE, jwt, {
     path: '/',
     secure: true,
