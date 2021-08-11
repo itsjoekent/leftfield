@@ -9,13 +9,13 @@ import {
 } from 'pkg.admin-components';
 import { selectPageName } from '@product/features/assembly';
 import {
-  selectActivePageId,
+  selectActivePageRoute,
   setIsSettingsMenuOpen,
 } from '@product/features/workspace';
 
 export default function SiteToolbar() {
-  const activePageId = useSelector(selectActivePageId);
-  const pageName = useSelector(selectPageName(activePageId));
+  const activePageRoute = useSelector(selectActivePageRoute);
+  const pageName = useSelector(selectPageName(activePageRoute));
 
   const dispatch = useDispatch();
 

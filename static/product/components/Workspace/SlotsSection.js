@@ -17,7 +17,7 @@ export default function WorkspaceSlotsSection() {
   const dispatch = useDispatch();
 
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
@@ -43,14 +43,14 @@ export default function WorkspaceSlotsSection() {
 
     if (destination.droppableId !== source.droppableId) {
       dispatch(removeChildComponentFromSlot({
-        pageId: activePageId,
+        route: activePageRoute,
         componentId: activeComponentId,
         slotId: source.droppableId,
         targetIndex: source.index,
       }));
 
       dispatch(addChildComponentToSlot({
-        pageId: activePageId,
+        route: activePageRoute,
         componentId: draggableId,
         parentComponentId: activeComponentId,
         slotId: destination.droppableId,
@@ -58,7 +58,7 @@ export default function WorkspaceSlotsSection() {
       }));
     } else {
       dispatch(reorderChildComponent({
-        pageId: activePageId,
+        route: activePageRoute,
         componentId: activeComponentId,
         slotId: source.droppableId,
         fromIndex: source.index,

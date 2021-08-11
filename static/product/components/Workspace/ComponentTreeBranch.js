@@ -24,12 +24,12 @@ export default function ComponentTreeBranch(props) {
 
   const {
     activeComponentId,
-    activePageId,
+    activePageRoute,
   } = useActiveWorkspaceComponent();
 
-  const name = useSelector(selectComponentName(activePageId, componentId));
-  const tag = useSelector(selectComponentTag(activePageId, componentId));
-  const slots = useSelector(selectComponentSlots(activePageId, componentId));
+  const name = useSelector(selectComponentName(activePageRoute, componentId));
+  const tag = useSelector(selectComponentTag(activePageRoute, componentId));
+  const slots = useSelector(selectComponentSlots(activePageRoute, componentId));
 
   const meta = ComponentMeta[tag];
 

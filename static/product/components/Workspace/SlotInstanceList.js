@@ -11,11 +11,11 @@ export default function SlotInstanceList(props) {
   const { slotId } = props;
 
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
-  const slotComponents = useSelector(selectComponentSlotMapped(activePageId, activeComponentId, slotId));
+  const slotComponents = useSelector(selectComponentSlotMapped(activePageRoute, activeComponentId, slotId));
 
   return (
     <Droppable droppableId={slotId}>

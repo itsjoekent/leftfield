@@ -13,7 +13,7 @@ import { closeModal } from '@product/features/modal';
 
 export default function ExportStyleModal(props) {
   const {
-    pageId,
+    route,
     componentId,
     styleId,
     styleType,
@@ -44,7 +44,7 @@ export default function ExportStyleModal(props) {
     const presetId = uuid();
 
     dispatch(exportStyle({
-      pageId,
+      route,
       componentId,
       presetId,
       styleId,

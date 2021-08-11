@@ -16,11 +16,11 @@ import pullTranslatedValue from '@product/utils/pullTranslatedValue';
 
 export default function PropertiesForm() {
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
-  const componentProperties = useSelector(selectComponentProperties(activePageId, activeComponentId));
+  const componentProperties = useSelector(selectComponentProperties(activePageRoute, activeComponentId));
   const visibleProperties = useSelector(selectVisibleProperties);
 
   const languages = useSiteLanguages();
@@ -71,7 +71,7 @@ export default function PropertiesForm() {
     const language = get(field, 'attributes.language');
 
     dispatch(setComponentPropertyValue({
-      pageId: activePageId,
+      route: activePageRoute,
       componentId: activeComponentId,
       propertyId,
       value,

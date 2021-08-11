@@ -32,7 +32,7 @@ export default function ResponsiveHint(props) {
   const adminTheme = useAdminTheme();
 
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
@@ -41,7 +41,7 @@ export default function ResponsiveHint(props) {
   const targetDevice = notResponsive ? Responsive.MOBILE_DEVICE : device;
 
   const attributeValue = useSelector(selectComponentStyleAttributeForDeviceCascading(
-    activePageId,
+    activePageRoute,
     activeComponentId,
     styleId,
     attributeId,
@@ -73,7 +73,7 @@ export default function ResponsiveHint(props) {
         IconComponent={Icons.TrashLight}
         iconSize={16}
         onClick={() => dispatch(resetComponentStyleAttribute({
-          pageId: activePageId,
+          route: activePageRoute,
           componentId: activeComponentId,
           styleId,
           attributeId,

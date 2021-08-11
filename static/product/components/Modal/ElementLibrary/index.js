@@ -22,7 +22,7 @@ const allComponents = Object.keys(ComponentMeta).map((tag) => ComponentMeta[tag]
 
 export default function ElementLibraryModal(props) {
   const {
-    pageId,
+    route,
     parentComponentId,
     slotId,
   } = props;
@@ -37,14 +37,14 @@ export default function ElementLibraryModal(props) {
     const componentId = uuid();
 
     dispatch(buildComponent({
-      pageId,
+      route,
       componentId,
       componentTag: meta.tag,
     }));
 
     dispatch(addChildComponentToSlot({
       componentId,
-      pageId,
+      route,
       parentComponentId,
       slotId,
     }));

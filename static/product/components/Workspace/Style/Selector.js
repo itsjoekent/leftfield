@@ -21,12 +21,12 @@ export default function Selector(props) {
   const dispatch = useDispatch();
 
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
   const componentStyle = useSelector(
-    selectComponentStyle(activePageId, activeComponentId, styleId)
+    selectComponentStyle(activePageRoute, activeComponentId, styleId)
   );
 
   const campaignTheme = useSelector(selectCampaignTheme);
@@ -48,7 +48,7 @@ export default function Selector(props) {
       .filter((option) => !!get(option, 'label', null) && !!get(option, 'value', null));
 
   const attributeValue = useSelector(selectComponentStyleAttributeForDeviceCascading(
-    activePageId,
+    activePageRoute,
     activeComponentId,
     styleId,
     attributeId,
@@ -69,7 +69,7 @@ export default function Selector(props) {
       options={options}
       isDisabled={notResponsive && device !== Responsive.MOBILE_DEVICE}
       onChange={({ value }) => dispatch(action({
-        pageId: activePageId,
+        route: activePageRoute,
         componentId: activeComponentId,
         styleId,
         attributeId,

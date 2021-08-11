@@ -24,12 +24,12 @@ export default function Uploader(props) {
   const propertyId = get(property, 'id');
   const allow = get(property, 'allow', []);
 
-  const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
+  const { activePageRoute, activeComponentId } = useActiveWorkspaceComponent();
 
-  const getPropertyValue = useGetPropertyValue(activePageId, activeComponentId);
+  const getPropertyValue = useGetPropertyValue(activePageRoute, activeComponentId);
 
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
-    activePageId,
+    activePageRoute,
     activeComponentId,
     propertyId,
     language,

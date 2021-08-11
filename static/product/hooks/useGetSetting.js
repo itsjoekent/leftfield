@@ -10,8 +10,8 @@ import {
 } from '@product/features/assembly';
 
 //TODO
-export default function useGetSetting(pageId) {
-  const pageSettings = useSelector(selectPageSettings(pageId));
+export default function useGetSetting(route) {
+  const pageSettings = useSelector(selectPageSettings(route));
   const siteSettings = useSelector(selectSiteSettings);
 
   function getSetting(from, key, defaultValue = null) {

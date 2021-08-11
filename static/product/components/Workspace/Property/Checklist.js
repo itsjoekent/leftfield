@@ -13,12 +13,12 @@ export default function Checklist(props) {
   const { fieldId, language, property } = props;
   const propertyId = get(property, 'id');
 
-  const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
+  const { activePageRoute, activeComponentId } = useActiveWorkspaceComponent();
 
-  const getPropertyValue = useGetPropertyValue(activePageId, activeComponentId);
+  const getPropertyValue = useGetPropertyValue(activePageRoute, activeComponentId);
 
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
-    activePageId,
+    activePageRoute,
     activeComponentId,
     propertyId,
     language,

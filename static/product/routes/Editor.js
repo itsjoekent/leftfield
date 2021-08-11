@@ -78,12 +78,8 @@ export default function Editor() {
 
               const data = get(website, 'draftSnapshot.assembly.data', {});
 
-              if (get(website, 'draftSnapshot.pages.data', null)) {
-                const pages = get(website, 'draftSnapshot.pages.data', {});
-
-                if (Object.keys(pages).length) {
-                  data.pages = pages;
-                }
+              if (get(website, 'draftSnapshot.pages./.data', null)) {
+                data.pages = { '/': get(website, 'draftSnapshot.pages./.data', {}) };
               }
 
               dispatch(setAssemblyState({

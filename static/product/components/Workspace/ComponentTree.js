@@ -9,12 +9,12 @@ import {
   selectPageName,
   selectPageRootComponentId,
 } from '@product/features/assembly';
-import { selectActivePageId } from '@product/features/workspace';
+import { selectActivePageRoute } from '@product/features/workspace';
 
 export default function ComponentTree() {
-  const activePageId = useSelector(selectActivePageId);
-  const pageName = useSelector(selectPageName(activePageId));
-  const rootComponentId = useSelector(selectPageRootComponentId(activePageId));
+  const activePageRoute = useSelector(selectActivePageRoute);
+  const pageName = useSelector(selectPageName(activePageRoute));
+  const rootComponentId = useSelector(selectPageRootComponentId(activePageRoute));
 
   return (
     <Flex.Column gridGap="12px" padding="12px" flexGrow fullWidth>

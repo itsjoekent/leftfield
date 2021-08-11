@@ -54,12 +54,12 @@ export function getPropertyValue(
   return propertyValue;
 }
 
-export default function useGetPropertyValue(pageId, componentId) {
-  const pageSettings = useSelector(selectPageSettings(pageId));
+export default function useGetPropertyValue(route, componentId) {
+  const pageSettings = useSelector(selectPageSettings(route));
   const siteSettings = useSelector(selectSiteSettings);
 
-  const componentTag = useSelector(selectComponentTag(pageId, componentId));
-  const componentProperties = useSelector(selectComponentProperties(pageId, componentId));
+  const componentTag = useSelector(selectComponentTag(route, componentId));
+  const componentProperties = useSelector(selectComponentProperties(route, componentId));
 
   return (propertyId, language) => getPropertyValue(
     propertyId,

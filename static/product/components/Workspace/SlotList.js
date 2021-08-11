@@ -22,7 +22,7 @@ export default function SlotList(props) {
   const dispatch = useDispatch();
 
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
     activeComponentMeta,
   } = useActiveWorkspaceComponent();
@@ -32,7 +32,7 @@ export default function SlotList(props) {
   // const minListSize = get(slotMeta, 'min', 0);
   const maxListSize = get(slotMeta, 'max', 0);
 
-  const slotComponents = useSelector(selectComponentSlot(activePageId, activeComponentId, slotId));
+  const slotComponents = useSelector(selectComponentSlot(activePageRoute, activeComponentId, slotId));
   const totalComponentsInSlot = slotComponents.length;
 
   const hasEmptyChannel = isList ? (
@@ -59,7 +59,7 @@ export default function SlotList(props) {
             onClick={() => dispatch(setModal({
               type: ELEMENT_LIBRARY_MODAL,
               props: {
-                pageId: activePageId,
+                route: activePageRoute,
                 parentComponentId: activeComponentId,
                 slotId,
               },

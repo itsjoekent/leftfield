@@ -14,7 +14,7 @@ export default function PageSettings(props) {
     setIsExpanded,
   } = props;
 
-  const { activePageId } = useActiveWorkspaceComponent();
+  const { activePageRoute } = useActiveWorkspaceComponent();
 
   return (
     <WorkspaceMenuAccordion
@@ -24,10 +24,10 @@ export default function PageSettings(props) {
     >
       <WorkspaceMenuSettings
         formName="page"
-        getter={selectPageSettings(activePageId)}
+        getter={selectPageSettings(activePageRoute)}
         setter={(payload) => setPageSetting({
           ...payload,
-          pageId: activePageId,
+          route: activePageRoute,
         })}
         settings={Settings.PageSettings}
       />

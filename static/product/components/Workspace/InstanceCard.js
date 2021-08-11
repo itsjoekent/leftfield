@@ -21,8 +21,8 @@ import useActiveWorkspaceComponent from '@product/hooks/useActiveWorkspaceCompon
 export default function InstanceCard(props) {
   const { componentId, index } = props;
 
-  const { activePageId } = useActiveWorkspaceComponent();
-  const component = useSelector(selectComponent(activePageId, componentId));
+  const { activePageRoute } = useActiveWorkspaceComponent();
+  const component = useSelector(selectComponent(activePageRoute, componentId));
 
   const dispatch = useDispatch();
 
@@ -60,7 +60,7 @@ export default function InstanceCard(props) {
                 hoverColor={(colors) => colors.mono[900]}
                 aria-label="Duplicate component"
                 onClick={() => dispatch(duplicateComponent({
-                  pageId: activePageId,
+                  route: activePageRoute,
                   componentId,
                 }))}
               />
@@ -80,7 +80,7 @@ export default function InstanceCard(props) {
                     confirmButtonIconName: 'Trash',
                     isDangerous: true,
                     onConfirm: () => dispatch(deleteComponentAndDescendants({
-                      pageId: activePageId,
+                      route: activePageRoute,
                       componentId,
                     })),
                   },

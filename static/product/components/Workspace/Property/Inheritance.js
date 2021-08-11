@@ -34,17 +34,17 @@ export default function PropertyInheritance(props) {
   const dispatch = useDispatch();
   const { setFieldValue } = useFormField(fieldId);
 
-  const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
+  const { activePageRoute, activeComponentId } = useActiveWorkspaceComponent();
 
   const inheritedFrom = useSelector(selectComponentPropertyInheritedFromForLanguage(
-    activePageId,
+    activePageRoute,
     activeComponentId,
     propertyId,
     language,
   ));
 
-  const getPropertyValue = useGetPropertyValue(activePageId, activeComponentId);
-  const getSetting = useGetSetting(activePageId);
+  const getPropertyValue = useGetPropertyValue(activePageRoute, activeComponentId);
+  const getSetting = useGetSetting(activePageRoute);
 
   const inheritFromSetting = get(property, 'inheritFromSetting', null);
 
@@ -98,7 +98,7 @@ export default function PropertyInheritance(props) {
       event.preventDefault();
 
       dispatch(setComponentInheritedFrom({
-        pageId: activePageId,
+        route: activePageRoute,
         componentId: activeComponentId,
         propertyId,
         value: value,

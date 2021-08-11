@@ -69,7 +69,7 @@ import {
 import { selectPreviewDeviceSize } from '@product/features/previewMode';
 import {
   setActiveComponentId,
-  setActivePageId,
+  setActivePageRoute,
   setTab,
   setVisibleProperties,
   setVisibleSlots,
@@ -78,7 +78,7 @@ import {
   navigateToPast,
   navigateToFuture,
 
-  selectActivePageId,
+  selectActivePageRoute,
   selectActiveComponentId,
   selectTab,
 
@@ -109,7 +109,7 @@ const TRIGGERS = [
   reorderChildComponent.toString(),
   resetComponentStyleAttribute.toString(),
   setActiveComponentId.toString(),
-  setActivePageId.toString(),
+  setActivePageRoute.toString(),
   setCampaignThemeKeyValue.toString(),
   setComponentPropertyValue.toString(),
   setComponentInheritedFrom.toString(),
@@ -146,7 +146,7 @@ function runParliamentarian(
   action,
   queueDispatch,
   state,
-  pageId,
+  route,
   componentId,
   previewDevice,
   pageSettings,
@@ -155,16 +155,16 @@ function runParliamentarian(
   languages,
   updateWorkspace = true,
 ) {
-  const componentTag = selectComponentTag(pageId, componentId)(state);
-  const componentPropertyValues = selectComponentProperties(pageId, componentId)(state);
-  const componentSlotValues = selectComponentSlots(pageId, componentId)(state);
+  const componentTag = selectComponentTag(route, componentId)(state);
+  const componentPropertyValues = selectComponentProperties(route, componentId)(state);
+  const componentSlotValues = selectComponentSlots(route, componentId)(state);
 
   const componentMeta = ComponentMeta[componentTag];
   const componentProperties = get(componentMeta, 'properties', []);
 
-  const parentComponentId = selectComponentsParentComponentId(pageId, componentId)(state);
-  const parentComponentTag = selectComponentTag(pageId, parentComponentId)(state);
-  const parentComponentSlotId = selectComponentsParentComponentSlotId(pageId, componentId)(state);
+  const parentComponentId = selectComponentsParentComponentId(route, componentId)(state);
+  const parentComponentTag = selectComponentTag(route, parentComponentId)(state);
+  const parentComponentSlotId = selectComponentsParentComponentSlotId(route, componentId)(state);
   const parentComponentSlotMeta = find(get(ComponentMeta[parentComponentTag], 'slots'), { id: parentComponentSlotId }) || null;
 
   const componentPropertyValuesForConditionals = Object.keys(componentPropertyValues).reduce((acc, propertyId) => {
@@ -255,7 +255,7 @@ function runParliamentarian(
     const hasSetDefault = (language) => !!get(appliedPropertyDefaults, `${propertyId}.${language}`, false)
       || !!(inheritFromSetting && isDefined(
         selectComponentPropertyInheritedFromForLanguage(
-          pageId,
+          route,
           componentId,
           propertyId,
           language,
@@ -284,7 +284,7 @@ function runParliamentarian(
 
         if (!!inheritanceLevel && !hasSetDefault(language)) {
           queueDispatch(setComponentInheritedFrom({
-            pageId,
+            route,
             componentId,
             propertyId: property.id,
             value: inheritanceLevel,
@@ -316,7 +316,7 @@ function runParliamentarian(
 
         if (getLocalPropertyValue(language) !== translatedValue) {
           queueDispatch(setComponentPropertyValue({
-            pageId,
+            route,
             componentId,
             propertyId,
             value: translatedValue,
@@ -344,7 +344,7 @@ function runParliamentarian(
 
         if (getLocalPropertyValue(language) !== translatedValue) {
           queueDispatch(setComponentPropertyValue({
-            pageId,
+            route,
             componentId,
             propertyId,
             value: translatedValue,
@@ -367,7 +367,7 @@ function runParliamentarian(
 
     if (hasValue) {
       queueDispatch(wipePropertyValue({
-        pageId,
+        route,
         componentId,
         propertyId,
       }));
@@ -375,7 +375,7 @@ function runParliamentarian(
 
     const hasInheritedFrom = !isEmpty(
       selectComponentPropertyInheritedFrom(
-        pageId,
+        route,
         componentId,
         propertyId,
       )(state)
@@ -383,7 +383,7 @@ function runParliamentarian(
 
     if (hasInheritedFrom) {
       queueDispatch(wipePropertyInheritedFrom({
-        pageId,
+        route,
         componentId,
         propertyId,
       }));
@@ -411,7 +411,7 @@ function runParliamentarian(
 
       const { compare, test } = hideIf;
       const compareValue = selectComponentStyleAttributeForDeviceCascading(
-        pageId,
+        route,
         componentId,
         style.id,
         compare,
@@ -468,7 +468,7 @@ function runParliamentarian(
     const styleType = get(style, 'type', null);
 
     const hasStyleValue = !isEmpty(
-      selectComponentStyle(pageId, componentId, styleId)(state)
+      selectComponentStyle(route, componentId, styleId)(state)
     );
 
     if (!hasStyleValue) {
@@ -478,7 +478,7 @@ function runParliamentarian(
         const apply = presets[0];
 
         queueDispatch(importStyle({
-          pageId,
+          route,
           componentId,
           styleId,
           presetId: get(apply, 'id'),
@@ -497,7 +497,7 @@ function runParliamentarian(
 
       const getAttributeValue = (device) => {
         return selectComponentStyleAttributeForDevice(
-          pageId,
+          route,
           componentId,
           styleId,
           attributeId,
@@ -525,7 +525,7 @@ function runParliamentarian(
 
         if (!hasSetDefault(device)) {
           queueDispatch(setComponentStyle({
-            pageId,
+            route,
             componentId,
             styleId,
             attributeId,
@@ -544,12 +544,12 @@ function runParliamentarian(
     const styleId = style.id;
 
     const hasValue = !isEmpty(
-      selectComponentStyle(pageId, componentId, styleId)(state)
+      selectComponentStyle(route, componentId, styleId)(state)
     );
 
     if (hasValue) {
       queueDispatch(wipeStyle({
-        pageId,
+        route,
         componentId,
         styleId,
       }));
@@ -603,11 +603,11 @@ function runParliamentarian(
 
   hiddenSlots.forEach((slot) => {
     const slotId = get(slot, 'id');
-    const hasChildren = !!selectComponentSlot(pageId, componentId, slotId)(state).length;
+    const hasChildren = !!selectComponentSlot(route, componentId, slotId)(state).length;
 
     if (hasChildren) {
       queueDispatch(wipeSlot({
-        pageId,
+        route,
         componentId,
         slotId,
       }));
@@ -660,12 +660,12 @@ const parliamentarian = store => next => action => {
   const dispatches = [];
   const queueDispatch = (action) => dispatches.push(action);
 
-  const pageId = selectActivePageId(state);
+  const route = selectActivePageRoute(state);
   const componentId = selectActiveComponentId(state);
 
-  if (!isDefined(selectComponent(pageId, componentId)(state))) {
+  if (!isDefined(selectComponent(route, componentId)(state))) {
     store.dispatch(setActiveComponentId({
-      componentId: selectPageRootComponentId(pageId)(state),
+      componentId: selectPageRootComponentId(route)(state),
       [DISABLE_HISTORY]: true,
     }));
 
@@ -674,7 +674,7 @@ const parliamentarian = store => next => action => {
 
   const previewDevice = selectPreviewDeviceSize(state);
 
-  const pageSettings = selectPageSettings(pageId)(state);
+  const pageSettings = selectPageSettings(route)(state);
   const siteSettings = selectSiteSettings(state);
   const campaignTheme = selectCampaignTheme(state);
 
@@ -688,7 +688,7 @@ const parliamentarian = store => next => action => {
     action,
     queueDispatch,
     state,
-    pageId,
+    route,
     componentId,
     previewDevice,
     pageSettings,
@@ -703,7 +703,7 @@ const parliamentarian = store => next => action => {
       action,
       queueDispatch,
       state,
-      pageId,
+      route,
       action.payload.componentId,
       previewDevice,
       pageSettings,
@@ -734,12 +734,12 @@ const parliamentarian = store => next => action => {
     console.groupEnd();
   }
 
-  const pageCompilation = JSON.parse(JSON.stringify(get(appliedState, `assembly.pages.${pageId}`)));
+  const pageCompilation = JSON.parse(JSON.stringify(get(appliedState, `assembly.pages.${route}`)));
 
   Object.keys(get(pageCompilation, 'components', {})).forEach((componentId) => {
-    const tag = selectComponentTag(pageId, componentId)(appliedState);
-    const previewComponentProperties = selectComponentProperties(pageId, componentId)(appliedState);
-    const previewComponentStyles = selectComponentStyles(pageId, componentId)(appliedState);
+    const tag = selectComponentTag(route, componentId)(appliedState);
+    const previewComponentProperties = selectComponentProperties(route, componentId)(appliedState);
+    const previewComponentStyles = selectComponentStyles(route, componentId)(appliedState);
 
     Object.keys(previewComponentProperties).forEach((propertyId) => {
       const properties = get(ComponentMeta[tag], `properties`);
@@ -751,7 +751,7 @@ const parliamentarian = store => next => action => {
           return;
         }
 
-        if (isDefined(selectComponentPropertyValue(pageId, componentId, propertyId, language)(appliedState))) {
+        if (isDefined(selectComponentPropertyValue(route, componentId, propertyId, language)(appliedState))) {
           return;
         }
 
@@ -774,7 +774,7 @@ const parliamentarian = store => next => action => {
 
     Object.keys(previewComponentStyles).forEach((styleId) => {
       const inheritsFromPreset = selectComponentStyleInheritsFrom(
-        pageId,
+        route,
         componentId,
         styleId,
       )(appliedState);
@@ -789,7 +789,7 @@ const parliamentarian = store => next => action => {
     });
   });
 
-  store.dispatch(setCompiledPage({ pageId, compilation: pageCompilation }));
+  store.dispatch(setCompiledPage({ route, compilation: pageCompilation }));
   // console.log('parliamentarian (compiled) => ', store.getState());
 
   return result;

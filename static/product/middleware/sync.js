@@ -78,11 +78,11 @@ const TRIGGERS = [
   wipeStyle.toString(),
 ];
 
-function getPropertyName(pageId, componentId, propertyId, state) {
+function getPropertyName(route, componentId, propertyId, state) {
   return get(
     find(
       get(
-        ComponentMeta[selectComponentTag(pageId, componentId)(state)],
+        ComponentMeta[selectComponentTag(route, componentId)(state)],
         'properties',
         {},
       ),
@@ -93,11 +93,11 @@ function getPropertyName(pageId, componentId, propertyId, state) {
   );
 }
 
-function getStyleName(pageId, componentId, styleId, state) {
+function getStyleName(route, componentId, styleId, state) {
   return get(
     find(
       get(
-        ComponentMeta[selectComponentTag(pageId, componentId)(state)],
+        ComponentMeta[selectComponentTag(route, componentId)(state)],
         'styles',
         {},
       ),
@@ -110,8 +110,8 @@ function getStyleName(pageId, componentId, styleId, state) {
 
 const ACTION_DESCRIPTIONS = {
   [addChildComponentToSlot.toString()]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
-    const parentComponentName = selectComponentName(action.payload.pageId, action.payload.parentComponentId)(state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
+    const parentComponentName = selectComponentName(action.payload.route, action.payload.parentComponentId)(state);
 
     return `Added ${componentName} to ${parentComponentName}`;
   },
@@ -120,54 +120,54 @@ const ACTION_DESCRIPTIONS = {
     return `Archived ${presetName}`;
   },
   [buildComponent.toString()]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
     return `Created ${componentName}`;
   },
   [deleteComponentAndDescendants.toString()]: ({ action, priorState }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(priorState);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(priorState);
     return `Deleted ${componentName}`;
   },
   [detachPreset.toString()]: ({ action, state, priorState }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
-    const presetId = selectComponentStyleInheritsFrom(action.payload.pageId, action.payload.componentId)(priorState);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
+    const presetId = selectComponentStyleInheritsFrom(action.payload.route, action.payload.componentId)(priorState);
     const presetName = selectPresetName(presetId)(state);
 
     return `Removed ${presetName} from ${componentName}`;
   },
   [duplicateComponent.toString()]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
     return `Duplicated ${componentName}`;
   },
   [exportStyle.toString()]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
     const presetName = selectPresetName(action.payload.presetId)(state);
 
     return `Created ${presetName} and applied to ${componentName}`;
   },
   [importStyle.toString()]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
     const presetName = selectPresetName(action.payload.presetId)(state);
 
     return `Applied ${presetName} to ${componentName}`;
   },
   [redo.toString()]: () => 'Redo',
   [removeChildComponentFromSlot.toString()]: ({ action, state, priorState }) => {
-    const parentComponentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
-    const slot = selectComponentSlot(action.payload.pageId, action.payload.componentId, action.payload.slotId)(priorState);
-    const childName = selectComponentName(action.payload.pageId, slot[action.payload.targetIndex])(state);
+    const parentComponentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
+    const slot = selectComponentSlot(action.payload.route, action.payload.componentId, action.payload.slotId)(priorState);
+    const childName = selectComponentName(action.payload.route, slot[action.payload.targetIndex])(state);
 
     return `Removed ${childName} from ${parentComponentName}`;
   },
   [reorderChildComponent.toString()]: ({ action, state, priorState }) => {
-    const parentComponentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
-    const slot = selectComponentSlot(action.payload.pageId, action.payload.componentId, action.payload.slotId)(priorState);
-    const childName = selectComponentName(action.payload.pageId, slot[action.payload.fromIndex])(state);
+    const parentComponentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
+    const slot = selectComponentSlot(action.payload.route, action.payload.componentId, action.payload.slotId)(priorState);
+    const childName = selectComponentName(action.payload.route, slot[action.payload.fromIndex])(state);
 
     return `Reordered ${childName} in ${parentComponentName}`;
   },
   [resetComponentStyleAttribute]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
-    const styleName = getStyleName(action.payload.pageId, action.payload.componentId, action.payload.styleId, state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
+    const styleName = getStyleName(action.payload.route, action.payload.componentId, action.payload.styleId, state);
 
     return `Reset ${componentName} ${styleName} style`;
   },
@@ -175,32 +175,32 @@ const ACTION_DESCRIPTIONS = {
     return 'Updated theme';
   },
   [setComponentPropertyValue.toString()]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
-    const propertyName = getPropertyName(action.payload.pageId, action.payload.componentId, action.payload.propertyId, state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
+    const propertyName = getPropertyName(action.payload.route, action.payload.componentId, action.payload.propertyId, state);
 
     return `Updated ${componentName} ${propertyName}`;
   },
   [setComponentInheritedFrom.toString()]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
-    const propertyName = getPropertyName(action.payload.pageId, action.payload.componentId, action.payload.propertyId, state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
+    const propertyName = getPropertyName(action.payload.route, action.payload.componentId, action.payload.propertyId, state);
 
     return `Updated ${componentName} ${propertyName} to use ${SETTING_LABELS[action.payload.value]}`;
   },
   [setComponentStyle.toString()]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
-    const styleName = getStyleName(action.payload.pageId, action.payload.componentId, action.payload.styleId, state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
+    const styleName = getStyleName(action.payload.route, action.payload.componentId, action.payload.styleId, state);
 
     return `Updated ${componentName} ${styleName} style`;
   },
   [setComponentCustomStyle.toString()]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
-    const styleName = getStyleName(action.payload.pageId, action.payload.componentId, action.payload.styleId, state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
+    const styleName = getStyleName(action.payload.route, action.payload.componentId, action.payload.styleId, state);
 
     return `Updated ${componentName} ${styleName} style`;
   },
   [setComponentThemeStyle.toString()]: ({ action, state }) => {
-    const componentName = selectComponentName(action.payload.pageId, action.payload.componentId)(state);
-    const styleName = getStyleName(action.payload.pageId, action.payload.componentId, action.payload.styleId, state);
+    const componentName = selectComponentName(action.payload.route, action.payload.componentId)(state);
+    const styleName = getStyleName(action.payload.route, action.payload.componentId, action.payload.styleId, state);
 
     return `Updated ${componentName} ${styleName} style`;
   },
@@ -214,7 +214,7 @@ const ACTION_DESCRIPTIONS = {
     return 'Updated theme';
   },
   [setPageSetting.toString()]: ({ action, state }) => {
-    const pageName = selectPageName(action.payload.pageId)(state);
+    const pageName = selectPageName(action.payload.route)(state);
     const name = get(Settings[action.payload.settingId], 'field.label', 'setting');
 
     return `Updated ${pageName} ${name} setting`;

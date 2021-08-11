@@ -11,7 +11,7 @@ import {
 import { selectPreviewDeviceSize } from '@product/features/previewMode';
 import {
   setActiveComponentId,
-  selectActivePageId,
+  selectActivePageRoute,
 } from '@product/features/workspace';
 
 const devices = {
@@ -51,8 +51,8 @@ export default function Preview(props) {
 
   const iframeRef = React.useRef(null);
 
-  const activePageId = useSelector(selectActivePageId);
-  const activePagePreview = useSelector(selectCompiledPage(activePageId));
+  const activePageRoute = useSelector(selectActivePageRoute);
+  const activePagePreview = useSelector(selectCompiledPage(activePageRoute));
   const campaignTheme = useSelector(selectCampaignTheme);
 
   const [isPreviewReady, setIsPreviewReady] = React.useState(false);

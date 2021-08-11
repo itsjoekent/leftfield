@@ -27,7 +27,7 @@ export default function Uploader(props) {
   const dispatch = useDispatch();
 
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
@@ -36,7 +36,7 @@ export default function Uploader(props) {
   const targetDevice = notResponsive ? Responsive.MOBILE_DEVICE : previewDevice;
 
   const attributeValue = useSelector(selectComponentStyleAttributeForDeviceCascading(
-    activePageId,
+    activePageRoute,
     activeComponentId,
     styleId,
     attributeId,
@@ -50,7 +50,7 @@ export default function Uploader(props) {
       allow={allow}
       imageSource={imageSource}
       setImageSource={(source) => dispatch(setComponentCustomStyle({
-        pageId: activePageId,
+        route: activePageRoute,
         componentId: activeComponentId,
         styleId,
         attributeId,

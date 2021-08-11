@@ -30,7 +30,7 @@ export default function ColorPicker(props) {
   const attributeId = get(attribute, 'id');
 
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
@@ -41,7 +41,7 @@ export default function ColorPicker(props) {
   const targetDevice = notResponsive ? Responsive.MOBILE_DEVICE : previewDevice;
 
   const attributeValue = useSelector(selectComponentStyleAttributeForDeviceCascading(
-    activePageId,
+    activePageRoute,
     activeComponentId,
     styleId,
     attributeId,
@@ -73,7 +73,7 @@ export default function ColorPicker(props) {
 
   function resetColor() {
     dispatch(resetComponentStyleAttribute({
-      pageId: activePageId,
+      route: activePageRoute,
       componentId: activeComponentId,
       styleId,
       attributeId,
@@ -88,7 +88,7 @@ export default function ColorPicker(props) {
     }
 
     dispatch(setComponentThemeStyle({
-      pageId: activePageId,
+      route: activePageRoute,
       componentId: activeComponentId,
       styleId,
       attributeId,
@@ -99,7 +99,7 @@ export default function ColorPicker(props) {
 
   function setCustomColor(value) {
     dispatch(setComponentCustomStyle({
-      pageId: activePageId,
+      route: activePageRoute,
       componentId: activeComponentId,
       styleId,
       attributeId,

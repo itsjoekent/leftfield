@@ -18,7 +18,7 @@ export default function Toggle(props) {
   const dispatch = useDispatch();
 
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
@@ -28,7 +28,7 @@ export default function Toggle(props) {
   const targetDevice = notResponsive ? Responsive.MOBILE_DEVICE : device;
 
   const attributeValue = useSelector(selectComponentStyleAttributeForDeviceCascading(
-    activePageId,
+    activePageRoute,
     activeComponentId,
     styleId,
     attributeId,
@@ -39,7 +39,7 @@ export default function Toggle(props) {
 
   function onChange(value) {
     dispatch(setComponentCustomStyle({
-      pageId: activePageId,
+      route: activePageRoute,
       componentId: activeComponentId,
       styleId,
       attributeId,

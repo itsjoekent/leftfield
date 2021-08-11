@@ -2,21 +2,21 @@ import { useSelector } from 'react-redux';
 import { ComponentMeta } from 'pkg.campaign-components';
 import {
   selectActiveComponentId,
-  selectActivePageId,
+  selectActivePageRoute,
 } from '@product/features/workspace';
 import {
   selectComponentTag,
 } from '@product/features/assembly';
 
 export default function useActiveWorkspaceComponent() {
-  const activePageId = useSelector(selectActivePageId);
+  const activePageRoute = useSelector(selectActivePageRoute);
   const activeComponentId = useSelector(selectActiveComponentId);
-  const activeComponentTag = useSelector(selectComponentTag(activePageId, activeComponentId));
+  const activeComponentTag = useSelector(selectComponentTag(activePageRoute, activeComponentId));
 
   const activeComponentMeta = ComponentMeta[activeComponentTag];
 
   return {
-    activePageId,
+    activePageRoute,
     activeComponentId,
     activeComponentTag,
     activeComponentMeta,

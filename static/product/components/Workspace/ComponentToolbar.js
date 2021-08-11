@@ -25,16 +25,16 @@ import useActiveWorkspaceComponent from '@product/hooks/useActiveWorkspaceCompon
 
 export default function WorkspaceComponentToolbar() {
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
   const activeComponentName = useSelector(
-    selectComponentName(activePageId, activeComponentId)
+    selectComponentName(activePageRoute, activeComponentId)
   );
 
   const activePageRootComponentId = useSelector(
-    selectPageRootComponentId(activePageId)
+    selectPageRootComponentId(activePageRoute)
   );
 
   const isComponentTreeOpen = useSelector(selectIsComponentTreeOpen);
@@ -123,7 +123,7 @@ export default function WorkspaceComponentToolbar() {
                 confirmButtonIconName: 'Trash',
                 isDangerous: true,
                 onConfirm: () => dispatch(deleteComponentAndDescendants({
-                  pageId: activePageId,
+                  route: activePageRoute,
                   componentId: activeComponentId,
                 })),
               },

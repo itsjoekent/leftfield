@@ -23,10 +23,10 @@ export default function PresetSelector(props) {
 
   const dispatch = useDispatch();
 
-  const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
+  const { activePageRoute, activeComponentId } = useActiveWorkspaceComponent();
 
   const availableStyles = useSelector(selectPresetsOfTypeSortedAsArray(styleType));
-  const inheritsFromPreset = useSelector(selectComponentStyleInheritsFrom(activePageId, activeComponentId, styleId));
+  const inheritsFromPreset = useSelector(selectComponentStyleInheritsFrom(activePageRoute, activeComponentId, styleId));
 
   const availableStylesAsOptions = availableStyles.map((style) => ({
     value: style.id,
@@ -39,7 +39,7 @@ export default function PresetSelector(props) {
   function onChange({ value }) {
     if (value === CUSTOM_OPTION.value) {
       dispatch(detachPreset({
-        pageId: activePageId,
+        route: activePageRoute,
         componentId: activeComponentId,
         styleId,
       }));
@@ -48,7 +48,7 @@ export default function PresetSelector(props) {
     }
 
     dispatch(importStyle({
-      pageId: activePageId,
+      route: activePageRoute,
       componentId: activeComponentId,
       styleId,
       presetId: value,

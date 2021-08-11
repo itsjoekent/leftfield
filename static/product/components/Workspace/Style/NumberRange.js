@@ -19,7 +19,7 @@ export default function NumberRange(props) {
   const dispatch = useDispatch();
 
   const {
-    activePageId,
+    activePageRoute,
     activeComponentId,
   } = useActiveWorkspaceComponent();
 
@@ -29,7 +29,7 @@ export default function NumberRange(props) {
   const targetDevice = notResponsive ? Responsive.MOBILE_DEVICE : device;
 
   const attributeValue = useSelector(selectComponentStyleAttributeForDeviceCascading(
-    activePageId,
+    activePageRoute,
     activeComponentId,
     styleId,
     attributeId,
@@ -42,7 +42,7 @@ export default function NumberRange(props) {
     const { target: { value } } = event;
 
     dispatch(setComponentCustomStyle({
-      pageId: activePageId,
+      route: activePageRoute,
       componentId: activeComponentId,
       styleId,
       attributeId,

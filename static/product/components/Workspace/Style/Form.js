@@ -37,10 +37,10 @@ export default function StyleForm(props) {
   const dispatch = useDispatch();
   const adminTheme = useAdminTheme();
 
-  const { activePageId, activeComponentId } = useActiveWorkspaceComponent();
+  const { activePageRoute, activeComponentId } = useActiveWorkspaceComponent();
 
   const inheritsFromPresetId = useSelector(selectComponentStyleInheritsFrom(
-    activePageId,
+    activePageRoute,
     activeComponentId,
     styleId,
   ));
@@ -123,7 +123,7 @@ export default function StyleForm(props) {
                   onClick={() => dispatch(setModal({
                     type: EXPORT_STYLE_MODAL,
                     props: {
-                      pageId: activePageId,
+                      route: activePageRoute,
                       componentId: activeComponentId,
                       styleId,
                       styleType: type,

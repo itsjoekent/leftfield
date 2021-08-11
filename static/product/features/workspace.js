@@ -19,7 +19,7 @@ export const workspaceSlice = createSlice({
   name: 'workspace',
   initialState: {
     activeComponentId: '1',
-    activePageId: 'test',
+    activePageRoute: '/',
     tab: PROPERTIES_TAB,
     past: [],
     future: [],
@@ -37,7 +37,7 @@ export const workspaceSlice = createSlice({
       if (shouldLogAction(action)) {
         state.past.push({
           componentId: state.activeComponentId,
-          pageId: state.activePageId,
+          route: state.activePageRoute,
           tab: state.tab,
         });
 
@@ -46,24 +46,24 @@ export const workspaceSlice = createSlice({
 
       state.tab = tab;
     },
-    setActivePageId: (state, action) => {
+    setActivePageRoute: (state, action) => {
       state.isComponentTreeOpen = false;
       state.isSettingsMenuOpen = false;
-      
-      const { payload: { pageId } } = action;
-      if (pageId === state.activePageId) return;
+
+      const { payload: { route } } = action;
+      if (route === state.activePageRoute) return;
 
       if (shouldLogAction(action)) {
         state.past.push({
           componentId: state.activeComponentId,
-          pageId: state.activePageId,
+          route: state.activePageRoute,
           tab: state.tab,
         });
 
         state.future = [];
       }
 
-      state.activePageId = pageId;
+      state.activePageRoute = route;
     },
     setActiveComponentId: (state, action) => {
       state.isComponentTreeOpen = false;
@@ -75,7 +75,7 @@ export const workspaceSlice = createSlice({
       if (shouldLogAction(action)) {
         state.past.push({
           componentId: state.activeComponentId,
-          pageId: state.activePageId,
+          route: state.activePageRoute,
           tab: state.tab,
         });
 
@@ -94,12 +94,12 @@ export const workspaceSlice = createSlice({
       const past = state.past.pop();
       state.future.push({
         componentId: state.activeComponentId,
-        pageId: state.activePageId,
+        route: state.activePageRoute,
         tab: state.tab,
       });
 
       state.activeComponentId = past.componentId;
-      state.activePageId = past.pageId;
+      state.activePageRoute = past.route;
       state.tab = past.tab;
 
       state.isComponentTreeOpen = false;
@@ -108,12 +108,12 @@ export const workspaceSlice = createSlice({
       const next = state.future.pop();
       state.past.push({
         componentId: state.activeComponentId,
-        pageId: state.activePageId,
+        route: state.activePageRoute,
         tab: state.tab,
       });
 
       state.activeComponentId = next.componentId;
-      state.activePageId = next.pageId;
+      state.activePageRoute = next.route;
       state.tab = next.tab;
 
       state.isComponentTreeOpen = false;
@@ -131,7 +131,7 @@ export const workspaceSlice = createSlice({
 });
 
 export const {
-  setActivePageId,
+  setActivePageRoute,
   setActiveComponentId,
   setIsComponentTreeOpen,
   setIsSettingsMenuOpen,
@@ -165,8 +165,8 @@ export function selectHasFuture(state) {
   return !!state.workspace.future.length;
 }
 
-export function selectActivePageId(state) {
-  return state.workspace.activePageId;
+export function selectActivePageRoute(state) {
+  return state.workspace.activePageRoute;
 }
 
 export function selectTab(state) {

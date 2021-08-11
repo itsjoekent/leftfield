@@ -21,13 +21,13 @@ function _addChildComponentToSlot(
 ) {
   const {
     componentId,
-    pageId,
+    route,
     parentComponentId,
     slotId,
     slotPlacementOrder,
   } = payload;
 
-  const path = `pages.${pageId}.components.${parentComponentId}.slots.${slotId}`;
+  const path = `pages.${route}.components.${parentComponentId}.slots.${slotId}`;
 
   const finalSlotPlacementOrder = isNaN(slotPlacementOrder)
     ? get(state, `${path}.length`, 0)
@@ -37,8 +37,8 @@ function _addChildComponentToSlot(
   children.splice(finalSlotPlacementOrder, 0, componentId);
 
   set(state, path, children);
-  set(state, `pages.${pageId}.components.${componentId}.childOf`, parentComponentId);
-  set(state, `pages.${pageId}.components.${componentId}.withinSlot`, slotId);
+  set(state, `pages.${route}.components.${componentId}.childOf`, parentComponentId);
+  set(state, `pages.${route}.components.${componentId}.withinSlot`, slotId);
 }
 
 function _removeChildComponentFromSlot(
@@ -46,13 +46,13 @@ function _removeChildComponentFromSlot(
   payload,
 ) {
   const {
-    pageId,
+    route,
     componentId,
     slotId,
     targetIndex,
   } = payload;
 
-  const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
+  const path = `pages.${route}.components.${componentId}.slots.${slotId}`;
   const children = get(state, path, []);
 
   children.splice(targetIndex, 1);
@@ -74,7 +74,8 @@ export const assemblySlice = createSlice({
       presetSortOrder: {},
     },
     pages: {
-      'test': {
+      '/': {
+        id: 'test',
         components: {
           'root': {
             id: 'root',
@@ -131,7 +132,7 @@ export const assemblySlice = createSlice({
       const {
         componentId,
         componentTag,
-        pageId,
+        route,
       } = action.payload;
 
       const insert = {
@@ -141,26 +142,26 @@ export const assemblySlice = createSlice({
         version: ComponentMeta[componentTag].version || '0',
       };
 
-      set(state, `pages.${pageId}.components.${insert.id}`, insert);
+      set(state, `pages.${route}.components.${insert.id}`, insert);
     },
     deleteComponentAndDescendants: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
       } = action.payload;
 
-      const childOf = get(state, `pages.${pageId}.components.${componentId}.childOf`, null);
-      const withinSlot = get(state, `pages.${pageId}.components.${componentId}.withinSlot`, null);
+      const childOf = get(state, `pages.${route}.components.${componentId}.childOf`, null);
+      const withinSlot = get(state, `pages.${route}.components.${componentId}.withinSlot`, null);
 
       if (!!childOf && !!withinSlot) {
         const targetIndex = get(
           state,
-          `pages.${pageId}.components.${childOf}.slots.${withinSlot}`,
+          `pages.${route}.components.${childOf}.slots.${withinSlot}`,
           [],
         ).indexOf(componentId);
 
         _removeChildComponentFromSlot(state, {
-          pageId,
+          route,
           componentId: childOf,
           slotId: withinSlot,
           targetIndex,
@@ -168,35 +169,35 @@ export const assemblySlice = createSlice({
       }
 
       function recursiveDelete(targetComponentId) {
-        const slots = get(state, `pages.${pageId}.components.${targetComponentId}.slots`, {});
+        const slots = get(state, `pages.${route}.components.${targetComponentId}.slots`, {});
 
         Object.keys(slots).forEach((slotId) => {
           slots[slotId].forEach((childId) => recursiveDelete(childId));
         });
 
-        delete state.pages[pageId].components[targetComponentId];
+        delete state.pages[route].components[targetComponentId];
       }
 
       recursiveDelete(componentId);
     },
     detachPreset: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         styleId,
       } = action.payload;
 
-      const style = selectComponentStyle(pageId, componentId, styleId)({ assembly: state });
+      const style = selectComponentStyle(route, componentId, styleId)({ assembly: state });
 
       const insert = { ...style };
       delete insert.id;
       delete insert.name;
 
-      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, insert);
+      set(state, `pages.${route}.components.${componentId}.styles.${styleId}`, insert);
     },
     duplicateComponent: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
       } = action.payload;
 
@@ -206,7 +207,7 @@ export const assemblySlice = createSlice({
         parentComponentSlot,
       ) {
         const duplicateComponentId = uuid();
-        const originalComponent = get(state, `pages.${pageId}.components.${targetComponentId}`);
+        const originalComponent = get(state, `pages.${route}.components.${targetComponentId}`);
 
         const duplicatedComponent = {
           ...originalComponent,
@@ -214,10 +215,10 @@ export const assemblySlice = createSlice({
           slots: {},
         };
 
-        set(state, `pages.${pageId}.components.${duplicateComponentId}`, duplicatedComponent);
+        set(state, `pages.${route}.components.${duplicateComponentId}`, duplicatedComponent);
 
         _addChildComponentToSlot(state, {
-          pageId,
+          route,
           componentId: duplicateComponentId,
           parentComponentId: parentComponentId,
           slotId: parentComponentSlot,
@@ -234,7 +235,7 @@ export const assemblySlice = createSlice({
         });
       }
 
-      const originalComponent = get(state, `pages.${pageId}.components.${componentId}`);
+      const originalComponent = get(state, `pages.${route}.components.${componentId}`);
 
       recursiveDuplicate(
         componentId,
@@ -244,7 +245,7 @@ export const assemblySlice = createSlice({
     },
     exportStyle: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         presetId,
         styleId,
@@ -252,7 +253,7 @@ export const assemblySlice = createSlice({
         styleName,
       } = action.payload;
 
-      const style = selectComponentStyle(pageId, componentId, styleId)({ assembly: state });
+      const style = selectComponentStyle(route, componentId, styleId)({ assembly: state });
 
       const preset = {
         id: presetId,
@@ -262,17 +263,17 @@ export const assemblySlice = createSlice({
       };
 
       set(state, `stylePresets.${presetId}`, preset);
-      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromPreset: presetId });
+      set(state, `pages.${route}.components.${componentId}.styles.${styleId}`, { inheritsFromPreset: presetId });
     },
     importStyle: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         styleId,
         presetId,
       } = action.payload;
 
-      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}`, { inheritsFromPreset: presetId });
+      set(state, `pages.${route}.components.${componentId}.styles.${styleId}`, { inheritsFromPreset: presetId });
     },
     redo: (state, action) => {
       const futureState = state.future.pop();
@@ -296,14 +297,14 @@ export const assemblySlice = createSlice({
     },
     reorderChildComponent: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         slotId,
         fromIndex,
         toIndex,
       } = action.payload;
 
-      const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
+      const path = `pages.${route}.components.${componentId}.slots.${slotId}`;
       const children = get(state, path, []);
 
       const [targetComponentId] = children.splice(fromIndex, 1);
@@ -313,20 +314,20 @@ export const assemblySlice = createSlice({
     removeChildComponentFromSlot: (state, action) => _removeChildComponentFromSlot(state, action.payload),
     resetComponentStyleAttribute: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         styleId,
         attributeId,
         device,
       } = action.payload;
 
-      const inheritsFromPreset = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      const inheritsFromPreset = selectComponentStyleInheritsFrom(route, componentId, styleId)({ assembly: state });
       if (isDefined(inheritsFromPreset)) {
         set(state, `stylePresets.${inheritsFromPreset}.attributes.${attributeId}.${device}`, {});
         return;
       }
 
-      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, {});
+      set(state, `pages.${route}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, {});
     },
     setAssemblyState: (state, action) => {
       const { newAssembly } = action.payload;
@@ -345,31 +346,31 @@ export const assemblySlice = createSlice({
     },
     setComponentPropertyValue: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         propertyId,
         value,
         language = Languages.US_ENGLISH_LANG,
       } = action.payload;
 
-      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value.${language}`, value);
-      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.inheritedFrom.${language}`, null);
+      set(state, `pages.${route}.components.${componentId}.properties.${propertyId}.value.${language}`, value);
+      set(state, `pages.${route}.components.${componentId}.properties.${propertyId}.inheritedFrom.${language}`, null);
     },
     setComponentInheritedFrom: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         propertyId,
         value,
         language = Languages.US_ENGLISH_LANG,
       } = action.payload;
 
-      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.inheritedFrom.${language}`, value);
-      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value.${language}`, null);
+      set(state, `pages.${route}.components.${componentId}.properties.${propertyId}.inheritedFrom.${language}`, value);
+      set(state, `pages.${route}.components.${componentId}.properties.${propertyId}.value.${language}`, null);
     },
     setComponentStyle: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         styleId,
         attributeId,
@@ -377,17 +378,17 @@ export const assemblySlice = createSlice({
         value,
       } = action.payload;
 
-      const inheritsFromPreset = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      const inheritsFromPreset = selectComponentStyleInheritsFrom(route, componentId, styleId)({ assembly: state });
       if (isDefined(inheritsFromPreset)) {
         set(state, `stylePresets.${inheritsFromPreset}.attributes.${attributeId}.${device}`, value);
         return;
       }
 
-      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, value);
+      set(state, `pages.${route}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, value);
     },
     setComponentCustomStyle: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         styleId,
         attributeId,
@@ -395,17 +396,17 @@ export const assemblySlice = createSlice({
         value,
       } = action.payload;
 
-      const inheritsFromPreset = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      const inheritsFromPreset = selectComponentStyleInheritsFrom(route, componentId, styleId)({ assembly: state });
       if (isDefined(inheritsFromPreset)) {
         set(state, `stylePresets.${inheritsFromPreset}.attributes.${attributeId}.${device}`, { custom: value });
         return;
       }
 
-      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, { custom: value });
+      set(state, `pages.${route}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, { custom: value });
     },
     setComponentThemeStyle: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         styleId,
         attributeId,
@@ -413,17 +414,17 @@ export const assemblySlice = createSlice({
         value,
       } = action.payload;
 
-      const inheritsFromPreset = selectComponentStyleInheritsFrom(pageId, componentId, styleId)({ assembly: state });
+      const inheritsFromPreset = selectComponentStyleInheritsFrom(route, componentId, styleId)({ assembly: state });
       if (isDefined(inheritsFromPreset)) {
         set(state, `stylePresets.${inheritsFromPreset}.attributes.${attributeId}.${device}`, { inheritFromTheme: value });
         return;
       }
 
-      set(state, `pages.${pageId}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, { inheritFromTheme: value });
+      set(state, `pages.${route}.components.${componentId}.styles.${styleId}.${attributeId}.${device}`, { inheritFromTheme: value });
     },
     setCompiledPage: (state, action) => {
-      const { pageId, compilation } = action.payload;
-      set(state, `compiled.pages.${pageId}`, compilation);
+      const { route, compilation } = action.payload;
+      set(state, `compiled.pages.${route}`, compilation);
     },
     setPresetName: (state, action) => {
       const { presetId, name } = action.payload;
@@ -473,13 +474,13 @@ export const assemblySlice = createSlice({
     },
     setPageSetting: (state, action) => {
       const {
-        pageId,
+        route,
         settingId,
         language,
         value,
       } = action.payload;
 
-      set(state, `pages.${pageId}.settings.${settingId}.${language}`, value);
+      set(state, `pages.${route}.settings.${settingId}.${language}`, value);
     },
     setSiteSetting: (state, action) => {
       const {
@@ -516,35 +517,35 @@ export const assemblySlice = createSlice({
     },
     wipePropertyValue: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         propertyId,
       } = action.payload;
 
-      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.value`, {});
+      set(state, `pages.${route}.components.${componentId}.properties.${propertyId}.value`, {});
     },
     wipePropertyInheritedFrom: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         propertyId,
       } = action.payload;
 
-      set(state, `pages.${pageId}.components.${componentId}.properties.${propertyId}.inheritedFrom`, {});
+      set(state, `pages.${route}.components.${componentId}.properties.${propertyId}.inheritedFrom`, {});
     },
     wipeSlot: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         slotId,
       } = action.payload;
 
-      const path = `pages.${pageId}.components.${componentId}.slots.${slotId}`;
+      const path = `pages.${route}.components.${componentId}.slots.${slotId}`;
 
       // TODO: replace with calling the recursive code above
       get(state, path, []).forEach((childId) => {
-        if (get(state, `pages.${pageId}.components.${childId}`)) {
-          delete state.pages[pageId].components[childId];
+        if (get(state, `pages.${route}.components.${childId}`)) {
+          delete state.pages[route].components[childId];
         }
       });
 
@@ -552,12 +553,12 @@ export const assemblySlice = createSlice({
     },
     wipeStyle: (state, action) => {
       const {
-        pageId,
+        route,
         componentId,
         styleId,
       } = action.payload;
 
-      const path = `pages.${pageId}.components.${componentId}.styles.${styleId}`;
+      const path = `pages.${route}.components.${componentId}.styles.${styleId}`;
 
       set(state, path, {});
     },
@@ -711,195 +712,195 @@ export function selectSiteTemplateId(state) {
   return get(state, 'assembly.templatedFrom', null);
 }
 
-export function selectPage(pageId) {
+export function selectPage(route) {
   function _selectPage(state) {
-    return get(state, `assembly.pages.${pageId}`);
+    return get(state, `assembly.pages.${route}`);
   }
 
   return _selectPage;
 }
 
-export function selectPageSettings(pageId) {
+export function selectPageSettings(route) {
   function _selectPageSettings(state) {
-    return get(selectPage(pageId)(state), 'settings', {});
+    return get(selectPage(route)(state), 'settings', {});
   }
 
   return _selectPageSettings;
 }
 
-export function selectPageName(pageId) {
+export function selectPageName(route) {
   function _selectPageName(state) {
-    return get(selectPage(pageId)(state), 'name', null);
+    return get(selectPage(route)(state), 'name', null);
   }
 
   return _selectPageName;
 }
 
-export function selectPageRootComponentId(pageId) {
+export function selectPageRootComponentId(route) {
   function _selectPageRootComponentId(state) {
-    return get(selectPage(pageId)(state), 'rootComponentId', null);
+    return get(selectPage(route)(state), 'rootComponentId', null);
   }
 
   return _selectPageRootComponentId;
 }
 
-export function selectPageComponents(pageId) {
+export function selectPageComponents(route) {
   function _selectPageComponents(state) {
-    return get(selectPage(pageId)(state), 'components', null);
+    return get(selectPage(route)(state), 'components', null);
   }
 
   return _selectPageComponents;
 }
 
-export function selectComponent(pageId, componentId) {
+export function selectComponent(route, componentId) {
   function _selectComponent(state) {
-    return get(selectPageComponents(pageId)(state), componentId, null);
+    return get(selectPageComponents(route)(state), componentId, null);
   }
 
   return _selectComponent;
 }
 
-export function selectComponentTag(pageId, componentId) {
+export function selectComponentTag(route, componentId) {
   function _selectComponentTag(state) {
-    return get(selectComponent(pageId, componentId)(state), 'tag', null);
+    return get(selectComponent(route, componentId)(state), 'tag', null);
   }
 
   return _selectComponentTag;
 }
 
-export function selectComponentName(pageId, componentId) {
+export function selectComponentName(route, componentId) {
   function _selectComponentName(state) {
-    return get(selectComponent(pageId, componentId)(state), 'name', null);
+    return get(selectComponent(route, componentId)(state), 'name', null);
   }
 
   return _selectComponentName;
 }
 
-export function selectComponentsParentComponentId(pageId, componentId) {
+export function selectComponentsParentComponentId(route, componentId) {
   function _selectComponentsParentComponentId(state) {
-    return get(selectComponent(pageId, componentId)(state), 'childOf', null);
+    return get(selectComponent(route, componentId)(state), 'childOf', null);
   }
 
   return _selectComponentsParentComponentId;
 }
 
-export function selectComponentsParentComponentSlotId(pageId, componentId) {
+export function selectComponentsParentComponentSlotId(route, componentId) {
   function _selectComponentsParentComponentSlotId(state) {
-    return get(selectComponent(pageId, componentId)(state), 'withinSlot', null);
+    return get(selectComponent(route, componentId)(state), 'withinSlot', null);
   }
 
   return _selectComponentsParentComponentSlotId;
 }
 
-export function selectComponentSlots(pageId, componentId) {
+export function selectComponentSlots(route, componentId) {
   function _selectComponentSlots(state) {
-    return get(selectComponent(pageId, componentId)(state), 'slots', {});
+    return get(selectComponent(route, componentId)(state), 'slots', {});
   }
 
   return _selectComponentSlots;
 }
 
-export function selectComponentSlot(pageId, componentId, slotId) {
+export function selectComponentSlot(route, componentId, slotId) {
   function _selectComponent(state) {
-    return get(selectComponentSlots(pageId, componentId)(state), slotId, []);
+    return get(selectComponentSlots(route, componentId)(state), slotId, []);
   }
 
   return _selectComponent;
 }
 
-export function selectComponentSlotMapped(pageId, componentId, slotId) {
+export function selectComponentSlotMapped(route, componentId, slotId) {
   function _selectComponentSlotMapped(state) {
-    const componentIds = selectComponentSlot(pageId, componentId, slotId)(state);
+    const componentIds = selectComponentSlot(route, componentId, slotId)(state);
     return componentIds
-      .map((childId) => selectComponent(pageId, childId)(state))
+      .map((childId) => selectComponent(route, childId)(state))
       .filter((child) => child !== null);
   }
 
   return _selectComponentSlotMapped;
 }
 
-export function selectComponentProperties(pageId, componentId) {
+export function selectComponentProperties(route, componentId) {
   function _selectComponentProperties(state) {
-    return get(selectComponent(pageId, componentId)(state), 'properties', {});
+    return get(selectComponent(route, componentId)(state), 'properties', {});
   }
 
   return _selectComponentProperties;
 }
 
-export function selectComponentPropertyValue(pageId, componentId, propertyId, language = Languages.US_ENGLISH_LANG) {
+export function selectComponentPropertyValue(route, componentId, propertyId, language = Languages.US_ENGLISH_LANG) {
   function _selectComponentPropertyValue(state) {
-    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.value.${language}`, null);
+    return get(selectComponentProperties(route, componentId)(state), `${propertyId}.value.${language}`, null);
   }
 
   return _selectComponentPropertyValue;
 }
 
-export function selectComponentPropertyInheritedFrom(pageId, componentId, propertyId) {
+export function selectComponentPropertyInheritedFrom(route, componentId, propertyId) {
   function _selectComponentPropertyInheritedFrom(state) {
-    return get(selectComponentProperties(pageId, componentId)(state), `${propertyId}.inheritedFrom`, {});
+    return get(selectComponentProperties(route, componentId)(state), `${propertyId}.inheritedFrom`, {});
   }
 
   return _selectComponentPropertyInheritedFrom;
 }
 
-export function selectComponentPropertyInheritedFromForLanguage(pageId, componentId, propertyId, language = Languages.US_ENGLISH_LANG) {
+export function selectComponentPropertyInheritedFromForLanguage(route, componentId, propertyId, language = Languages.US_ENGLISH_LANG) {
   function _selectComponentPropertyInheritedFromForLanguage(state) {
-    return get(selectComponentPropertyInheritedFrom(pageId, componentId, propertyId)(state), language, null);
+    return get(selectComponentPropertyInheritedFrom(route, componentId, propertyId)(state), language, null);
   }
 
   return _selectComponentPropertyInheritedFromForLanguage;
 }
 
-export function selectComponentStyles(pageId, componentId) {
+export function selectComponentStyles(route, componentId) {
   function _selectComponentStyles(state) {
-    return get(selectComponent(pageId, componentId)(state), 'styles', {});
+    return get(selectComponent(route, componentId)(state), 'styles', {});
   }
 
   return _selectComponentStyles;
 }
 
-export function selectComponentStyleInheritsFrom(pageId, componentId, styleId) {
+export function selectComponentStyleInheritsFrom(route, componentId, styleId) {
   function _selectComponentStyleInheritsFrom(state) {
-    return get(selectComponentStyles(pageId, componentId)(state), `${styleId}.inheritsFromPreset`, null);
+    return get(selectComponentStyles(route, componentId)(state), `${styleId}.inheritsFromPreset`, null);
   }
 
   return _selectComponentStyleInheritsFrom;
 }
 
-export function selectComponentStyle(pageId, componentId, styleId) {
+export function selectComponentStyle(route, componentId, styleId) {
   function _selectComponentStyle(state) {
-    const inheritsFromPreset = selectComponentStyleInheritsFrom(pageId, componentId, styleId)(state);
+    const inheritsFromPreset = selectComponentStyleInheritsFrom(route, componentId, styleId)(state);
 
     if (isDefined(inheritsFromPreset)) {
       return selectStyleAttributesFromPreset(inheritsFromPreset, styleId)(state);
     }
 
-    return get(selectComponentStyles(pageId, componentId)(state), styleId, {});
+    return get(selectComponentStyles(route, componentId)(state), styleId, {});
   }
 
   return _selectComponentStyle;
 }
 
-export function selectComponentStyleAttribute(pageId, componentId, styleId, attributeId) {
+export function selectComponentStyleAttribute(route, componentId, styleId, attributeId) {
   function _selectComponentStyleAttribute(state) {
-    return get(selectComponentStyle(pageId, componentId, styleId)(state), attributeId, {});
+    return get(selectComponentStyle(route, componentId, styleId)(state), attributeId, {});
   }
 
   return _selectComponentStyleAttribute;
 }
 
-export function selectComponentStyleAttributeForDevice(pageId, componentId, styleId, attributeId, device) {
+export function selectComponentStyleAttributeForDevice(route, componentId, styleId, attributeId, device) {
   function _selectComponentStyleAttributeForDevice(state) {
-    return get(selectComponentStyleAttribute(pageId, componentId, styleId, attributeId)(state), device, {});
+    return get(selectComponentStyleAttribute(route, componentId, styleId, attributeId)(state), device, {});
   }
 
   return _selectComponentStyleAttributeForDevice;
 }
 
-export function selectComponentStyleAttributeForDeviceCascading(pageId, componentId, styleId, attributeId, device) {
+export function selectComponentStyleAttributeForDeviceCascading(route, componentId, styleId, attributeId, device) {
   function _selectComponentStyleAttributeForDeviceCascading(state) {
     const firstAttempt = selectComponentStyleAttributeForDevice(
-      pageId,
+      route,
       componentId,
       styleId,
       attributeId,
@@ -923,7 +924,7 @@ export function selectComponentStyleAttributeForDeviceCascading(pageId, componen
       if (!isEmpty(acc)) return acc;
 
       const nthAttempt = selectComponentStyleAttributeForDevice(
-        pageId,
+        route,
         componentId,
         styleId,
         attributeId,
@@ -943,9 +944,9 @@ export function selectCompiledPages(state) {
   return get(state, 'assembly.compiled.pages', {});
 }
 
-export function selectCompiledPage(pageId) {
+export function selectCompiledPage(route) {
   function _selectCompiledPage(state) {
-    return get(selectCompiledPages(state), pageId, {});
+    return get(selectCompiledPages(state), route, {});
   }
 
   return _selectCompiledPage;
