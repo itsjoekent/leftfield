@@ -62,10 +62,14 @@ async function uploadFile(request, response) {
   await Promise.all([
     put(
       process.env.CF_FILES_NAMESPACE_ID,
-      hash,
-      fileSize,
       key,
-      mimeType,
+      {
+        createdAt: now,
+        etag: hash,
+        fileSize,
+        lastModifiedAt: now,
+        mimeType,
+      },
     ),
     File.create({
       organization: targetBucket === 'assets' ? account.organization._id : null,

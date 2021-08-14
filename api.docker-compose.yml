@@ -4,7 +4,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: api.dockerfile
+      dockerfile: api.local.dockerfile
     command: npm run start:api:development
     depends_on:
       - mongo
@@ -26,8 +26,10 @@ services:
   workers:
     build:
       context: .
-      dockerfile: api.dockerfile
-    command: npm run start:workers:build:development
+      dockerfile: api.local.dockerfile
+      args:
+        - FILES_DOMAIN=https://files-dev.getleftfield.com
+    command: npm run start:task:manufacture:development
     depends_on:
       - mongo
       - redis
@@ -37,6 +39,7 @@ services:
       - REDIS_URL=redis://redis
     volumes:
       - ./api:/usr/src/code/api:cached
+      - ./baseballs:/usr/src/code/baseballs:cached
 
   mongo:
     image: mongo:4

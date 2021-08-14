@@ -9,20 +9,10 @@ const CF_API_KEY = process.env.CF_API_KEY;
 
 async function put(
   namespace,
-  fileSize,
-  hash,
   key,
-  mimeType = 'text/plain',
+  data = {},
 ) {
   const now = Date.now();
-
-  const meta = JSON.stringify({
-    createdAt: now,
-    etag: hash,
-    fileSize,
-    lastModifiedAt: now,
-    mimeType,
-  });
 
   const keyEncoded = encodeURIComponent(key);
 
@@ -32,7 +22,7 @@ async function put(
       'Content-Type': 'text/plain',
     },
     method: 'PUT',
-    body: meta,
+    body: JSON.stringify(data),
   });
 
   if (!response.ok) {

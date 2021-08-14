@@ -90,6 +90,7 @@ import {
   DISABLE_HISTORY,
 } from '@product/features/workspace';
 import { getPropertyValue } from '@product/hooks/useGetPropertyValue';
+import compileAssembly from '@product/utils/compileAssembly';
 import isDefined from '@product/utils/isDefined';
 import pullTranslatedValue from '@product/utils/pullTranslatedValue';
 
@@ -734,63 +735,8 @@ const parliamentarian = store => next => action => {
     console.groupEnd();
   }
 
-  const pageCompilation = JSON.parse(JSON.stringify(get(appliedState, `assembly.pages.${route}`)));
-
-  Object.keys(get(pageCompilation, 'components', {})).forEach((componentId) => {
-    const tag = selectComponentTag(route, componentId)(appliedState);
-    const previewComponentProperties = selectComponentProperties(route, componentId)(appliedState);
-    const previewComponentStyles = selectComponentStyles(route, componentId)(appliedState);
-
-    Object.keys(previewComponentProperties).forEach((propertyId) => {
-      const properties = get(ComponentMeta[tag], `properties`);
-      const property = find(properties, { id: propertyId });
-      const isTranslatable = get(property, 'isTranslatable', false);
-
-      languages.forEach((language) => {
-        if (!isTranslatable && language !== Languages.US_ENGLISH_LANG) {
-          return;
-        }
-
-        if (isDefined(selectComponentPropertyValue(route, componentId, propertyId, language)(appliedState))) {
-          return;
-        }
-
-        set(
-          pageCompilation,
-          `components.${componentId}.properties.${propertyId}.value.${language}`,
-          getPropertyValue(
-            propertyId,
-            language,
-            pageSettings,
-            siteSettings,
-            tag,
-            previewComponentProperties,
-          ),
-        );
-
-        delete pageCompilation.components[componentId].properties[propertyId].inheritedFrom;
-      });
-    });
-
-    Object.keys(previewComponentStyles).forEach((styleId) => {
-      const inheritsFromPreset = selectComponentStyleInheritsFrom(
-        route,
-        componentId,
-        styleId,
-      )(appliedState);
-
-      if (isDefined(inheritsFromPreset)) {
-        set(
-          pageCompilation,
-          `components.${componentId}.styles.${styleId}`,
-          selectStyleAttributesFromPreset(inheritsFromPreset)(appliedState),
-        );
-      }
-    });
-  });
-
+  const pageCompilation = compileAssembly(appliedState, route);
   store.dispatch(setCompiledPage({ route, compilation: pageCompilation }));
-  // console.log('parliamentarian (compiled) => ', store.getState());
 
   return result;
 }

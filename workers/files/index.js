@@ -58,14 +58,11 @@ addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event.request));
 });
 
-async function handleFileRequest(request) {
-  const { pathname } = getNormalizedHostAndPath(request);
-  const key = pathname.replace('/file/', '');
-
+async function handleFileRequest(key, request) {
   const metadataStringified = await FILES_NAMESPACE.get(key);
 
   if (typeof metadataStringified !== 'string') {
-    return new Response('', { status: 404 });
+    return new Response('', { status: 404, headers: { 'X-Leftfield-Key': key } });
   }
 
   const metadata = JSON.parse(metadataStringified);
@@ -133,11 +130,6 @@ async function handleFileRequest(request) {
   });
 }
 
-// Uint8ArrayFromBase64(value)
-// function Uint8ArrayFromBase64(base64) {
-//   return Uint8Array.from(atob(base64), (v) => v.charCodeAt(0));
-// }
-
 /**
  * Respond with hello worker text
  * @param {Request} request
@@ -147,7 +139,8 @@ async function handleRequest(request) {
     const { pathname } = getNormalizedHostAndPath(request);
 
     if (pathname.startsWith('/file')) {
-      return await handleFileRequest(request);
+      const key = pathname.replace('/file/', '');
+      return await handleFileRequest(key, request);
     }
 
     return new Response('', { status: 404 });

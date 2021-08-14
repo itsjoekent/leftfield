@@ -35,9 +35,28 @@ function getSignedUploadUrls(fileKey) {
   ];
 }
 
-// TODO: Upload
+async function upload(key, data) {
+  const params = {
+    ACL: 'public-read',
+    Body: data,
+    ContentType: 'application/octet-stream',
+    Key: key,
+  };
+
+  await Promise.all([
+    spaces.ny.upload({
+      ...params,
+      Bucket: process.env.SPACES_NAME_NY,
+    }).promise(),
+    spaces.sf.upload({
+      ...params,
+      Bucket: process.env.SPACES_NAME_SF,
+    }).promise(),
+  ]);
+}
 
 module.exports = {
-  spaces,
   getSignedUploadUrls,
+  spaces,
+  upload,
 };

@@ -1,12 +1,18 @@
+import path from 'path';
+import { get } from 'lodash';
 import { renderToString } from 'react-dom/server';
 import {
   Components,
   ComponentCss,
+  Languages,
   compileComponentStyles,
+  theme,
 } from 'pkg.campaign-components';
-import render from './render';
+import render from '@baseballs/presentation/render';
+import compileAssembly from '@product/utils/compileAssembly';
 
-export default function server(page) {
+export default function ssr(state, route) {  
+  const page = compileAssembly(state, route);
   const html = renderToString(render(Components, page));
 
   const components = Object.keys(get(page, 'components', {}));
@@ -19,7 +25,10 @@ export default function server(page) {
     if (!!cssGenerator) {
       const css = cssGenerator({
         componentClassName: `c-${componentId}`,
-        theme: finalTheme,
+        theme: {
+          ...theme,
+          ...get(state, 'assembly.theme', {}),
+        },
         properties: component.properties,
         slots: component.slots,
         styles: component.styles,
@@ -34,8 +43,5 @@ export default function server(page) {
 
   const css = compileComponentStyles(componentsCss);
 
-  return {
-    html,
-    css,
-  }
+  return { css, html, page };
 }

@@ -30,6 +30,9 @@ static/www/*
 api/certs/tls.key
 api/certs/tls.cert
 
+# API task build output
+api/tasks/manufacture/*.build.js
+
 # Cloudflare Worker build output
 dist
 worker
