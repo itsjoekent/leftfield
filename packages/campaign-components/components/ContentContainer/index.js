@@ -1,6 +1,11 @@
 import React from 'react';
 import get from 'lodash/get';
-import { CONTENT_CONTAINER_SLOT } from 'pkg.campaign-components/components/ContentContainer/meta';
+
+export const TAG = 'ContentContainer';
+
+export const CONTENT_CONTAINER_SLOT = 'CONTENT_CONTAINER_SLOT';
+
+export const CONTENT_CONTAINER_STYLE = 'CONTENT_CONTAINER_STYLE';
 
 export default function ContentContainer(props) {
   const { componentClassName, slots } = props;

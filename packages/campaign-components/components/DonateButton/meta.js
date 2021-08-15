@@ -1,3 +1,9 @@
+import {
+  TAG,
+  BUTTON_STYLE,
+  AMOUNT_PROPERTY,
+  LABEL_PROPERTY,
+} from 'pkg.campaign-components/components/DonateButton';
 import { US_ENGLISH_LANG } from 'pkg.campaign-components/constants/languages';
 import {
   SHORT_TEXT_TYPE,
@@ -8,13 +14,6 @@ import {
   DONATE_BUTTON_TRAIT,
 } from 'pkg.campaign-components/constants/traits';
 import ButtonStyle from 'pkg.campaign-components/styles/button';
-
-export const TAG = 'DonateButton';
-
-export const AMOUNT_PROPERTY = 'AMOUNT_PROPERTY';
-export const LABEL_PROPERTY = 'LABEL_PROPERTY';
-
-export const BUTTON_STYLE = 'BUTTON_STYLE';
 
 const DonateButtonMeta = {
   tag: TAG,

@@ -1,17 +1,16 @@
 import get from 'lodash/get';
 import {
+  TAG,
+  CONTENT_CONTAINER_SLOT,
+  CONTENT_CONTAINER_STYLE,
+} from 'pkg.campaign-components/components/ContentContainer';
+import {
   FILLS_CONTAINER_WIDE,
   GROWS_VERTICALLY,
 } from 'pkg.campaign-components/constants/layout';
 import { CONTENT_TRAIT } from 'pkg.campaign-components/constants/traits';
 import BoxStyle from 'pkg.campaign-components/styles/box';
 import FlexStyle from 'pkg.campaign-components/styles/flex';
-
-export const TAG = 'ContentContainer';
-
-export const CONTENT_CONTAINER_SLOT = 'CONTENT_CONTAINER_SLOT';
-
-export const CONTENT_CONTAINER_STYLE = 'CONTENT_CONTAINER_STYLE';
 
 const ContentContainerMeta = {
   tag: TAG,

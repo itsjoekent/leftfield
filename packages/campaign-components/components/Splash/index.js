@@ -1,15 +1,6 @@
 import React from 'react';
 import get from 'lodash/get';
 import {
-  PHOTO_COLUMN_CLASS_NAME,
-  CONTENT_COLUMN_CLASS_NAME,
-} from 'pkg.campaign-components/components/Splash/css';
-import {
-  PHOTO_ALT_PROPERTY,
-  PHOTO_SOURCE_PROPERTY,
-  CONTENT_SLOT,
-} from 'pkg.campaign-components/components/Splash/meta';
-import {
   DESKTOP_DEVICE,
   MOBILE_DEVICE,
   TABLET_DEVICE,
@@ -17,6 +8,23 @@ import {
 import useLanguage from 'pkg.campaign-components/hooks/useLanguage';
 import getPropertyValue from 'pkg.campaign-components/utils/getPropertyValue';
 import CfImageUrl from 'pkg.cf-image-url';
+
+export const TAG = 'Splash';
+
+export const PHOTO_ALT_PROPERTY = 'PHOTO_ALT_PROPERTY';
+export const PHOTO_SOURCE_PROPERTY = 'PHOTO_SOURCE_PROPERTY';
+
+export const CONTENT_SLOT = 'CONTENT_SLOT';
+
+export const CONTENT_STYLE = 'CONTENT_STYLE';
+export const PHOTO_STYLE = 'PHOTO_STYLE';
+
+export const PHOTO_COLUMN_CLASS_NAME = 'photo-column';
+export const CONTENT_COLUMN_CLASS_NAME = 'content-column';
+
+export const PHOTO_SIZE_ATTRIBUTE = 'PHOTO_SIZE_ATTRIBUTE';
+export const PHOTO_HORIZONTAL_POSITION_ATTRIBUTE = 'PHOTO_HORIZONTAL_POSITION_ATTRIBUTE';
+export const PHOTO_VERTICAL_POSITION_ATTRIBUTE = 'PHOTO_VERTICAL_POSITION_ATTRIBUTE';
 
 export default function Splash(props) {
   const {

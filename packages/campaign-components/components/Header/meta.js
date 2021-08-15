@@ -1,4 +1,9 @@
 import get from 'lodash/get';
+import {
+  TAG,
+  COPY_PROPERTY,
+  LEVEL_PROPERTY,
+} from 'pkg.campaign-components/components/Header';
 import { US_ENGLISH_LANG } from 'pkg.campaign-components/constants/languages';
 import { NUMBER_RANGE_TYPE, TEXT_MARKUP } from 'pkg.campaign-components/constants/property-types';
 import {
@@ -15,13 +20,6 @@ import {
   getDefaultFontFamily,
   getCampaignThemeFontWeightNearest,
 } from 'pkg.campaign-components/utils/campaignThemeFontSelectors';
-
-export const TAG = 'Header';
-
-export const COPY_PROPERTY = 'COPY_PROPERTY';
-export const LEVEL_PROPERTY = 'LEVEL_PROPERTY';
-
-export const HEADER_STYLE = 'HEADER_STYLE';
 
 const HeaderMeta = {
   tag: TAG,

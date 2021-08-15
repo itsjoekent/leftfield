@@ -9,13 +9,13 @@ import 'pkg.campaign-components/css/reset.css';
 
 (async function() {
   try {
-    const page = JSON.parse(document.getElementById('__PAGE_DATA__').text);
+    const page = JSON.parse(window.__PAGE_DATA__);
 
     const componentTags = uniq(
       Object.values(page.components).map((component) => component.tag)
     );
 
-    const Components = await Promise.all(componentTags.map(async (tag) => {
+    const loadedComponents = await Promise.all(componentTags.map(async (tag) => {
       const { default: Component } = await import(
         /* webpackChunkName: "[request]" */
         /* webpackExports: "default" */
@@ -25,6 +25,11 @@ import 'pkg.campaign-components/css/reset.css';
 
       return Component;
     }));
+
+    const Components = loadedComponents.reduce((acc, Component, index) => ({
+      ...acc,
+      [componentTags[index]]: Component,
+    }), {});
 
     hydrate(render(Components, page), document.getElementById('root'));
   } catch (error) {

@@ -19,6 +19,24 @@ module.exports = merge(
   {
     devtool: 'source-map',
     entry: path.join(__dirname, 'main.js'),
+    optimization: {
+      sideEffects: true,
+      splitChunks: {
+        cacheGroups: {
+          defaultVendors: {
+            test: /[\\/]node_modules[\\/]/,
+            priority: -10,
+            reuseExistingChunk: true,
+            name: 'vendor',
+          },
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+        },
+      },
+    },
     output: {
       filename: '[name].bundle.js',
       chunkFilename: (pathData, assetInfo) => {

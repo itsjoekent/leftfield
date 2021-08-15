@@ -5,7 +5,7 @@ import {
   GRID_STYLE,
 
   ENABLE_EXPRESS_DONATE_PROPERTY,
-} from 'pkg.campaign-components/components/ActBlueDonateForm/meta';
+} from 'pkg.campaign-components/components/ActBlueDonateForm';
 import {
   DESKTOP_DEVICE,
   TABLET_DEVICE,

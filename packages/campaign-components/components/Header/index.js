@@ -1,9 +1,15 @@
 import React from 'react';
 import get from 'lodash/get';
-import { COPY_PROPERTY, LEVEL_PROPERTY } from 'pkg.campaign-components/components/Header/meta';
 import useLanguage from 'pkg.campaign-components/hooks/useLanguage';
 import getPropertyValue from 'pkg.campaign-components/utils/getPropertyValue';
 import serializeRichText from 'pkg.campaign-components/utils/serializeRichText';
+
+export const TAG = 'Header';
+
+export const COPY_PROPERTY = 'COPY_PROPERTY';
+export const LEVEL_PROPERTY = 'LEVEL_PROPERTY';
+
+export const HEADER_STYLE = 'HEADER_STYLE';
 
 export default function Header(props) {
   const { componentClassName, properties } = props;

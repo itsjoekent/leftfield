@@ -2,10 +2,12 @@ import get from 'lodash/get';
 import {
   CONTENT_STYLE,
   PHOTO_STYLE,
+  PHOTO_COLUMN_CLASS_NAME,
+  CONTENT_COLUMN_CLASS_NAME,
+  PHOTO_HORIZONTAL_POSITION_ATTRIBUTE,
+  PHOTO_VERTICAL_POSITION_ATTRIBUTE,
   PHOTO_SIZE_ATTRIBUTE,
-  PHOTO_HORIZONTAL_POSITION,
-  PHOTO_VERTICAL_POSITION,
-} from 'pkg.campaign-components/components/Splash/meta';
+} from 'pkg.campaign-components/components/Splash';
 import {
   DESKTOP_DEVICE,
   MOBILE_DEVICE,
@@ -16,9 +18,6 @@ import FlexStyle from 'pkg.campaign-components/styles/flex';
 import getCascadingStyleValue from 'pkg.campaign-components/utils/getCascadingStyleValue';
 import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
 import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
-
-export const PHOTO_COLUMN_CLASS_NAME = 'photo-column';
-export const CONTENT_COLUMN_CLASS_NAME = 'content-column';
 
 export default function SplashCSS({
   componentClassName,
@@ -111,8 +110,8 @@ export default function SplashCSS({
             applyStyleIfChanged,
             theme,
             [
-              { styles: photoStyles, attribute: PHOTO_VERTICAL_POSITION },
-              { styles: photoStyles, attribute: PHOTO_HORIZONTAL_POSITION },
+              { styles: photoStyles, attribute: PHOTO_VERTICAL_POSITION_ATTRIBUTE },
+              { styles: photoStyles, attribute: PHOTO_HORIZONTAL_POSITION_ATTRIBUTE },
             ],
             (styleValue) => `object-position: ${styleValue[0]} ${styleValue[1]};`,
           )}

@@ -2,7 +2,7 @@ import get from 'lodash/get';
 import {
   DISCLAIMER_BOX_STYLE,
   DISCLAIMER_TEXT_STYLE,
-} from 'pkg.campaign-components/components/CommitteeDisclaimer/meta';
+} from 'pkg.campaign-components/components/CommitteeDisclaimer';
 import {
   DESKTOP_DEVICE,
   TABLET_DEVICE,

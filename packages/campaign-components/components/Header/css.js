@@ -1,5 +1,5 @@
 import get from 'lodash/get';
-import { HEADER_STYLE } from 'pkg.campaign-components/components/Header/meta';
+import { HEADER_STYLE } from 'pkg.campaign-components/components/Header';
 import MarkupStyle from 'pkg.campaign-components/styles/markup';
 import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
 

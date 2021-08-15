@@ -1,4 +1,10 @@
 import get from 'lodash/get';
+import {
+  TAG,
+  COPY_PROPERTY,
+  PARAGRAPH_STYLE,
+  PARAGRAPH_LINK_STYLE,
+} from 'pkg.campaign-components/components/Paragraph';
 import { US_ENGLISH_LANG } from 'pkg.campaign-components/constants/languages';
 import { TEXT_MARKUP } from 'pkg.campaign-components/constants/property-types';
 import { MOBILE_DEVICE } from 'pkg.campaign-components/constants/responsive';
@@ -10,13 +16,6 @@ import {
   getDefaultFontFamily,
   getCampaignThemeFontWeightNearest,
 } from 'pkg.campaign-components/utils/campaignThemeFontSelectors';
-
-export const TAG = 'Paragraph';
-
-export const COPY_PROPERTY = 'COPY_PROPERTY';
-
-export const PARAGRAPH_STYLE = 'PARAGRAPH_STYLE';
-export const PARAGRAPH_LINK_STYLE = 'PARAGRAPH_LINK_STYLE';
 
 const ParagraphMeta = {
   tag: TAG,

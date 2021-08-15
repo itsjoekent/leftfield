@@ -1,4 +1,10 @@
 import get from 'lodash/get';
+import {
+  TAG,
+  COPY_PROPERTY,
+  DISCLAIMER_BOX_STYLE,
+  DISCLAIMER_TEXT_STYLE,
+} from 'pkg.campaign-components/components/CommitteeDisclaimer';
 import { US_ENGLISH_LANG } from 'pkg.campaign-components/constants/languages';
 import { MOBILE_DEVICE } from 'pkg.campaign-components/constants/responsive';
 import { PAID_FOR_BY_COMMITTEE } from 'pkg.campaign-components/constants/settings';
@@ -17,13 +23,6 @@ import {
   getDefaultFontFamily,
   getCampaignThemeFontWeightNearest,
 } from 'pkg.campaign-components/utils/campaignThemeFontSelectors';
-
-export const TAG = 'CommitteeDisclaimer';
-
-export const COPY_PROPERTY = 'COPY_PROPERTY';
-
-export const DISCLAIMER_BOX_STYLE = 'DISCLAIMER_BOX_STYLE';
-export const DISCLAIMER_TEXT_STYLE = 'DISCLAIMER_TEXT_STYLE';
 
 const CommitteeDisclaimerMeta = {
   tag: TAG,

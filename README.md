@@ -17,3 +17,6 @@ $ npm start
 # Launch api
 $ make start-api
 ```
+
+docker container ls
+docker exec -t -i e6fdaea1eee7 npm run upload:baseball:presentation

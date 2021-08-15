@@ -1,5 +1,16 @@
 import get from 'lodash/get';
 import {
+  TAG,
+  PHOTO_ALT_PROPERTY,
+  PHOTO_SOURCE_PROPERTY,
+  CONTENT_SLOT,
+  CONTENT_STYLE,
+  PHOTO_STYLE,
+  PHOTO_HORIZONTAL_POSITION_ATTRIBUTE,
+  PHOTO_VERTICAL_POSITION_ATTRIBUTE,
+  PHOTO_SIZE_ATTRIBUTE,
+} from 'pkg.campaign-components/components/Splash';
+import {
   FILLS_CONTAINER_WIDE,
   GROWS_VERTICALLY,
   IS_RELATIVE,
@@ -15,23 +26,9 @@ import {
   MOBILE_DEVICE,
   TABLET_DEVICE,
 } from 'pkg.campaign-components/constants/responsive';
-import { TAG as RootTag } from 'pkg.campaign-components/components/Root/meta';
+import { TAG as RootTag } from 'pkg.campaign-components/components/Root';
 import BoxStyle from 'pkg.campaign-components/styles/box';
 import FlexStyle from 'pkg.campaign-components/styles/flex';
-
-export const TAG = 'Splash';
-
-export const PHOTO_ALT_PROPERTY = 'PHOTO_ALT_PROPERTY';
-export const PHOTO_SOURCE_PROPERTY = 'PHOTO_SOURCE_PROPERTY';
-
-export const CONTENT_SLOT = 'CONTENT_SLOT';
-
-export const CONTENT_STYLE = 'CONTENT_STYLE';
-export const PHOTO_STYLE = 'PHOTO_STYLE';
-
-export const PHOTO_SIZE_ATTRIBUTE = 'PHOTO_SIZE_ATTRIBUTE';
-export const PHOTO_HORIZONTAL_POSITION = 'PHOTO_HORIZONTAL_POSITION';
-export const PHOTO_VERTICAL_POSITION = 'PHOTO_VERTICAL_POSITION';
 
 export const POSITION_TOP = 'top';
 export const POSITION_BOTTOM = 'bottom';
@@ -104,7 +101,7 @@ const SplashMeta = {
           },
         },
         {
-          id: PHOTO_VERTICAL_POSITION,
+          id: PHOTO_VERTICAL_POSITION_ATTRIBUTE,
           label: 'Vertical Position',
           type: SELECT_TYPE,
           options: [
@@ -119,7 +116,7 @@ const SplashMeta = {
           },
         },
         {
-          id: PHOTO_HORIZONTAL_POSITION,
+          id: PHOTO_HORIZONTAL_POSITION_ATTRIBUTE,
           label: 'Horizontal Position',
           type: SELECT_TYPE,
           options: [

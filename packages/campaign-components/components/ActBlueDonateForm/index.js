@@ -2,18 +2,6 @@ import React from 'react';
 import get from 'lodash/get';
 import { DISCLAIMER_CLASS_NAME } from 'pkg.campaign-components/components/ActBlueDonateForm/css';
 import {
-  ONE_BUTTON_LAYOUT,
-  MULTI_BUTTON_LAYOUT,
-
-  ACTBLUE_FORM_PROPERTY,
-  ENABLE_EXPRESS_DONATE_PROPERTY,
-  EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY,
-  REFCODE_PROPERTY,
-  CARRY_TRACKING_SOURCE_PROPERTY,
-
-  DONATE_BUTTONS_SLOT,
-} from 'pkg.campaign-components/components/ActBlueDonateForm/meta';
-import {
   initialFundraisingState,
   FundraisingContext,
 } from 'pkg.campaign-components/context/Fundraising';
@@ -22,6 +10,23 @@ import useLanguage from 'pkg.campaign-components/hooks/useLanguage';
 import getPropertyValue from 'pkg.campaign-components/utils/getPropertyValue';
 import makeActBlueLink from 'pkg.campaign-components/utils/makeActBlueLink';
 import mapSourceToRefcode from 'pkg.campaign-components/utils/makeActBlueLink';
+
+export const TAG = 'ActBlueDonateForm';
+
+export const ACTBLUE_FORM_PROPERTY = 'ACTBLUE_FORM_PROPERTY';
+export const ENABLE_EXPRESS_DONATE_PROPERTY = 'ENABLE_EXPRESS_DONATE_PROPERTY';
+export const EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY = 'EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY';
+export const REFCODE_PROPERTY = 'REFCODE_PROPERTY';
+export const CARRY_TRACKING_SOURCE_PROPERTY = 'CARRY_TRACKING_SOURCE_PROPERTY';
+
+export const DONATE_BUTTONS_SLOT = 'DONATE_BUTTONS_SLOT';
+export const WIDE_MOBILE_DONATE_BUTTONS_SLOT = 'WIDE_MOBILE_DONATE_BUTTONS_SLOT';
+export const WIDE_DESKTOP_DONATE_BUTTONS_SLOT = 'WIDE_DESKTOP_DONATE_BUTTONS_SLOT';
+
+export const DISCLAIMER_TEXT_STYLE = 'DISCLAIMER_TEXT_STYLE';
+export const GRID_STYLE = 'GRID_STYLE';
+
+export const DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE = 'DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE';
 
 export default function ActBlueDonateForm(props) {
   const {

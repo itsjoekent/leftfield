@@ -1,4 +1,9 @@
 import {
+  TAG,
+  SECTIONS_SLOT,
+  BACKGROUND_STYLE,
+} from 'pkg.campaign-components/components/Root';
+import {
   FULL_SCREEN_WIDTH,
   FILLS_CONTAINER_WIDE,
   GROWS_VERTICALLY,
@@ -9,12 +14,6 @@ import {
   SECTION_TRAIT,
 } from 'pkg.campaign-components/constants/traits';
 import BoxStyle from 'pkg.campaign-components/styles/box';
-
-export const TAG = 'Root';
-
-export const SECTIONS_SLOT = 'SECTIONS_SLOT';
-
-export const BACKGROUND_STYLE = 'BACKGROUND_STYLE';
 
 const RootMeta = {
   tag: TAG,

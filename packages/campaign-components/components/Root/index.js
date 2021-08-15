@@ -1,6 +1,11 @@
 import React from 'react';
 import get from 'lodash/get';
-import { SECTIONS_SLOT } from 'pkg.campaign-components/components/Root/meta';
+
+export const TAG = 'Root';
+
+export const SECTIONS_SLOT = 'SECTIONS_SLOT';
+
+export const BACKGROUND_STYLE = 'BACKGROUND_STYLE';
 
 export default function Root(props) {
   const { componentClassName, slots } = props;

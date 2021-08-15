@@ -6,7 +6,7 @@ if (process.env.NODE_ENV === 'development') {
   require(path.join(process.cwd(), 'environment/development.api'));
 }
 
-const { get } = require('lodash');
+const { get, uniq } = require('lodash');
 const md5 = require('md5');
 const mime = require('mime');
 
@@ -67,19 +67,34 @@ consumer.process(1, async function(job) {
       const stats = require(path.join(process.cwd(), '/static/www/baseballs/presentation-remote/stats.json'));
       const { assetsByChunkName, publicPath } = stats;
 
-      const main = get(assetsByChunkName, 'main', []);
+      const mainChunk = get(assetsByChunkName, 'main', []);
+      const vendorChunk = get(assetsByChunkName, 'vendor', []);
 
       const stylesheets = [
         `${process.env.FILES_DOMAIN}/file/${keyPrefix}/components.css`,
-        ...main.filter((file) => file.endsWith('.css'))
+        ...mainChunk.filter((file) => file.endsWith('.css'))
           .map((file) => `${publicPath}${file}`.toLowerCase()),
       ];
 
-      const scripts = main.filter((file) => file.endsWith('.js'))
+      const mainScripts = mainChunk.filter((file) => file.endsWith('.js'))
         .map((file) => `${publicPath}${file}`.toLowerCase());
 
+      const componentTags = uniq(
+        Object.values(page.components).map((component) => component.tag)
+      );
+
+      const componentChunks = componentTags.reduce((acc, tag) => ([
+        ...acc,
+        ...get(assetsByChunkName, tag, []).filter((file) => file.endsWith('.js')),
+      ]), []);
+
+      const asyncScripts = [
+        ...componentChunks,
+        ...vendorChunk.filter((file) => file.endsWith('.js'))
+      ].map((file) => `${publicPath}${file}`.toLowerCase());
+
       const HTML_REPLACER = `%%%_HTML_${now}_%%%`;
-      const index = `
+      const rawIndex = `
         <!DOCTYPE html>
         <html lang="en">
           <head>
@@ -91,13 +106,18 @@ consumer.process(1, async function(job) {
           </head>
           <body>
             <div id="root">${HTML_REPLACER}</div>
-            <script id="__PAGE_DATA__" type="application/json">${JSON.stringify(page)}</script>
-            ${scripts.map((script) => (
+            ${asyncScripts.map((script) => (
+              `<script src="${script}" defer></script>`
+            )).join('\n')}
+            <script>window.__PAGE_DATA__ = '${JSON.stringify(page)}';</script>
+            ${mainScripts.map((script) => (
               `<script src="${script}"></script>`
             )).join('\n')}
           </body>
         </html>
-      `.split('\n')
+      `;
+
+      const index = rawIndex.split('\n')
         .map((line) => line.trim())
         .join('')
         .replace(HTML_REPLACER, html);
@@ -128,10 +148,6 @@ consumer.process(1, async function(job) {
           put(process.env.CF_FILES_NAMESPACE_ID, key, meta),
         ]);
       }
-      // create http2 push array
-      //  - everything in assetsByChunkName.main
-      //  - for each component in page,
-      //    - each asset under assetsByChunkName.[componentTag]
     }
 
     logger.info(`Completed snapshotId:${snapshotId}`);

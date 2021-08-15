@@ -1,5 +1,5 @@
 import get from 'lodash/get';
-import { BACKGROUND_STYLE } from 'pkg.campaign-components/components/Root/meta';
+import { BACKGROUND_STYLE } from 'pkg.campaign-components/components/Root';
 import BoxStyle from 'pkg.campaign-components/styles/box';
 import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
 

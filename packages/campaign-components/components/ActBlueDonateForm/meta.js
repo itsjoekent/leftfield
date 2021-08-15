@@ -1,4 +1,18 @@
 import get from 'lodash/get';
+import {
+  TAG,
+  ACTBLUE_FORM_PROPERTY,
+  ENABLE_EXPRESS_DONATE_PROPERTY,
+  EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY,
+  REFCODE_PROPERTY,
+  CARRY_TRACKING_SOURCE_PROPERTY,
+  DONATE_BUTTONS_SLOT,
+  WIDE_MOBILE_DONATE_BUTTONS_SLOT,
+  WIDE_DESKTOP_DONATE_BUTTONS_SLOT,
+  DISCLAIMER_TEXT_STYLE,
+  GRID_STYLE,
+  DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE,
+} from 'pkg.campaign-components/components/ActBlueDonateForm';
 import documentation from 'pkg.campaign-components/components/ActBlueDonateForm/docs.md';
 import makeValidationError from 'pkg.campaign-components/utils/makeValidationError';
 import {
@@ -32,23 +46,6 @@ import BoxStyle from 'pkg.campaign-components/styles/box';
 import GridStyle from 'pkg.campaign-components/styles/grid';
 import TextStyle, { FONT_SIZE_ATTRIBUTE } from 'pkg.campaign-components/styles/text';
 import getPropertyValue from 'pkg.campaign-components/utils/getPropertyValue';
-
-export const TAG = 'ActBlueDonateForm';
-
-export const ACTBLUE_FORM_PROPERTY = 'ACTBLUE_FORM_PROPERTY';
-export const ENABLE_EXPRESS_DONATE_PROPERTY = 'ENABLE_EXPRESS_DONATE_PROPERTY';
-export const EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY = 'EXPRESS_DONATE_DISCLAIMER_COPY_PROPERTY';
-export const REFCODE_PROPERTY = 'REFCODE_PROPERTY';
-export const CARRY_TRACKING_SOURCE_PROPERTY = 'CARRY_TRACKING_SOURCE_PROPERTY';
-
-export const DONATE_BUTTONS_SLOT = 'DONATE_BUTTONS_SLOT';
-export const WIDE_MOBILE_DONATE_BUTTONS_SLOT = 'WIDE_MOBILE_DONATE_BUTTONS_SLOT';
-export const WIDE_DESKTOP_DONATE_BUTTONS_SLOT = 'WIDE_DESKTOP_DONATE_BUTTONS_SLOT';
-
-export const DISCLAIMER_TEXT_STYLE = 'DISCLAIMER_TEXT_STYLE';
-export const GRID_STYLE = 'GRID_STYLE';
-
-export const DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE = 'DISCLAIMER_TEXT_TOP_MARGIN_ATTRIBUTE';
 
 const ActBlueDonateFormMeta = {
   tag: TAG,

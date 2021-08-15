@@ -2,7 +2,7 @@ import get from 'lodash/get';
 import {
   PARAGRAPH_STYLE,
   PARAGRAPH_LINK_STYLE,
-} from 'pkg.campaign-components/components/Paragraph/meta';
+} from 'pkg.campaign-components/components/Paragraph';
 import LinkStyle from 'pkg.campaign-components/styles/link';
 import MarkupStyle from 'pkg.campaign-components/styles/markup';
 import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
