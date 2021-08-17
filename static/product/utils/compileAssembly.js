@@ -29,6 +29,18 @@ export default function compileAssembly(state, route) {
 
   const pageCompilation = JSON.parse(JSON.stringify(get(state, `assembly.pages.${route}`)));
 
+  Object.keys(siteSettings || {}).forEach((settingId) => {
+    Object.keys(get(siteSettings, settingId, {})).forEach((language) => {
+      if (!isDefined(get(pageSettings, `${settingId}.${language}`, null))) {
+        set(
+          pageCompilation,
+          `settings.${settingId}.${language}`,
+          get(siteSettings, `${settingId}.${language}`, null),
+        );
+      }
+    });
+  });
+
   Object.keys(get(pageCompilation, 'components', {})).forEach((componentId) => {
     const tag = selectComponentTag(route, componentId)(state);
     const previewComponentProperties = selectComponentProperties(route, componentId)(state);

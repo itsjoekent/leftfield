@@ -93,6 +93,7 @@ export const META_DESCRIPTION = {
   field: {
     label: 'Meta Description',
     help: 'Shows under title in social media preview cards',
+    isTranslatable: true,
     defaultValue: {
       [US_ENGLISH_LANG]: '',
     },
@@ -105,6 +106,7 @@ export const META_IMAGE = {
   field: {
     label: 'Meta Image',
     help: 'Upload the highest resolution image you have, Leftfield will automatically crop and compress',
+    isTranslatable: true,
     type: UPLOAD_TYPE,
     allow: [
       'image/avif',
@@ -120,6 +122,7 @@ export const META_TITLE = {
   field: {
     label: 'Meta Title',
     help: 'Shows in social media preview cards',
+    isTranslatable: true,
     defaultValue: {
       [US_ENGLISH_LANG]: '',
     },

@@ -62,7 +62,7 @@ consumer.process(1, async function(job) {
         },
       };
 
-      const { css, html, page } = ssr(state, route);
+      const { css, helmet, html, page } = ssr(state, route);
 
       const stats = require(path.join(process.cwd(), '/static/www/baseballs/presentation-remote/stats.json'));
       const { assetsByChunkName, publicPath } = stats;
@@ -93,23 +93,26 @@ consumer.process(1, async function(job) {
         ...vendorChunk.filter((file) => file.endsWith('.js'))
       ].map((file) => `${publicPath}${file}`.toLowerCase());
 
+      const dataUrl = `${process.env.FILES_DOMAIN}/file/${keyPrefix}/page-data.json`;
+
       const HTML_REPLACER = `%%%_HTML_${now}_%%%`;
       const rawIndex = `
         <!DOCTYPE html>
         <html lang="en">
           <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
+            ${helmet.title.toString()}
+            ${helmet.meta.toString()}
             ${stylesheets.map((stylesheet) => (
               `<link rel="stylesheet" href="${stylesheet}" />`
             )).join('\n')}
+            <link rel="preload" href="${dataUrl}" as="fetch" crossorigin="anonymous">
           </head>
           <body>
             <div id="root">${HTML_REPLACER}</div>
             ${asyncScripts.map((script) => (
               `<script src="${script}" defer></script>`
             )).join('\n')}
-            <script>window.__PAGE_DATA__ = '${JSON.stringify(page)}';</script>
+            <script>window.__PAGE_DATA_URL__ = "${dataUrl}";</script>
             ${mainScripts.map((script) => (
               `<script src="${script}"></script>`
             )).join('\n')}
@@ -123,6 +126,7 @@ consumer.process(1, async function(job) {
         .replace(HTML_REPLACER, html);
 
       const filesToUpload = [
+        ['page-data.json', JSON.stringify(page)],
         ['components.css', css],
         ['index.html', index],
       ];

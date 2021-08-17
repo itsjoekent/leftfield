@@ -1,6 +1,7 @@
 import path from 'path';
 import { get } from 'lodash';
 import { renderToString } from 'react-dom/server';
+import { Helmet } from 'react-helmet';
 import {
   Components,
   ComponentCss,
@@ -11,9 +12,10 @@ import {
 import render from '@baseballs/presentation/render';
 import compileAssembly from '@product/utils/compileAssembly';
 
-export default function ssr(state, route) {  
+export default function ssr(state, route) {
   const page = compileAssembly(state, route);
   const html = renderToString(render(Components, page));
+  const helmet = Helmet.renderStatic();
 
   const components = Object.keys(get(page, 'components', {}));
   const componentsCss = components.reduce((acc, componentId) => {
@@ -43,5 +45,5 @@ export default function ssr(state, route) {
 
   const css = compileComponentStyles(componentsCss);
 
-  return { css, html, page };
+  return { css, helmet, html, page };
 }

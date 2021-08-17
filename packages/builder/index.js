@@ -44,6 +44,7 @@ function construct(
   const props = {
     componentClassName: `c-${targetComponentId}`,
     properties: properties || {},
+    settings: page.settings,
     slots: renderedSlots,
     styles: styles || {},
   };

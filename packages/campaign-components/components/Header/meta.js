@@ -3,6 +3,7 @@ import {
   TAG,
   COPY_PROPERTY,
   LEVEL_PROPERTY,
+  HEADER_STYLE,
 } from 'pkg.campaign-components/components/Header';
 import { US_ENGLISH_LANG } from 'pkg.campaign-components/constants/languages';
 import { NUMBER_RANGE_TYPE, TEXT_MARKUP } from 'pkg.campaign-components/constants/property-types';

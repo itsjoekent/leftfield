@@ -1,5 +1,6 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+import 'whatwg-fetch';
 
 import { hydrate } from 'react-dom';
 import uniq from 'lodash/uniq';
@@ -9,7 +10,8 @@ import 'pkg.campaign-components/css/reset.css';
 
 (async function() {
   try {
-    const page = JSON.parse(window.__PAGE_DATA__);
+    const pageDataResponse = await fetch(window.__PAGE_DATA_URL__);
+    const page = await pageDataResponse.json();
 
     const componentTags = uniq(
       Object.values(page.components).map((component) => component.tag)
