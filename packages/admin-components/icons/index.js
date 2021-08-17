@@ -378,6 +378,7 @@ export { default as LoadCircle } from './loadcircle';
 export { default as LoadCircleFill } from './loadcirclefill';
 export { default as LoadCircleLight } from './loadcirclelight';
 export { default as Loading } from './loading';
+export { default as LoadingBall } from './loadingball';
 export { default as Lock } from './lock';
 export { default as LockFill } from './lockfill';
 export { default as LockLight } from './locklight';

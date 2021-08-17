@@ -2,7 +2,7 @@ import React from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { rgba } from 'polished';
 import Typography from 'pkg.admin-components/Typography';
-import Loading from 'pkg.admin-components/icons/loading';
+import Loading from 'pkg.admin-components/icons/loadingball';
 import generics from 'pkg.admin-components/generics';
 import useAdminTheme from 'pkg.admin-components/useAdminTheme';
 import useIsHovering from 'pkg.admin-components/useIsHovering';
@@ -55,7 +55,7 @@ const sharedButtonStyles = css`
 
   ${(props) => props.isLoading && css`
     cursor: not-allowed;
-    ${!props.gridGap && css`grid-gap: 2px;`}
+    ${!props.gridGap && css`grid-gap: 4px;`}
   `}
 
   ${({ gridGap }) => !!gridGap && css`grid-gap: ${gridGap};`}

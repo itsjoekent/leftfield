@@ -25,6 +25,10 @@ async function publishWebsite(request, response) {
     throw makeApiError({ message: 'You do not have access to this website', status: 401 });
   }
 
+  if (!body.snapshotId && !website.draftSnapshot) {
+    throw makeApiError({ message: 'Invalid snapshot id given, or no draft snapshot exists', status: 400 });
+  }
+
   const publishedSnapshotId = body.snapshotId
     ? mongoose.Types.ObjectId(body.snapshotId)
     : website.draftSnapshot._id;
