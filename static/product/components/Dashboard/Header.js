@@ -5,7 +5,7 @@ import HomeButton from '@product/components/HomeButton';
 
 export default function DashboardHeader() {
   return (
-    <Flex.Column fullWidth gridGap="12px">
+    <Flex.Column fullWidth gridGap="6px">
       <Flex.Row
         justify="space-between"
         align="center"

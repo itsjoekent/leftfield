@@ -13,7 +13,7 @@ services:
       - "5001:5001"
     environment:
       - AUTH_TOKEN_SECRET=270336f7f365e82bc9fd4b6f3a0ddeda80e4e576637b81432698ae9e4c3100d2
-      - DOMAIN=localhost
+      - DOMAIN=localhost:5000
       - FRONTEND_URL=https://localhost:5000
       - FILES_DOMAIN=https://files-dev.getleftfield.com
       - MONGODB_URL=mongodb://admin:secret@mongo:27017

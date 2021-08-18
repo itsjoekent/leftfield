@@ -85,7 +85,7 @@ export default function FileUploader(props) {
         fontSize="12px"
         fg={(colors) => colors.mono[600]}
       >
-        25 megabyte max file size. {accepts.length ? `Accepts ${accepts.map((type) => `.${mime.getExtension(type)}`).join(', ')}` : ''}
+        {accepts.length ? `Accepts ${accepts.map((type) => `.${mime.getExtension(type)}`).join(', ')}` : ''}
       </Typography>
       {!!error && (
         <Typography

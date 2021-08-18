@@ -1,5 +1,6 @@
 import React from 'react';
-import { get } from 'lodash';
+import qs from 'qs';
+import { get, isEmpty } from 'lodash';
 import { batch, useDispatch } from 'react-redux';
 import { Link, useLocation } from 'wouter';
 import {
@@ -11,14 +12,15 @@ import {
 import { FormWizardProvider, FormWizardFields } from 'pkg.form-wizard';
 import VaultLayout from '@product/components/VaultLayout';
 import { setAccount, setToken } from '@product/features/auth';
+import { pushSnack } from '@product/features/snacks';
 import useProductApi from '@product/hooks/useProductApi';
 import { DASHBOARD_ROUTE } from '@product/routes/Dashboard';
-import { RESET_PASSWORD_ROUTE } from '@product/routes/ResetPassword';
+import { LOGIN_ROUTE } from '@product/routes/Login';
 import { SIGNUP_ROUTE } from '@product/routes/Signup';
 
-export const LOGIN_ROUTE = '/login';
+export const RESET_PASSWORD_ROUTE = '/reset-password';
 
-export default function Login() {
+export default function ResetPassword() {
   const [formError, setFormError] = React.useState(null);
   const hitApi = useProductApi(false);
 
@@ -26,21 +28,27 @@ export default function Login() {
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = React.useState(false);
+  const [disableSubmit, setDisableSubmit] = React.useState(false);
 
-  function onLogin({ values }) {
-    const { email, password } = values;
+  const [query, setQuery] = React.useState(qs.parse(window.location.search.slice(1)));
+  const isRequestingReset = isEmpty(query) || !get(query, 'id', null);
+
+  function onReset({ values }) {
+    const { password } = values;
     setIsLoading(true);
+
+    const { id, token } = query;
 
     hitApi({
       method: 'post',
-      route: '/login',
-      payload: { email, password },
+      route: '/reset-password',
+      payload: { id, password, token },
       options: { credentials: 'include' },
-      onResponse: ({ status, json }) => {
+      onResponse: ({ json, ok }) => {
         setIsLoading(false);
 
-        if (get(json, 'error')) {
-          setFormError(get(json, 'error.message', 'Encountered error logging in, try again?'));
+        if (!ok || get(json, 'error')) {
+          setFormError(get(json, 'error.message', 'Encountered error resetting password, try again?'));
           return;
         }
 
@@ -55,7 +63,32 @@ export default function Login() {
     });
   }
 
-  const fields = [
+  function requestReset({ values }) {
+    const { email } = values;
+    setIsLoading(true);
+
+    hitApi({
+      method: 'post',
+      route: '/request-password-reset',
+      payload: { email },
+      onResponse: ({ json, ok }) => {
+        setIsLoading(false);
+
+        if (!ok || get(json, 'error')) {
+          setFormError(get(json, 'error.message', 'Encountered error requesting password reset, try again?'));
+          return;
+        }
+
+        setDisableSubmit(true);
+        dispatch(pushSnack({
+          message: 'Password reset email sent, check your inbox!',
+        }));
+      },
+      onFatalError: () => setIsLoading(false),
+    });
+  }
+
+  const fields = isRequestingReset ? [
     {
       id: 'email',
       label: 'Email',
@@ -63,9 +96,10 @@ export default function Login() {
         htmlType: 'email',
       },
     },
+  ] : [
     {
       id: 'password',
-      label: 'Password',
+      label: 'New Password',
       attributes: {
         htmlType: 'password',
       },
@@ -73,13 +107,10 @@ export default function Login() {
   ];
 
   return (
-    <VaultLayout
-      title="Welcome back"
-      subtitle="Log in to your Leftfield account."
-    >
+    <VaultLayout title="Reset your password">
       <FormWizardProvider
-        name="login"
-        onFormSubmit={onLogin}
+        name="reset-password"
+        onFormSubmit={isRequestingReset ? requestReset : onReset}
         fields={fields}
       >
         {({ formProps }) => (
@@ -117,6 +148,7 @@ export default function Login() {
             )}
             <Buttons.Filled
               type="submit"
+              disabled={disableSubmit}
               fullWidth
               buttonFg={(colors) => colors.mono[100]}
               buttonBg={(colors) => colors.blue[500]}
@@ -126,42 +158,44 @@ export default function Login() {
               isLoading={isLoading}
             >
               <Typography fontStyle="medium" fontSize="14px">
-                Log in
+                {isRequestingReset ? 'Request password reset' : 'Reset password'}
               </Typography>
             </Buttons.Filled>
           </Flex.Column>
         )}
       </FormWizardProvider>
-      <Flex.Row justify="space-around" wrap="wrap">
-        <Link href={SIGNUP_ROUTE}>
-          <Buttons.Text
-            as="a"
-            buttonFg={(colors) => colors.blue[400]}
-            hoverButtonFg={(colors) => colors.blue[700]}
-          >
-            <Typography
-              fontStyle="regular"
-              fontSize="14px"
+      {isRequestingReset && (
+        <Flex.Row justify="space-around" wrap="wrap">
+          <Link href={SIGNUP_ROUTE}>
+            <Buttons.Text
+              as="a"
+              buttonFg={(colors) => colors.blue[400]}
+              hoverButtonFg={(colors) => colors.blue[700]}
             >
-              Create new account
-            </Typography>
-          </Buttons.Text>
-        </Link>
-        <Link href={RESET_PASSWORD_ROUTE}>
-          <Buttons.Text
-            as="a"
-            buttonFg={(colors) => colors.blue[400]}
-            hoverButtonFg={(colors) => colors.blue[700]}
-          >
-            <Typography
-              fontStyle="regular"
-              fontSize="14px"
+              <Typography
+                fontStyle="regular"
+                fontSize="14px"
+              >
+                Create new account
+              </Typography>
+            </Buttons.Text>
+          </Link>
+          <Link href={LOGIN_ROUTE}>
+            <Buttons.Text
+              as="a"
+              buttonFg={(colors) => colors.blue[400]}
+              hoverButtonFg={(colors) => colors.blue[700]}
             >
-              Forgot Password
-            </Typography>
-          </Buttons.Text>
-        </Link>
-      </Flex.Row>
+              <Typography
+                fontStyle="regular"
+                fontSize="14px"
+              >
+                Log in
+              </Typography>
+            </Buttons.Text>
+          </Link>
+        </Flex.Row>
+      )}
     </VaultLayout>
   );
 }

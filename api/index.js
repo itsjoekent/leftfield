@@ -39,6 +39,8 @@ app.use(function (req, res, next) {
   try {
     app.post('/file', routeWrapper('upload-file'));
     app.post('/login', routeWrapper('login'));
+    app.post('/request-password-reset', routeWrapper('request-password-reset'));
+    app.post('/reset-password', routeWrapper('reset-password'));
     app.get('/organization/files', routeWrapper('get-organization-files'));
     app.get('/organization/websites', routeWrapper('get-organization-websites'));
     app.get('/profile', routeWrapper('get-profile'));

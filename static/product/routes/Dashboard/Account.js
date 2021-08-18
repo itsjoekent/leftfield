@@ -61,6 +61,19 @@ export default function DashboardAccount() {
     });
   }
 
+  function triggerPasswordReset() {
+    hitApi({
+      method: 'post',
+      route: '/request-password-reset',
+      payload: { email: account.email },
+      onResponse: ({ json, ok }) => {
+        if (ok) {
+          dispatch(pushSnack({ message: 'Password reset email sent, check your inbox!' }));
+        }
+      },
+    });
+  }
+
   return (
     <DashboardLayout>
       <Flex.Column
@@ -168,6 +181,36 @@ export default function DashboardAccount() {
             </Flex.Column>
           )}
         </FormWizardProvider>
+        <Flex.Column gridGap="12px">
+          <Flex.Column gridGap="6px">
+            <Typography
+              as="h2"
+              fontStyle="bold"
+              fontSize="24px"
+              fg={(colors) => colors.mono[700]}
+            >
+              Reset password
+            </Typography>
+            <Typography fontSize="16px" fg={(colors) => colors.mono[700]}>
+              Need to change your password? We'll send you a link to{' '}
+              <Typography as="span" fg={(colors) => colors.blue[500]}>{get(account, 'email')}</Typography>.
+            </Typography>
+          </Flex.Column>
+          <Buttons.Filled
+            type="button"
+            fitWidth
+            buttonFg={(colors) => colors.mono[700]}
+            buttonBg={(colors) => colors.blue[200]}
+            hoverButtonBg={(colors) => colors.blue[300]}
+            paddingVertical="4px"
+            paddingHorizontal="8px"
+            onClick={triggerPasswordReset}
+          >
+            <Typography fontStyle="medium" fontSize="14px">
+              Send password reset email
+            </Typography>
+          </Buttons.Filled>
+        </Flex.Column>
       </Flex.Column>
     </DashboardLayout>
   );

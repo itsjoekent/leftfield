@@ -10,6 +10,7 @@ import {
   Typography,
 } from 'pkg.admin-components';
 import { FormWizardProvider, FormWizardFields } from 'pkg.form-wizard';
+import VaultLayout from '@product/components/VaultLayout';
 import { setToken } from '@product/features/auth';
 import useProductApi from '@product/hooks/useProductApi';
 import { EDITOR_ROUTE } from '@product/routes/Editor';
@@ -102,142 +103,107 @@ export default function Signup() {
   ];
 
   return (
-    <Flex.Column
-      fullWidth
-      fullViewportHeight
-      bg={(colors) => colors.mono[200]}
-      justify="center"
-      align="center"
-      padding="24px"
+    <VaultLayout
+      title="Sign up"
+      subtitle="Get started with Leftfield"
     >
-      <Flex.Column
-        gridGap="24px"
-        fullWidth
-        maxWidth="400px"
-        padding="24px"
-        bg={(colors) => colors.mono[100]}
-        rounded={(radius) => radius.default}
-        shadow={(shadows) => shadows.light}
-        overflowY="scroll"
+      <FormWizardProvider
+        name="signup"
+        onFormSubmit={onSignup}
+        fields={fields}
       >
-        <Flex.Column gridGap="2px">
-          <Typography
-            as="h1"
-            fontStyle="bold"
-            fontSize="22px"
-            fg={(colors) => colors.blue[600]}
-            textAlign="center"
+        {({ formProps }) => (
+          <Flex.Column
+            as="form"
+            gridGap="12px"
+            {...formProps}
           >
-            Sign up
-          </Typography>
-          <Typography
-            as="h2"
-            fontStyle="medium"
-            fontSize="16px"
-            fg={(colors) => colors.mono[500]}
-            textAlign="center"
-          >
-            Get started with Leftfield
-          </Typography>
-        </Flex.Column>
-        <FormWizardProvider
-          name="signup"
-          onFormSubmit={onSignup}
-          fields={fields}
-        >
-          {({ formProps }) => (
-            <Flex.Column
-              as="form"
-              gridGap="12px"
-              {...formProps}
-            >
-              <FormWizardFields>
-                {({
-                  field,
-                  value,
-                  setFieldValue,
-                  labelProps,
-                  inputProps,
-                  inputStylingProps,
-                }) => (
-                  <Flex.Column key={field.id} gridGap="2px">
-                    <Typography
-                      as="label"
-                      fontStyle="medium"
-                      fontSize="14px"
-                      fg={(colors) => colors.mono[700]}
-                      {...labelProps}
+            <FormWizardFields>
+              {({
+                field,
+                value,
+                setFieldValue,
+                labelProps,
+                inputProps,
+                inputStylingProps,
+              }) => (
+                <Flex.Column key={field.id} gridGap="2px">
+                  <Typography
+                    as="label"
+                    fontStyle="medium"
+                    fontSize="14px"
+                    fg={(colors) => colors.mono[700]}
+                    {...labelProps}
+                  />
+                  {field.attributes.isSelect ? (
+                    <Select
+                      value={find(field.attributes.options, { value })}
+                      options={field.attributes.options}
+                      onChange={({ value }) => setFieldValue(value)}
                     />
-                    {field.attributes.isSelect ? (
-                      <Select
-                        value={find(field.attributes.options, { value })}
-                        options={field.attributes.options}
-                        onChange={({ value }) => setFieldValue(value)}
-                      />
-                    ) : (
-                      <Inputs.DefaultText
-                        type={field.attributes.htmlType}
-                        {...inputProps}
-                        {...inputStylingProps}
-                      />
-                    )}
-                  </Flex.Column>
-                )}
-              </FormWizardFields>
-              {!!formError && (
-                <Typography
-                  fontStyle="medium"
-                  fontSize="14px"
-                  fg={(colors) => colors.red[500]}
-                >
-                  {formError}
-                </Typography>
+                  ) : (
+                    <Inputs.DefaultText
+                      type={field.attributes.htmlType}
+                      {...inputProps}
+                      {...inputStylingProps}
+                    />
+                  )}
+                </Flex.Column>
               )}
-              <Buttons.Filled
-                type="submit"
-                fullWidth
-                buttonFg={(colors) => colors.mono[100]}
-                buttonBg={(colors) => colors.blue[500]}
-                hoverButtonBg={(colors) => colors.blue[700]}
-                paddingVertical="4px"
-                paddingHorizontal="8px"
-                isLoading={isLoading}
+            </FormWizardFields>
+            {!!formError && (
+              <Typography
+                fontStyle="medium"
+                fontSize="14px"
+                fg={(colors) => colors.red[500]}
               >
-                <Typography fontStyle="medium" fontSize="14px">
-                  Sign up
-                </Typography>
-              </Buttons.Filled>
-            </Flex.Column>
-          )}
-        </FormWizardProvider>
-        <Flex.Row
-          align="center"
-          justify="center"
-          gridGap="6px"
-          wrap="wrap"
+                {formError}
+              </Typography>
+            )}
+            <Buttons.Filled
+              type="submit"
+              fullWidth
+              buttonFg={(colors) => colors.mono[100]}
+              buttonBg={(colors) => colors.blue[500]}
+              hoverButtonBg={(colors) => colors.blue[700]}
+              paddingVertical="4px"
+              paddingHorizontal="8px"
+              isLoading={isLoading}
+            >
+              <Typography fontStyle="medium" fontSize="14px">
+                Sign up
+              </Typography>
+            </Buttons.Filled>
+          </Flex.Column>
+        )}
+      </FormWizardProvider>
+      <Flex.Row
+        align="center"
+        justify="center"
+        gridGap="6px"
+        wrap="wrap"
+      >
+        <Typography
+          fontStyle="regular"
+          fontSize="14px"
+          fg={(colors) => colors.mono[500]}
+        >
+          Already have an account?
+        </Typography>
+        <Buttons.Text
+          as="a"
+          href={LOGIN_ROUTE}
+          buttonFg={(colors) => colors.blue[400]}
+          hoverButtonFg={(colors) => colors.blue[700]}
         >
           <Typography
             fontStyle="regular"
             fontSize="14px"
-            fg={(colors) => colors.mono[500]}
           >
-            Already have an account?
+            Login
           </Typography>
-          <Buttons.Text
-            as="a"
-            href={LOGIN_ROUTE}
-            buttonFg={(colors) => colors.blue[400]}
-            hoverButtonFg={(colors) => colors.blue[700]}
-          >
-            <Typography
-              fontStyle="regular"
-              fontSize="14px"
-            >
-              Login
-            </Typography>
-          </Buttons.Text>
-        </Flex.Row>
-      </Flex.Column>
-    </Flex.Column>
+        </Buttons.Text>
+      </Flex.Row>
+    </VaultLayout>
   );
 }

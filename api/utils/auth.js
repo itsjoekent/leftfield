@@ -46,6 +46,7 @@ async function signToken({
   claims = {},
   expiration = '7 days',
   prefix = 'p',
+  secret = secretKey,
 }) {
   const jwt = await new SignJWT(claims)
     .setProtectedHeader({ alg: 'HS256' })
@@ -53,14 +54,14 @@ async function signToken({
     .setIssuer('leftfield')
     .setSubject(`${subjectType}_${subject}`)
     .setExpirationTime('7 days')
-    .sign(secretKey);
+    .sign(secret);
 
   return `lf${prefix}_${jwt}`;
 }
 
-async function validateToken(token) {
+async function validateToken(token, secret = secretKey) {
   const jwt = token.split(/_(.+)/)[1];
-  const { payload } = await jwtVerify(jwt, secretKey, { issuer: 'leftfield' });
+  const { payload } = await jwtVerify(jwt, secret, { issuer: 'leftfield' });
   return payload;
 }
 

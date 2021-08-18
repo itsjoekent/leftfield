@@ -30,6 +30,9 @@ const LoginPage = React.lazy(() => import('@product/routes/Login'));
 
 import LogoutPage, { LOGOUT_ROUTE } from '@product/routes/Logout';
 
+import { RESET_PASSWORD_ROUTE } from '@product/routes/ResetPassword';
+const ResetPasswordPage = React.lazy(() => import('@product/routes/ResetPassword'));
+
 import { SIGNUP_ROUTE } from '@product/routes/Signup';
 const SignupPage = React.lazy(() => import('@product/routes/Signup'));
 
@@ -47,6 +50,7 @@ ReactDOM.render(
               <Route path={EDITOR_ROUTE} component={EditorPage} />
               <Route path={LOGIN_ROUTE} component={LoginPage} />
               <Route path={LOGOUT_ROUTE} component={LogoutPage} />
+              <Route path={RESET_PASSWORD_ROUTE} component={ResetPasswordPage} />
               <Route path={SIGNUP_ROUTE} component={SignupPage} />
             </Suspense>
             <Suspense fallback={null}>
