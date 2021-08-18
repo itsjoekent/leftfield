@@ -79,8 +79,8 @@ export default function Signup() {
       },
     },
     {
-      id: 'firstName',
-      label: 'First Name',
+      id: 'name',
+      label: 'Name',
       attributes: {
         htmlType: 'text',
       },

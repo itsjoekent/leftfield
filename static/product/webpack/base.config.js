@@ -26,10 +26,19 @@ module.exports = {
         },
       },
       {
-        test: /\.(md)$/i,
-        use: {
-          loader: 'raw-loader',
+        test: /\.svg$/,
+        loader: '@svgr/webpack',
+        options: {
+          svgoConfig: {
+            plugins: {
+              removeViewBox: false,
+            },
+          },
         },
+      },
+      {
+        test: /\.(md)$/i,
+        loader: 'raw-loader',
       },
     ],
   },
@@ -47,6 +56,7 @@ module.exports = {
   resolve: {
     alias: {
       '@product': path.resolve(process.cwd(), '/static/product'),
+      '@assets': path.resolve(process.cwd(), '/static/assets'),
     },
     fallback: {
       'fs': false,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { get } from 'lodash';
-import { useDispatch } from 'react-redux';
+import { batch, useDispatch } from 'react-redux';
 import { useLocation } from 'wouter';
 import {
   Buttons,
@@ -9,9 +9,9 @@ import {
   Typography,
 } from 'pkg.admin-components';
 import { FormWizardProvider, FormWizardFields } from 'pkg.form-wizard';
-import { setToken } from '@product/features/auth';
+import { setAccount, setToken } from '@product/features/auth';
 import useProductApi from '@product/hooks/useProductApi';
-import { EDITOR_ROUTE } from '@product/routes/Editor';
+import { DASHBOARD_ROUTE } from '@product/routes/Dashboard';
 import { SIGNUP_ROUTE } from '@product/routes/Signup';
 
 export const LOGIN_ROUTE = '/login';
@@ -42,8 +42,12 @@ export default function Login() {
           return;
         }
 
-        dispatch(setToken(get(json, 'token')));
-        setLocation(EDITOR_ROUTE);
+        batch(() => {
+          dispatch(setAccount(get(json, 'account')));
+          dispatch(setToken(get(json, 'token')));
+        });
+
+        setLocation(DASHBOARD_ROUTE);
       },
       onFatalError: () => setIsLoading(false),
     });

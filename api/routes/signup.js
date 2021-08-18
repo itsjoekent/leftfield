@@ -15,7 +15,7 @@ async function signup(request, response) {
   await basicValidator(body, [
     { key: 'email', humanName: 'email' },
     { key: 'password', humanName: 'password' },
-    { key: 'firstName', humanName: 'first name' },
+    { key: 'name', humanName: 'name' },
     { key: 'organizationName', humanName: 'organization name' },
     { key: 'organizationSize', humanName: 'organization size' },
     {
@@ -31,7 +31,7 @@ async function signup(request, response) {
   const {
     email,
     password,
-    firstName,
+    name,
     organizationName,
     organizationSize,
   } = body;
@@ -45,7 +45,7 @@ async function signup(request, response) {
 
   await Account.create({
     email,
-    firstName,
+    name,
     password: hashedPassword,
     organization: organization._id,
     role: 'OWNER',

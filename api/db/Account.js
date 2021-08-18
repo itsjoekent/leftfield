@@ -9,8 +9,8 @@ const schema = new mongoose.Schema({
     unique: true,
   },
   'password': String,
-  'firstName': String,
-  'lastName': String,
+  'avatar': String,
+  'name': String,
   'organization': {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Organization',

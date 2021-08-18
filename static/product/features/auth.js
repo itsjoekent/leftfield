@@ -1,17 +1,13 @@
+import Cookies from 'js-cookie';
 import { createSlice } from '@reduxjs/toolkit';
 import isDefined from '@product/utils/isDefined';
-
-// https://stackoverflow.com/a/25490531
-const getCookieValue = (name) => (
-  document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
-);
 
 export const authSlice = createSlice({
   name: 'auth',
   initialState: {
     account: null,
     organization: null,
-    token: getCookieValue('lf_auth') || null,
+    token: Cookies.get('lf_auth') || null,
   },
   reducers: {
     setAccount: (state, action) => {

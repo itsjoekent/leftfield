@@ -72,7 +72,7 @@ export default function FormProvider(props) {
 
   const submitButtonProps = {
     type: 'submit',
-    disabled: !!validationMessages.length,
+    disabled: !!validationMessages.length && hasSubmittedOnce,
   };
 
   function providerFormOnSubmit(event) {
@@ -80,6 +80,10 @@ export default function FormProvider(props) {
 
     if (!hasSubmittedOnce) {
       dispatch(setHasSubmittedOnce(true));
+    }
+
+    if (!!validationMessages.length) {
+      return;
     }
 
     if (onFormSubmit) {

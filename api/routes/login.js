@@ -5,6 +5,7 @@ const { passwordCompare, signToken, AUTH_TOKEN_COOKIE } = require('../utils/auth
 const basicValidator = require('../utils/basicValidator');
 const makeApiError = require('../utils/makeApiError');
 const { respondWithSuccess } = require('../utils/responder');
+const { transformAccount } = require('../utils/transformer');
 
 async function login(request, response) {
   const { body } = request;
@@ -49,7 +50,7 @@ async function login(request, response) {
 
   return respondWithSuccess(
     response,
-    { token: jwt },
+    { token: jwt, account: transformAccount(account, account) },
     200,
     { 'Set-Cookie': jwtCookie },
   );

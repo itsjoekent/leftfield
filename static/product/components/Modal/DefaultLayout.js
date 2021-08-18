@@ -8,6 +8,7 @@ import {
   Typography,
 } from 'pkg.admin-components';
 import { closeModal } from '@product/features/modal';
+import useIsKeyPressed from '@product/hooks/useIsKeyPressed';
 
 export default function DefaultLayout(props) {
   const {
@@ -19,6 +20,14 @@ export default function DefaultLayout(props) {
 
   const dispatch = useDispatch();
   const modalRef = React.useRef(null);
+
+  const isEscapePressed = useIsKeyPressed(['Esc', 'Escape']);
+
+  React.useEffect(() => {
+    if (!disableClose && isEscapePressed) {
+      dispatch(closeModal());
+    }
+  }, [disableClose, isEscapePressed]);
 
   React.useEffect(() => {
     const modalElement = modalRef.current;

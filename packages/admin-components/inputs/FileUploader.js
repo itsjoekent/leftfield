@@ -75,7 +75,11 @@ export default function FileUploader(props) {
           style={{ width: '100%' }}
         />
       )}
-      {children({ onClick: openDialog, fullWidth: true })}
+      {children({
+        onClick: openDialog,
+        fullWidth: true,
+        type: 'button',
+      })}
       <Typography
         fontStyle="regular"
         fontSize="12px"

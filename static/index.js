@@ -39,6 +39,7 @@ const httpLogger = pinoHttps({ logger });
           { source: '/dashboard/*', destination: '/product/index.html' },
           { source: '/editor', destination: '/product/index.html' },
           { source: '/login', destination: '/product/index.html' },
+          { source: '/logout', destination: '/product/index.html' },
           { source: '/signup', destination: '/product/index.html' },
         ],
         trailingSlash: false,

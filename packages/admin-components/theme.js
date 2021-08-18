@@ -110,6 +110,7 @@ const theme = {
     strong: 'box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);',
   },
   zIndex: {
+    dropdown: 50,
     modal: 100,
     snacks: 200,
     tooltip: 1000000,

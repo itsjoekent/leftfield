@@ -42,6 +42,7 @@ app.use(function (req, res, next) {
     app.get('/organization/files', routeWrapper('get-organization-files'));
     app.get('/organization/websites', routeWrapper('get-organization-websites'));
     app.get('/profile', routeWrapper('get-profile'));
+    app.put('/profile', routeWrapper('update-profile'));
     app.post('/signup', routeWrapper('signup'));
     app.post('/website', routeWrapper('create-website'));
     app.get('/website/:websiteId', routeWrapper('get-website'));

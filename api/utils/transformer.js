@@ -8,14 +8,16 @@ function transformAccount(account, requestingAccount = null) {
 
   const {
     _id,
+    avatar,
     email,
-    firstName,
+    name,
     lastName,
   } = account;
 
   const data = {
     id: _id.toString(),
-    firstName,
+    avatar,
+    name,
     lastName,
   };
 

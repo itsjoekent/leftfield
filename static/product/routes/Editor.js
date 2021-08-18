@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Flex, Typography } from 'pkg.admin-components';
 import AutoSave from '@product/components/AutoSave';
 import History from '@product/components/History';
+import HomeButton from '@product/components/HomeButton';
 import Preview from '@product/components/Preview';
 import PreviewSelector from '@product/components/PreviewSelector';
 import PublishButton from '@product/components/PublishButton';
@@ -15,11 +16,7 @@ import {
   setWebsiteId,
   setAssemblyState,
 } from '@product/features/assembly';
-import {
-  selectAuthOrganization,
-  setAccount,
-  setOrganization,
-} from '@product/features/auth';
+import { selectAuthOrganization } from '@product/features/auth';
 import { setModal, WEBSITE_SELECTOR_MODAL } from '@product/features/modal';
 import useAuthGate from '@product/hooks/useAuthGate';
 import useMediaQuery from '@product/hooks/useMediaQuery';
@@ -45,19 +42,6 @@ export default function Editor() {
   React.useEffect(() => {
     if (!isAuthenticated) return;
     let cancel = false;
-
-    if (!organization) {
-      hitApi({
-        method: 'get',
-        route: '/profile',
-        onResponse: ({ json, ok }) => {
-          if (ok && !cancel) {
-            dispatch(setAccount(get(json, 'account')));
-            dispatch(setOrganization(get(json, 'organization')));
-          }
-        },
-      });
-    }
 
     if (!!organization) {
       hitApi({
@@ -146,9 +130,12 @@ export default function Editor() {
           gridGap="24px"
           bg={(colors) => colors.mono[100]}
           shadow={(shadows) => shadows.light}
-          padding="12px"
+          paddingVertical="12px"
+          paddingHorizontal="24px"
         >
-          <LeftSideNavigation />
+          <LeftSideNavigation>
+            <HomeButton />
+          </LeftSideNavigation>
           <RightSideNavigation
             justify="space-between"
             align="center"

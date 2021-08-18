@@ -37,13 +37,6 @@ async function uploadFile(request, response) {
   let folder = null;
 
   if (targetBucket === 'accounts') {
-    if (!['avatar'].includes(fileName)) {
-      throw makeApiError({
-        message: 'Cannot upload to this location',
-        status: 401,
-      });
-    }
-
     folder = account._id.toString();
   } else if (targetBucket === 'assets') {
     folder = account.organization._id.toString();
@@ -58,6 +51,8 @@ async function uploadFile(request, response) {
   const url = `${process.env.FILES_DOMAIN}/file/${key}`;
 
   const uploadUrls = getSignedUploadUrls(key);
+
+  const now = Date.now();
 
   await Promise.all([
     put(
