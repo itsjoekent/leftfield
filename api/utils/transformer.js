@@ -156,6 +156,8 @@ function transformWebsite(website, requestingAccount = null) {
     publishedSnapshot,
     lastPublishedAt,
     lastPublishedBy,
+    createdAt,
+    updatedAt,
   } = website;
 
   return {
@@ -173,6 +175,8 @@ function transformWebsite(website, requestingAccount = null) {
     lastPublishedBy: lastPublishedBy
       ? transformAccount(lastPublishedBy, requestingAccount)
       : null,
+    createdAt,
+    updatedAt,
   };
 }
 

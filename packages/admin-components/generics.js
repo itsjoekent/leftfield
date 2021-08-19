@@ -49,6 +49,8 @@ export const colors = css`
       background-color: ${hoverBg(theme.colors)};
     }
   `}
+
+  ${({ opacity }) => !!opacity && css`opacity: ${opacity};`}
 `;
 
 export const cursor = css`

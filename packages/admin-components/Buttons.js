@@ -23,6 +23,7 @@ const sharedButtonStyles = css`
   align-items: center;
   justify-content: center;
   width: fit-content;
+  text-decoration: none;
   white-space: nowrap;
   border-style: solid;
   cursor: pointer;
@@ -32,6 +33,7 @@ const sharedButtonStyles = css`
 
   ${Typography} {
     transition: color ${(props) => props.theme.animation.defaultTransition};
+    text-decoration: none;
   }
 
   svg * {

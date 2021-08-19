@@ -4,7 +4,7 @@ import 'regenerator-runtime/runtime';
 
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import { Route } from 'wouter';
+import { Route, Switch } from 'wouter';
 import { Provider as StateProvider } from 'react-redux'
 import { StyleSheetManager, ThemeProvider } from 'styled-components';
 import { theme, GlobalReset } from 'pkg.admin-components';
@@ -45,13 +45,19 @@ ReactDOM.render(
             <GlobalReset />
             <Init />
             <Suspense fallback={<div>Loading...</div>}>
-              <Route path={DASHBOARD_ROUTE} component={DashboardPage} />
-              <Route path={DASHBOARD_ACCOUNT_ROUTE} component={DashboardAccountPage} />
-              <Route path={EDITOR_ROUTE} component={EditorPage} />
-              <Route path={LOGIN_ROUTE} component={LoginPage} />
-              <Route path={LOGOUT_ROUTE} component={LogoutPage} />
-              <Route path={RESET_PASSWORD_ROUTE} component={ResetPasswordPage} />
-              <Route path={SIGNUP_ROUTE} component={SignupPage} />
+              <Switch>
+                <Route path={DASHBOARD_ROUTE} component={DashboardPage} />
+                <Route path={DASHBOARD_ACCOUNT_ROUTE} component={DashboardAccountPage} />
+                <Route path={`${DASHBOARD_ROUTE}/:subpath`} component={DashboardPage} />
+                <Route path={EDITOR_ROUTE} component={EditorPage} />
+                <Route path={LOGIN_ROUTE} component={LoginPage} />
+                <Route path={LOGOUT_ROUTE} component={LogoutPage} />
+                <Route path={RESET_PASSWORD_ROUTE} component={ResetPasswordPage} />
+                <Route path={SIGNUP_ROUTE} component={SignupPage} />
+                <Route path="/:rest*">
+                  {(params) => `404, Sorry the page ${params.rest} does not exist!`}
+                </Route>
+              </Switch>
             </Suspense>
             <Suspense fallback={null}>
               <Modal />

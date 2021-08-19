@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 import {
+  animation,
   colors,
   cursor,
   overflow,
@@ -18,6 +19,7 @@ const Typography = styled.p`
   ${(props) => props.textOverflow && css`text-overflow: ${props.textOverflow};`}
   ${(props) => props.whiteSpace && css`white-space: ${props.whiteSpace};`}
 
+  ${animation}
   ${colors}
   ${cursor}
   ${overflow}
