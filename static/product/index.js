@@ -22,6 +22,9 @@ const DashboardPage = React.lazy(() => import('@product/routes/Dashboard'));
 import { DASHBOARD_ACCOUNT_ROUTE } from '@product/routes/Dashboard/Account';
 const DashboardAccountPage = React.lazy(() => import('@product/routes/Dashboard/Account'));
 
+import { DASHBOARD_CREATE_WEBSITE_ROUTE } from '@product/routes/Dashboard/CreateWebsite';
+const DashboardCreateWebsitePage = React.lazy(() => import('@product/routes/Dashboard/CreateWebsite'));
+
 import { EDITOR_ROUTE } from '@product/routes/Editor';
 const EditorPage = React.lazy(() => import('@product/routes/Editor'));
 
@@ -48,6 +51,7 @@ ReactDOM.render(
               <Switch>
                 <Route path={DASHBOARD_ROUTE} component={DashboardPage} />
                 <Route path={DASHBOARD_ACCOUNT_ROUTE} component={DashboardAccountPage} />
+                <Route path={DASHBOARD_CREATE_WEBSITE_ROUTE} component={DashboardCreateWebsitePage} />
                 <Route path={`${DASHBOARD_ROUTE}/:subpath`} component={DashboardPage} />
                 <Route path={EDITOR_ROUTE} component={EditorPage} />
                 <Route path={LOGIN_ROUTE} component={LoginPage} />

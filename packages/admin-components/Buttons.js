@@ -187,11 +187,6 @@ const TextButtonWrapper = styled.button`
     }
   }
 
-  svg * {
-    transition: all ${(props) => props.theme.animation.defaultTransition};
-    transition-property: stroke, fill;
-  }
-
   ${sharedButtonStyles}
   background: none;
   border: none;
@@ -202,6 +197,7 @@ export function Text(props) {
     children,
     IconComponent,
     iconSize,
+    isLoading,
     ...rest
   } = props;
 
@@ -213,14 +209,15 @@ export function Text(props) {
   const iconColor = rest.buttonFg;
   const iconHoverColor = rest.hoverButtonFg;
 
+  const FinalIconComponent = isLoading ? Loading : IconComponent;
   const finalIconColor = !!IconComponent && isHovering
     ? (!!iconHoverColor && iconHoverColor(theme.colors))
     : (!!iconColor && iconColor(theme.colors));
 
   return (
-    <TextButtonWrapper ref={buttonRef} {...rest}>
+    <TextButtonWrapper ref={buttonRef} isLoading={isLoading} {...rest}>
       {!!IconComponent && (
-        <IconComponent
+        <FinalIconComponent
           width={iconSize}
           height={iconSize}
           color={finalIconColor}

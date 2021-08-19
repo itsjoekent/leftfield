@@ -6,7 +6,6 @@ export const ELEMENT_LIBRARY_MODAL = 'ELEMENT_LIBRARY_MODAL';
 export const EXPORT_STYLE_MODAL = 'EXPORT_STYLE_MODAL';
 export const FILE_SELECTOR = 'FILE_SELECTOR';
 export const FONTS_MODAL = 'FONTS_MODAL';
-export const WEBSITE_SELECTOR_MODAL = 'WEBSITE_SELECTOR_MODAL';
 
 export const modalSlice = createSlice({
   name: 'modal',

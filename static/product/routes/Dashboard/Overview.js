@@ -16,6 +16,7 @@ import {
 import DashboardWebsiteCard from '@product/components/Dashboard/WebsiteCard';
 import { selectAuthOrganization } from '@product/features/auth';
 import useProductApi from '@product/hooks/useProductApi';
+import { DASHBOARD_CREATE_WEBSITE_ROUTE } from '@product/routes/Dashboard/CreateWebsite';
 
 export const DASHBOARD_OVERVIEW_ROUTE = '/dashboard';
 
@@ -108,7 +109,7 @@ export default function DashboardOverview() {
           >
             {get(organization, 'name', 'Campaign')} Websites
           </Typography>
-          <Link href="/dashboard">
+          <Link href={DASHBOARD_CREATE_WEBSITE_ROUTE}>
             <Buttons.Filled
               as="a"
               IconComponent={Icons.AddRoundFill}

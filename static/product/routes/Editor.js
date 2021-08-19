@@ -2,15 +2,16 @@ import React from 'react';
 import styled, { css, ThemeProvider } from 'styled-components';
 import qs from 'qs';
 import { get } from 'lodash';
+import { useLocation } from 'wouter';
 import { useDispatch, useSelector } from 'react-redux';
 import { Flex, Typography } from 'pkg.admin-components';
 import AutoSave from '@product/components/AutoSave';
 import History from '@product/components/History';
 import HomeButton from '@product/components/HomeButton';
-import Preview from '@product/components/Preview';
 import PreviewSelector from '@product/components/PreviewSelector';
 import PublishButton from '@product/components/PublishButton';
 import Workspace from '@product/components/Workspace';
+import WorkspacePreview from '@product/components/Workspace/Preview';
 import { PARLIAMENTARIAN_BOOTSTRAP_TYPE } from '@product/constants/parliamentarian';
 import {
   selectWebsiteId,
@@ -18,10 +19,11 @@ import {
   setAssemblyState,
 } from '@product/features/assembly';
 import { selectAuthOrganization } from '@product/features/auth';
-import { setModal, WEBSITE_SELECTOR_MODAL } from '@product/features/modal';
+import { setModal } from '@product/features/modal';
 import useAuthGate from '@product/hooks/useAuthGate';
 import useMediaQuery from '@product/hooks/useMediaQuery';
 import useProductApi from '@product/hooks/useProductApi';
+import { DASHBOARD_CREATE_WEBSITE_ROUTE } from '@product/routes/Dashboard/CreateWebsite';
 import store from '@product/store';
 
 export const EDITOR_ROUTE = '/editor';
@@ -36,6 +38,7 @@ export default function Editor() {
 
   const dispatch = useDispatch();
   const hitApi = useProductApi();
+  const [, setLocation] = useLocation();
 
   const websiteId = useSelector(selectWebsiteId);
   const organization = useSelector(selectAuthOrganization);
@@ -100,7 +103,7 @@ export default function Editor() {
                 newAssembly: { websiteId, ...data },
               }));
             } else {
-              dispatch(setModal({ type: WEBSITE_SELECTOR_MODAL }));
+              setLocation(DASHBOARD_CREATE_WEBSITE_ROUTE);
             }
           }
         },
@@ -198,7 +201,9 @@ export default function Editor() {
             as="section"
             ref={previewContainerRef}
           >
-            <Preview previewContainerDimensions={previewContainerDimensions} />
+            <WorkspacePreview
+              containerDimensions={previewContainerDimensions}
+            />
           </PreviewContainer>
         </Flex.Row>
       </Page>

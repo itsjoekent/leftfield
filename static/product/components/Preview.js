@@ -1,18 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
-import { get, isEmpty } from 'lodash';
-import { useSelector } from 'react-redux';
+import { get } from 'lodash';
 import { Responsive } from 'pkg.campaign-components';
-import {
-  selectCompiledPage,
-  selectCampaignTheme,
-} from '@product/features/assembly';
-import { selectPreviewDeviceSize } from '@product/features/previewMode';
-import {
-  setActiveComponentId,
-  selectActivePageRoute,
-} from '@product/features/workspace';
 
 const devices = {
   [Responsive.MOBILE_DEVICE]: {
@@ -39,88 +28,40 @@ const devices = {
 };
 
 export default function Preview(props) {
-  const { previewContainerDimensions } = props;
-
-  const dispatch = useDispatch();
-
-  const deviceSize = useSelector(selectPreviewDeviceSize);
+  const {
+    deviceSize,
+    iframeRef,
+    iframeSrc,
+    containerDimensions,
+  } = props;
 
   const pixelRatio = get(devices[deviceSize], 'pixelRatio', 0);
   const width = get(devices[deviceSize], 'resolution.width', 0) / pixelRatio;
   const height = get(devices[deviceSize], 'resolution.height', 0) / pixelRatio;
 
-  const iframeRef = React.useRef(null);
-
-  const activePageRoute = useSelector(selectActivePageRoute);
-  const activePagePreview = useSelector(selectCompiledPage(activePageRoute));
-  const campaignTheme = useSelector(selectCampaignTheme);
-
-  const [isPreviewReady, setIsPreviewReady] = React.useState(false);
   const [previewTransform, setPreviewTransform] = React.useState('scale(1)');
 
   React.useEffect(() => {
-    function onMessage(event) {
-      const { data } = event;
-      const { type } = data;
-
-      if (type === 'READY') {
-        setIsPreviewReady(true);
-      }
-
-      if (type === 'CLICKED') {
-        const { componentId } = data;
-        dispatch(setActiveComponentId({ componentId }));
-      }
-    }
-
-    window.addEventListener('message', onMessage);
-    return () => window.removeEventListener('message', onMessage);
-  }, []);
-
-  React.useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) {
-      return;
-    }
-
-    const { contentWindow: targetWindow } = iframe;
-
-    if (isPreviewReady && !isEmpty(activePagePreview)) {
-      targetWindow.postMessage({
-        type: 'RENDER',
-        payload: {
-          page: activePagePreview,
-          campaignTheme,
-        },
-      }, '*');
-    }
-  }, [
-    isPreviewReady,
-    activePagePreview,
-    campaignTheme,
-  ]);
-
-  React.useEffect(() => {
-    if (!previewContainerDimensions || !width || !height) {
+    if (!containerDimensions || !width || !height) {
       return;
     }
 
     const scale = Math.min(
-      previewContainerDimensions[0] / width,
-      previewContainerDimensions[1] / height,
+      containerDimensions[0] / width,
+      containerDimensions[1] / height,
     );
 
     const scaledWidth = width * scale;
     const scaledHeight = height * scale;
 
-    const topOffset = ((previewContainerDimensions[1] - scaledHeight) / 2) + 12;
-    const leftOffset = ((previewContainerDimensions[0] - scaledWidth) / 2) + 12;
+    const topOffset = ((containerDimensions[1] - scaledHeight) / 2) + 12;
+    const leftOffset = ((containerDimensions[0] - scaledWidth) / 2) + 12;
 
     setPreviewTransform(`translate(${leftOffset}px, ${topOffset}px) scale(${scale})`);
   }, [
     width,
     height,
-    previewContainerDimensions,
+    containerDimensions,
   ]);
 
   const style = { width, height, transform: previewTransform };
@@ -128,7 +69,7 @@ export default function Preview(props) {
   return (
     <PreviewSpace>
       <DeviceContainer style={style}>
-        <Frame ref={iframeRef} src={process.env.PREVIEW_PATH} />
+        <Frame ref={iframeRef} src={iframeSrc} />
       </DeviceContainer>
     </PreviewSpace>
   );
