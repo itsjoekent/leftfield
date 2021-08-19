@@ -77,6 +77,10 @@ schema.statics.findAllForOrganization = function({
           path: 'assembly',
           model: DataContainer,
         },
+        {
+          path: 'createdBy',
+          model: Account,
+        },
       ],
     };
 

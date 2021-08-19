@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import { get } from 'lodash';
 import { Link } from 'wouter';
 import { Typography } from 'pkg.admin-components';
+import CfImageUrl from 'pkg.cf-image-url';
 
 export default function Avatar(props) {
   const {
@@ -30,7 +31,10 @@ export default function Avatar(props) {
       {...containerProps}
     >
       {hasAvatar && (
-        <img src={avatarSrc} alt="Account avatar" />
+        <img
+          src={CfImageUrl(avatarSrc, { width: `${size}px` })}
+          alt={`${name} account avatar`}
+        />
       )}
       {!hasAvatar && (
         <Typography

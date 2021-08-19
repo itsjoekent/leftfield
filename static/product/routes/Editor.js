@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { css, ThemeProvider } from 'styled-components';
+import qs from 'qs';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { Flex, Typography } from 'pkg.admin-components';
@@ -43,7 +44,36 @@ export default function Editor() {
     if (!isAuthenticated) return;
     let cancel = false;
 
-    if (!!organization) {
+    const query = qs.parse(window.location.search.slice(1));
+    if (get(query, 'id', null)) {
+      hitApi({
+        method: 'get',
+        route: `/website/${get(query, 'id')}`,
+        query: {
+          fillDraftSnapshot: true,
+          fillSnapshotRoute: '/',
+        },
+        onResponse: ({ json, ok }) => {
+          if (ok && !cancel) {
+            const website = get(json, 'website', null);
+            if (!website) {
+              return;
+            }
+
+            const websiteId = get(website, 'id');
+            const data = get(website, 'draftSnapshot.assembly.data', {});
+
+            if (get(website, 'draftSnapshot.pages./.data', null)) {
+              data.pages = { '/': get(website, 'draftSnapshot.pages./.data', {}) };
+            }
+
+            dispatch(setAssemblyState({
+              newAssembly: { websiteId, ...data },
+            }));
+          }
+        },
+      });
+    } else if (!!organization) {
       hitApi({
         method: 'get',
         route: '/organization/websites',

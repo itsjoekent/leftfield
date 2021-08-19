@@ -1,5 +1,5 @@
 import React from 'react';
-import { get } from 'lodash';
+import { get, isEmpty, isObject } from 'lodash';
 import { Link } from 'wouter';
 import ago from 's-ago';
 import {
@@ -9,6 +9,8 @@ import {
   Icons,
   Typography,
 } from 'pkg.admin-components';
+import Avatar from '@product/components/Avatar';
+import { EDITOR_ROUTE } from '@product/routes/Editor';
 
 export default function WebsiteCard(props) {
   const {
@@ -20,6 +22,14 @@ export default function WebsiteCard(props) {
     draftSnapshot,
     createdAt,
   } = props;
+
+  const draftCreatedBy = get(draftSnapshot, 'createdBy', null);
+  const hasDraftCreatedBy = !!draftCreatedBy
+    && isObject(draftCreatedBy)
+    && !isEmpty(draftCreatedBy);
+
+  const hasLastPublishedBy = isObject(lastPublishedBy)
+    && !isEmpty(lastPublishedBy);
 
   return (
     <Flex.Column
@@ -51,7 +61,7 @@ export default function WebsiteCard(props) {
             {domain || 'No domain configured'}
           </Typography>
         </Flex.Column>
-        <Link href="/dashboard">
+        <Link href={`${EDITOR_ROUTE}?id=${id}`}>
           <Buttons.Filled
             as="a"
             IconComponent={Icons.EditFill}
@@ -80,7 +90,31 @@ export default function WebsiteCard(props) {
         bg={(colors) => colors.mono[200]}
         gridGap="6px"
       >
-        {!draftSnapshot && !lastPublishedBy && (
+        {!!hasDraftCreatedBy && (
+          <Flex.Row gridGap="4px" align="center">
+            <Avatar
+              avatarSrc={get(draftCreatedBy, 'avatar')}
+              name={get(draftCreatedBy, 'name')}
+              size={16}
+            />
+            <Typography fontSize="14px" fg={(colors) => colors.mono[600]}>
+              Last updated by {get(draftCreatedBy, 'name')} {ago(new Date(get(draftSnapshot, 'createdAt')))}
+            </Typography>
+          </Flex.Row>
+        )}
+        {!!hasLastPublishedBy && (
+          <Flex.Row gridGap="4px" align="center">
+            <Avatar
+              avatarSrc={get(lastPublishedBy, 'avatar')}
+              name={get(lastPublishedBy, 'name')}
+              size={16}
+            />
+            <Typography fontSize="14px" fg={(colors) => colors.mono[600]}>
+              Last published by {get(lastPublishedBy, 'name')} {ago(new Date(lastPublishedAt))}
+            </Typography>
+          </Flex.Row>
+        )}
+        {!hasDraftCreatedBy && !hasLastPublishedBy && (
           <Typography fontSize="14px" fg={(colors) => colors.mono[600]}>
             Created {ago(new Date(createdAt))}
           </Typography>

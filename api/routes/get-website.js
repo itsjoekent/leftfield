@@ -1,4 +1,6 @@
 const mongoose = require('../db');
+const DataContainer = require('../db/DataContainer');
+const Snapshot = require('../db/Snapshot');
 const Website = require('../db/Website');
 const { validateAuthorizationHeader } = require('../utils/auth');
 const makeApiError = require('../utils/makeApiError');
@@ -12,10 +14,38 @@ async function getWebsite(request, response) {
     throw makeApiError('Missing website id', 400);
   }
 
-  const account = await validateAuthorizationHeader(event);
+  const account = await validateAuthorizationHeader(request);
   if (account._apiError) throw account;
 
-  const website = await Website.findById(mongoose.Types.ObjectId(websiteId)).exec();
+  const {
+    fillDraftSnapshot,
+    fillSnapshotRoute,
+  } = request.query;
+
+  let query = Website.findById(mongoose.Types.ObjectId(websiteId));
+  if (fillDraftSnapshot) {
+    const populate = {
+      path: 'draftSnapshot',
+      model: Snapshot,
+      populate: [
+        {
+          path: 'assembly',
+          model: DataContainer,
+        },
+      ],
+    };
+
+    if (fillSnapshotRoute) {
+      populate.populate.push({
+        path: `pages.${fillSnapshotRoute}`,
+        model: DataContainer,
+      });
+    }
+
+    query = query.populate(populate);
+  }
+
+  const website = await query.exec();
   if (!website) {
     throw makeApiError({ message: 'This website does not exist', status: 404 });
   }
