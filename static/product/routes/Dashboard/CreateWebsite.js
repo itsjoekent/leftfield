@@ -203,5 +203,5 @@ const PreviewContainer = styled(Flex.Column)`
   ${rightSide}
   position: relative;
   overflow: hidden;
-  height: ${({ theme }) => css`calc(100vh - ${24 + 20}px);`}
+  height: calc(100vh - 60px);
 `;
