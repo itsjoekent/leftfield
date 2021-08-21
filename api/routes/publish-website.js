@@ -1,6 +1,6 @@
 const { get } = require('lodash');
 const { v4: uuid } = require('uuid');
-const mongoose = require('../db');
+const mongoose = require('mongoose');
 const Snapshot = require('../db/Snapshot');
 const Website = require('../db/Website');
 const { validateAuthorizationHeader } = require('../utils/auth');

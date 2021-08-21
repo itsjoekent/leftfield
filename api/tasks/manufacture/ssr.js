@@ -29,7 +29,7 @@ export default function ssr(state, route) {
         componentClassName: `c-${componentId}`,
         theme: {
           ...theme,
-          ...get(state, 'assembly.theme', {}),
+          campaign: get(state, 'assembly.theme', {}),
         },
         properties: component.properties,
         slots: component.slots,

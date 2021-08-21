@@ -13,12 +13,17 @@ const mime = require('mime');
 const mongoose = require('../../db');
 const DataContainer = require('../../db/DataContainer');
 const Snapshot = require('../../db/Snapshot');
+const Website = require('../../db/Website');
 const { consumer } = require('../../utils/buildQueue');
 const { put } = require('../../utils/cloudflareKeyValue');
 const logger = require('../../utils/logger');
 const { upload } = require('../../utils/spaces');
 
 logger.child({ task: 'build' });
+
+function removeTrailingSlash(input) {
+  return input.replace(/\/$/, '');
+}
 
 consumer.process(1, async function(job) {
   try {
@@ -145,13 +150,22 @@ consumer.process(1, async function(job) {
           mimeType,
         };
 
-        const key = `${keyPrefix}/${fileName}`.toLowerCase();
+        const key = `${keyPrefix}${removeTrailingSlash(route)}/${fileName}`.toLowerCase();
 
         await Promise.all([
           upload(key, buffer),
           put(process.env.CF_FILES_NAMESPACE_ID, key, meta),
         ]);
       }
+    }
+
+    const website = await Website.findById(snapshot.website).exec();
+    for (const domainRecord of website.domains) {
+      await put(
+        process.env.CF_DOMAINS_NAMESPACE_ID,
+        domainRecord.name,
+        keyPrefix,
+      );
     }
 
     logger.info(`Completed snapshotId:${snapshotId}`);

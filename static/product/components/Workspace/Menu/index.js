@@ -7,6 +7,7 @@ import {
   Icons,
   Typography,
 } from 'pkg.admin-components';
+import WorkspaceMenuDns from '@product/components/Workspace/Menu/Dns';
 import WorkspaceMenuPageSettings from '@product/components/Workspace/Menu/PageSettings';
 import WorkspaceMenuPresets from '@product/components/Workspace/Menu/Presets';
 import WorkspaceMenuSiteSettings from '@product/components/Workspace/Menu/SiteSettings';
@@ -17,6 +18,7 @@ import {
 } from '@product/features/workspace';
 
 const CAMPAIGN_THEME_MENU = 'CAMPAIGN_THEME_MENU';
+const DNS_MENU = 'DNS_MENU';
 const PAGE_SETTINGS_MENU = 'PAGE_SETTINGS_MENU';
 const PRESETS_MENU = 'PRESETS_MENU';
 const SITE_SETTINGS_MENU = 'SITE_SETTINGS_MENU';
@@ -26,6 +28,7 @@ const menus = [
   [SITE_SETTINGS_MENU, WorkspaceMenuSiteSettings],
   [CAMPAIGN_THEME_MENU, WorkspaceMenuTheme],
   [PRESETS_MENU, WorkspaceMenuPresets],
+  [DNS_MENU, WorkspaceMenuDns],
 ];
 
 export default function Menu() {

@@ -11,6 +11,7 @@ import {
   EXPORT_STYLE_MODAL,
   FILE_SELECTOR,
   FONTS_MODAL,
+  POST_ADD_DOMAIN_MODAL,
 } from '@product/features/modal';
 
 const componentFileMap = {
@@ -20,6 +21,7 @@ const componentFileMap = {
   [EXPORT_STYLE_MODAL]: async () => import('./ExportStyle'),
   [FILE_SELECTOR]: async () => import('./FileSelector'),
   [FONTS_MODAL]: async () => import('./Fonts'),
+  [POST_ADD_DOMAIN_MODAL]: async () => import('./PostAddDomain'),
 };
 
 export default function Modal() {

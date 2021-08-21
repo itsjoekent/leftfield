@@ -58,10 +58,21 @@ const TextStyle = {
       id: FONT_FAMILY_ATTRIBUTE,
       label: 'Font Family',
       type: SELECT_TYPE,
-      optionsFromTheme: ({ campaignTheme }) => getThemeLabels(campaignTheme, 'fonts'),
+      optionsFromTheme: ({ campaignTheme }) => getThemeLabels(
+        campaignTheme,
+        'fonts',
+        (font) => !get(font, 'isArchived', false),
+      ),
       dynamicDefaultThemeValue: ({ campaignTheme }) => ({
         [MOBILE_DEVICE]: {
-          inheritFromTheme: Object.keys(get(campaignTheme, 'fonts', {}))[0],
+          inheritFromTheme: get(
+            getThemeLabels(
+              campaignTheme,
+              'fonts',
+              (font) => !get(font, 'isArchived', false),
+            ),
+            '[0].value',
+          ),
         },
       }),
       notResponsive: true,

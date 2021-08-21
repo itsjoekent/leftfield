@@ -1,6 +1,7 @@
-const mongoose = require('./');
+const mongoose = require('mongoose');
 const Account = require('./Account');
-const DataContainer = require('../db/DataContainer');
+const DataContainer = require('./DataContainer');
+const DomainRecord = require('./DomainRecord');
 const Organization = require('./Organization');
 const Snapshot = require('./Snapshot');
 
@@ -13,9 +14,12 @@ const schema = new mongoose.Schema({
     type: String,
     maxLength: 256,
   },
-  'domain': {
-    type: String,
-  },
+  'domains': [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'DomainRecord',
+    },
+  ],
   'draftSnapshot': {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Snapshot',
@@ -36,13 +40,16 @@ const schema = new mongoose.Schema({
 });
 
 function populate() {
-  this.populate('organization').populate('lastPublishedBy');
+  this.populate('organization')
+    .populate('lastPublishedBy')
+    .populate('domains');
 }
 
 schema.pre('find', populate);
 schema.pre('findOne', populate);
 
 schema.index({ 'name': 'text' });
+schema.index({ 'domains': 1 });
 schema.index({ 'createdAt': 1 });
 schema.index({ 'updatedAt': 1 });
 

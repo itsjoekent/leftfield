@@ -50,6 +50,34 @@ function transformDataContainer(dataContainer, requestingAccount = null) {
   };
 }
 
+function transformDomainRecord(domainRecord, requestingAccount = null) {
+  if (ObjectId.isValid(domainRecord)) {
+    return domainRecord.toString();
+  }
+
+  const {
+    _id,
+    organization,
+    website,
+    name,
+    verified,
+    lastCheckedDns,
+    createdAt,
+    updatedAt,
+  } = domainRecord;
+
+  return {
+    id: _id.toString(),
+    organization: transformOrganization(organization, requestingAccount),
+    website: transformWebsite(website, requestingAccount),
+    name,
+    verified,
+    lastCheckedDns,
+    createdAt,
+    updatedAt,
+  };
+}
+
 function transformFile(file, requestingAccount = null) {
   if (ObjectId.isValid(file)) {
     return file.toString();
@@ -151,7 +179,7 @@ function transformWebsite(website, requestingAccount = null) {
     _id,
     organization,
     name,
-    domain,
+    domains,
     draftSnapshot,
     publishedSnapshot,
     lastPublishedAt,
@@ -164,7 +192,9 @@ function transformWebsite(website, requestingAccount = null) {
     id: _id.toString(),
     organization: transformOrganization(organization, requestingAccount),
     name,
-    domain,
+    domains: domains
+      ? domains.map((domainRecord) => transformDomainRecord(domainRecord, requestingAccount))
+      : [],
     draftSnapshot: draftSnapshot
       ? transformSnapshot(draftSnapshot, requestingAccount)
       : null,
@@ -182,6 +212,7 @@ function transformWebsite(website, requestingAccount = null) {
 
 module.exports = {
   transformAccount,
+  transformDomainRecord,
   transformFile,
   transformOrganization,
   transformWebsite,

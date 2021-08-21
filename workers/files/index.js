@@ -1,3 +1,5 @@
+import { getType } from 'mime';
+
 const DEFAULT_MAX_AGE = 60 * 60 * 24; // 1 day (seconds)
 
 /**
@@ -136,10 +138,18 @@ async function handleFileRequest(key, request) {
  */
 async function handleRequest(request) {
   try {
-    const { pathname } = getNormalizedHostAndPath(request);
+    const { hostname, pathname } = getNormalizedHostAndPath(request);
 
     if (pathname.startsWith('/file')) {
       const key = pathname.replace('/file/', '');
+      return await handleFileRequest(key, request);
+    }
+
+    const snapshotDirectory = await DOMAIN_NAMESPACE.get(hostname);
+    if (snapshotDirectory) {
+      const keyPath = !getType(pathname) ? `${pathname}/index.html` : pathname;
+      const key = `${JSON.parse(snapshotDirectory)}${keyPath}`;
+
       return await handleFileRequest(key, request);
     }
 

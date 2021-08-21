@@ -21,9 +21,7 @@ const app = express();
 const httpLogger = pinoHttps({ logger });
 
 app.use(httpLogger);
-app.use(express.json({
-  limit: '25mb',
-}));
+app.use(express.json());
 
 app.use(cors({
   credentials: true,
@@ -37,6 +35,7 @@ app.use(function (req, res, next) {
 
 (async function () {
   try {
+    app.post('/dns/:domainRecordId/verify', routeWrapper('verify-domain'));
     app.post('/file', routeWrapper('upload-file'));
     app.post('/login', routeWrapper('login'));
     app.post('/request-password-reset', routeWrapper('request-password-reset'));
@@ -50,6 +49,8 @@ app.use(function (req, res, next) {
     app.get('/website/:websiteId', routeWrapper('get-website'));
     app.put('/website/:websiteId', routeWrapper('update-website'));
     app.post('/website/:websiteId/publish', routeWrapper('publish-website'));
+    app.post('/website/:websiteId/dns', routeWrapper('add-domain'));
+    app.delete('/website/:websiteId/dns/:domainRecordId', routeWrapper('delete-domain'));
 
     function listen() {
       if (NODE_ENV === 'development') {

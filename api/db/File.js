@@ -1,4 +1,4 @@
-const mongoose = require('./');
+const mongoose = require('mongoose');
 const Account = require('./Account');
 const Organization = require('./Organization');
 

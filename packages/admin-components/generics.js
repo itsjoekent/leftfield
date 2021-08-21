@@ -34,6 +34,9 @@ export const border = css`
       border: ${borderWidth} solid ${hoverBorderColor(theme.colors)};
     }
   `}
+
+  ${({ borderLeftWidth, borderColor, theme }) => !!borderLeftWidth && !!borderColor && css`border-left: ${borderLeftWidth} solid ${borderColor(theme.colors)};`}
+  ${({ borderRightWidth, borderColor, theme }) => !!borderRightWidth && !!borderColor && css`border-right: ${borderRightWidth} solid ${borderColor(theme.colors)};`}
 `;
 
 export const colors = css`

@@ -13,7 +13,7 @@ import { FormWizardProvider, FormWizardFields } from 'pkg.form-wizard';
 import VaultLayout from '@product/components/VaultLayout';
 import { setToken } from '@product/features/auth';
 import useProductApi from '@product/hooks/useProductApi';
-import { EDITOR_ROUTE } from '@product/routes/Editor';
+import { DASHBOARD_CREATE_WEBSITE_ROUTE } from '@product/routes/Dashboard/CreateWebsite';
 import { LOGIN_ROUTE } from '@product/routes/Login';
 
 export const SIGNUP_ROUTE = '/signup';
@@ -45,7 +45,7 @@ export default function Signup() {
         }
 
         dispatch(setToken(get(json, 'token')));
-        setLocation(EDITOR_ROUTE);
+        setLocation(DASHBOARD_CREATE_WEBSITE_ROUTE);
       },
       onFatalError: () => setIsLoading(false),
     });

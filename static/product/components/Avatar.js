@@ -40,7 +40,7 @@ export default function Avatar(props) {
         <Typography
           as="span"
           fontStyle="medium"
-          fontSize="14px"
+          fontSize={`${size / 2}px`}
           fg={(colors) => colors.blue[800]}
         >
           {getInitial(0)}{getInitial(1)}

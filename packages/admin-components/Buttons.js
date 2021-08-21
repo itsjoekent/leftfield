@@ -239,9 +239,10 @@ const IconButtonWrapper = styled.button`
   background: none;
   cursor: pointer;
 
-  ${({ disabled }) => !!disabled && css`
+  &:disabled {
     cursor: not-allowed;
-  `}
+    opacity: 0.5;
+  }
 
   svg * {
     transition: stroke 0.4s, fill 0.4s;

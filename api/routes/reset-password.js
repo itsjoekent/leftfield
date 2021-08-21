@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const cookie = require('cookie');
 const ms = require('ms');
-const mongoose = require('../db');
+const mongoose = require('mongoose');
 const Account = require('../db/Account');
 const { signToken, validateToken, AUTH_TOKEN_COOKIE } = require('../utils/auth');
 const basicValidator = require('../utils/basicValidator');

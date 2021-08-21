@@ -13,7 +13,7 @@ export default function Snacks() {
       position="absolute"
       zIndex={(indexes) => indexes.snacks}
       bottom="0"
-      left="24px"
+      left="32px"
       specificWidth="0px"
       specificHeight="0px"
     >

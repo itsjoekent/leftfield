@@ -16,7 +16,7 @@ async function updateProfile(request, response) {
     { _id: account._id },
     { name, avatar },
     { new: true },
-  );
+  ).exec();
 
   return respondWithSuccess(response, {
     account: transformAccount(updatedAccount, account),

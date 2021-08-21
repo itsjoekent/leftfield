@@ -1,4 +1,4 @@
-const mongoose = require('./');
+const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
   'organization': {
@@ -9,7 +9,7 @@ const schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Website',
   },
-  data: {
+  'data': {
     type: String,
   },
 }, {

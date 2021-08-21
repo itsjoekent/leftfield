@@ -11,7 +11,6 @@ import WorkspaceComponentToolbar from '@product/components/Workspace/ComponentTo
 import WorkspaceComponentTree from '@product/components/Workspace/ComponentTree';
 import WorkspaceDocumentationSection from '@product/components/Workspace/DocumentationSection';
 import WorkspaceFeedbackSection from '@product/components/Workspace/FeedbackSection';
-import WorkspaceMenu from '@product/components/Workspace/Menu';
 import WorkspacePropertiesForm from '@product/components/Workspace/Property/Form';
 import WorkspaceSection from '@product/components/Workspace/Section';
 import WorkspaceSiteToolbar from '@product/components/Workspace/SiteToolbar';
@@ -32,6 +31,8 @@ import {
   setTab,
 } from '@product/features/workspace';
 import useActiveWorkspaceComponent from '@product/hooks/useActiveWorkspaceComponent';
+
+const WorkspaceMenu = React.lazy(() => import('@product/components/Workspace/Menu'));
 
 export default function Workspace(props) {
   const tab = useSelector(selectTab);
@@ -182,7 +183,9 @@ export default function Workspace(props) {
           </Flex.Column>
         </Flex.Row>
       )}
-      <WorkspaceMenu />
+      <React.Suspense fallback={<div>Loading...</div>}>
+        <WorkspaceMenu />
+      </React.Suspense>
     </Flex.Column>
   );
 }

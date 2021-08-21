@@ -82,7 +82,9 @@ const PreviewSpace = styled.div`
 `;
 
 const DeviceContainer = styled.div`
-  border-radius: ${(props) => props.theme.rounded.default};
+  overflow: hidden;
+  border: 1px solid ${(props) => props.theme.colors.mono[200]};
+  border-radius: ${(props) => props.theme.rounded.extra};
   ${(props) => props.theme.shadow.light}
 
   transition: all ${(props) => props.theme.animation.defaultTransition};

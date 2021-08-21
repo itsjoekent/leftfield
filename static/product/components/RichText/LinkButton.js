@@ -1,5 +1,6 @@
 import React from 'react';
 import isUrl from 'is-url';
+import { get } from 'lodash';
 import { useDispatch } from 'react-redux';
 import {
   Editor,
@@ -48,17 +49,17 @@ export function withLinks(editor) {
 
       Transforms.insertNodes(editor, element);
     } else {
-      ifNotLink(text);
+      ifNotLink();
     }
   }
 
   editor.insertText = function (text) {
-    insertUrl(text, insertText);
+    insertUrl(text, () => insertText(text));
   }
 
   editor.insertData = function (data) {
     const text = data.getData('text/plain');
-    insertUrl(text, insertData);
+    insertUrl(text, () => insertData(data));
   }
 
   return editor;
@@ -77,7 +78,7 @@ export default function LinkButton() {
       return;
     }
 
-    const openInNewTab = isTrue(get(link[0], 'openInNewTab', false));
+    const openInNewTab = !!link && isTrue(get(link[0], 'openInNewTab', false));
 
     const selection = editor.selection;
     const isExpanded = Range.isExpanded(editor.selection);

@@ -1,5 +1,5 @@
 const { get } = require('lodash');
-const mongoose = require('../db');
+const mongoose = require('mongoose');
 const DataContainer = require('../db/DataContainer');
 const Snapshot = require('../db/Snapshot');
 const Website = require('../db/Website');
