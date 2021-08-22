@@ -1,7 +1,9 @@
 const path = require('path');
+const zlib = require('zlib');
 
 const { v4: uuid } = require('uuid');
 const webpack = require('webpack');
+const CompressionPlugin = require('compression-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const { StatsWriterPlugin } = require('webpack-stats-plugin')
 const { merge } = require('webpack-merge');
@@ -50,6 +52,18 @@ module.exports = merge(
     },
     plugins: [
       new CssMinimizerPlugin(),
+      new CompressionPlugin({
+        filename: '[path][base].br',
+        algorithm: 'brotliCompress',
+        test: /\.(js|json|css|html|svg)$/,
+        compressionOptions: {
+          params: {
+            [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+          },
+        },
+        minRatio: 0.8,
+        deleteOriginalAssets: false,
+      }),
       new StatsWriterPlugin({
         fields: [
           'publicPath',

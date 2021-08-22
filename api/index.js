@@ -11,14 +11,14 @@ if (NODE_ENV === 'development') {
 
 const cors = require('cors');
 const express = require('express');
-const pinoHttps = require('pino-http');
+const pinoHttp = require('pino-http');
 
 const mongoose = require('./db');
 const logger = require('./utils/logger');
 const routeWrapper = require('./utils/routeWrapper');
 
 const app = express();
-const httpLogger = pinoHttps({ logger });
+const httpLogger = pinoHttp({ logger });
 
 app.use(httpLogger);
 app.use(express.json());
@@ -35,6 +35,8 @@ app.use(function (req, res, next) {
 
 (async function () {
   try {
+    const ssl = await require(path.join(process.cwd(), 'ssl/read'))();
+
     app.post('/dns/:domainRecordId/verify', routeWrapper('verify-domain'));
     app.post('/file', routeWrapper('upload-file'));
     app.post('/login', routeWrapper('login'));
@@ -52,26 +54,15 @@ app.use(function (req, res, next) {
     app.post('/website/:websiteId/dns', routeWrapper('add-domain'));
     app.delete('/website/:websiteId/dns/:domainRecordId', routeWrapper('delete-domain'));
 
-    function listen() {
-      if (NODE_ENV === 'development') {
-        https.createServer({
-          key: fs.readFileSync(path.join(__dirname, '/certs/tls.key')),
-          cert: fs.readFileSync(path.join(__dirname, '/certs/tls.cert')),
-        }, app).listen(PORT);
-      } else {
-        app.listen(PORT);
-      }
-
-      logger.info(`Listening on port:${PORT}`);
-    }
-
     const db = mongoose.connection;
 
     db.on('error', (error) => {
       throw error;
     });
 
-    db.once('open', listen);
+    db.once('open', () => {
+      https.createServer(ssl, app).listen(PORT, () => logger.info(`Listening on port:${PORT}`));
+    });
   } catch (error) {
     logger.error('Fatal startup error, exiting...');
     logger.error(error);

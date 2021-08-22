@@ -1,23 +1,22 @@
 const cluster = require('cluster');
 const os = require('os');
 const path = require('path');
+const zlib = require('zlib');
 
 if (process.env.NODE_ENV === 'development') {
   require(path.join(process.cwd(), 'environment/development.api'));
 }
 
 const { get, uniq } = require('lodash');
-const md5 = require('md5');
-const mime = require('mime');
 
 const mongoose = require('../../db');
 const DataContainer = require('../../db/DataContainer');
 const Snapshot = require('../../db/Snapshot');
 const Website = require('../../db/Website');
 const { consumer } = require('../../utils/buildQueue');
-const { put } = require('../../utils/cloudflareKeyValue');
+const getFileType = require('../../utils/getFileType');
 const logger = require('../../utils/logger');
-const { upload } = require('../../utils/spaces');
+const { upload } = require('../../utils/storage');
 
 logger.child({ task: 'build' });
 
@@ -130,42 +129,43 @@ consumer.process(1, async function(job) {
         .join('')
         .replace(HTML_REPLACER, html);
 
+      const pageDataJson = JSON.stringify(page);
+
+      const brotliParams = {
+        params: {
+          [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+        },
+      };
+
       const filesToUpload = [
-        ['page-data.json', JSON.stringify(page)],
+        ['page-data.json', pageDataJson],
+        ['page-data.json.br', zlib.brotliCompressSync(pageDataJson, brotliParams)],
         ['components.css', css],
+        ['components.css.br', zlib.brotliCompressSync(css, brotliParams)],
         ['index.html', index],
+        ['index.html.br', zlib.brotliCompressSync(index, brotliParams)],
       ];
 
       for (const [, file] of filesToUpload.entries()) {
         const [fileName, data] = file;
 
-        const mimeType = mime.getType(fileName);
+        const mimeType = getFileType(fileName);
         const buffer = Buffer.from(data);
-
-        const meta = {
-          createdAt: now,
-          etag: md5(data),
-          fileSize: Buffer.byteLength(buffer),
-          lastModifiedAt: now,
-          mimeType,
-        };
 
         const key = `${keyPrefix}${removeTrailingSlash(route)}/${fileName}`.toLowerCase();
 
-        await Promise.all([
-          upload(key, buffer),
-          put(process.env.CF_FILES_NAMESPACE_ID, key, meta),
-        ]);
+        await upload(key, buffer, mimeType);
       }
     }
 
     const website = await Website.findById(snapshot.website).exec();
     for (const domainRecord of website.domains) {
-      await put(
-        process.env.CF_DOMAINS_NAMESPACE_ID,
-        domainRecord.name,
-        keyPrefix,
-      );
+      // TODO: Replace with redis set()
+      // await put(
+      //   process.env.CF_DOMAINS_NAMESPACE_ID,
+      //   domainRecord.name,
+      //   keyPrefix,
+      // );
     }
 
     logger.info(`Completed snapshotId:${snapshotId}`);

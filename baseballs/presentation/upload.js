@@ -5,11 +5,8 @@ if (process.env.NODE_ENV === 'development') {
   require(path.join(process.cwd(), 'environment/development.api'));
 }
 
-const mime = require('mime');
-const md5 = require('md5');
-
-const { put } = require(path.join(process.cwd(), '/api/utils/cloudflareKeyValue'));
-const { upload } = require(path.join(process.cwd(), '/api/utils/spaces'));
+const getFileType = require(path.join(process.cwd(), '/api/utils/getFileType'));
+const { upload } = require(path.join(process.cwd(), '/api/utils/storage'));
 
 (async function() {
   try {
@@ -32,23 +29,10 @@ const { upload } = require(path.join(process.cwd(), '/api/utils/spaces'));
 
       const fileContents = await fs.promises.readFile(path.join(outputPath, fileName));
 
-      const mimeType = mime.getType(fileName);
-
-      const now = Date.now();
-      const meta = {
-        createdAt: now,
-        etag: md5(fileContents.toString('utf8')),
-        fileSize: Buffer.byteLength(fileContents),
-        lastModifiedAt: now,
-        mimeType,
-      };
-
+      const mimeType = getFileType(fileName);
       const key = `${keyPrefix}${fileName}`.toLowerCase();
 
-      await Promise.all([
-        upload(key, fileContents),
-        put(process.env.CF_FILES_NAMESPACE_ID, key, meta),
-      ]);
+      await upload(key, fileContents, mimeType);
     }
 
     console.log('Finished upload.');

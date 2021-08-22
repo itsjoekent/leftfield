@@ -32,7 +32,6 @@ export default function AccountAvatar(props) {
     const {
       file,
       fileSize,
-      hash,
       mimeType,
       originalFileName,
     } = event;
@@ -42,23 +41,21 @@ export default function AccountAvatar(props) {
       route: '/file',
       payload: {
         fileSize,
-        hash,
         mimeType,
         originalFileName,
         targetBucket: 'accounts',
       },
       onResponse: ({ ok, json }) => {
         if (ok) {
-          const { key, uploadUrls, url } = json;
+          const { key, meta, uploadUrl, url } = json;
 
-          Promise.all(uploadUrls.map((signedUrl) => fetch(signedUrl, {
+          fetch(uploadUrl, {
             method: 'put',
             headers: {
-              'Content-Type': 'application/octet-stream',
-              'x-amz-acl': 'public-read',
+              'Content-Type': mimeType,
             },
             body: file,
-          }))).then(() => {
+          }).then(() => {
             setAvatar(url);
             setIsUploading(false);
           }).catch((error) => {

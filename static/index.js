@@ -6,7 +6,7 @@ const path = require('path');
 
 const handler = require('serve-handler');
 const pino = require('pino');
-const pinoHttps = require('pino-http');
+const pinoHttp = require('pino-http');
 
 const logger = pino({
   prettyPrint: NODE_ENV !== 'production',
@@ -15,7 +15,7 @@ const logger = pino({
   ] : [],
 });
 
-const httpLogger = pinoHttps({ logger });
+const httpLogger = pinoHttp({ logger });
 
 (async function () {
   try {

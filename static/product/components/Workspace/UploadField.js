@@ -39,7 +39,6 @@ export default function Uploader(props) {
     const {
       file,
       fileSize,
-      hash,
       mimeType,
       originalFileName,
     } = event;
@@ -49,25 +48,27 @@ export default function Uploader(props) {
       route: '/file',
       payload: {
         fileSize,
-        hash,
         mimeType,
         originalFileName,
         targetBucket: 'assets',
       },
       onResponse: ({ ok, json }) => {
         if (ok) {
-          const { key, uploadUrls, url } = json;
+          const { key, meta, uploadUrl, url } = json;
 
-          Promise.all(uploadUrls.map((signedUrl) => fetch(signedUrl, {
+          fetch(uploadUrl, {
             method: 'put',
             headers: {
-              'Content-Type': 'application/octet-stream',
-              'x-amz-acl': 'public-read',
+              'Content-Type': mimeType,
             },
             body: file,
-          }))).then(() => {
-            setImageSource(url);
-            setIsUploading(false);
+          }).then((response) => {
+            if (response.ok) {
+              setImageSource(url);
+              setIsUploading(false);
+            } else {
+              throw new Error(`Failed to upload to S3, ${response.status}`);
+            }
           }).catch((error) => {
             setIsUploading(false);
             onError(error);

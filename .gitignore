@@ -26,15 +26,11 @@ static/www/*
 !static/www/404.html
 !static/www/500.html
 
-# API SSL Certs
-api/certs/tls.key
-api/certs/tls.cert
+# SSL secrets
+ssl/*.key
+ssl/*.cert
 
 # API task build output
 api/tasks/manufacture/*.build.js
-
-# Cloudflare Worker build output
-dist
-worker
 
 .DS_Store
