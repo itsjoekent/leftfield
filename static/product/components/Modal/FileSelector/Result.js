@@ -11,7 +11,7 @@ export default function Result(props) {
   const { file, onSelect } = props;
 
   const name = get(file, 'name', 'Unnamed file');
-  const src = `${process.env.FILES_DOMAIN}/file/${get(file, 'fileKey')}`;
+  const src = `${process.env.EDGE_DOMAIN}/file/${get(file, 'fileKey')}`;
   const isImage = get(file, 'fileType', '').startsWith('image/');
 
   const adminTheme = useAdminTheme();

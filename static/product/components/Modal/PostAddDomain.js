@@ -91,7 +91,7 @@ export default function PostAddDomain(props) {
               fontStyle="medium"
               fg={(colors) => colors.mono[700]}
             >
-              {process.env.DNS_CNAME}
+              {process.env.EDGE_DNS_CNAME}
             </Typography>
             <ClickToCopy text="dns.getleftfield.com">
               {(copyButtonProps) => (

@@ -45,7 +45,7 @@ async function uploadFile(request, response) {
   }
 
   const key = `${targetBucket}/${folder}/${fileName}`;
-  const url = `${process.env.FILES_DOMAIN}/file/${key}`;
+  const url = `${process.env.EDGE_DOMAIN}/file/${key}`;
 
   const now = `${Date.now()}`;
 

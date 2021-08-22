@@ -1,33 +1,15 @@
 const STORAGE_MAIN_REGION = process.env.STORAGE_MAIN_REGION;
 const STORAGE_REGIONS = process.env.STORAGE_REGIONS;
 
-const STORAGE_KEY = process.env.STORAGE_KEY;
-const STORAGE_SECRET = process.env.STORAGE_SECRET;
-
 const DEFAULT_MAX_AGE = Number(process.env.DEFAULT_MAX_AGE);
+const REGION = process.env.REGION;
 
 const path = require('path');
 
-const AWS = require('aws-sdk');
 const bytes = require('bytes');
 const { get } = require('lodash');
 
-const regions = {};
-
-STORAGE_REGIONS.split(',').map((region) => {
-  const bucket = process.env[`STORAGE_BUCKET_${region}`];
-
-  regions[region] = {
-    s3: new AWS.S3({
-      endpoint: new AWS.Endpoint(process.env[`STORAGE_ENDPOINT_${region}`]),
-      accessKeyId: STORAGE_KEY,
-      secretAccessKey: STORAGE_SECRET,
-    }),
-    bucket,
-  };
-});
-
-regions.main = regions[STORAGE_MAIN_REGION];
+const { regions } = require('./storage');
 
 const compressionRegex = new RegExp(/\.(js|json|css|html|svg)$/);
 function isCompressible(key) {
@@ -40,7 +22,7 @@ function isCacheable(fileSize) {
 
 async function retrieveFile(key, request, options) {
   const {
-    region = STORAGE_MAIN_REGION,
+    region = REGION || STORAGE_MAIN_REGION,
     regionPool = STORAGE_REGIONS.split(','),
     attempts = 0,
     maxAttempts = 3,

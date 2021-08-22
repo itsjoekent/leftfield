@@ -4,6 +4,7 @@ const util = require('util');
 const mongoose = require('mongoose');
 const ms = require('ms');
 const DomainRecord = require('../db/DomainRecord');
+const { publishJob } = require('../queue/ssl');
 const { validateAuthorizationHeader } = require('../utils/auth');
 const basicValidator = require('../utils/basicValidator');
 const makeApiError = require('../utils/makeApiError');
@@ -47,7 +48,7 @@ async function verifyDomain(request, response) {
   try {
     const addresses = await resolveCname(domainRecord.name);
 
-    verified = addresses.includes(process.env.DNS_CNAME)
+    verified = addresses.includes(process.env.EDGE_DNS_CNAME)
       && addresses.length === 1;
   } catch (error) {
     // TODO: Check if DNS specific error?
@@ -59,6 +60,14 @@ async function verifyDomain(request, response) {
     { verified, lastCheckedDns: Date.now() },
     { new: true },
   ).exec();
+
+  if (
+    !!verified
+    && !updatedDomainRecord.lastObtainedSslOn
+    && process.env.NODE_ENV !== 'development'
+  ) {
+    await publishJob({ domainRecordId: domainRecord._id.toString() });
+  }
 
   return respondWithSuccess(response, {
     domainRecord: transformDomainRecord(updatedDomainRecord, account),

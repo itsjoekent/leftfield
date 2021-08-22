@@ -22,6 +22,9 @@ const schema = new mongoose.Schema({
   'lastCheckedDns': {
     type: Number,
   },
+  'lastObtainedSslOn': {
+    type: Number,
+  },
 }, {
   timestamps: true,
 });

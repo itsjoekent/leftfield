@@ -1,11 +1,10 @@
 const { get } = require('lodash');
-const { v4: uuid } = require('uuid');
 const mongoose = require('mongoose');
 const Snapshot = require('../db/Snapshot');
 const Website = require('../db/Website');
+const { publishJob } = require('../queue/manufacture');
 const { validateAuthorizationHeader } = require('../utils/auth');
 const basicValidator = require('../utils/basicValidator');
-const { publisher } = require('../utils/buildQueue');
 const makeApiError = require('../utils/makeApiError');
 const { respondWithSuccess } = require('../utils/responder');
 
@@ -56,10 +55,7 @@ async function publishWebsite(request, response) {
     },
   );
 
-  const buildId = uuid();
-  const job = publisher.createJob({ snapshotId: publishedSnapshotId.toString() });
-
-  await job.setId(buildId).backoff('exponential', 1000).save();
+  const buildId = await publishJob({ snapshotId: publishedSnapshotId.toString() });
 
   return respondWithSuccess(response, { buildId });
 }

@@ -14,7 +14,8 @@ services:
       - AUTH_TOKEN_SECRET=270336f7f365e82bc9fd4b6f3a0ddeda80e4e576637b81432698ae9e4c3100d2
       - DOMAIN=localhost:5000
       - FRONTEND_URL=https://localhost:5000
-      - FILES_DOMAIN=https://localhost:5003
+      - EDGE_DOMAIN=https://localhost:5004
+      - EDGE_DNS_CNAME=cdn-staging.getleftfield.com
       - MONGODB_URL=mongodb://admin:secret@mongo:27017
       - NODE_ENV=development
       - PORT=5001
@@ -30,12 +31,16 @@ services:
       - redis
     ports:
       - "5003:5003"
+      - "5004:5004"
     environment:
       - DEFAULT_MAX_AGE=86400
-      - FILES_DOMAIN=https://localhost:5003
+      - EDGE_DOMAIN=https://localhost:5004
       - NODE_ENV=development
-      - PORT=5003
+      - HTTP_PORT=5003
+      - HTTPS_PORT=5004
       - REDIS_CACHE_URL=redis://redis
+      - REDIS_EDGE_URL=redis://redis
+      - REGION=us-east-1
     volumes:
       - ./edge:/usr/src/code/edge:cached
 
@@ -44,7 +49,7 @@ services:
       context: .
       dockerfile: ./dockerfiles/task.manufacture.local.dockerfile
       args:
-        - FILES_DOMAIN=https://localhost:5003
+        - EDGE_DOMAIN=https://localhost:5004
     depends_on:
       - mongo
       - redis
@@ -55,6 +60,20 @@ services:
     volumes:
       - ./api:/usr/src/code/api:cached
       - ./baseballs:/usr/src/code/baseballs:cached
+
+  task_ssl:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/task.ssl.local.dockerfile
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      - MONGODB_URL=mongodb://admin:secret@mongo:27017
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis
+    volumes:
+      - ./api:/usr/src/code/api:cached
 
   mongo:
     image: mongo:4

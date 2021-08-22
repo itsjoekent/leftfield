@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const distributionId = uuid();
-const publicPath = `${process.env.FILES_DOMAIN}/file/baseball/${distributionId}/`;
+const publicPath = `${process.env.EDGE_DOMAIN}/file/baseball/${distributionId}/`;
 
 module.exports = merge(
   base('presentation-remote'),

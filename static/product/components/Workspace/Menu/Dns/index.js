@@ -11,7 +11,7 @@ import {
   Typography,
   useAdminTheme,
 } from 'pkg.admin-components';
-import { FormWizardProvider, FormWizardField } from 'pkg.form-wizard';
+import { FormWizardProvider, FormWizardField, formActions } from 'pkg.form-wizard';
 import WorkspaceMenuAccordion from '@product/components/Workspace/Menu/Accordion';
 import { selectWebsiteId } from '@product/features/assembly';
 import { setModal, POST_ADD_DOMAIN_MODAL } from '@product/features/modal';
@@ -39,6 +39,8 @@ export default function Dns(props) {
   const dispatch = useDispatch();
   const hitApi = useProductApi();
   const adminTheme = useAdminTheme();
+
+  const formApiRef = React.useRef(null);
 
   const websiteId = useSelector(selectWebsiteId);
 
@@ -95,6 +97,7 @@ export default function Dns(props) {
 
         if (ok) {
           setDomains(get(json, 'website.domains', []));
+          formApiRef.current.dispatch(formActions.clearForm());
 
           const domainRecordId = get(json, 'domainRecord.id');
 

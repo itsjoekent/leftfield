@@ -32,14 +32,14 @@ $ docker system prune --all --force
 
 ---
 
-- [ ] API task to get certificate when new domain is added https://github.com/publishlab/node-acme-client
-- [ ] (On prod) Read getleftfield cert from S3 bucket
+- [ ] ssl/generate-remote (accept domain argument)
+- [ ] tasks/ssl/cron
+- [ ] load ssl cert in static/index
+
 - [ ] Refactor/clean up dns menu into sub components
  - [ ] Show DNS cert status
 
 - [ ] image resizing options?
-
-- [ ] Delete CF + DO resources, downgrade plans
 
 ---
 
