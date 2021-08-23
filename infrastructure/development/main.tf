@@ -56,7 +56,7 @@ provider "aws" {
 
 module "edge_replication_policy" {
   source = "../modules/edge-replication-policy"
-  source_bucket_arn = "us-east-1"
+  source_bucket = module.edge_storage_us_east_1
   destination_buckets = [module.edge_storage_us_west_1]
 }
 

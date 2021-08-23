@@ -1,7 +1,4 @@
-variable "source_bucket_arn" {
-  type = string
-}
-
+variable "source_bucket" {}
 variable "destination_buckets" {}
 
 resource "aws_iam_role" "cdn-replication" {
@@ -38,7 +35,7 @@ resource "aws_iam_policy" "cdn-replication" {
       ],
       "Effect": "Allow",
       "Resource": [
-        "${var.source_bucket_arn}"
+        "${var.source_bucket.arn}"
       ]
     },
     {
@@ -49,7 +46,7 @@ resource "aws_iam_policy" "cdn-replication" {
       ],
       "Effect": "Allow",
       "Resource": [
-        "${var.source_bucket_arn}/*"
+        "${var.source_bucket.arn}/*"
       ]
     },
     {
