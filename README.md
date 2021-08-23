@@ -11,7 +11,6 @@ For backend development, you will need [Docker Desktop](https://www.docker.com/p
 ```sh
 # Get values from coworker
 $ cp environment/.env.development.api.example environment/.env.development.api
-$ cp environment/.aws.example environment/.aws.development.credentials
 
 # Create local dev ssl certs (only need to do this once!)
 $ npm run ssl:localhost

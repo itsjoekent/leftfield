@@ -21,14 +21,12 @@ terraform {
 provider "aws" {
   region                  = "us-east-1"
   profile                 = "default"
-  shared_credentials_file = "../../environment/.aws.development.credentials"
 }
 
 provider "aws" {
   region                  = "us-west-1"
   alias                   = "us-west-1"
   profile                 = "default"
-  shared_credentials_file = "../../environment/.aws.development.credentials"
 }
 
 resource "aws_iam_role" "cdn-replication" {
