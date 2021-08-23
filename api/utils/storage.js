@@ -11,8 +11,8 @@ STORAGE_REGIONS.split(',').map((region) => {
   regions[region] = {
     s3: new AWS.S3({
       endpoint: new AWS.Endpoint(process.env[`STORAGE_ENDPOINT_${region}`]),
-      accessKeyId: process.env.STORAGE_KEY,
-      secretAccessKey: process.env.STORAGE_SECRET,
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     }),
     bucket,
   };

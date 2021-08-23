@@ -10,7 +10,8 @@ For backend development, you will need [Docker Desktop](https://www.docker.com/p
 
 ```sh
 # Get values from coworker
-$ cp environment/.env.development.api.example
+$ cp environment/.env.development.api.example environment/.env.development.api
+$ cp environment/.aws.example environment/.aws.development.credentials
 
 # Create local dev ssl certs (only need to do this once!)
 $ npm run ssl:localhost
@@ -20,6 +21,16 @@ $ npm start
 
 # Launch backend services
 $ make start-api
+```
+
+### Infrastructure Development
+
+Install Terraform,
+
+```sh
+$ brew tap hashicorp/tap
+$ brew install hashicorp/tap/terraform
+$ terraform login
 ```
 
 ### Debugging Local Development
@@ -40,9 +51,3 @@ $ docker system prune --all --force
  - [ ] Show DNS cert status
 
 - [ ] image resizing options?
-
----
-
-- Object versioning
-- Replication rules
-- CORS
