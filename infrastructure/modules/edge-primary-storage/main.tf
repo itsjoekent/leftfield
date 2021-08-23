@@ -1,5 +1,5 @@
 variable "prefix" {
-  type = string
+  type    = string
   default = "leftfield"
 }
 
@@ -78,9 +78,9 @@ resource "aws_iam_policy" "cdn-replication" {
       ],
       "Effect": "Allow",
       "Resource": [
-        %{ for bucket in var.destination_buckets }
+        %{for bucket in var.destination_buckets}
         "${bucket.arn}/*"
-        %{ endfor }
+        %{endfor}
       ]
     }
   ]
@@ -94,8 +94,8 @@ resource "aws_iam_role_policy_attachment" "replication" {
 }
 
 resource "aws_s3_bucket" "bucket" {
-  bucket   = "${var.prefix}-${var.environment}-${var.region}"
-  acl      = "private"
+  bucket = "${var.prefix}-${var.environment}-${var.region}"
+  acl    = "private"
 
   cors_rule {
     allowed_headers = ["*"]
@@ -126,6 +126,15 @@ resource "aws_s3_bucket" "bucket" {
       }
     }
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "block_cdn_public_access" {
+  bucket = aws_s3_bucket.bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 output "arn" {
