@@ -37,7 +37,7 @@ api/tasks/manufacture/*.build.js
 .DS_Store
 
 # Terraform
-infrastructure/**/.terraform/*
+infrastructure/**/.terraform
 
 # Crash log files
 crash.log

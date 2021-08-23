@@ -119,6 +119,10 @@ export default function Editor() {
 
   React.useEffect(() => {
     function updateDimensions() {
+      if (!previewContainerRef.current) {
+        return;
+      }
+
       const boundingRect = previewContainerRef.current.getBoundingClientRect();
       setpreviewContainerDimensions([boundingRect.width - 24, boundingRect.height - 24]);
     }
