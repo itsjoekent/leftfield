@@ -21,6 +21,8 @@ locals {
 
   container_tcp_port = 80
   container_tls_port = 443
+
+  vpc_cidr_block = "10.0.0.0/16"
 }
 
 terraform {
@@ -37,15 +39,15 @@ data "aws_availability_zones" "available" {
 }
 
 resource "aws_vpc" "edge" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = local.vpc_cidr_block
 }
 
 resource "aws_subnet" "edge" {
   count = length(data.aws_availability_zones.available.names)
 
-  vpc_id     = aws_vpc.edge.id
+  vpc_id            = aws_vpc.edge.id
   availability_zone = data.aws_availability_zones.available.names[count.index]
-  cidr_block = "10.0.1.0/24"
+  cidr_block        = cidrsubnet(local.vpc_cidr_block, 8, count.index)
 }
 
 resource "aws_ecs_cluster" "edge" {
@@ -57,7 +59,7 @@ resource "aws_lb" "edge" {
   load_balancer_type               = "network"
   subnets                          = aws_subnet.edge.*.id
   enable_cross_zone_load_balancing = true
-  enable_deletion_protection = var.environment == "production" ? true : false
+  enable_deletion_protection       = var.environment == "production" ? true : false
 }
 
 resource "aws_lb_target_group" "edge_tcp" {
@@ -73,7 +75,6 @@ resource "aws_lb_target_group" "edge_tcp" {
     healthy_threshold   = 2
     interval            = 10
     protocol            = "HTTP"
-    matcher             = 200
     timeout             = 6
     path                = "/_leftfield/health-check"
     unhealthy_threshold = 2
@@ -93,7 +94,6 @@ resource "aws_lb_target_group" "edge_tls" {
     healthy_threshold   = 2
     interval            = 10
     protocol            = "HTTPS"
-    matcher             = 200
     timeout             = 10
     path                = "/_leftfield/health-check"
     unhealthy_threshold = 2
@@ -135,7 +135,7 @@ resource "aws_ecs_task_definition" "edge" {
     {
       name      = "edge-container"
       image     = "${var.image_repository.repository_url}:latest"
-      essential = false
+      essential = true
       cpu       = 1
       memory    = 2048
 
@@ -160,7 +160,7 @@ resource "aws_ecs_task_definition" "edge" {
         logDriver = "awslogs"
         options = {
           awslogs-region = var.region
-          awslogs-group = aws_cloudwatch_log_group.edge_task.name
+          awslogs-group  = aws_cloudwatch_log_group.edge_task.name
         }
       }
 

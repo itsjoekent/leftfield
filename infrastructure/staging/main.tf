@@ -71,12 +71,12 @@ module "edge_storage_us_east_1" {
 locals {
   edge_container_vars = {
     AWS_ACCESS_KEY_ID = {
-      name = "AWS_ACCESS_KEY_ID"
+      name  = "AWS_ACCESS_KEY_ID"
       value = var.AWS_ACCESS_KEY_ID
     }
 
     AWS_SECRET_ACCESS_KEY = {
-      name = "AWS_SECRET_ACCESS_KEY"
+      name  = "AWS_SECRET_ACCESS_KEY"
       value = var.AWS_SECRET_ACCESS_KEY
     }
 
@@ -86,27 +86,27 @@ locals {
     }
 
     STORAGE_REGIONS = {
-      name = "STORAGE_REGIONS"
+      name  = "STORAGE_REGIONS"
       value = "us-east-1,us-west-1"
     }
 
     STORAGE_ENDPOINT_US_EAST_1 = {
-      name = "STORAGE_ENDPOINT_US_EAST_1"
+      name  = "STORAGE_ENDPOINT_US_EAST_1"
       value = "https://s3.us-east-1.amazonaws.com"
     }
 
     STORAGE_BUCKET_US_EAST_1 = {
-      name = "STORAGE_BUCKET_US_EAST_1"
+      name  = "STORAGE_BUCKET_US_EAST_1"
       value = module.edge_storage_us_east_1.name
     }
 
     STORAGE_ENDPOINT_US_WEST_1 = {
-      name = "STORAGE_ENDPOINT_US_WEST_1"
+      name  = "STORAGE_ENDPOINT_US_WEST_1"
       value = "https://s3.us-west-1.amazonaws.com"
     }
 
     STORAGE_BUCKET_US_WEST_1 = {
-      name = "STORAGE_BUCKET_US_WEST_1"
+      name  = "STORAGE_BUCKET_US_WEST_1"
       value = module.edge_storage_us_west_1.name
     }
   }
@@ -118,7 +118,7 @@ module "edge_team_us_east_1" {
   region                  = "us-east-1"
   image_repository        = module.edge_global.image_repository
   ecs_task_execution_role = module.edge_global.ecs_task_execution_role
-  container_vars = local.edge_container_vars
+  container_vars          = local.edge_container_vars
   providers = {
     aws = aws.us_east_1
   }
