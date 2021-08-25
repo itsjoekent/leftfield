@@ -1,4 +1,3 @@
-# TODO: Auto scaling
 # TODO: Redis
 
 variable "environment" {
@@ -9,11 +8,23 @@ variable "region" {
   type = string
 }
 
+variable "auto_scale_max" {
+  type = number
+}
+
 variable "image_repository" {}
 
 variable "ecs_task_execution_role" {}
 
 variable "container_vars" {}
+
+variable "container_cpu" {
+  type = number
+}
+
+variable "container_memory" {
+  type = number
+}
 
 locals {
   container_tcp_port = 5001
@@ -37,6 +48,13 @@ data "aws_availability_zones" "available" {
 
 resource "aws_vpc" "edge" {
   cidr_block = local.vpc_cidr_block
+
+  enable_dns_support   = true
+  enable_dns_hostnames = false
+}
+
+resource "aws_internet_gateway" "edge" {
+  vpc_id = aws_vpc.edge.id
 }
 
 resource "aws_subnet" "edge" {
@@ -45,6 +63,14 @@ resource "aws_subnet" "edge" {
   vpc_id            = aws_vpc.edge.id
   availability_zone = data.aws_availability_zones.available.names[count.index]
   cidr_block        = cidrsubnet(local.vpc_cidr_block, 8, count.index)
+
+  tags = {
+    name = "edge-team-${data.aws_availability_zones.available.names[count.index]}-subnet"
+  }
+
+  depends_on = [
+    aws_internet_gateway.edge
+  ]
 }
 
 resource "aws_ecs_cluster" "edge" {
@@ -133,8 +159,8 @@ resource "aws_ecs_task_definition" "edge" {
       name      = "edge-container"
       image     = "${var.image_repository.repository_url}:latest"
       essential = true
-      cpu       = 1
-      memory    = 2048
+      cpu       = var.container_cpu
+      memory    = var.container_memory
 
       environment = toset(values(merge({
         NODE_ENV = {
@@ -222,4 +248,44 @@ resource "aws_ecs_service" "edge" {
     aws_lb_listener.edge_tls_forward,
     var.ecs_task_execution_role,
   ]
+}
+
+resource "aws_appautoscaling_target" "edge_ecs" {
+  max_capacity       = var.auto_scale_max
+  min_capacity       = 1
+  resource_id        = "service/${aws_ecs_cluster.edge.name}/${aws_ecs_service.edge.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "edge_ecs_memory" {
+  name               = "edge-team-${var.region}-mem"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.edge_ecs.resource_id
+  scalable_dimension = aws_appautoscaling_target.edge_ecs.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.edge_ecs.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
+
+    target_value = 60
+  }
+}
+
+resource "aws_appautoscaling_policy" "edge_ecs_cpu" {
+  name               = "edge-team-${var.region}-cpu"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.edge_ecs.resource_id
+  scalable_dimension = aws_appautoscaling_target.edge_ecs.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.edge_ecs.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+
+    target_value = 60
+  }
 }

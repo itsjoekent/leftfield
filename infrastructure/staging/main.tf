@@ -2,6 +2,7 @@
 # Global Edge redis cluster
 # Global accelerator
 # DNS entry
+# API application, Mongo
 
 terraform {
   required_providers {
@@ -121,6 +122,9 @@ module "edge_team_us_east_1" {
   image_repository        = module.edge_global.image_repository
   ecs_task_execution_role = module.edge_global.ecs_task_execution_role
   container_vars          = local.edge_container_vars
+  container_cpu           = 1
+  container_memory        = 2048
+  auto_scale_max          = 2
   providers = {
     aws = aws.us_east_1
   }
