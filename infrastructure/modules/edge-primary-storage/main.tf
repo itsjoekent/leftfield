@@ -56,7 +56,7 @@ resource "aws_iam_policy" "cdn-replication" {
       ],
       "Effect": "Allow",
       "Resource": [
-        "${aws_s3_bucket.bucket.arn}"
+        "${aws_s3_bucket.edge.arn}"
       ]
     },
     {
@@ -67,7 +67,7 @@ resource "aws_iam_policy" "cdn-replication" {
       ],
       "Effect": "Allow",
       "Resource": [
-        "${aws_s3_bucket.bucket.arn}/*"
+        "${aws_s3_bucket.edge.arn}/*"
       ]
     },
     {
@@ -93,7 +93,7 @@ resource "aws_iam_role_policy_attachment" "replication" {
   policy_arn = aws_iam_policy.cdn-replication.arn
 }
 
-resource "aws_s3_bucket" "bucket" {
+resource "aws_s3_bucket" "edge" {
   bucket = "${var.prefix}-${var.environment}-${var.region}"
   acl    = "private"
 
@@ -129,7 +129,7 @@ resource "aws_s3_bucket" "bucket" {
 }
 
 resource "aws_s3_bucket_public_access_block" "block_cdn_public_access" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.edge.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -137,8 +137,12 @@ resource "aws_s3_bucket_public_access_block" "block_cdn_public_access" {
   restrict_public_buckets = true
 }
 
+output "name" {
+  value = aws_s3_bucket.edge.bucket
+}
+
 output "arn" {
-  value = aws_s3_bucket.bucket.arn
+  value = aws_s3_bucket.edge.arn
 }
 
 output "region" {

@@ -26,8 +26,6 @@ const sniLookup = require('./sniLookup');
 const secureApp = router();
 const insecureApp = router();
 
-const ACME_CHALLENGE = '/.well-known/acme-challenge';
-
 const redisCacheClient = new Redis(REDIS_CACHE_URL, { enableReadyCheck: true });
 const redisEdgeClient = new Redis(REDIS_EDGE_URL, { enableReadyCheck: true });
 
@@ -38,6 +36,11 @@ function requestErrorHandler(error, response) {
   // TODO: return different content based on mimeType/path?
   response.set('X-LF-Error-Id', errorId);
   response.status(500).end();
+}
+
+function healthCheck(request, response) {
+  res.status(200).send(`Homerun!`);
+  return;
 }
 
 (async function () {
@@ -55,6 +58,11 @@ function requestErrorHandler(error, response) {
       ...ssl,
       SNICallback: sniLookup(redisEdgeClient),
     };
+
+    secureApp.get('/_leftfield/health-check', healthCheck);
+    insecureApp.get('/_leftfield/health-check', healthCheck);
+
+    // TODO: Serve static/www
 
     secureApp.get('*', async function handler(request, response) {
       try {
@@ -89,34 +97,42 @@ function requestErrorHandler(error, response) {
       }
     });
 
-    insecureApp.get('*', async function (request, response) {
-      const host = request.get('host').toLowerCase();
-      const path = request.path.toLowerCase();
+    insecureApp.get(
+      '/.well-known/acme-challenge/:token',
+      async function (request, response) {
+        try {
+          const host = request.get('host').toLowerCase();
+          const { token } = request.params;
 
-      if (!path.startsWith(ACME_CHALLENGE)) {
+          const ssl = await retrieveSsl(host);
+          if (!ssl) {
+            throw new Error(`Unable to locate acme challenge for ${host}`);
+          }
+
+          if (ssl.token !== token) {
+            response.status(404).end();
+            return;
+          }
+
+          response.set('Content-Type', 'text/plain');
+          response.status(200).send(ssl.token);
+        } catch (error) {
+          requestErrorHandler(error, response);
+        }
+      },
+    );
+
+    insecureApp.get('*', async function (request, response) {
+      try {
+        const host = request.get('host').toLowerCase();
+        const path = request.path.toLowerCase();
+
         if (NODE_ENV === 'development' && host.includes('localhost')) {
           response.redirect(`https://localhost:${HTTPS_PORT}${request.url}`);
           return;
         }
 
         response.redirect(`https://${host}${request.url}`);
-        return;
-      }
-
-      try {
-        const ssl = await retrieveSsl(host);
-        if (!ssl) {
-          throw new Error(`Unable to locate acme challenge for ${host}`);
-        }
-
-        const token = path.split('/').pop();
-        if (ssl.token === token) {
-          response.set('Content-Type', 'text/plain');
-          response.status(200).send(ssl.token);
-        }
-
-        response.status(404).end();
-        return;
       } catch (error) {
         requestErrorHandler(error, response);
       }
