@@ -16,11 +16,8 @@ variable "ecs_task_execution_role" {}
 variable "container_vars" {}
 
 locals {
-  app_http_port  = 5001
-  app_https_port = 5002
-
-  container_tcp_port = 80
-  container_tls_port = 443
+  container_tcp_port = 5001
+  container_tls_port = 5002
 
   vpc_cidr_block = "10.0.0.0/16"
 }
@@ -63,7 +60,7 @@ resource "aws_lb" "edge" {
 }
 
 resource "aws_lb_target_group" "edge_tcp" {
-  name               = "edge-team-${var.region}-target-group"
+  name               = "edge-team-${var.region}-tcp-target-group"
   port               = local.container_tcp_port
   protocol           = "TCP"
   vpc_id             = aws_vpc.edge.id
@@ -82,7 +79,7 @@ resource "aws_lb_target_group" "edge_tcp" {
 }
 
 resource "aws_lb_target_group" "edge_tls" {
-  name               = "edge-team-${var.region}-target-group"
+  name               = "edge-team-${var.region}-tls-target-group"
   port               = local.container_tls_port
   protocol           = "TLS"
   vpc_id             = aws_vpc.edge.id
@@ -147,12 +144,12 @@ resource "aws_ecs_task_definition" "edge" {
 
         HTTP_PORT = {
           name  = "HTTP_PORT"
-          value = local.app_http_port
+          value = local.container_tcp_port
         }
 
         HTTPS_PORT = {
           name  = "HTTPS_PORT"
-          value = local.app_https_port
+          value = local.container_tls_port
         }
       }, var.container_vars)))
 
@@ -166,13 +163,11 @@ resource "aws_ecs_task_definition" "edge" {
 
       portMappings = [
         {
-          containerPort = local.app_http_port
-          hostPort      = local.container_tcp_port
+          containerPort = local.container_tcp_port
           protocol      = "tcp"
         },
         {
-          containerPort = local.app_https_port
-          hostPort      = local.container_tls_port
+          containerPort = local.container_tls_port
           protocol      = "tls"
         }
       ]
@@ -213,13 +208,13 @@ resource "aws_ecs_service" "edge" {
   load_balancer {
     target_group_arn = aws_lb_target_group.edge_tcp.arn
     container_name   = "edge-container"
-    container_port   = local.app_http_port
+    container_port   = local.container_tcp_port
   }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.edge_tls.arn
     container_name   = "edge-container"
-    container_port   = local.app_https_port
+    container_port   = local.container_tls_port
   }
 
   depends_on = [
