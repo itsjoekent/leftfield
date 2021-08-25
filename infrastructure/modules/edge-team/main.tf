@@ -26,6 +26,14 @@ variable "container_memory" {
   type = number
 }
 
+variabe "cache_node_type" {
+  type = string
+}
+
+variable "cache_node_replicas" {
+  type = number
+}
+
 locals {
   container_tcp_port = 5001
   container_tls_port = 5002
@@ -73,6 +81,16 @@ resource "aws_subnet" "edge" {
   ]
 }
 
+resource "aws_elasticache_cluster" "cache" {
+  cluster_id           = "edge-team-${var.region}-cache"
+  engine               = "redis"
+  node_type            = var.cache_node_type
+  num_cache_nodes      = var.cache_node_replicas
+  parameter_group_name = "default.redis6.x"
+  engine_version       = "3.2.10"
+  port                 = 6379
+}
+
 resource "aws_ecs_cluster" "edge" {
   name = "edge-team-${var.region}-cls"
 }
@@ -107,7 +125,7 @@ resource "aws_lb_target_group" "edge_tcp" {
 resource "aws_lb_target_group" "edge_tls" {
   name               = "edge-team-${var.region}-tls-tg"
   port               = local.container_tls_port
-  protocol           = "TLS"
+  protocol           = "TCP"
   vpc_id             = aws_vpc.edge.id
   target_type        = "ip"
   preserve_client_ip = true
@@ -137,7 +155,7 @@ resource "aws_lb_listener" "edge_tcp_forward" {
 resource "aws_lb_listener" "edge_tls_forward" {
   load_balancer_arn = aws_lb.edge.arn
   port              = local.container_tls_port
-  protocol          = "TLS"
+  protocol          = "TCP"
 
   default_action {
     type             = "forward"
@@ -194,7 +212,7 @@ resource "aws_ecs_task_definition" "edge" {
         },
         {
           containerPort = local.container_tls_port
-          protocol      = "tls"
+          protocol      = "tcp"
         }
       ]
 

@@ -63,6 +63,7 @@ function healthCheck(request, response) {
     insecureApp.get('/_leftfield/health-check', healthCheck);
 
     // TODO: Serve static/www
+    // TODO: encrypt ssl at rest
 
     secureApp.get('*', async function handler(request, response) {
       try {

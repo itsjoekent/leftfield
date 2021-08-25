@@ -125,6 +125,8 @@ module "edge_team_us_east_1" {
   container_cpu           = 1
   container_memory        = 2048
   auto_scale_max          = 2
+  cache_node_type         = "cache.t2.small"
+  cache_node_replicas     = 2
   providers = {
     aws = aws.us_east_1
   }
