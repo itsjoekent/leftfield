@@ -137,7 +137,7 @@ resource "aws_lb_listener" "edge_tcp_forward" {
 resource "aws_lb_listener" "edge_tls_forward" {
   load_balancer_arn = aws_lb.edge.arn
   port              = local.container_tls_port
-  protocol          = "TCP"
+  protocol          = "TLS"
 
   default_action {
     type             = "forward"

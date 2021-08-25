@@ -1,7 +1,7 @@
 # TODO:
 # Global Edge redis cluster
-# Global accelerator
-# DNS entry
+# Edge global accelerator
+# Edge DNS entry
 # API application, Mongo
 
 terraform {
