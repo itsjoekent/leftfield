@@ -27,15 +27,14 @@ variable "container_memory" {
   type = number
 }
 
+variable "storage_buckets" {}
+
 variable "cache_node_type" {
   type = string
 }
 
-locals {
-  container_tcp_port = 80
-  container_tls_port = 443
-
-  vpc_cidr_block = "10.0.0.0/16"
+variable "cache_nodes" {
+  type = number
 }
 
 terraform {
@@ -51,11 +50,24 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+locals {
+  container_tcp_port = 80
+  container_tls_port = 443
+
+  vpc_cidr_block = "10.0.0.0/16"
+
+  availability_zones = slice(data.aws_availability_zones.available.names, 0, 2)
+}
+
 resource "aws_vpc" "edge" {
   cidr_block = local.vpc_cidr_block
 
   enable_dns_support   = true
   enable_dns_hostnames = false
+
+  tags = {
+    name = "edge-team-${var.region}-vpc"
+  }
 }
 
 resource "aws_internet_gateway" "edge" {
@@ -63,15 +75,15 @@ resource "aws_internet_gateway" "edge" {
 }
 
 resource "aws_subnet" "edge_public" {
-  count = length(data.aws_availability_zones.available.names)
+  count = length(local.availability_zones)
 
   vpc_id                  = aws_vpc.edge.id
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  availability_zone       = local.availability_zones[count.index]
   cidr_block              = cidrsubnet(local.vpc_cidr_block, 6, count.index)
   map_public_ip_on_launch = true
 
   tags = {
-    name = "edge-team-${data.aws_availability_zones.available.names[count.index]}-public-subnet"
+    name = "edge-team-${local.availability_zones[count.index]}-public-subnet"
   }
 
   depends_on = [
@@ -80,15 +92,15 @@ resource "aws_subnet" "edge_public" {
 }
 
 resource "aws_subnet" "edge_private" {
-  count = length(data.aws_availability_zones.available.names)
+  count = length(local.availability_zones)
 
   vpc_id                  = aws_vpc.edge.id
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
-  cidr_block              = cidrsubnet(local.vpc_cidr_block, 4, count.index + length(data.aws_availability_zones.available.names))
+  availability_zone       = local.availability_zones[count.index]
+  cidr_block              = cidrsubnet(local.vpc_cidr_block, 4, count.index + length(local.availability_zones))
   map_public_ip_on_launch = false
 
   tags = {
-    name = "edge-team-${data.aws_availability_zones.available.names[count.index]}-private-subnet"
+    name = "edge-team-${local.availability_zones[count.index]}-private-subnet"
   }
 }
 
@@ -106,33 +118,39 @@ resource "aws_route_table" "edge_public" {
 }
 
 resource "aws_route_table_association" "edge_public" {
-  count = length(data.aws_availability_zones.available.names)
+  count = length(local.availability_zones)
 
   subnet_id      = aws_subnet.edge_public[count.index].id
   route_table_id = aws_route_table.edge_public.id
 }
 
 resource "aws_eip" "edge" {
+  count = length(local.availability_zones)
+
   vpc = true
 
   depends_on = [aws_internet_gateway.edge]
+
+  tags = {
+    name = "edge-team-${local.availability_zones[count.index]}-eip"
+  }
 }
 
 resource "aws_nat_gateway" "edge_public" {
-  count = length(data.aws_availability_zones.available.names)
+  count = length(local.availability_zones)
 
-  allocation_id = aws_eip.edge.id
+  allocation_id = aws_eip.edge[count.index].id
   subnet_id     = aws_subnet.edge_public[count.index].id
 
   tags = {
-    Name = "edge-team-${data.aws_availability_zones.available.names[count.index]}-nat-gateway"
+    name = "edge-team-${local.availability_zones[count.index]}-nat-gateway"
   }
 
   depends_on = [aws_internet_gateway.edge]
 }
 
 resource "aws_route_table" "edge_private" {
-  count = length(data.aws_availability_zones.available.names)
+  count = length(local.availability_zones)
 
   vpc_id = aws_vpc.edge.id
 
@@ -142,30 +160,55 @@ resource "aws_route_table" "edge_private" {
   }
 
   tags = {
-    name = "edge-team-${var.region}-private-route-table"
+    name = "edge-team-${local.availability_zones[count.index]}-private-route-table"
   }
 }
 
 resource "aws_route_table_association" "edge_private" {
-  count = length(data.aws_availability_zones.available.names)
+  count = length(local.availability_zones)
 
   subnet_id      = aws_subnet.edge_private[count.index].id
   route_table_id = aws_route_table.edge_private[count.index].id
 }
 
-resource "aws_elasticache_cluster" "edge_cache" {
-  cluster_id           = "edge-team-${var.region}-cache"
-  engine               = "redis"
-  node_type            = var.cache_node_type
-  num_cache_nodes      = 1
-  parameter_group_name = "default.redis6.x"
-  engine_version       = "6.x"
-  port                 = 6379
+resource "aws_vpc_endpoint" "s3" {
+  count = length(var.storage_buckets)
+
+  vpc_id            = aws_vpc.edge.id
+  service_name      = "com.amazonaws.${var.storage_buckets[count.index].region}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = aws_route_table.edge_private.*.id
+
+  tags = {
+    name = "edge-team-${var.region}-s3-endpoint"
+  }
 }
 
 resource "aws_elasticache_subnet_group" "edge_cache_subnet" {
   name       = "edge-team-${var.region}-ch-net"
   subnet_ids = aws_subnet.edge_private.*.id
+}
+
+resource "aws_elasticache_parameter_group" "edge_cache" {
+  name   = "edge-team-${var.region}-param"
+  family = "redis6.x"
+
+  parameter {
+    name  = "maxmemory-policy"
+    value = "allkeys-lfu"
+  }
+}
+
+resource "aws_elasticache_replication_group" "edge_cache" {
+  automatic_failover_enabled    = true
+  availability_zones            = local.availability_zones
+  replication_group_id          = "edge-${var.region}-cache"
+  replication_group_description = "Edge cache"
+  node_type                     = var.cache_node_type
+  number_cache_clusters         = var.cache_nodes
+  parameter_group_name          = aws_elasticache_parameter_group.edge_cache.id
+  port                          = 6379
+  subnet_group_name             = aws_elasticache_subnet_group.edge_cache_subnet.name
 }
 
 resource "aws_ecs_cluster" "edge" {
@@ -310,40 +353,40 @@ resource "aws_security_group" "edge_ecs" {
 
   ingress = [
     {
-      description = "TCP from VPC"
-      from_port   = local.container_tcp_port
-      to_port     = local.container_tcp_port
-      protocol    = "tcp"
-      cidr_blocks = [aws_vpc.edge.cidr_block]
+      description      = "TCP from VPC"
+      from_port        = local.container_tcp_port
+      to_port          = local.container_tcp_port
+      protocol         = "tcp"
+      cidr_blocks      = [aws_vpc.edge.cidr_block]
       ipv6_cidr_blocks = null
-      prefix_list_ids = null
-      security_groups = null
-      self = null
+      prefix_list_ids  = null
+      security_groups  = null
+      self             = null
     },
     {
-      description = "TLS from VPC"
-      from_port   = local.container_tls_port
-      to_port     = local.container_tls_port
-      protocol    = "tcp"
-      cidr_blocks = [aws_vpc.edge.cidr_block]
+      description      = "TLS from VPC"
+      from_port        = local.container_tls_port
+      to_port          = local.container_tls_port
+      protocol         = "tcp"
+      cidr_blocks      = [aws_vpc.edge.cidr_block]
       ipv6_cidr_blocks = null
-      prefix_list_ids = null
-      security_groups = null
-      self = null
+      prefix_list_ids  = null
+      security_groups  = null
+      self             = null
     }
   ]
 
   egress = [
     {
-      description = "Outbound"
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
+      description      = "Outbound"
+      from_port        = 0
+      to_port          = 0
+      protocol         = "-1"
+      cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = null
-      prefix_list_ids = null
-      security_groups = null
-      self = null
+      prefix_list_ids  = null
+      security_groups  = null
+      self             = null
     }
   ]
 }
