@@ -48,7 +48,7 @@ resource "aws_subnet" "edge" {
 }
 
 resource "aws_ecs_cluster" "edge" {
-  name = "edge-team-${var.region}-cluster"
+  name = "edge-team-${var.region}-cls"
 }
 
 resource "aws_lb" "edge" {
@@ -60,7 +60,7 @@ resource "aws_lb" "edge" {
 }
 
 resource "aws_lb_target_group" "edge_tcp" {
-  name               = "edge-team-${var.region}-tcp-target-group"
+  name               = "edge-team-${var.region}-tcp-tg"
   port               = local.container_tcp_port
   protocol           = "TCP"
   vpc_id             = aws_vpc.edge.id
@@ -79,7 +79,7 @@ resource "aws_lb_target_group" "edge_tcp" {
 }
 
 resource "aws_lb_target_group" "edge_tls" {
-  name               = "edge-team-${var.region}-tls-target-group"
+  name               = "edge-team-${var.region}-tls-tg"
   port               = local.container_tls_port
   protocol           = "TLS"
   vpc_id             = aws_vpc.edge.id
@@ -124,7 +124,7 @@ resource "aws_cloudwatch_log_group" "edge_task" {
 }
 
 resource "aws_ecs_task_definition" "edge" {
-  family                   = "eedge-team-${var.region}-task"
+  family                   = "edge-team-${var.region}-task"
   network_mode             = "awsvpc"
   execution_role_arn       = var.ecs_task_execution_role.arn
   requires_compatibilities = ["EC2"]
@@ -184,7 +184,7 @@ resource "aws_ecs_task_definition" "edge" {
 }
 
 resource "aws_ecs_service" "edge" {
-  name            = "edge-team-${var.region}-service"
+  name            = "edge-team-${var.region}-svc"
   cluster         = aws_ecs_cluster.edge.id
   task_definition = aws_ecs_task_definition.edge.arn
   desired_count   = 1

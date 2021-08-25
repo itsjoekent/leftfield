@@ -1,5 +1,7 @@
 # TODO:
 # Global Edge redis cluster
+# Global accelerator
+# DNS entry
 
 terraform {
   required_providers {
