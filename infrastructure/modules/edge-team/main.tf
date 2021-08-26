@@ -278,7 +278,7 @@ resource "aws_cloudwatch_log_group" "edge_task" {
 resource "aws_ssm_parameter" "edge_container_secret" {
   count = length(var.container_secrets)
 
-  name      = var.container_secrets[count.index].name
+  name      = var.container_secrets[count.index].path
   value     = var.container_secrets[count.index].value
   type      = "SecureString"
   overwrite = true

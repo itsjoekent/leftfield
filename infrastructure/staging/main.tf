@@ -3,6 +3,7 @@
 # Peering between Edge VPC's
 # Global Edge redis cluster
 # Edge global accelerator
+#  -> Take edge LB off public subnet
 # Edge DNSimple DNS entry
 
 # API application, Mongo
