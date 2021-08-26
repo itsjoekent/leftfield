@@ -1,10 +1,12 @@
 # TODO:
 # https://aws.amazon.com/about-aws/whats-new/2019/03/aws-privatelink-now-supports-access-over-vpc-peering/
+# Peering between Edge VPC's
 # Global Edge redis cluster
 # Edge global accelerator
-# Edge DNS entry
+# Edge DNSimple DNS entry
 
 # API application, Mongo
+#  - Seperate domain / infra from Edge
 
 terraform {
   required_providers {
@@ -75,16 +77,6 @@ module "edge_storage_us_east_1" {
 # EDGE_DOMAIN
 locals {
   edge_container_vars = {
-    AWS_ACCESS_KEY_ID = {
-      name  = "AWS_ACCESS_KEY_ID"
-      value = var.AWS_ACCESS_KEY_ID
-    }
-
-    AWS_SECRET_ACCESS_KEY = {
-      name  = "AWS_SECRET_ACCESS_KEY"
-      value = var.AWS_SECRET_ACCESS_KEY
-    }
-
     STORAGE_MAIN_REGION = {
       name  = "STORAGE_MAIN_REGION"
       value = "us-east-1"
@@ -115,21 +107,35 @@ locals {
       value = module.edge_storage_us_west_1.name
     }
   }
+
+  edge_container_secrets = [
+    {
+      name  = "AWS_ACCESS_KEY_ID"
+      path  = "/edge/AWS_ACCESS_KEY_ID"
+      value = var.AWS_ACCESS_KEY_ID
+    },
+    {
+      name  = "AWS_SECRET_ACCESS_KEY"
+      path  = "/edge/AWS_SECRET_ACCESS_KEY"
+      value = var.AWS_SECRET_ACCESS_KEY
+    }
+  ]
 }
 
 module "edge_team_us_east_1" {
-  source                  = "../modules/edge-team"
-  environment             = var.ENVIRONMENT
-  region                  = "us-east-1"
-  image_repository        = module.edge_global.image_repository
-  ecs_task_execution_role = module.edge_global.ecs_task_execution_role
-  container_vars          = local.edge_container_vars
-  container_cpu           = 1
-  container_memory        = 2048
-  auto_scale_max          = 2
-  storage_bucket          = module.edge_storage_us_east_1
-  cache_node_type         = "cache.t2.small"
-  cache_nodes             = 2
+  source            = "../modules/edge-team"
+  environment       = var.ENVIRONMENT
+  region            = "us-east-1"
+  aws_account_id    = var.AWS_ACCOUNT_ID
+  image_repository  = module.edge_global.image_repository
+  container_vars    = local.edge_container_vars
+  container_secrets = local.edge_container_secrets
+  container_cpu     = 1
+  container_memory  = 2048
+  auto_scale_max    = 2
+  storage_bucket    = module.edge_storage_us_east_1
+  cache_node_type   = "cache.t2.small"
+  cache_nodes       = 2
   providers = {
     aws = aws.us_east_1
   }

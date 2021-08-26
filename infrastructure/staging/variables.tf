@@ -1,3 +1,7 @@
+variable "AWS_ACCOUNT_ID" {
+  sensitive = true
+}
+
 variable "AWS_ACCESS_KEY_ID" {
   sensitive = true
 }

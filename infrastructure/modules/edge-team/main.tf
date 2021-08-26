@@ -1,37 +1,28 @@
-# TODO: Better manage secrets, https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html
-
 variable "environment" {
   type = string
 }
-
 variable "region" {
   type = string
 }
-
+variable "aws_account_id" {
+  type = string
+}
 variable "auto_scale_max" {
   type = number
 }
-
 variable "image_repository" {}
-
-variable "ecs_task_execution_role" {}
-
 variable "container_vars" {}
-
+variable "container_secrets" {}
 variable "container_cpu" {
   type = number
 }
-
 variable "container_memory" {
   type = number
 }
-
 variable "storage_bucket" {}
-
 variable "cache_node_type" {
   type = string
 }
-
 variable "cache_nodes" {
   type = number
 }
@@ -65,7 +56,7 @@ resource "aws_vpc" "edge" {
   enable_dns_hostnames = false
 
   tags = {
-    name = "edge-team-${var.region}-vpc"
+    name = "team-${var.region}-vpc"
   }
 }
 
@@ -82,7 +73,7 @@ resource "aws_subnet" "edge_public" {
   map_public_ip_on_launch = true
 
   tags = {
-    name = "edge-team-${local.availability_zones[count.index]}-public-subnet"
+    name = "team-${local.availability_zones[count.index]}-public-subnet"
   }
 
   depends_on = [
@@ -99,7 +90,7 @@ resource "aws_subnet" "edge_private" {
   map_public_ip_on_launch = false
 
   tags = {
-    name = "edge-team-${local.availability_zones[count.index]}-private-subnet"
+    name = "team-${local.availability_zones[count.index]}-private-subnet"
   }
 }
 
@@ -112,7 +103,7 @@ resource "aws_route_table" "edge_public" {
   }
 
   tags = {
-    name = "edge-team-${var.region}-public-route-table"
+    name = "team-${var.region}-public-route-table"
   }
 }
 
@@ -131,7 +122,7 @@ resource "aws_eip" "edge" {
   depends_on = [aws_internet_gateway.edge]
 
   tags = {
-    name = "edge-team-${local.availability_zones[count.index]}-eip"
+    name = "team-${local.availability_zones[count.index]}-eip"
   }
 }
 
@@ -142,7 +133,7 @@ resource "aws_nat_gateway" "edge_public" {
   subnet_id     = aws_subnet.edge_public[count.index].id
 
   tags = {
-    name = "edge-team-${local.availability_zones[count.index]}-nat-gateway"
+    name = "team-${local.availability_zones[count.index]}-nat-gateway"
   }
 
   depends_on = [aws_internet_gateway.edge]
@@ -159,7 +150,7 @@ resource "aws_route_table" "edge_private" {
   }
 
   tags = {
-    name = "edge-team-${local.availability_zones[count.index]}-private-route-table"
+    name = "team-${local.availability_zones[count.index]}-private-route-table"
   }
 }
 
@@ -177,17 +168,17 @@ resource "aws_vpc_endpoint" "s3" {
   route_table_ids   = aws_route_table.edge_private.*.id
 
   tags = {
-    name = "edge-team-${var.region}-s3-endpoint"
+    name = "team-${var.region}-s3-endpoint"
   }
 }
 
 resource "aws_elasticache_subnet_group" "edge_cache_subnet" {
-  name       = "edge-team-${var.region}-ch-net"
+  name       = "team-${var.region}-ch-net"
   subnet_ids = aws_subnet.edge_private.*.id
 }
 
 resource "aws_elasticache_parameter_group" "edge_cache" {
-  name   = "edge-team-${var.region}-param"
+  name   = "team-${var.region}-param"
   family = "redis6.x"
 
   parameter {
@@ -209,11 +200,11 @@ resource "aws_elasticache_replication_group" "edge_cache" {
 }
 
 resource "aws_ecs_cluster" "edge" {
-  name = "edge-team-${var.region}-cls"
+  name = "team-${var.region}-cls"
 }
 
 resource "aws_lb" "edge" {
-  name                             = "edge-team-${var.region}-lb"
+  name                             = "team-${var.region}-lb"
   load_balancer_type               = "network"
   subnets                          = aws_subnet.edge_public.*.id
   enable_cross_zone_load_balancing = true
@@ -221,7 +212,7 @@ resource "aws_lb" "edge" {
 }
 
 resource "aws_lb_target_group" "edge_tcp" {
-  name               = "edge-team-${var.region}-tcp-tg"
+  name               = "team-${var.region}-tcp-tg"
   port               = local.container_tcp_port
   protocol           = "TCP"
   vpc_id             = aws_vpc.edge.id
@@ -234,13 +225,13 @@ resource "aws_lb_target_group" "edge_tcp" {
     interval            = 10
     protocol            = "HTTP"
     timeout             = 6
-    path                = "/_leftfield/health-check"
+    path                = "/_lf/health-check"
     unhealthy_threshold = 2
   }
 }
 
 resource "aws_lb_target_group" "edge_tls" {
-  name               = "edge-team-${var.region}-tls-tg"
+  name               = "team-${var.region}-tls-tg"
   port               = local.container_tls_port
   protocol           = "TCP"
   vpc_id             = aws_vpc.edge.id
@@ -253,7 +244,7 @@ resource "aws_lb_target_group" "edge_tls" {
     interval            = 10
     protocol            = "HTTPS"
     timeout             = 10
-    path                = "/_leftfield/health-check"
+    path                = "/_lf/health-check"
     unhealthy_threshold = 2
   }
 }
@@ -281,13 +272,74 @@ resource "aws_lb_listener" "edge_tls_forward" {
 }
 
 resource "aws_cloudwatch_log_group" "edge_task" {
-  name = "edge-team-${var.region}-logs"
+  name = "team-${var.region}-logs"
+}
+
+resource "aws_ssm_parameter" "edge_container_secret" {
+  count = length(var.container_secrets)
+
+  name      = var.container_secrets[count.index].name
+  value     = var.container_secrets[count.index].value
+  type      = "SecureString"
+  overwrite = true
+}
+
+data "aws_iam_policy_document" "ecs_assume_role" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "edge_ecs_execution" {
+  name                = "team-${var.region}-ecs-role"
+  assume_role_policy  = data.aws_iam_policy_document.ecs_assume_role.json
+  managed_policy_arns = []
+}
+
+data "aws_iam_policy_document" "edge_ecs_read_ssm_secrets" {
+  statement {
+    effect    = "Allow"
+    actions   = ["ssm:GetParameters"]
+    resources = ["arn:aws:ssm:*:${var.aws_account_id}:parameter/*"]
+  }
+
+  statement {
+    effect    = "Allow"
+    actions   = ["ssm:DescribeParameters"]
+    resources = ["*"]
+  }
+
+  statement {
+    effect  = "Allow"
+    actions = ["kms:Decrypt", "secretsmanager:GetSecretValue"]
+    resources = [
+      "arn:aws:kms:*:${var.aws_account_id}:key/*",
+      "arn:aws:secretsmanager:*:${var.aws_account_id}:secret:*"
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "edge_ecs_read_secrets" {
+  name   = "SecretsReadOnly"
+  role   = aws_iam_role.edge_ecs_execution.name
+  policy = data.aws_iam_policy_document.edge_ecs_read_ssm_secrets.json
+}
+
+resource "aws_iam_role_policy_attachment" "edge_ecs_execution" {
+  role       = aws_iam_role.edge_ecs_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 resource "aws_ecs_task_definition" "edge" {
-  family                   = "edge-team-${var.region}-task"
+  family                   = "team-${var.region}-task"
   network_mode             = "awsvpc"
-  execution_role_arn       = var.ecs_task_execution_role.arn
+  execution_role_arn       = aws_iam_role.edge_ecs_execution.arn
   requires_compatibilities = ["EC2"]
   container_definitions = jsonencode([
     {
@@ -296,6 +348,13 @@ resource "aws_ecs_task_definition" "edge" {
       essential = true
       cpu       = var.container_cpu
       memory    = var.container_memory
+
+      secrets = [
+        for secret in var.container_secrets : {
+          "name" : secret.name,
+          "valueFrom" : "arn:aws:ssm:${var.region}:${var.aws_account_id}:parameter${secret.path}"
+        }
+      ]
 
       environment = toset(values(merge({
         NODE_ENV = {
@@ -345,7 +404,7 @@ resource "aws_ecs_task_definition" "edge" {
 }
 
 resource "aws_security_group" "edge_ecs" {
-  name   = "edge-team-${var.region}-scg"
+  name   = "team-${var.region}-scg"
   vpc_id = aws_vpc.edge.id
 
   ingress = [
@@ -389,7 +448,7 @@ resource "aws_security_group" "edge_ecs" {
 }
 
 resource "aws_ecs_service" "edge" {
-  name            = "edge-team-${var.region}-svc"
+  name            = "team-${var.region}-svc"
   cluster         = aws_ecs_cluster.edge.id
   task_definition = aws_ecs_task_definition.edge.arn
   desired_count   = 1
@@ -425,7 +484,7 @@ resource "aws_ecs_service" "edge" {
   depends_on = [
     aws_lb_listener.edge_tcp_forward,
     aws_lb_listener.edge_tls_forward,
-    var.ecs_task_execution_role,
+    aws_iam_role.edge_ecs_execution,
   ]
 }
 
@@ -438,7 +497,7 @@ resource "aws_appautoscaling_target" "edge_ecs" {
 }
 
 resource "aws_appautoscaling_policy" "edge_ecs_memory" {
-  name               = "edge-team-${var.region}-mem"
+  name               = "team-${var.region}-mem"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.edge_ecs.resource_id
   scalable_dimension = aws_appautoscaling_target.edge_ecs.scalable_dimension
@@ -454,7 +513,7 @@ resource "aws_appautoscaling_policy" "edge_ecs_memory" {
 }
 
 resource "aws_appautoscaling_policy" "edge_ecs_cpu" {
-  name               = "edge-team-${var.region}-cpu"
+  name               = "team-${var.region}-cpu"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.edge_ecs.resource_id
   scalable_dimension = aws_appautoscaling_target.edge_ecs.scalable_dimension
