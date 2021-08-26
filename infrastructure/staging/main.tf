@@ -1,7 +1,9 @@
 # TODO:
+# https://aws.amazon.com/about-aws/whats-new/2019/03/aws-privatelink-now-supports-access-over-vpc-peering/
 # Global Edge redis cluster
 # Edge global accelerator
 # Edge DNS entry
+
 # API application, Mongo
 
 terraform {
@@ -125,12 +127,9 @@ module "edge_team_us_east_1" {
   container_cpu           = 1
   container_memory        = 2048
   auto_scale_max          = 2
-  storage_buckets = [
-    module.edge_storage_us_east_1,
-    module.edge_storage_us_west_1
-  ]
-  cache_node_type = "cache.t2.small"
-  cache_nodes     = 2
+  storage_bucket          = module.edge_storage_us_east_1
+  cache_node_type         = "cache.t2.small"
+  cache_nodes             = 2
   providers = {
     aws = aws.us_east_1
   }

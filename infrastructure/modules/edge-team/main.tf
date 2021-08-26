@@ -1,4 +1,3 @@
-# TODO: Redis
 # TODO: Better manage secrets, https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html
 
 variable "environment" {
@@ -27,7 +26,7 @@ variable "container_memory" {
   type = number
 }
 
-variable "storage_buckets" {}
+variable "storage_bucket" {}
 
 variable "cache_node_type" {
   type = string
@@ -172,10 +171,8 @@ resource "aws_route_table_association" "edge_private" {
 }
 
 resource "aws_vpc_endpoint" "s3" {
-  count = length(var.storage_buckets)
-
   vpc_id            = aws_vpc.edge.id
-  service_name      = "com.amazonaws.${var.storage_buckets[count.index].region}.s3"
+  service_name      = "com.amazonaws.${var.storage_bucket.region}.s3"
   vpc_endpoint_type = "Gateway"
   route_table_ids   = aws_route_table.edge_private.*.id
 
