@@ -572,19 +572,19 @@ data "aws_iam_policy_document" "ecs_agent" {
   }
 }
 
-resource "aws_iam_role" "ecs_agent" {
+resource "aws_iam_role" "edge_ec2" {
   name               = "ecs-agent"
   assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_agent" {
-  role       = "aws_iam_role.ecs_agent.name"
+resource "aws_iam_role_policy_attachment" "edge_ec2" {
+  role       = aws_iam_role.edge_ec2.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
-resource "aws_iam_instance_profile" "ecs_agent" {
+resource "aws_iam_instance_profile" "edge_ec2" {
   name = "ecs-agent"
-  role = aws_iam_role.ecs_agent.name
+  role = aws_iam_role_policy_attachment.edge_ec2.name
 }
 
 data "aws_ami" "aws_optimized_ecs" {
@@ -611,7 +611,7 @@ data "aws_ami" "aws_optimized_ecs" {
 resource "aws_launch_configuration" "ecs_launch_config" {
   name                 = "team-${var.region}-elc"
   image_id             = data.aws_ami.aws_optimized_ecs.id
-  iam_instance_profile = aws_iam_instance_profile.ecs_agent.name
+  iam_instance_profile = aws_iam_instance_profile.edge_ec2.name
   security_groups      = local.security_groups
   user_data            = "#!/bin/bash\necho ECS_CLUSTER=team-${var.region}-cls} >> /etc/ecs/ecs.config"
   instance_type        = var.instance_type
