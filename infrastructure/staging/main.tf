@@ -2,9 +2,6 @@
 # https://aws.amazon.com/about-aws/whats-new/2019/03/aws-privatelink-now-supports-access-over-vpc-peering/
 # Peering between Edge VPC's
 # Global Edge redis cluster
-# Edge global accelerator
-#  -> Take edge LB off public subnet
-# Edge DNSimple DNS entry
 
 # API application, Mongo
 #  - Seperate domain / infra from Edge
@@ -14,6 +11,11 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 3.27"
+    }
+
+    dnsimple = {
+      source  = "dnsimple/dnsimple"
+      version = "~> 0.6"
     }
   }
 
@@ -49,6 +51,11 @@ provider "aws" {
   secret_key = var.AWS_SECRET_ACCESS_KEY
 }
 
+provider "dnsimple" {
+  token   = var.DNSIMPLE_API_TOKEN
+  account = var.DNSIMPLE_ACCOUNT_ID
+}
+
 module "edge_global" {
   source      = "../modules/edge-global"
   environment = var.ENVIRONMENT
@@ -73,11 +80,23 @@ module "edge_storage_us_east_1" {
   }
 }
 
-# TODO: Inject environment variables for Email API
-# DEFAULT_MAX_AGE
-# EDGE_DOMAIN
 locals {
   edge_container_vars = {
+    DEFAULT_MAX_AGE = {
+      name  = "DEFAULT_MAX_AGE"
+      value = 86400
+    }
+
+    EMAIL_DOMAIN = {
+      name  = "EMAIL_DOMAIN"
+      value = var.EMAIL_DOMAIN
+    }
+
+    PRODUCT_DOMAIN = {
+      name  = "PRODUCT_DOMAIN"
+      value = ""
+    }
+
     STORAGE_MAIN_REGION = {
       name  = "STORAGE_MAIN_REGION"
       value = "us-east-1"
@@ -119,6 +138,16 @@ locals {
       name  = "AWS_SECRET_ACCESS_KEY"
       path  = "/edge/AWS_SECRET_ACCESS_KEY"
       value = var.AWS_SECRET_ACCESS_KEY
+    },
+    {
+      name  = "SSL_AT_REST_KEY"
+      path  = "/edge/SSL_AT_REST_KEY"
+      value = var.SSL_AT_REST_KEY
+    },
+    {
+      name  = "EMAIL_API_KEY",
+      path  = "/edge/EMAIL_API_KEY",
+      value = var.EMAIL_API_KEY
     }
   ]
 }
@@ -137,6 +166,7 @@ module "edge_team_us_east_1" {
   storage_bucket    = module.edge_storage_us_east_1
   cache_node_type   = "cache.t2.small"
   cache_nodes       = 2
+  globalaccelerator = module.edge_global.globalaccelerator
   providers = {
     aws = aws.us_east_1
   }

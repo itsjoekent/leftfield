@@ -1,16 +1,15 @@
-variable "environment" {
-  type = string
-}
-variable "region" {
-  type = string
+variable "auto_scale_max" {
+  type = number
 }
 variable "aws_account_id" {
   type = string
 }
-variable "auto_scale_max" {
+variable "cache_node_type" {
+  type = string
+}
+variable "cache_nodes" {
   type = number
 }
-variable "image_repository" {}
 variable "container_vars" {}
 variable "container_secrets" {}
 variable "container_cpu" {
@@ -19,13 +18,15 @@ variable "container_cpu" {
 variable "container_memory" {
   type = number
 }
-variable "storage_bucket" {}
-variable "cache_node_type" {
+variable "environment" {
   type = string
 }
-variable "cache_nodes" {
-  type = number
+variable "globalaccelerator" {}
+variable "image_repository" {}
+variable "region" {
+  type = string
 }
+variable "storage_bucket" {}
 
 terraform {
   required_providers {
@@ -206,7 +207,7 @@ resource "aws_ecs_cluster" "edge" {
 resource "aws_lb" "edge" {
   name                             = "team-${var.region}-lb"
   load_balancer_type               = "network"
-  subnets                          = aws_subnet.edge_public.*.id
+  subnets                          = aws_subnet.edge_private.*.id
   enable_cross_zone_load_balancing = true
   enable_deletion_protection       = var.environment == "production" ? true : false
 }
@@ -217,7 +218,7 @@ resource "aws_lb_target_group" "edge_tcp" {
   protocol           = "TCP"
   vpc_id             = aws_vpc.edge.id
   target_type        = "ip"
-  preserve_client_ip = true
+  preserve_client_ip = false
 
   health_check {
     enabled             = true
@@ -236,7 +237,7 @@ resource "aws_lb_target_group" "edge_tls" {
   protocol           = "TCP"
   vpc_id             = aws_vpc.edge.id
   target_type        = "ip"
-  preserve_client_ip = true
+  preserve_client_ip = false
 
   health_check {
     enabled             = true
@@ -268,6 +269,31 @@ resource "aws_lb_listener" "edge_tls_forward" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.edge_tls.arn
+  }
+}
+
+resource "aws_globalaccelerator_listener" "edge" {
+  accelerator_arn = var.globalaccelerator.id
+  client_affinity = "SOURCE_IP"
+  protocol        = "TCP"
+
+  port_range {
+    from_port = local.container_tcp_port
+    to_port   = local.container_tcp_port
+  }
+
+  port_range {
+    from_port = local.container_tls_port
+    to_port   = local.container_tls_port
+  }
+}
+
+resource "aws_globalaccelerator_endpoint_group" "edge" {
+  listener_arn = aws_globalaccelerator_listener.edge.id
+
+  endpoint_configuration {
+    endpoint_id = aws_lb.edge.arn
+    weight      = 100
   }
 }
 
@@ -370,6 +396,11 @@ resource "aws_ecs_task_definition" "edge" {
         HTTPS_PORT = {
           name  = "HTTPS_PORT"
           value = local.container_tls_port
+        }
+
+        REDIS_CACHE_URL = {
+          name  = "REDIS_CACHE_URL"
+          value = aws_elasticache_replication_group.edge_cache.primary_endpoint_address
         }
       }, var.container_vars)))
 
