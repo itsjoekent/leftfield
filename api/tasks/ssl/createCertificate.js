@@ -8,8 +8,6 @@ const ms = require('ms');
 
 const { upload } = require('../../utils/storage');
 
-const cipher = crypto.createCipheriv('aes256', SSL_AT_REST_KEY, Buffer.alloc(16, 0));
-
 module.exports = async function createCertificate(domainName) {
   const accountKey = await acme.forge.createPrivateKey();
 
@@ -51,6 +49,12 @@ module.exports = async function createCertificate(domainName) {
     createdAt: Date.now(),
     expires: ms('90 days'),
   });
+
+  const cipher = crypto.createCipheriv(
+    'aes-256-cbc',
+    SSL_AT_REST_KEY,
+    Buffer.from(crypto.randomBytes(16), 'utf8'),
+  );
 
   let encryptedData = cipher.update(data, 'utf8', 'hex');
   encryptedData += cipher.final('hex');

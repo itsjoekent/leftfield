@@ -7,7 +7,7 @@ const logger = require('./logger');
 const retrieveFile = require('./retrieveFile');
 const { getObject } = require('./storage');
 
-const decipher = crypto.createDecipheriv('aes256', SSL_AT_REST_KEY, Buffer.alloc(16, 0));
+const decipher = crypto.createDecipheriv('aes-256-cbc', SSL_AT_REST_KEY, Buffer.alloc(16, 0));
 
 module.exports = async function retrieveSsl(domainName, redisEdgeClient) {
   function buildResponse(sslData) {

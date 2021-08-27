@@ -28,7 +28,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
   return {
     S3,
     bucket: getEnv('STORAGE_PRIMARY_BUCKET'),
-    cipher: crypto.createCipheriv('aes256', getEnv('SSL_AT_REST_KEY'), Buffer.alloc(16, 0)),
+    encryptionKey: getEnv('SSL_AT_REST_KEY'),
   };
 });
 
@@ -92,7 +92,13 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
       expires: ms('90 days'),
     });
 
-    await Promise.all(storage.map(({ S3, bucket, cipher }) => {
+    await Promise.all(storage.map(({ S3, bucket, encryptionKey }) => {
+      const cipher = crypto.createCipheriv(
+        'aes-256-cbc',
+        encryptionKey,
+        Buffer.from(crypto.randomBytes(16), 'utf8'),
+      );
+
       let encryptedData = cipher.update(data, 'utf8', 'hex');
       encryptedData += cipher.final('hex');
 
