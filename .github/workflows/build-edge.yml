@@ -1,0 +1,34 @@
+name: Build Edge container
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'edge/**'
+      - 'ssl/**'
+      - 'package.json'
+      - 'package-lock.json'
+jobs:
+  build-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - uses: aws-actions/amazon-ecr-login@v1
+        id: login-ecr
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: edge/staging
+          GIT_SHA: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GIT_SHA \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:deployed \
+            -f dockerfiles/edge.remote.dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
