@@ -370,7 +370,7 @@ resource "aws_ecs_task_definition" "edge" {
   container_definitions = jsonencode([
     {
       name      = "edge-container"
-      image     = "${var.image_repository.repository_url}:latest"
+      image     = "${var.image_repository.repository_url}:deployed"
       essential = true
       cpu       = var.container_cpu
       memory    = var.container_memory

@@ -57,9 +57,10 @@ provider "dnsimple" {
 }
 
 module "edge_global" {
-  source         = "../modules/edge-global"
-  environment    = var.ENVIRONMENT
-  product_domain = var.PRODUCT_DOMAIN
+  source        = "../modules/edge-global"
+  environment   = var.ENVIRONMENT
+  dns_subdomain = var.DNS_SUBDOMAIN
+  dns_zone      = var.DNS_ZONE
 }
 
 module "edge_storage_us_west_1" {
@@ -93,9 +94,9 @@ locals {
       value = var.EMAIL_DOMAIN
     }
 
-    PRODUCT_DOMAIN = {
-      name  = "PRODUCT_DOMAIN"
-      value = ""
+    EDGE_DOMAIN = {
+      name  = "EDGE_DOMAIN"
+      value = "https://${join(".", compact([var.DNS_SUBDOMAIN, var.DNS_ZONE]))}"
     }
 
     STORAGE_MAIN_REGION = {

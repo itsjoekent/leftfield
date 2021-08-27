@@ -2,7 +2,12 @@ variable "environment" {
   type = string
 }
 
-variable "product_domain" {
+variable "dns_subdomain" {
+  type    = string
+  default = ""
+}
+
+variable "dns_zone" {
   type = string
 }
 
@@ -30,29 +35,29 @@ resource "aws_globalaccelerator_accelerator" "edge" {
 }
 
 locals {
-  domain_name            = replace(replace(var.product_domain, "getleftfield.com", ""), ".", "")
   accelerator_ip_address = flatten(aws_globalaccelerator_accelerator.edge.ip_sets[*].ip_addresses)
 }
 
 resource "dnsimple_record" "root_domain_ip_1" {
-  domain = "getleftfield.com"
-  name   = local.domain_name
+  domain = var.dns_zone
+  name   = var.dns_subdomain
   value  = local.accelerator_ip_address[0]
   type   = "A"
   ttl    = 3600
 }
 
 resource "dnsimple_record" "root_domain_ip_2" {
-  domain = "getleftfield.com"
-  name   = local.domain_name
+  domain = var.dns_zone
+  name   = var.dns_subdomain
   value  = local.accelerator_ip_address[1]
   type   = "A"
   ttl    = 3600
 }
 
 resource "dnsimple_record" "www_domain_ip_1" {
-  count  = length(local.domain_name) == 0 ? 1 : 0
-  domain = "getleftfield.com"
+  count = length(var.dns_subdomain) == 0 ? 1 : 0
+
+  domain = var.dns_zone
   name   = "www"
   value  = local.accelerator_ip_address[0]
   type   = "A"
@@ -60,8 +65,9 @@ resource "dnsimple_record" "www_domain_ip_1" {
 }
 
 resource "dnsimple_record" "www_domain_ip_2" {
-  count  = length(local.domain_name) == 0 ? 1 : 0
-  domain = "getleftfield.com"
+  count = length(var.dns_subdomain) == 0 ? 1 : 0
+
+  domain = var.dns_zone
   name   = "www"
   value  = local.accelerator_ip_address[1]
   type   = "A"

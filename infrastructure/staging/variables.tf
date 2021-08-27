@@ -23,6 +23,14 @@ variable "DNSIMPLE_ACCOUNT_ID" {
   type      = string
 }
 
+variable "DNS_SUBDOMAIN" {
+  type = string
+}
+
+variable "DNS_ZONE" {
+  type = string
+}
+
 variable "EMAIL_API_KEY" {
   sensitive = true
   type      = string
@@ -33,10 +41,6 @@ variable "EMAIL_DOMAIN" {
 }
 
 variable "ENVIRONMENT" {
-  type = string
-}
-
-variable "PRODUCT_DOMAIN" {
   type = string
 }
 
