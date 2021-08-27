@@ -81,7 +81,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
       challengeCreateFn: createChallenge,
     });
 
-    console.log(`Uploading certificate to ${ENVIRONMENTS.split(',').join(', ')} storage...`);
+    console.log(`Uploading certificate to ${ENVIRONMENTS.split(',').join(', ').toLowerCase()} storage...`);
 
     const data = JSON.stringify({
       token,
