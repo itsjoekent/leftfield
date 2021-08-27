@@ -57,7 +57,6 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
         token = challenge.token;
         tokenContents = keyAuthorization;
       } else if (challenge.type === 'dns-01') {
-        const dnsRecord = `_acme-challenge.${auth.identifier.value}`;
         const recordValue = keyAuthorization;
 
         await dnsClient.zones.createZoneRecord(
@@ -65,7 +64,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
           WILDCARD_DOMAIN,
           {
             content: recordValue,
-            name: dnsRecord,
+            name: '_acme-challenge',
             type: 'TXT',
             ttl: 3600
           },
