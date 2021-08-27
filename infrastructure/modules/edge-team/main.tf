@@ -584,7 +584,7 @@ resource "aws_iam_role_policy_attachment" "edge_ec2" {
 
 resource "aws_iam_instance_profile" "edge_ec2" {
   name = "ecs-agent"
-  role = aws_iam_role_policy_attachment.edge_ec2.name
+  role = aws_iam_role_policy_attachment.edge_ec2.role
 }
 
 data "aws_ami" "aws_optimized_ecs" {
