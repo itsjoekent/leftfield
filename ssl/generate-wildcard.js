@@ -61,7 +61,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
         const recordValue = keyAuthorization;
 
         await dnsimple.zones.createZoneRecord(
-          DNSIMPLE_ACCOUNT_ID
+          DNSIMPLE_ACCOUNT_ID,
           WILDCARD_DOMAIN,
           {
             content: recordValue,
