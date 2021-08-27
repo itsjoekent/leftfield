@@ -613,7 +613,7 @@ resource "aws_launch_configuration" "ecs_launch_config" {
   image_id             = data.aws_ami.aws_optimized_ecs.id
   iam_instance_profile = aws_iam_instance_profile.edge_ec2.name
   security_groups      = local.security_groups
-  user_data            = "#!/bin/bash\necho ECS_CLUSTER=team-${var.region}-cls} >> /etc/ecs/ecs.config"
+  user_data            = "#!/bin/bash\necho ECS_CLUSTER=${aws_ecs_cluster.edge.name} >> /etc/ecs/ecs.config"
   instance_type        = var.instance_type
 
   lifecycle {
