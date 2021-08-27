@@ -18,5 +18,5 @@ jobs:
           STAGING_AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
           STAGING_SSL_AT_REST_KEY: ${{ secrets.STAGING_SSL_AT_REST_KEY }}
           STAGING_STORAGE_PRIMARY_BUCKET: leftfield-staging-us-east-1
-          STORAGE_PRIMARY_ENDPOINT: https://s3.us-east-1.amazonaws.com
+          STAGING_STORAGE_PRIMARY_ENDPOINT: https://s3.us-east-1.amazonaws.com
           WILDCARD_DOMAIN: getleftfield.com
