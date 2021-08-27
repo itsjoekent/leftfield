@@ -41,7 +41,7 @@ services:
       - REDIS_CACHE_URL=redis://redis
       - REDIS_EDGE_URL=redis://redis
       - REGION=us-east-1
-      - SSL_AT_REST_KEY=7022e25d5b4f47a7f1b8d9f532d35e4be46660d4717785a6
+      - SSL_AT_REST_KEY=252216bd27cfaecf0109a9cdc75bf5fc
     volumes:
       - ./edge:/usr/src/code/edge:cached
 
@@ -73,6 +73,7 @@ services:
       - MONGODB_URL=mongodb://admin:secret@mongo:27017
       - NODE_ENV=development
       - REDIS_URL=redis://redis
+      - SSL_AT_REST_KEY=252216bd27cfaecf0109a9cdc75bf5fc
     volumes:
       - ./api:/usr/src/code/api:cached
 

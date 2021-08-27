@@ -60,7 +60,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
         const dnsRecord = `_acme-challenge.${auth.identifier.value}`;
         const recordValue = keyAuthorization;
 
-        await dnsimple.zones.createZoneRecord(
+        await dnsClient.zones.createZoneRecord(
           DNSIMPLE_ACCOUNT_ID,
           WILDCARD_DOMAIN,
           {
@@ -107,7 +107,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
         Bucket: bucket,
         ContentType: 'text/plain',
         Key: `ssl/*.${WILDCARD_DOMAIN}`,
-      }).promise()
+      }).promise();
     }));
 
     console.log('Done!');
