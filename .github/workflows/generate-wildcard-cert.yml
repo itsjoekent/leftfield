@@ -1,4 +1,5 @@
 name: Generate wildcard certificate
+on: workflow_dispatch
 jobs:
   generate-wildcard:
     runs-on: ubuntu-latest
