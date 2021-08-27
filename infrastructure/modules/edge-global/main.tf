@@ -30,29 +30,30 @@ resource "aws_globalaccelerator_accelerator" "edge" {
 }
 
 locals {
+  domain_name            = replace(replace(var.product_domain, "getleftfield.com", ""), ".", "")
   accelerator_ip_address = flatten(aws_globalaccelerator_accelerator.edge.ip_sets[*].ip_addresses)
 }
 
 resource "dnsimple_record" "root_domain_ip_1" {
-  domain = var.product_domain
+  domain = "getleftfield.com"
+  name   = local.domain_name
   value  = local.accelerator_ip_address[0]
   type   = "A"
   ttl    = 3600
-  name   = "product-${var.environment}-ip-1"
 }
 
 resource "dnsimple_record" "root_domain_ip_2" {
-  domain = var.product_domain
+  domain = "getleftfield.com"
+  name   = local.domain_name
   value  = local.accelerator_ip_address[1]
   type   = "A"
   ttl    = 3600
-  name   = "product-${var.environment}-ip-2"
 }
 
 resource "dnsimple_record" "www_domain_ip_1" {
-  count  = length(split(".", var.product_domain)) < 3 ? 1 : 0
-  domain = "www.${var.product_domain}"
-  value  = local.accelerator_ip_address[0]
+  count  = length(local.domain_name) > 0 ? 1 : 0
+  domain = "getleftfield.com"
+  name = "www"
   type   = "A"
   ttl    = 3600
   name   = "product-${var.environment}-ip-1"
@@ -60,11 +61,11 @@ resource "dnsimple_record" "www_domain_ip_1" {
 
 resource "dnsimple_record" "www_domain_ip_2" {
   count  = length(split(".", var.product_domain)) < 3 ? 1 : 0
-  domain = "www.${var.product_domain}"
+  domain = "getleftfield.com"
+  name = "www"
   value  = local.accelerator_ip_address[1]
   type   = "A"
   ttl    = 3600
-  name   = "product-${var.environment}-ip-2"
 }
 
 output "image_repository" {
