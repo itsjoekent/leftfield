@@ -41,6 +41,7 @@ services:
       - REDIS_CACHE_URL=redis://redis
       - REDIS_EDGE_URL=redis://redis
       - REGION=us-east-1
+      - SSL_AT_REST_KEY=7022e25d5b4f47a7f1b8d9f532d35e4be46660d4717785a6
     volumes:
       - ./edge:/usr/src/code/edge:cached
 

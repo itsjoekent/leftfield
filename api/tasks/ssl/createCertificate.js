@@ -1,9 +1,14 @@
 const NODE_ENV = process.env.NODE_ENV;
+const SSL_AT_REST_KEY = process.env.SSL_AT_REST_KEY;
+
+const crypto = require('crypto');
 
 const acme = require('acme-client');
 const ms = require('ms');
 
 const { upload } = require('../../utils/storage');
+
+const cipher = crypto.createCipheriv('aes256', SSL_AT_REST_KEY, Buffer.alloc(16, 0));
 
 module.exports = async function createCertificate(domainName) {
   const accountKey = await acme.forge.createPrivateKey();
@@ -20,13 +25,15 @@ module.exports = async function createCertificate(domainName) {
   });
 
   let token = null;
+  let tokenContents = null;
 
-  function createChallenge(auth, challenge, key) {
+  function createChallenge(auth, challenge, keyAuthorization) {
     if (challenge.type !== 'http-01') {
       throw new Error(`Unsupported ssl challenge type, "${challenge.type}" for ${domainName}`);
     }
 
     token = challenge.token;
+    tokenContents = keyAuthorization;
   }
 
   const cert = await client.auto({
@@ -38,12 +45,16 @@ module.exports = async function createCertificate(domainName) {
 
   const data = JSON.stringify({
     token,
+    tokenContents,
     key: key.toString(),
     cert: cert.toString(),
     createdAt: Date.now(),
     expires: ms('90 days'),
   });
 
+  let encryptedData = cipher.update(data, 'utf8', 'hex');
+  encryptedData += cipher.final('hex');
+
   const storageKey = `ssl/${domainName}`;
-  await upload(storageKey, data, 'application/json');
+  await upload(storageKey, encryptedData, 'text/plain');
 }

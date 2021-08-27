@@ -8,6 +8,7 @@ const REDIS_EDGE_URL = process.env.REDIS_EDGE_URL;
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
+const { URL } = require('url');
 
 if (NODE_ENV === 'development') {
   require(path.join(process.cwd(), 'environment/development.api'));
@@ -28,6 +29,16 @@ const insecureApp = router();
 
 const redisCacheClient = new Redis(REDIS_CACHE_URL, { enableReadyCheck: true });
 const redisEdgeClient = new Redis(REDIS_EDGE_URL, { enableReadyCheck: true });
+
+const edgeHost = new URL(EDGE_DOMAIN).host;
+
+function poweredBy(request, response, next) {
+  response.set('X-Powered-By', 'Leftfield');
+
+  if (process.env.REGION) {
+    response.set('X-LF-Region', process.env.REGION);
+  }
+}
 
 function requestErrorHandler(error, response) {
   const errorId = uuid();
@@ -50,7 +61,7 @@ function healthCheck(request, response) {
     if (NODE_ENV === 'development') {
       ssl = await require(path.join(process.cwd(), 'ssl/read'))();
     } else {
-      const { cert, key } = await retrieveSsl(EDGE_DOMAIN, redisEdgeClient);
+      const { cert, key } = await retrieveSsl('*.getleftfield.com', redisEdgeClient);
       ssl = { cert, key };
     }
 
@@ -59,32 +70,49 @@ function healthCheck(request, response) {
       SNICallback: sniLookup(redisEdgeClient),
     };
 
-    secureApp.get('/_leftfield/health-check', healthCheck);
-    insecureApp.get('/_leftfield/health-check', healthCheck);
+    secureApp.get('/_lf/health-check', healthCheck);
+    insecureApp.get('/_lf/health-check', healthCheck);
 
-    // TODO: Serve static/www
-    // TODO: encrypt ssl at rest
+    secureApp.get('/_lf/file/', async function handler(request, response) {
+      try {
+        const path = request.path.toLowerCase();
+        const key = path.replace('/_lf/file/', '');
+
+        const respondWith = await retrieveFile(key, request, { redisCacheClient });
+
+        if (respondWith) {
+          respondWith(response);
+          return;
+        }
+
+        response.status(404).end();
+        return;
+      } catch (error) {
+        requestErrorHandler(error, response);
+      }
+    });
+
+    secureApp.get('*', async function handler(request, response, next) {
+      const host = request.get('host').toLowerCase();
+
+      if (host === edgeHost) {
+        res.send('homerun!');
+        // TODO:
+        // - Lookup domain in redisEdgeClient
+        // - Find published product version
+        // - create key based on published version + product type (SPA vs SSR) + path
+        // - retrieveFile()
+      } else {
+        next();
+      }
+    });
 
     secureApp.get('*', async function handler(request, response) {
       try {
         const host = request.get('host').toLowerCase();
         const path = request.path.toLowerCase();
 
-        if (EDGE_DOMAIN.includes(host)) {
-          if (path.startsWith('/file')) {
-            const key = path.replace('/file/', '');
-
-            const respondWith = await retrieveFile(key, request, { redisCacheClient });
-
-            if (respondWith) {
-              respondWith(response);
-              return;
-            }
-          }
-
-          response.status(404).end();
-          return;
-        }
+        res.send('grandslam!');
 
         // TODO:
         // - Lookup domain in redisEdgeClient
@@ -92,7 +120,7 @@ function healthCheck(request, response) {
         // - create key based on snapshot + path
         // - retrieveFile()
 
-        response.status(404).end();
+        // response.status(404).end();
       } catch (error) {
         requestErrorHandler(error, response);
       }
@@ -116,7 +144,7 @@ function healthCheck(request, response) {
           }
 
           response.set('Content-Type', 'text/plain');
-          response.status(200).send(ssl.token);
+          response.status(200).send(ssl.tokenContents);
         } catch (error) {
           requestErrorHandler(error, response);
         }
