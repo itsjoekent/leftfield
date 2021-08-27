@@ -609,7 +609,7 @@ data "aws_ami" "aws_optimized_ecs" {
 }
 
 resource "aws_launch_configuration" "ecs_launch_config" {
-  name                 = "team-${var.region}-elc"
+  name_prefix          = "team-${var.region}-elc-"
   image_id             = data.aws_ami.aws_optimized_ecs.id
   iam_instance_profile = aws_iam_instance_profile.edge_ec2.name
   security_groups      = local.security_groups
@@ -629,6 +629,10 @@ resource "aws_autoscaling_group" "edge" {
   max_size                  = var.auto_scale_max
   health_check_grace_period = 300
   health_check_type         = "EC2"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # resource "aws_appautoscaling_target" "edge_ecs" {
