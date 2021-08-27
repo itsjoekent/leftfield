@@ -56,8 +56,10 @@ module.exports = async function createCertificate(domainName) {
     Buffer.from(crypto.randomBytes(16), 'utf8'),
   );
 
-  let encryptedData = cipher.update(data, 'utf8', 'hex');
-  encryptedData += cipher.final('hex');
+  const encryptedData = Buffer.concat([
+    cipher.update(data, 'utf8'),
+    cipher.final(),
+  ]).toString('hex');
 
   const storageKey = `ssl/${domainName}`;
   await upload(storageKey, encryptedData, 'text/plain');

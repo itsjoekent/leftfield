@@ -98,8 +98,10 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
         Buffer.from(crypto.randomBytes(16), 'utf8'),
       );
 
-      let encryptedData = cipher.update(data, 'utf8', 'hex');
-      encryptedData += cipher.final('hex');
+      const encryptedData = Buffer.concat([
+        cipher.update(data, 'utf8'),
+        cipher.final(),
+      ]).toString('hex');
 
       return S3.upload({
         Body: encryptedData,
