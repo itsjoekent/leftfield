@@ -573,7 +573,7 @@ data "aws_iam_policy_document" "ecs_agent" {
 }
 
 resource "aws_iam_role" "edge_ec2" {
-  name               = "ecs-agent"
+  name               = "team-${var.region}-ec2"
   assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
 }
 
@@ -583,7 +583,7 @@ resource "aws_iam_role_policy_attachment" "edge_ec2" {
 }
 
 resource "aws_iam_instance_profile" "edge_ec2" {
-  name = "ecs-agent"
+  name = "team-${var.region}-ec2"
   role = aws_iam_role_policy_attachment.edge_ec2.role
 }
 
