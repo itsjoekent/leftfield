@@ -402,6 +402,11 @@ resource "aws_ecs_task_definition" "edge" {
           name  = "REDIS_CACHE_URL"
           value = aws_elasticache_replication_group.edge_cache.primary_endpoint_address
         }
+
+        REGION = {
+          name  = "REGION"
+          value = var.region
+        }
       }, var.container_vars)))
 
       logConfiguration = {

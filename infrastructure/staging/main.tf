@@ -57,8 +57,9 @@ provider "dnsimple" {
 }
 
 module "edge_global" {
-  source      = "../modules/edge-global"
-  environment = var.ENVIRONMENT
+  source         = "../modules/edge-global"
+  environment    = var.ENVIRONMENT
+  product_domain = var.PRODUCT_DOMAIN
 }
 
 module "edge_storage_us_west_1" {
