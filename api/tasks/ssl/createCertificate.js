@@ -1,12 +1,12 @@
 const NODE_ENV = process.env.NODE_ENV;
 const SSL_AT_REST_KEY = process.env.SSL_AT_REST_KEY;
 
-const crypto = require('crypto');
-
 const acme = require('acme-client');
 const ms = require('ms');
+const path = require('path');
 
 const { upload } = require('../../utils/storage');
+const cryptography = require(path.join(process.cwd(), 'ssl/cryptography'));
 
 module.exports = async function createCertificate(domainName) {
   const accountKey = await acme.forge.createPrivateKey();
@@ -41,26 +41,15 @@ module.exports = async function createCertificate(domainName) {
     challengePriority: ['http-01'],
   });
 
-  const data = JSON.stringify({
+  const data = {
     token,
     tokenContents,
     key: key.toString(),
     cert: cert.toString(),
     createdAt: Date.now(),
     expires: ms('90 days'),
-  });
-
-  const cipher = crypto.createCipheriv(
-    'aes-256-cbc',
-    SSL_AT_REST_KEY,
-    Buffer.from(crypto.randomBytes(16), 'utf8'),
-  );
-
-  const encryptedData = Buffer.concat([
-    cipher.update(data, 'utf8'),
-    cipher.final(),
-  ]).toString('hex');
+  };
 
   const storageKey = `ssl/${domainName}`;
-  await upload(storageKey, encryptedData, 'text/plain');
+  await upload(storageKey, cryptography.encrypt(data), 'text/plain');
 }

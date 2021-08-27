@@ -1,26 +1,17 @@
 const SSL_AT_REST_KEY = process.env.SSL_AT_REST_KEY;
 
-const crypto = require('crypto');
 const ms = require('ms');
+const path = require('path');
 
 const logger = require('./logger');
 const retrieveFile = require('./retrieveFile');
 const { getObject } = require('./storage');
 
+const cryptography = require(path.join(process.cwd(), 'ssl/cryptography'));
+
 module.exports = async function retrieveSsl(domainName, redisEdgeClient) {
   function buildResponse(sslData) {
-    const decipher = crypto.createDecipheriv(
-      'aes-256-cbc',
-      SSL_AT_REST_KEY,
-      Buffer.alloc(16, 0),
-    );
-
-    const decrypted = Buffer.concat([
-      decipher.update(sslData, 'hex'),
-      decipher.final(),
-    ]).toString('utf8');
-
-    const ssl = JSON.parse(sslData);
+    const ssl = cryptography.decrypt(sslData)
 
     return ssl;
   }

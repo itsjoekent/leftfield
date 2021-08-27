@@ -3,12 +3,12 @@ const DNSIMPLE_API_TOKEN = process.env.DNSIMPLE_API_TOKEN;
 const ENVIRONMENTS = process.env.ENVIRONMENTS;
 const WILDCARD_DOMAIN = process.env.WILDCARD_DOMAIN;
 
-const crypto = require('crypto');
-
 const acme = require('acme-client');
 const AWS = require('aws-sdk');
 const dnsimple = require('dnsimple');
 const ms = require('ms');
+
+const cryptography = require('./cryptography');
 
 const dnsClient = dnsimple({
   accessToken: DNSIMPLE_API_TOKEN,
@@ -82,29 +82,18 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
 
     console.log(`Uploading certificate to ${ENVIRONMENTS.split(',').join(', ').toLowerCase()} storage...`);
 
-    const data = JSON.stringify({
+    const data = {
       token,
       tokenContents,
       key: key.toString(),
       cert: cert.toString(),
       createdAt: Date.now(),
       expires: ms('90 days'),
-    });
+    };
 
-    await Promise.all(storage.map(({ S3, bucket, encryptionKey }) => {
-      const cipher = crypto.createCipheriv(
-        'aes-256-cbc',
-        encryptionKey,
-        Buffer.from(crypto.randomBytes(16), 'utf8'),
-      );
-
-      const encryptedData = Buffer.concat([
-        cipher.update(data, 'utf8'),
-        cipher.final(),
-      ]).toString('hex');
-
+    await Promise.all(storage.map(({ S3, bucket,  }) => {
       return S3.upload({
-        Body: encryptedData,
+        Body: cryptography.encrypt(encryptionKey, data),
         Bucket: bucket,
         ContentType: 'text/plain',
         Key: `ssl/*.${WILDCARD_DOMAIN}`,
