@@ -27,7 +27,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
 
   return {
     S3,
-    bucket: get('STORAGE_PRIMARY_BUCKET'),
+    bucket: getEnv('STORAGE_PRIMARY_BUCKET'),
     cipher: crypto.createCipheriv('aes256', get('SSL_AT_REST_KEY'), Buffer.alloc(16, 0)),
   };
 });
