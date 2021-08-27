@@ -6,7 +6,7 @@ const WILDCARD_DOMAIN = process.env.WILDCARD_DOMAIN;
 const crypto = require('crypto');
 
 const acme = require('acme-client');
-const aws = require('aws-sdk');
+const AWS = require('aws-sdk');
 const dnsimple = require('dnsimple');
 const ms = require('ms');
 
