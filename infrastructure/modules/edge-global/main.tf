@@ -53,16 +53,16 @@ resource "dnsimple_record" "root_domain_ip_2" {
 resource "dnsimple_record" "www_domain_ip_1" {
   count  = length(local.domain_name) > 0 ? 1 : 0
   domain = "getleftfield.com"
-  name = "www"
+  name   = "www"
+  value  = local.accelerator_ip_address[0]
   type   = "A"
   ttl    = 3600
-  name   = "product-${var.environment}-ip-1"
 }
 
 resource "dnsimple_record" "www_domain_ip_2" {
-  count  = length(split(".", var.product_domain)) < 3 ? 1 : 0
+  count  = length(local.domain_name) > 0 ? 1 : 0
   domain = "getleftfield.com"
-  name = "www"
+  name   = "www"
   value  = local.accelerator_ip_address[1]
   type   = "A"
   ttl    = 3600
