@@ -6,8 +6,8 @@ crypto.randomBytes(256, (err, randomBytes) => {
   console.log(
     crypto.scryptSync(
       randomBytes.toString('hex'),
-      'salt',
-      24,
+      `${Date.now()}`,
+      16,
     ).toString('hex')
   );
 });
