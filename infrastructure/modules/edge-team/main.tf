@@ -443,8 +443,31 @@ data "aws_ip_ranges" "all" {
   services = ["globalaccelerator", "route53_healthchecks"]
 }
 
+resource "aws_security_group" "edge_aws" {
+  # AWS enforces a maxiumum amount of rules per security group,
+  # this is a hacky workaround.
+  count = ceil(length(data.aws_ip_ranges.all.cidr_blocks) / 50)
+
+  name   = "team-${var.region}-aws-${count.index}"
+  vpc_id = aws_vpc.edge.id
+
+  ingress = [
+    {
+      description      = "AWS Services"
+      from_port        = 0
+      to_port          = 0
+      protocol         = "-1"
+      cidr_blocks      = slice(data.aws_ip_ranges.all.cidr_blocks, count.index * 50, min((count.index * 50) + 50, length(data.aws_ip_ranges.all.cidr_blocks)))
+      ipv6_cidr_blocks = null
+      prefix_list_ids  = null
+      security_groups  = null
+      self             = null
+    }
+  ]
+}
+
 resource "aws_security_group" "edge_ecs" {
-  name   = "team-${var.region}-scg"
+  name   = "team-${var.region}-ecs"
   vpc_id = aws_vpc.edge.id
 
   ingress = [
@@ -466,17 +489,6 @@ resource "aws_security_group" "edge_ecs" {
       protocol         = "tcp"
       cidr_blocks      = [aws_vpc.edge.cidr_block]
       ipv6_cidr_blocks = null
-      prefix_list_ids  = null
-      security_groups  = null
-      self             = null
-    },
-    {
-      description      = "AWS Services"
-      from_port        = 0
-      to_port          = 0
-      protocol         = "-1"
-      cidr_blocks      = data.aws_ip_ranges.all.cidr_blocks
-      ipv6_cidr_blocks = data.aws_ip_ranges.all.ipv6_cidr_blocks
       prefix_list_ids  = null
       security_groups  = null
       self             = null
@@ -516,8 +528,11 @@ resource "aws_ecs_service" "edge" {
   }
 
   network_configuration {
-    subnets         = aws_subnet.edge_private.*.id
-    security_groups = [aws_security_group.edge_ecs.id]
+    subnets = aws_subnet.edge_private.*.id
+    security_groups = flatten([
+      [aws_security_group.edge_ecs.id],
+      aws_security_group.edge_aws.*.id
+    ])
   }
 
   load_balancer {
