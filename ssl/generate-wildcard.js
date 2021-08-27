@@ -91,7 +91,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
       expires: ms('90 days'),
     };
 
-    await Promise.all(storage.map(({ S3, bucket,  }) => {
+    await Promise.all(storage.map(({ S3, bucket, encryptionKey }) => {
       return S3.upload({
         Body: cryptography.encrypt(encryptionKey, data),
         Bucket: bucket,
