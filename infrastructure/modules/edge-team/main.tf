@@ -23,6 +23,9 @@ variable "environment" {
 }
 variable "globalaccelerator" {}
 variable "image_repository" {}
+variable "instance_type" {
+  type = string
+}
 variable "region" {
   type = string
 }
@@ -510,6 +513,13 @@ resource "aws_security_group" "edge_ecs" {
   ]
 }
 
+locals {
+  security_groups = flatten([
+    [aws_security_group.edge_ecs.id],
+    aws_security_group.edge_aws.*.id
+  ])
+}
+
 resource "aws_ecs_service" "edge" {
   name            = "team-${var.region}-svc"
   cluster         = aws_ecs_cluster.edge.id
@@ -528,11 +538,8 @@ resource "aws_ecs_service" "edge" {
   }
 
   network_configuration {
-    subnets = aws_subnet.edge_private.*.id
-    security_groups = flatten([
-      [aws_security_group.edge_ecs.id],
-      aws_security_group.edge_aws.*.id
-    ])
+    subnets         = aws_subnet.edge_private.*.id
+    security_groups = local.security_groups
   }
 
   load_balancer {
@@ -554,42 +561,138 @@ resource "aws_ecs_service" "edge" {
   ]
 }
 
-resource "aws_appautoscaling_target" "edge_ecs" {
-  max_capacity       = var.auto_scale_max
-  min_capacity       = 1
-  resource_id        = "service/${aws_ecs_cluster.edge.name}/${aws_ecs_service.edge.name}"
-  scalable_dimension = "ecs:service:DesiredCount"
-  service_namespace  = "ecs"
-}
+data "aws_iam_policy_document" "ecs_agent" {
+  statement {
+    actions = ["sts:AssumeRole"]
 
-resource "aws_appautoscaling_policy" "edge_ecs_memory" {
-  name               = "team-${var.region}-mem"
-  policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.edge_ecs.resource_id
-  scalable_dimension = aws_appautoscaling_target.edge_ecs.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.edge_ecs.service_namespace
-
-  target_tracking_scaling_policy_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
     }
-
-    target_value = 60
   }
 }
 
-resource "aws_appautoscaling_policy" "edge_ecs_cpu" {
-  name               = "team-${var.region}-cpu"
-  policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.edge_ecs.resource_id
-  scalable_dimension = aws_appautoscaling_target.edge_ecs.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.edge_ecs.service_namespace
+resource "aws_iam_role" "ecs_agent" {
+  name               = "ecs-agent"
+  assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
+}
 
-  target_tracking_scaling_policy_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ECSServiceAverageCPUUtilization"
-    }
+resource "aws_iam_role_policy_attachment" "ecs_agent" {
+  role       = "aws_iam_role.ecs_agent.name"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
 
-    target_value = 60
+resource "aws_iam_instance_profile" "ecs_agent" {
+  name = "ecs-agent"
+  role = aws_iam_role.ecs_agent.name
+}
+
+data "aws_ami" "aws_optimized_ecs" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn-ami*amazon-ecs-optimized"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["amazon"]
+}
+
+resource "aws_launch_configuration" "ecs_launch_config" {
+  name                 = "team-${var.region}-elc"
+  image_id             = data.aws_ami.aws_optimized_ecs.id
+  iam_instance_profile = aws_iam_instance_profile.ecs_agent.name
+  security_groups      = local.security_groups
+  user_data            = "#!/bin/bash\necho ECS_CLUSTER=team-${var.region}-cls} >> /etc/ecs/ecs.config"
+  instance_type        = var.instance_type
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
+
+resource "aws_autoscaling_group" "edge" {
+  name                      = "team-${var.region}-asg"
+  vpc_zone_identifier       = aws_subnet.edge_private.*.id
+  launch_configuration      = aws_launch_configuration.ecs_launch_config.name
+  min_size                  = 1
+  max_size                  = var.auto_scale_max
+  health_check_grace_period = 300
+  health_check_type         = "EC2"
+}
+
+# resource "aws_appautoscaling_target" "edge_ecs" {
+#   max_capacity       = var.auto_scale_max
+#   min_capacity       = 1
+#   resource_id        = "service/${aws_ecs_cluster.edge.name}/${aws_ecs_service.edge.name}"
+#   scalable_dimension = "ecs:service:DesiredCount"
+#   service_namespace  = "ecs"
+# }
+#
+# resource "aws_appautoscaling_policy" "edge_ecs_memory" {
+#   name               = "team-${var.region}-mem"
+#   policy_type        = "TargetTrackingScaling"
+#   resource_id        = aws_appautoscaling_target.edge_ecs.resource_id
+#   scalable_dimension = aws_appautoscaling_target.edge_ecs.scalable_dimension
+#   service_namespace  = aws_appautoscaling_target.edge_ecs.service_namespace
+#
+#   target_tracking_scaling_policy_configuration {
+#     predefined_metric_specification {
+#       predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+#     }
+#
+#     target_value = 60
+#   }
+# }
+#
+# resource "aws_appautoscaling_policy" "edge_ecs_cpu" {
+#   name               = "team-${var.region}-cpu"
+#   policy_type        = "TargetTrackingScaling"
+#   resource_id        = aws_appautoscaling_target.edge_ecs.resource_id
+#   scalable_dimension = aws_appautoscaling_target.edge_ecs.scalable_dimension
+#   service_namespace  = aws_appautoscaling_target.edge_ecs.service_namespace
+#
+#   target_tracking_scaling_policy_configuration {
+#     predefined_metric_specification {
+#       predefined_metric_type = "ECSServiceAverageCPUUtilization"
+#     }
+#
+#     target_value = 60
+#   }
+# }
+
+# --- from guide VVV https://www.scavasoft.com/terraform-aws-ecs-cluster-provision/
+# resource "aws_autoscaling_policy" "ecs_cluster_scale_policy" {
+#   name = "${var.cluster_name}_ecs_cluster_spot_scale_policy"
+#   policy_type = "TargetTrackingScaling"
+#   adjustment_type = "ChangeInCapacity"
+#   lifecycle {
+#     ignore_changes = [
+#       adjustment_type
+#     ]
+#   }
+#   autoscaling_group_name = aws_autoscaling_group.ecs_cluster_spot.name
+#
+#   target_tracking_configuration {
+#     customized_metric_specification {
+#       metric_dimension {
+#         name = "ClusterName"
+#         value = var.cluster_name
+#       }
+#       metric_name = "MemoryReservation"
+#       namespace = "AWS/ECS"
+#       statistic = "Average"
+#     }
+#     target_value = 70.0
+#   }
+# }

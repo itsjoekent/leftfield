@@ -163,7 +163,8 @@ module "edge_team_us_east_1" {
   container_vars    = local.edge_container_vars
   container_secrets = local.edge_container_secrets
   container_cpu     = 1
-  container_memory  = 2048
+  container_memory  = 1024
+  instance_type     = "t2.micro"
   auto_scale_max    = 2
   storage_bucket    = module.edge_storage_us_east_1
   cache_node_type   = "cache.t2.small"
