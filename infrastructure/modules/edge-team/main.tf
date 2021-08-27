@@ -439,6 +439,10 @@ resource "aws_ecs_task_definition" "edge" {
   ])
 }
 
+data "aws_ip_ranges" "all" {
+  services = ["globalaccelerator", "route53_healthchecks"]
+}
+
 resource "aws_security_group" "edge_ecs" {
   name   = "team-${var.region}-scg"
   vpc_id = aws_vpc.edge.id
@@ -462,6 +466,17 @@ resource "aws_security_group" "edge_ecs" {
       protocol         = "tcp"
       cidr_blocks      = [aws_vpc.edge.cidr_block]
       ipv6_cidr_blocks = null
+      prefix_list_ids  = null
+      security_groups  = null
+      self             = null
+    },
+    {
+      description      = "AWS Services"
+      from_port        = 0
+      to_port          = 0
+      protocol         = "-1"
+      cidr_blocks      = data.aws_ip_ranges.all.cidr_blocks
+      ipv6_cidr_blocks = data.aws_ip_ranges.all.ipv6_cidr_blocks
       prefix_list_ids  = null
       security_groups  = null
       self             = null
