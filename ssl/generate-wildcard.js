@@ -1,10 +1,6 @@
-const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 const DNSIMPLE_ACCOUNT_ID = process.env.DNSIMPLE_ACCOUNT_ID;
 const DNSIMPLE_API_TOKEN = process.env.DNSIMPLE_API_TOKEN;
-const SSL_AT_REST_KEY = process.env.SSL_AT_REST_KEY;
-const STORAGE_PRIMARY_BUCKET = process.env.STORAGE_PRIMARY_BUCKET;
-const STORAGE_PRIMARY_ENDPOINT = process.env.STORAGE_PRIMARY_ENDPOINT;
+const ENVIRONMENTS = process.env.ENVIRONMENTS;
 const WILDCARD_DOMAIN = process.env.WILDCARD_DOMAIN;
 
 const crypto = require('crypto');
@@ -18,12 +14,22 @@ const dnsClient = dnsimple({
   accessToken: DNSIMPLE_API_TOKEN,
 });
 
-const cipher = crypto.createCipheriv('aes256', SSL_AT_REST_KEY, Buffer.alloc(16, 0));
+const storage = ENVIRONMENTS.split(',').map((environment) => {
+  function getEnv(key) {
+    return process.env[`${environment}_${key}`];
+  }
 
-const S3 = new AWS.S3({
-  endpoint: new AWS.Endpoint(STORAGE_PRIMARY_ENDPOINT),
-  accessKeyId: AWS_ACCESS_KEY_ID,
-  secretAccessKey: AWS_SECRET_ACCESS_KEY,
+  const S3 = new AWS.S3({
+    endpoint: new AWS.Endpoint(getEnv('STORAGE_PRIMARY_ENDPOINT')),
+    accessKeyId: getEnv('AWS_ACCESS_KEY_ID'),
+    secretAccessKey: getEnv('AWS_SECRET_ACCESS_KEY'),
+  });
+
+  return {
+    S3,
+    bucket: get('STORAGE_PRIMARY_BUCKET'),
+    cipher: crypto.createCipheriv('aes256', get('SSL_AT_REST_KEY'), Buffer.alloc(16, 0)),
+  };
 });
 
 (async function generateWildcard() {
@@ -75,7 +81,7 @@ const S3 = new AWS.S3({
       challengeCreateFn: createChallenge,
     });
 
-    console.log(`Uploading certificate to edge storage...`);
+    console.log(`Uploading certificate to ${ENVIRONMENTS.split(',').join(', ')} storage...`);
 
     const data = JSON.stringify({
       token,
@@ -86,15 +92,17 @@ const S3 = new AWS.S3({
       expires: ms('90 days'),
     });
 
-    let encryptedData = cipher.update(data, 'utf8', 'hex');
-    encryptedData += cipher.final('hex');
+    await Promise.all(storage.map(({ S3, bucket, cipher }) => {
+      let encryptedData = cipher.update(data, 'utf8', 'hex');
+      encryptedData += cipher.final('hex');
 
-    await s3.upload({
-      Body: encryptedData,
-      Bucket: STORAGE_PRIMARY_BUCKET,
-      ContentType: 'text/plain',
-      Key: `ssl/*.${WILDCARD_DOMAIN}`,
-    }).promise();
+      return S3.upload({
+        Body: encryptedData,
+        Bucket: bucket,
+        ContentType: 'text/plain',
+        Key: `ssl/*.${WILDCARD_DOMAIN}`,
+      }).promise()
+    }));
 
     console.log('Done!');
   } catch (error) {

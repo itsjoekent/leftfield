@@ -66,7 +66,6 @@
     "wouter": "^2.7.4"
   },
   "scripts": {
-    "ssl:localhost": "node ssl/generate-localhost",
     "build:baseball:preview-local": "NODE_ENV=development webpack --config ./baseballs/preview/preview-local.config.js",
     "build:baseball:preview-remote": "NODE_ENV=production webpack --config ./baseballs/preview/preview-remote.config.js",
     "build:baseball:presentation": "NODE_ENV=production webpack --config ./baseballs/presentation/presentation-remote.config.js",
@@ -77,6 +76,9 @@
     "watch:baseball:preview-local": "NODE_ENV=production webpack --config ./baseballs/preview/preview-local.config.js --watch",
     "watch:product:development": "NODE_ENV=development webpack --config ./static/product/webpack/development.config.js --watch",
     "watch:task:manufacture": "NODE_ENV=development webpack --config ./api/tasks/manufacture/ssr.config.js --watch",
+    "ssl:key": "node ssl/generate-encryption-key",
+    "ssl:localhost": "node ssl/generate-localhost",
+    "ssl:wildcard": "node ssl/generate-wildcard",
     "start": "NODE_ENV=development PORT=5000 npm-run-all --parallel watch:static:development start:static",
     "start:api": "node api",
     "start:api:development": "NODE_ENV=development nodemon api",
