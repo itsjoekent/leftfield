@@ -223,9 +223,18 @@ resource "aws_lb" "edge" {
   name                             = "team-${var.region}-lb"
   load_balancer_type               = "network"
   subnets                          = aws_subnet.edge_private.*.id
+  internal                         = true
   enable_cross_zone_load_balancing = true
   enable_deletion_protection       = var.environment == "production" ? true : false
 }
+
+# resource "aws_lb" "edge" {
+#   name                             = "team-${var.region}-lb"
+#   load_balancer_type               = "network"
+#   subnets                          = aws_subnet.edge_private.*.id
+#   enable_cross_zone_load_balancing = true
+#   enable_deletion_protection       = var.environment == "production" ? true : false
+# }
 
 resource "aws_lb_target_group" "edge_tcp" {
   name               = "team-${var.region}-tcp-tg"
