@@ -27,8 +27,27 @@ const sniLookup = require('./sniLookup');
 const secureApp = router();
 const insecureApp = router();
 
-const redisCacheClient = new Redis(REDIS_CACHE_URL, { enableReadyCheck: true });
-const redisEdgeClient = new Redis(REDIS_EDGE_URL, { enableReadyCheck: true });
+const sharedRedisConfig = {
+  port: 6379,
+};
+
+if (NODE_ENV !== 'development') {
+  sharedRedisConfig.tls = {};
+}
+
+const redisCacheClient = new Redis({
+  ...sharedRedisConfig,
+  host: REDIS_CACHE_URL,
+}, {
+  enableReadyCheck: true,
+});
+
+const redisEdgeClient = new Redis({
+  ...sharedRedisConfig,
+  host: REDIS_EDGE_URL,
+}, {
+  enableReadyCheck: true,
+});
 
 const edgeHost = new URL(EDGE_DOMAIN).host;
 

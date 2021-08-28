@@ -1,24 +1,35 @@
-#  - ingress ports
-#  - access logs
-#  - "edge_vpc_logs"
 #  - autoscale policies
 #  - deploying should keep the containers running & drain them
-#  - cant connect to redis cache
-
 # 429a29d8-a46a-4db3-9c92-e2eeebb95da8
 # 2021-08-28 02:43:11 -0400
 # service team-us-east-1-svc was unable to place a task because no container instance met all of its requirements. The closest matching container-instance 8dac02653c8b4e8b9d58f9c5f899af63 has insufficient memory available. For more information, see the Troubleshooting section.
 # --- Why doesnt it create a new container??
 
-# this wont delete??
-# update
-# attributes {
-# delete
-# flow_logs_s3_bucket :
-# "leftfield-staging-logs"
-# delete
-# flow_logs_s3_prefix :
-# "accelerator-flow-logs/"
+# ----
+
+#  - cant connect to redis cache
+
+# 2021-08-28T03:09:24.480-04:00	> node edge
+#
+# 2021-08-28T03:09:25.599-04:00	[ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
+#
+# 2021-08-28T03:09:25.599-04:00	at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1146:16)
+#
+# 2021-08-28T03:09:25.652-04:00	[ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
+#
+# 2021-08-28T03:09:25.652-04:00	at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1146:16)
+#
+# 2021-08-28T03:09:25.753-04:00	[ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
+#
+# 2021-08-28T03:09:25.753-04:00	at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1146:16)
+#
+# 2021-08-28T03:09:25.904-04:00	[ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
+#
+# 2021-08-28T03:09:25.904-04:00	at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1146:16)
+#
+# 2021-08-28T03:09:26.105-04:00	[ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
+#
+# 2021-08-28T03:09:26.105-04:00	at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1146:16)
 
 variable "auto_scale_max" {
   type = number
@@ -87,21 +98,9 @@ resource "aws_vpc" "edge" {
 }
 
 # TODO: Delete
-resource "aws_s3_bucket" "edge_vpc_logs" {
-  bucket = "leftfield-${var.environment}-${var.region}-vpc-logs"
-  acl    = "private"
-}
-
 resource "aws_s3_bucket" "edge_logs" {
   bucket = "leftfield-edge-${var.environment}-team-${var.region}-logs"
   acl    = "private"
-}
-
-resource "aws_flow_log" "edge_vpc_logs" {
-  log_destination      = aws_s3_bucket.edge_logs.arn
-  log_destination_type = "s3"
-  traffic_type         = "ALL"
-  vpc_id               = aws_vpc.edge.id
 }
 
 resource "aws_internet_gateway" "edge" {
@@ -254,12 +253,6 @@ resource "aws_lb" "edge" {
   internal                         = false
   enable_cross_zone_load_balancing = true
   enable_deletion_protection       = var.environment == "production" ? true : false
-
-  # access_logs {
-  #   enabled = true
-  #   bucket  = aws_s3_bucket.edge_logs.id
-  #   prefix  = "lb"
-  # }
 }
 
 resource "aws_lb_target_group" "edge_tcp" {
