@@ -3,6 +3,10 @@
 # Peering between Edge VPC's
 # Global Edge redis cluster
 
+# https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-tag-mutability.html
+#  -> aws ecs update-service --cluster <<cluster-name>> --service <<service-name>> --force-new-deployment --region <<region>>
+#  -> Run this in Github Action after ECR update
+
 # API application, Mongo
 #  - Seperate domain / infra from Edge
 

@@ -247,8 +247,8 @@ resource "aws_elasticache_replication_group" "edge_cache" {
 }
 
 resource "aws_elasticache_user" "cache" {
-  user_id              = "edge_cache_${var.region}"
-  user_name            = "edge_cache_${var.region}"
+  user_id              = "edge-cache-${var.region}"
+  user_name            = "edge-cache-${var.region}"
   access_string        = "on ~* +@all"
   engine               = "REDIS"
   no_password_required = true
