@@ -85,23 +85,27 @@ function healthCheck(request, response) {
     });
 
     secureApp.get('*', async function handler(request, response, next) {
-      const host = request.get('host').toLowerCase();
+      try {
+        const host = (request.get('host') || '').toLowerCase();
 
-      if (host === edgeHost) {
-        response.send('homerun!');
-        // TODO:
-        // - Lookup domain in redisEdgeClient
-        // - Find published product version
-        // - create key based on published version + product type (SPA vs SSR) + path
-        // - retrieveFile()
-      } else {
-        next();
+        if (host === edgeHost) {
+          response.send('homerun!');
+          // TODO:
+          // - Lookup domain in redisEdgeClient
+          // - Find published product version
+          // - create key based on published version + product type (SPA vs SSR) + path
+          // - retrieveFile()
+        } else {
+          next();
+        }
+      } catch (error) {
+        requestErrorHandler(error, response);
       }
     });
 
     secureApp.get('*', async function handler(request, response) {
       try {
-        const host = request.get('host').toLowerCase();
+        const host = (request.get('host') || '').toLowerCase();
         const path = request.path.toLowerCase();
 
         response.send('grandslam!');

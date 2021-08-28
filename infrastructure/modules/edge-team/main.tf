@@ -3,8 +3,14 @@
 #  - "edge_vpc_logs"
 #  - autoscale policies
 #  - deploying should keep the containers running & drain them
+#  - cant connect to redis cache
 
-# this wont delete
+# 429a29d8-a46a-4db3-9c92-e2eeebb95da8
+# 2021-08-28 02:43:11 -0400
+# service team-us-east-1-svc was unable to place a task because no container instance met all of its requirements. The closest matching container-instance 8dac02653c8b4e8b9d58f9c5f899af63 has insufficient memory available. For more information, see the Troubleshooting section.
+# --- Why doesnt it create a new container??
+
+# this wont delete??
 # update
 # attributes {
 # delete
