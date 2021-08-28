@@ -13,7 +13,7 @@ module.exports = () => {
     res.setHeader('X-Powered-By', 'Leftfield');
 
     if (process.env.REGION) {
-      response.set('X-LF-Region', process.env.REGION);
+      res.set('X-LF-Region', process.env.REGION);
     }
 
     next();
