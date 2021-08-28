@@ -167,9 +167,10 @@ module "edge_team_us_east_1" {
   image_repository  = module.edge_global.image_repository
   container_vars    = local.edge_container_vars
   container_secrets = local.edge_container_secrets
-  container_cpu     = 1
-  container_memory  = 512
+  container_cpu     = "0.25 vcpu"
+  container_memory  = "0.5 GB"
   instance_type     = "t2.micro"
+  auto_scale_min    = 1
   auto_scale_max    = 2
   storage_bucket    = module.edge_storage_us_east_1
   cache_node_type   = "cache.t2.small"

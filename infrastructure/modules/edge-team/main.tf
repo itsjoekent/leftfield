@@ -34,6 +34,9 @@
 variable "auto_scale_max" {
   type = number
 }
+variable "auto_scale_min" {
+  type = number
+}
 variable "aws_account_id" {
   type = string
 }
@@ -46,10 +49,10 @@ variable "cache_nodes" {
 variable "container_vars" {}
 variable "container_secrets" {}
 variable "container_cpu" {
-  type = number
+  type = string
 }
 variable "container_memory" {
-  type = number
+  type = string
 }
 variable "environment" {
   type = string
@@ -408,14 +411,15 @@ resource "aws_ecs_task_definition" "edge" {
   family                   = "team-${var.region}-task"
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.edge_ecs_execution.arn
-  requires_compatibilities = ["EC2"]
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.container_cpu
+  memory                   = var.container_memory
+
   container_definitions = jsonencode([
     {
       name      = "edge-container"
       image     = "${var.image_repository.repository_url}:deployed"
       essential = true
-      cpu       = var.container_cpu
-      memory    = var.container_memory
 
       secrets = [
         for secret in var.container_secrets : {
@@ -552,19 +556,9 @@ resource "aws_ecs_service" "edge" {
   name                 = "team-${var.region}-svc"
   cluster              = aws_ecs_cluster.edge.id
   task_definition      = aws_ecs_task_definition.edge.arn
-  desired_count        = 1
-  launch_type          = "EC2"
+  desired_count        = var.auto_scale_min
+  launch_type          = "FARGATE"
   force_new_deployment = true
-
-  ordered_placement_strategy {
-    field = "attribute:ecs.availability-zone"
-    type  = "spread"
-  }
-
-  ordered_placement_strategy {
-    field = "instanceId"
-    type  = "spread"
-  }
 
   network_configuration {
     subnets         = aws_subnet.edge_private.*.id
