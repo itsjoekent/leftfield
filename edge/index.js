@@ -32,16 +32,6 @@ const redisEdgeClient = new Redis(REDIS_EDGE_URL, { enableReadyCheck: true });
 
 const edgeHost = new URL(EDGE_DOMAIN).host;
 
-function poweredBy(request, response, next) {
-  response.set('X-Powered-By', 'Leftfield');
-
-  if (process.env.REGION) {
-    response.set('X-LF-Region', process.env.REGION);
-  }
-
-  next();
-}
-
 function requestErrorHandler(error, response) {
   const errorId = uuid();
   logger.error(error, { httpErrorId: errorId });
@@ -71,9 +61,6 @@ function healthCheck(request, response) {
       ...ssl,
       SNICallback: sniLookup(redisEdgeClient),
     };
-
-    secureApp.use(response);
-    insecureApp.use(response);
 
     secureApp.get('/_lf/health-check', healthCheck);
     insecureApp.get('/_lf/health-check', healthCheck);

@@ -277,7 +277,7 @@ resource "aws_lb_listener" "edge_tls_forward" {
 
 resource "aws_globalaccelerator_listener" "edge" {
   accelerator_arn = var.globalaccelerator.id
-  client_affinity = "SOURCE_IP"
+  client_affinity = "NONE"
   protocol        = "TCP"
 
   port_range {

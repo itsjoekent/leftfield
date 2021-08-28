@@ -11,6 +11,11 @@ module.exports = () => {
 
   app.use(function (req, res, next) {
     res.setHeader('X-Powered-By', 'Leftfield');
+
+    if (process.env.REGION) {
+      response.set('X-LF-Region', process.env.REGION);
+    }
+
     next();
   });
 
