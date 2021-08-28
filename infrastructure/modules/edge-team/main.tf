@@ -64,13 +64,19 @@ resource "aws_vpc" "edge" {
   }
 }
 
+# TODO: Delete
 resource "aws_s3_bucket" "edge_vpc_logs" {
   bucket = "leftfield-${var.environment}-${var.region}-vpc-logs"
   acl    = "private"
 }
 
+resource "aws_s3_bucket" "edge_logs" {
+  bucket = "leftfield-edge-${var.environment}-team-${var.region}-logs"
+  acl    = "private"
+}
+
 resource "aws_flow_log" "edge_vpc_logs" {
-  log_destination      = aws_s3_bucket.edge_vpc_logs.arn
+  log_destination      = aws_s3_bucket.edge_logs.arn
   log_destination_type = "s3"
   traffic_type         = "ALL"
   vpc_id               = aws_vpc.edge.id
@@ -222,19 +228,17 @@ resource "aws_ecs_cluster" "edge" {
 resource "aws_lb" "edge" {
   name                             = "team-${var.region}-lb"
   load_balancer_type               = "network"
-  subnets                          = aws_subnet.edge_private.*.id
-  internal                         = true
+  subnets                          = aws_subnet.edge_public.*.id
+  internal                         = false
   enable_cross_zone_load_balancing = true
   enable_deletion_protection       = var.environment == "production" ? true : false
-}
 
-# resource "aws_lb" "edge" {
-#   name                             = "team-${var.region}-lb"
-#   load_balancer_type               = "network"
-#   subnets                          = aws_subnet.edge_private.*.id
-#   enable_cross_zone_load_balancing = true
-#   enable_deletion_protection       = var.environment == "production" ? true : false
-# }
+  access_logs = {
+    enabled = true
+    bucket  = aws_s3_bucket.edge_logs.id
+    prefix  = "lb"
+  }
+}
 
 resource "aws_lb_target_group" "edge_tcp" {
   name               = "team-${var.region}-tcp-tg"

@@ -37,10 +37,6 @@ resource "aws_globalaccelerator_accelerator" "edge" {
   name            = "team-${var.environment}-gacl"
   ip_address_type = "IPV4"
   enabled         = true
-
-  attributes {
-    flow_logs_enabled   = false
-  }
 }
 
 locals {
