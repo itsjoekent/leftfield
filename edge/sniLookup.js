@@ -15,7 +15,7 @@ module.exports = function sniLookup(redisEdgeClient) {
         return callback(null, tls.createSecureContext(ssl));
       }
 
-      const sslDomain = domain.includes(DNS_ZONE) ? `*.${edgeHost}` : domain;
+      const sslDomain = domain.includes(DNS_ZONE) ? `*.${DNS_ZONE}` : domain;
       const ssl = await retrieveSsl(sslDomain, redisEdgeClient);
 
       if (!ssl) {
