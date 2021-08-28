@@ -50,7 +50,7 @@ function requestErrorHandler(error, response) {
 }
 
 function healthCheck(request, response) {
-  res.status(200).send(`Homerun!`);
+  response.status(200).send(`Homerun!`);
   return;
 }
 
@@ -96,7 +96,7 @@ function healthCheck(request, response) {
       const host = request.get('host').toLowerCase();
 
       if (host === edgeHost) {
-        res.send('homerun!');
+        response.send('homerun!');
         // TODO:
         // - Lookup domain in redisEdgeClient
         // - Find published product version
@@ -112,7 +112,7 @@ function healthCheck(request, response) {
         const host = request.get('host').toLowerCase();
         const path = request.path.toLowerCase();
 
-        res.send('grandslam!');
+        response.send('grandslam!');
 
         // TODO:
         // - Lookup domain in redisEdgeClient
