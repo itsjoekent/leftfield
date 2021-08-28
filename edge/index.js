@@ -64,14 +64,15 @@ function healthCheck(request, response) {
   return;
 }
 
-try {
-  const response = await require('node-fetch')('https://google.com');
-  console.log('google test', response.status);
-} catch (error) {
-  console.error('google test', error);
-}
-
 (async function () {
+  try {
+    console.log('hitting google.com');
+    const response = await require('node-fetch')('https://google.com');
+    console.log('google test', response.status);
+  } catch (error) {
+    console.error('google test', error);
+  }
+
   try {
     let ssl = null;
 
