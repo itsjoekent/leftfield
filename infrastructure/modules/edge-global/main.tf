@@ -39,49 +39,8 @@ resource "aws_globalaccelerator_accelerator" "edge" {
   enabled         = true
 
   attributes {
-    flow_logs_enabled   = true
-    flow_logs_s3_bucket = aws_s3_bucket.edge_logs.id
-    flow_logs_s3_prefix = "accelerator-flow-logs/"
+    flow_logs_enabled   = false
   }
-}
-
-resource "aws_s3_bucket_policy" "globalaccelerator_logs" {
-  bucket = aws_s3_bucket.edge_logs.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        "Sid": "DeliverLogs",
-        "Effect": "Allow",
-        "Principal": "*",
-        "Action": [
-          "logs:CreateLogDelivery",
-          "logs:DeleteLogDelivery"
-        ],
-        "Resource": "*"
-      },
-      {
-        "Sid": "AllowGlobalAcceleratorService",
-        "Effect": "Allow",
-        "Principal": "*",
-        "Action": [
-          "globalaccelerator:*"
-        ],
-        "Resource": "*"
-      },
-      {
-        "Sid": "s3Perms",
-        "Effect": "Allow",
-        "Principal": "*",
-        "Action": [
-          "s3:GetBucketPolicy",
-          "s3:PutBucketPolicy"
-        ],
-        "Resource": "*"
-      }
-    ]
-  })
 }
 
 locals {

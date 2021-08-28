@@ -64,6 +64,18 @@ resource "aws_vpc" "edge" {
   }
 }
 
+resource "aws_s3_bucket" "edge_vpc_logs" {
+  bucket = "leftfield-${var.environment}-${var.region}-vpc-logs"
+  acl    = "private"
+}
+
+resource "aws_flow_log" "example" {
+  log_destination      = aws_s3_bucket.edge_vpc_logs.arn
+  log_destination_type = "s3"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.edge.id
+}
+
 resource "aws_internet_gateway" "edge" {
   vpc_id = aws_vpc.edge.id
 }
