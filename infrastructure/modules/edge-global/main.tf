@@ -45,6 +45,42 @@ resource "aws_globalaccelerator_accelerator" "edge" {
   }
 }
 
+resource "aws_s3_bucket_policy" "globalaccelerator_logs" {
+  bucket = aws_s3_bucket.edge_logs.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        "Sid": "DeliverLogs",
+        "Effect": "Allow",
+        "Action": [
+          "logs:CreateLogDelivery",
+          "logs:DeleteLogDelivery"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Sid": "AllowGlobalAcceleratorService",
+        "Effect": "Allow",
+        "Action": [
+          "globalaccelerator:*"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Sid": "s3Perms",
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetBucketPolicy",
+          "s3:PutBucketPolicy"
+        ],
+        "Resource": "*"
+      }
+    ]
+  })
+}
+
 locals {
   accelerator_ip_address = flatten(aws_globalaccelerator_accelerator.edge.ip_sets[*].ip_addresses)
 }
