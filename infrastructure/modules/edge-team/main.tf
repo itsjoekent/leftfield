@@ -240,17 +240,18 @@ resource "aws_lb" "edge" {
 }
 
 resource "aws_lb_target_group" "edge_tcp" {
-  name               = "team-${var.region}-tcp-tg"
-  port               = local.container_tcp_port
-  protocol           = "TCP"
-  vpc_id             = aws_vpc.edge.id
-  target_type        = "ip"
-  preserve_client_ip = false
+  name                 = "team-${var.region}-tcp-tg"
+  port                 = local.container_tcp_port
+  protocol             = "TCP"
+  vpc_id               = aws_vpc.edge.id
+  target_type          = "ip"
+  preserve_client_ip   = false
+  deregistration_delay = 5
 
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    interval            = 10
+    interval            = 5
     protocol            = "HTTP"
     timeout             = 6
     path                = "/_lf/health-check"
@@ -259,17 +260,18 @@ resource "aws_lb_target_group" "edge_tcp" {
 }
 
 resource "aws_lb_target_group" "edge_tls" {
-  name               = "team-${var.region}-tls-tg"
-  port               = local.container_tls_port
-  protocol           = "TCP"
-  vpc_id             = aws_vpc.edge.id
-  target_type        = "ip"
-  preserve_client_ip = false
+  name                 = "team-${var.region}-tls-tg"
+  port                 = local.container_tls_port
+  protocol             = "TCP"
+  vpc_id               = aws_vpc.edge.id
+  target_type          = "ip"
+  preserve_client_ip   = false
+  deregistration_delay = 5
 
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    interval            = 10
+    interval            = 5
     protocol            = "HTTPS"
     timeout             = 10
     path                = "/_lf/health-check"
