@@ -27,18 +27,23 @@ jobs:
       - uses: aws-actions/amazon-ecr-login@v1
         id: login-ecr
       - name: Build, tag, and push image to Amazon ECR
+        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: edge/staging
           GIT_SHA: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GIT_SHA \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:deployed \
-            -f dockerfiles/edge.remote.dockerfile .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GIT_SHA -f dockerfiles/edge.remote.dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       - name: Download task definition
         run: aws ecs describe-task-definition --task-definition team-us-east-1-task --query taskDefinition > task-definition.json
+      - name: Update Amazon ECS task definition with new ID
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: edge-container
+          image: ${{ steps.build-image.outputs.image }}
       - name: Deploy Amazon ECS task
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
