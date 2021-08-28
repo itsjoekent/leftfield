@@ -39,6 +39,7 @@ jobs:
       - name: Download task definition
         run: aws ecs describe-task-definition --task-definition team-us-east-1-task --query taskDefinition > task-definition.json
       - name: Update Amazon ECS task definition with new ID
+        id: render-task
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
@@ -47,7 +48,7 @@ jobs:
       - name: Deploy Amazon ECS task
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: task-definition.json
+          task-definition: ${{ steps.render-task.outputs.task-definition }}
           service: team-us-east-1-svc
           cluster: team-us-east-1-cls
           wait-for-service-stability: true
