@@ -69,7 +69,7 @@ resource "aws_s3_bucket" "edge_vpc_logs" {
   acl    = "private"
 }
 
-resource "aws_flow_log" "example" {
+resource "aws_flow_log" "edge_vpc_logs" {
   log_destination      = aws_s3_bucket.edge_vpc_logs.arn
   log_destination_type = "s3"
   traffic_type         = "ALL"
