@@ -257,6 +257,10 @@ resource "aws_lb_target_group" "edge_tcp" {
     path                = "/_lf/health-check"
     unhealthy_threshold = 2
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lb_target_group" "edge_tls" {
@@ -276,6 +280,10 @@ resource "aws_lb_target_group" "edge_tls" {
     timeout             = 10
     path                = "/_lf/health-check"
     unhealthy_threshold = 2
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
