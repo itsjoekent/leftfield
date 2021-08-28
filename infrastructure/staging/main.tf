@@ -106,7 +106,7 @@ locals {
 
     STORAGE_REGIONS = {
       name  = "STORAGE_REGIONS"
-      value = "us-east-1,us-west-1"
+      value = "US_EAST_1,US_WEST_1"
     }
 
     STORAGE_ENDPOINT_US_EAST_1 = {
