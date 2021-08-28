@@ -28,6 +28,13 @@ resource "aws_globalaccelerator_accelerator" "edge" {
   name            = "team-${var.environment}-gacl"
   ip_address_type = "IPV4"
   enabled         = true
+
+  attributes {
+    # Removing this seems to cause a lifecycle bug...
+    flow_logs_s3_bucket = "leftfield-staging-logs"
+    flow_logs_s3_prefix = "accelerator-flow-logs/"
+    flow_logs_enabled   = false
+  }
 }
 
 locals {

@@ -3,6 +3,7 @@ const HTTP_PORT = process.env.HTTP_PORT;
 const HTTPS_PORT = process.env.HTTPS_PORT;
 const NODE_ENV = process.env.NODE_ENV;
 const REDIS_CACHE_URL = process.env.REDIS_CACHE_URL;
+const REDIS_CACHE_USER = process.env.REDIS_CACHE_USER;
 const REDIS_EDGE_URL = process.env.REDIS_EDGE_URL;
 
 const fs = require('fs');
@@ -35,6 +36,10 @@ if (NODE_ENV !== 'development') {
   sharedRedisConfig.tls = {};
 }
 
+if (REDIS_CACHE_USER) {
+  sharedRedisConfig.username = REDIS_CACHE_USER;
+}
+
 const redisCacheClient = new Redis({
   ...sharedRedisConfig,
   host: REDIS_CACHE_URL,
@@ -49,7 +54,7 @@ const redisEdgeClient = new Redis({
   enableReadyCheck: true,
 });
 
-console.log({
+console.log('Redis Cache Config', {
   ...sharedRedisConfig,
   host: REDIS_CACHE_URL,
 });

@@ -246,6 +246,14 @@ resource "aws_elasticache_replication_group" "edge_cache" {
   transit_encryption_enabled    = false
 }
 
+resource "aws_elasticache_user" "cache" {
+  user_id              = "edge_cache_${var.region}"
+  user_name            = "edge_cache_${var.region}"
+  access_string        = "on ~* +@all"
+  engine               = "REDIS"
+  no_password_required = true
+}
+
 resource "aws_ecs_cluster" "edge" {
   name = "team-${var.region}-cls"
 }
@@ -450,6 +458,11 @@ resource "aws_ecs_task_definition" "edge" {
           value = aws_elasticache_replication_group.edge_cache.primary_endpoint_address
         }
 
+        REDIS_CACHE_USER = {
+          name  = "REDIS_CACHE_USER"
+          value = aws_elasticache_user.cache.user_name
+        }
+
         REGION = {
           name  = "REGION"
           value = var.region
@@ -459,8 +472,8 @@ resource "aws_ecs_task_definition" "edge" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-region = var.region
-          awslogs-group  = aws_cloudwatch_log_group.edge_task.name
+          awslogs-region        = var.region
+          awslogs-group         = aws_cloudwatch_log_group.edge_task.name
           awslogs-stream-prefix = "awslogs-edge-team-${var.region}"
         }
       }
@@ -537,7 +550,7 @@ resource "aws_security_group" "edge_ecs" {
       description      = "Outbound"
       from_port        = 0
       to_port          = 0
-      protocol         = "-1"
+      protocol         = -1
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = null
       prefix_list_ids  = null

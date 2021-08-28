@@ -90,7 +90,7 @@ locals {
     }
 
     DNS_ZONE = {
-      name = "DNS_ZONE"
+      name  = "DNS_ZONE"
       value = var.DNS_ZONE
     }
 
@@ -167,8 +167,8 @@ module "edge_team_us_east_1" {
   image_repository  = module.edge_global.image_repository
   container_vars    = local.edge_container_vars
   container_secrets = local.edge_container_secrets
-  container_cpu     = "0.25 vcpu"
-  container_memory  = "0.5 GB"
+  container_cpu     = "256"
+  container_memory  = "512"
   instance_type     = "t2.micro"
   auto_scale_min    = 1
   auto_scale_max    = 2
