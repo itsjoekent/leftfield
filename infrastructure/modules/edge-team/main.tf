@@ -357,8 +357,8 @@ data "aws_iam_policy_document" "ecs_assume_role" {
 }
 
 resource "aws_iam_role" "edge_ecs_execution" {
-  name                = "team-${var.region}-ecs-role"
-  assume_role_policy  = data.aws_iam_policy_document.ecs_assume_role.json
+  name               = "team-${var.region}-ecs-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role.json
 }
 
 data "aws_iam_policy_document" "edge_ecs_read_ssm_secrets" {
@@ -540,11 +540,12 @@ locals {
 }
 
 resource "aws_ecs_service" "edge" {
-  name            = "team-${var.region}-svc"
-  cluster         = aws_ecs_cluster.edge.id
-  task_definition = aws_ecs_task_definition.edge.arn
-  desired_count   = 1
-  launch_type     = "EC2"
+  name                 = "team-${var.region}-svc"
+  cluster              = aws_ecs_cluster.edge.id
+  task_definition      = aws_ecs_task_definition.edge.arn
+  desired_count        = 1
+  launch_type          = "EC2"
+  force_new_deployment = true
 
   ordered_placement_strategy {
     field = "attribute:ecs.availability-zone"
