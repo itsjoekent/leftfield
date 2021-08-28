@@ -37,10 +37,12 @@ jobs:
             -t $ECR_REGISTRY/$ECR_REPOSITORY:deployed \
             -f dockerfiles/edge.remote.dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+      - name: Download task definition
+        run: aws ecs describe-task-definition --task-definition team-us-east-1-task --query taskDefinition > task-definition.json
       - name: Deploy Amazon ECS task
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: team-us-east-1-task
+          task-definition: task-definition.json
           service: team-us-east-1-svc
           cluster: team-us-east-1-cls
           wait-for-service-stability: true
