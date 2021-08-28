@@ -38,6 +38,8 @@ function poweredBy(request, response, next) {
   if (process.env.REGION) {
     response.set('X-LF-Region', process.env.REGION);
   }
+
+  next();
 }
 
 function requestErrorHandler(error, response) {
@@ -69,6 +71,9 @@ function healthCheck(request, response) {
       ...ssl,
       SNICallback: sniLookup(redisEdgeClient),
     };
+
+    secureApp.use(response);
+    insecureApp.use(response);
 
     secureApp.get('/_lf/health-check', healthCheck);
     insecureApp.get('/_lf/health-check', healthCheck);
