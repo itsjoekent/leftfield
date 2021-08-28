@@ -49,6 +49,11 @@ const redisEdgeClient = new Redis({
   enableReadyCheck: true,
 });
 
+console.log({
+  ...sharedRedisConfig,
+  host: REDIS_CACHE_URL,
+});
+
 const edgeHost = new URL(EDGE_DOMAIN).host;
 
 function requestErrorHandler(error, response) {
