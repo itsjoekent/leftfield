@@ -27,11 +27,13 @@ const sniLookup = require('./sniLookup');
 const secureApp = router();
 const insecureApp = router();
 
+// TODO:
 // Error: Unable to locate SSL certificate for cplb.rtb-dsp.com
 
 const redisCacheClient = new Redis(REDIS_CACHE_URL, {
   enableReadyCheck: true,
 
+  // TODO:
   // temp:
   retryStrategy: () => null,
 });
@@ -39,6 +41,7 @@ const redisCacheClient = new Redis(REDIS_CACHE_URL, {
 const redisEdgeClient = new Redis(REDIS_EDGE_URL, {
   enableReadyCheck: true,
 
+  // TODO:
   // temp:
   retryStrategy: () => null,
 });
@@ -187,7 +190,12 @@ function healthCheck(request, response) {
     const httpsServer = https.createServer(httpsOptions, secureApp);
 
     httpsServer.listen(HTTPS_PORT, () => logger.info(`Listening for https traffic on port:${HTTPS_PORT}`));
-    insecureApp.listen(HTTP_PORT, () => logger.info(`Listening for http traffic on port:${HTTP_PORT}`));
+    const httpServer = insecureApp.listen(HTTP_PORT, () => logger.info(`Listening for http traffic on port:${HTTP_PORT}`));
+
+    process.on('SIGTERM', function() {
+      httpsServer.close();
+      httpServer.close();
+    });
   } catch (error) {
     logger.error('Fatal startup error, exiting...');
     logger.error(error);
