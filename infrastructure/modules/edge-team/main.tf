@@ -243,6 +243,7 @@ resource "aws_elasticache_replication_group" "edge_cache" {
   parameter_group_name          = aws_elasticache_parameter_group.edge_cache.id
   port                          = 6379
   subnet_group_name             = aws_elasticache_subnet_group.edge_cache_subnet.name
+  transit_encryption_enabled    = false
 }
 
 resource "aws_ecs_cluster" "edge" {
@@ -585,88 +586,19 @@ resource "aws_ecs_service" "edge" {
   ]
 }
 
-data "aws_iam_policy_document" "ecs_agent" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "edge_ec2" {
-  name               = "team-${var.region}-ec2"
-  assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
-}
-
-resource "aws_iam_role_policy_attachment" "edge_ec2" {
-  role       = aws_iam_role.edge_ec2.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-}
-
-resource "aws_iam_instance_profile" "edge_ec2" {
-  name = "team-${var.region}-ec2"
-  role = aws_iam_role_policy_attachment.edge_ec2.role
-}
-
-data "aws_ami" "aws_optimized_ecs" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["amzn-ami*amazon-ecs-optimized"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["amazon"]
-}
-
-locals {
-  user_data = <<EOF
-#!/bin/bash
-cat <<'EOF' >> /etc/ecs/ecs.config
-ECS_CLUSTER=${aws_ecs_cluster.edge.name}
-ECS_IMAGE_PULL_BEHAVIOR=always
-EOF
-}
-
-resource "aws_launch_configuration" "ecs_launch_config" {
-  name_prefix          = "team-${var.region}-elc-"
-  image_id             = data.aws_ami.aws_optimized_ecs.id
-  iam_instance_profile = aws_iam_instance_profile.edge_ec2.name
-  security_groups      = local.security_groups
-  user_data            = local.user_data
-  instance_type        = var.instance_type
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_autoscaling_group" "edge" {
-  name                      = "team-${var.region}-asg"
-  vpc_zone_identifier       = aws_subnet.edge_private.*.id
-  launch_configuration      = aws_launch_configuration.ecs_launch_config.name
-  min_size                  = 1
-  max_size                  = var.auto_scale_max
-  health_check_grace_period = 300
-  health_check_type         = "EC2"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+# resource "aws_autoscaling_group" "edge" {
+#   name                      = "team-${var.region}-asg"
+#   vpc_zone_identifier       = aws_subnet.edge_private.*.id
+#   launch_configuration      = aws_launch_configuration.ecs_launch_config.name
+#   min_size                  = 1
+#   max_size                  = var.auto_scale_max
+#   health_check_grace_period = 300
+#   health_check_type         = "EC2"
+#
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
 
 # resource "aws_appautoscaling_target" "edge_ecs" {
 #   max_capacity       = var.auto_scale_max
