@@ -40,7 +40,7 @@ resource "aws_globalaccelerator_accelerator" "edge" {
 
   attributes {
     flow_logs_enabled   = true
-    flow_logs_s3_bucket = aws_s3_bucket.edge_logs.name
+    flow_logs_s3_bucket = aws_s3_bucket.edge_logs.id
     flow_logs_s3_prefix = "accelerator-flow-logs/"
   }
 }
