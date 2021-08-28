@@ -475,20 +475,9 @@ resource "aws_security_group" "edge_ecs" {
   ingress = [
     {
       description      = "TCP from VPC"
-      from_port        = local.container_tcp_port
-      to_port          = local.container_tcp_port
-      protocol         = "tcp"
-      cidr_blocks      = [aws_vpc.edge.cidr_block]
-      ipv6_cidr_blocks = null
-      prefix_list_ids  = null
-      security_groups  = null
-      self             = null
-    },
-    {
-      description      = "TLS from VPC"
-      from_port        = local.container_tls_port
-      to_port          = local.container_tls_port
-      protocol         = "tcp"
+      from_port        = 0
+      to_port          = 0
+      protocol         = -1
       cidr_blocks      = [aws_vpc.edge.cidr_block]
       ipv6_cidr_blocks = null
       prefix_list_ids  = null
