@@ -54,6 +54,7 @@ resource "aws_s3_bucket_policy" "globalaccelerator_logs" {
       {
         "Sid": "DeliverLogs",
         "Effect": "Allow",
+        "Principal": "*",
         "Action": [
           "logs:CreateLogDelivery",
           "logs:DeleteLogDelivery"
@@ -63,6 +64,7 @@ resource "aws_s3_bucket_policy" "globalaccelerator_logs" {
       {
         "Sid": "AllowGlobalAcceleratorService",
         "Effect": "Allow",
+        "Principal": "*",
         "Action": [
           "globalaccelerator:*"
         ],
@@ -71,6 +73,7 @@ resource "aws_s3_bucket_policy" "globalaccelerator_logs" {
       {
         "Sid": "s3Perms",
         "Effect": "Allow",
+        "Principal": "*",
         "Action": [
           "s3:GetBucketPolicy",
           "s3:PutBucketPolicy"
