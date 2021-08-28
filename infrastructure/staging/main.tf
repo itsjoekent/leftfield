@@ -89,6 +89,11 @@ locals {
       value = 86400
     }
 
+    DNS_ZONE = {
+      name = "DNS_ZONE"
+      value = var.DNS_ZONE
+    }
+
     EMAIL_DOMAIN = {
       name  = "EMAIL_DOMAIN"
       value = var.EMAIL_DOMAIN

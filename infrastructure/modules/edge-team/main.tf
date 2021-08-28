@@ -4,6 +4,16 @@
 #  - autoscale policies
 #  - deploying should keep the containers running & drain them
 
+# this wont delete
+# update
+# attributes {
+# delete
+# flow_logs_s3_bucket :
+# "leftfield-staging-logs"
+# delete
+# flow_logs_s3_prefix :
+# "accelerator-flow-logs/"
+
 variable "auto_scale_max" {
   type = number
 }
