@@ -51,5 +51,5 @@ module.exports = async function createCertificate(domainName) {
   };
 
   const storageKey = `ssl/${domainName}`;
-  await upload(storageKey, cryptography.encrypt(data), 'text/plain');
+  await upload(storageKey, cryptography.encrypt(SSL_AT_REST_KEY, data), 'text/plain');
 }

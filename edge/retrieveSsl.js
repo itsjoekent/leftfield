@@ -11,7 +11,7 @@ const cryptography = require(path.join(process.cwd(), 'ssl/cryptography'));
 
 module.exports = async function retrieveSsl(domainName, redisEdgeClient) {
   function buildResponse(sslData) {
-    const ssl = cryptography.decrypt(sslData)
+    const ssl = cryptography.decrypt(SSL_AT_REST_KEY, sslData)
 
     return ssl;
   }
