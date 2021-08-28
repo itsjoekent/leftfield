@@ -25,7 +25,7 @@ resource "aws_ecr_repository" "image_repository" {
 }
 
 resource "aws_s3_bucket" "edge_logs" {
-  bucket = "leftfield-${var.environment}-accelerator-logs"
+  bucket = "leftfield-${var.environment}-logs"
   acl    = "private"
 
   versioning {

@@ -634,6 +634,10 @@ resource "aws_autoscaling_group" "edge" {
   }
 }
 
+# TODO
+#  - autoscale policies
+#  - deploying should keep the containers running & drain them
+
 # resource "aws_appautoscaling_target" "edge_ecs" {
 #   max_capacity       = var.auto_scale_max
 #   min_capacity       = 1
