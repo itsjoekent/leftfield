@@ -1,10 +1,14 @@
+const EDGE_DOMAIN = process.env.EDGE_DOMAIN;
 const NODE_ENV = process.env.NODE_ENV;
 
 const path = require('path');
 const tls = require('tls');
+const { URL } = require('url');
 
 const logger = require('./logger');
 const retrieveSsl = require('./retrieveSsl');
+
+const edgeHost = new URL(EDGE_DOMAIN).host;
 
 module.exports = function sniLookup(redisEdgeClient) {
   async function _sniLookup(domain, callback) {
@@ -14,9 +18,11 @@ module.exports = function sniLookup(redisEdgeClient) {
         return callback(null, tls.createSecureContext(ssl));
       }
 
-      const ssl = await retrieveSsl(domain, redisEdgeClient);
+      const sslDomain = domain.includes(edgeHost) ? `*.${edgeHost}` : domain;
+      const ssl = await retrieveSsl(sslDomain, redisEdgeClient);
+
       if (!ssl) {
-        throw new Error(`Unable to locate SSL certificate for ${host}`);
+        throw new Error(`Unable to locate SSL certificate for ${domain}`);
       }
 
       const { cert, key } = ssl;

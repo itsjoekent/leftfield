@@ -1,3 +1,9 @@
+#  - ingress ports
+#  - access logs
+#  - "edge_vpc_logs"
+#  - autoscale policies
+#  - deploying should keep the containers running & drain them
+
 variable "auto_scale_max" {
   type = number
 }
@@ -647,10 +653,6 @@ resource "aws_autoscaling_group" "edge" {
     create_before_destroy = true
   }
 }
-
-# TODO
-#  - autoscale policies
-#  - deploying should keep the containers running & drain them
 
 # resource "aws_appautoscaling_target" "edge_ecs" {
 #   max_capacity       = var.auto_scale_max
