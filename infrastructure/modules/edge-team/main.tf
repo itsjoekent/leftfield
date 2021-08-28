@@ -1,35 +1,4 @@
 #  - autoscale policies
-#  - deploying should keep the containers running & drain them
-# 429a29d8-a46a-4db3-9c92-e2eeebb95da8
-# 2021-08-28 02:43:11 -0400
-# service team-us-east-1-svc was unable to place a task because no container instance met all of its requirements. The closest matching container-instance 8dac02653c8b4e8b9d58f9c5f899af63 has insufficient memory available. For more information, see the Troubleshooting section.
-# --- Why doesnt it create a new container??
-
-# ----
-
-#  - cant connect to redis cache
-
-# 2021-08-28T03:09:24.480-04:00	> node edge
-#
-# 2021-08-28T03:09:25.599-04:00	[ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
-#
-# 2021-08-28T03:09:25.599-04:00	at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1146:16)
-#
-# 2021-08-28T03:09:25.652-04:00	[ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
-#
-# 2021-08-28T03:09:25.652-04:00	at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1146:16)
-#
-# 2021-08-28T03:09:25.753-04:00	[ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
-#
-# 2021-08-28T03:09:25.753-04:00	at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1146:16)
-#
-# 2021-08-28T03:09:25.904-04:00	[ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
-#
-# 2021-08-28T03:09:25.904-04:00	at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1146:16)
-#
-# 2021-08-28T03:09:26.105-04:00	[ioredis] Unhandled error event: Error: connect ECONNREFUSED 127.0.0.1:6379
-#
-# 2021-08-28T03:09:26.105-04:00	at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1146:16)
 
 variable "auto_scale_max" {
   type = number
