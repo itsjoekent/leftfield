@@ -460,6 +460,7 @@ resource "aws_ecs_task_definition" "edge" {
         options = {
           awslogs-region = var.region
           awslogs-group  = aws_cloudwatch_log_group.edge_task.name
+          awslogs-stream-prefix = "awslogs-edge-team-${var.region}"
         }
       }
 
