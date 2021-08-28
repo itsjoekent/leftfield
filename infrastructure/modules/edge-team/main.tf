@@ -251,7 +251,7 @@ resource "aws_lb_target_group" "edge_tcp" {
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    interval            = 5
+    interval            = 10
     protocol            = "HTTP"
     timeout             = 6
     path                = "/_lf/health-check"
@@ -275,7 +275,7 @@ resource "aws_lb_target_group" "edge_tls" {
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    interval            = 5
+    interval            = 10
     protocol            = "HTTPS"
     timeout             = 10
     path                = "/_lf/health-check"
