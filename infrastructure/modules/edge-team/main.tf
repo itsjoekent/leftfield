@@ -628,12 +628,21 @@ data "aws_ami" "aws_optimized_ecs" {
   owners = ["amazon"]
 }
 
+locals {
+  user_data = <<EOF
+#!/bin/bash
+cat <<'EOF' >> /etc/ecs/ecs.config
+ECS_CLUSTER=${aws_ecs_cluster.edge.name}
+ECS_IMAGE_PULL_BEHAVIOR=always
+EOF
+}
+
 resource "aws_launch_configuration" "ecs_launch_config" {
   name_prefix          = "team-${var.region}-elc-"
   image_id             = data.aws_ami.aws_optimized_ecs.id
   iam_instance_profile = aws_iam_instance_profile.edge_ec2.name
   security_groups      = local.security_groups
-  user_data            = "#!/bin/bash\necho ECS_CLUSTER=${aws_ecs_cluster.edge.name} ECS_IMAGE_PULL_BEHAVIOR=always >> /etc/ecs/ecs.config"
+  user_data            = local.user_data
   instance_type        = var.instance_type
 
   lifecycle {
