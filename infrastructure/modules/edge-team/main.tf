@@ -328,7 +328,6 @@ data "aws_iam_policy_document" "ecs_assume_role" {
 resource "aws_iam_role" "edge_ecs_execution" {
   name                = "team-${var.region}-ecs-role"
   assume_role_policy  = data.aws_iam_policy_document.ecs_assume_role.json
-  managed_policy_arns = []
 }
 
 data "aws_iam_policy_document" "edge_ecs_read_ssm_secrets" {
