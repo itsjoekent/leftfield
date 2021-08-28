@@ -24,15 +24,6 @@ resource "aws_ecr_repository" "image_repository" {
   name = "edge/${var.environment}"
 }
 
-resource "aws_s3_bucket" "edge_logs" {
-  bucket = "leftfield-${var.environment}-logs"
-  acl    = "private"
-
-  versioning {
-    enabled = true
-  }
-}
-
 resource "aws_globalaccelerator_accelerator" "edge" {
   name            = "team-${var.environment}-gacl"
   ip_address_type = "IPV4"

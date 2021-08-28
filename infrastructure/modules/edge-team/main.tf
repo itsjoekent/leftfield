@@ -233,7 +233,7 @@ resource "aws_lb" "edge" {
   enable_cross_zone_load_balancing = true
   enable_deletion_protection       = var.environment == "production" ? true : false
 
-  access_logs = {
+  access_logs {
     enabled = true
     bucket  = aws_s3_bucket.edge_logs.id
     prefix  = "lb"
