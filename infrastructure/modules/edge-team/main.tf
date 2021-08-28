@@ -62,7 +62,7 @@ resource "aws_vpc" "edge" {
   cidr_block = local.vpc_cidr_block
 
   enable_dns_support   = true
-  enable_dns_hostnames = false
+  enable_dns_hostnames = true
 
   tags = {
     name = "team-${var.region}-vpc"
