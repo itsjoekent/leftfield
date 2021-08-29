@@ -34,6 +34,7 @@ const redisCacheClient = (() => {
     });
   } else {
     const [host, port] = REDIS_CACHE_URL.split(':');
+    console.log({ host, port });
 
     return new Redis.Cluster([
       { host, port },
@@ -51,8 +52,6 @@ const redisEdgeClient = new Redis(REDIS_EDGE_URL, {
   // temp:
   retryStrategy: () => null,
 });
-
-console.log(REDIS_CACHE_URL);
 
 const edgeHost = new URL(EDGE_DOMAIN).host;
 
