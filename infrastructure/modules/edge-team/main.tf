@@ -69,12 +69,6 @@ resource "aws_vpc" "edge" {
   }
 }
 
-# TODO: Delete
-resource "aws_s3_bucket" "edge_logs" {
-  bucket = "leftfield-edge-${var.environment}-team-${var.region}-logs"
-  acl    = "private"
-}
-
 resource "aws_internet_gateway" "edge" {
   vpc_id = aws_vpc.edge.id
 }
@@ -477,6 +471,10 @@ resource "aws_ecs_task_definition" "edge" {
   ])
 }
 
+data "aws_ecs_task_definition" "edge" {
+  task_definition = aws_ecs_task_definition.edge.family
+}
+
 data "aws_ip_ranges" "all" {
   services = ["globalaccelerator", "route53_healthchecks"]
 }
@@ -547,7 +545,7 @@ locals {
 resource "aws_ecs_service" "edge" {
   name                 = "team-${var.region}-svc"
   cluster              = aws_ecs_cluster.edge.id
-  task_definition      = aws_ecs_task_definition.edge.arn
+  task_definition      = "${aws_ecs_task_definition.edge.family}:${max(aws_ecs_task_definition.edge.revision, data.aws_ecs_task_definition.edge.revision)}"
   desired_count        = var.auto_scale_min
   launch_type          = "FARGATE"
   force_new_deployment = true
