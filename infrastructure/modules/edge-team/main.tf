@@ -198,7 +198,7 @@ resource "aws_elasticache_parameter_group" "edge_cache" {
 }
 
 resource "aws_security_group" "cache" {
-  name = "edge-cache-${var.region}"
+  name   = "edge-cache-${var.region}"
   vpc_id = aws_vpc.edge.id
 
   ingress = [
@@ -242,15 +242,16 @@ resource "aws_elasticache_replication_group" "edge_cache" {
   subnet_group_name             = aws_elasticache_subnet_group.edge_cache_subnet.name
   security_group_ids            = [aws_security_group.cache.id]
   transit_encryption_enabled    = false
+  multi_az_enabled              = true
 }
 
-resource "aws_elasticache_user" "cache" {
-  user_id       = "edge-cache-${var.region}"
-  user_name     = "edge-cache-${var.region}"
-  access_string = "on ~* +@all"
-  engine        = "REDIS"
-  no_password_required = true
-}
+# resource "aws_elasticache_user" "cache" {
+#   user_id              = "edge-cache-${var.region}"
+#   user_name            = "edge-cache-${var.region}"
+#   access_string        = "on ~* +@all"
+#   engine               = "REDIS"
+#   no_password_required = true
+# }
 
 resource "aws_ecs_cluster" "edge" {
   name = "team-${var.region}-cls"
@@ -463,7 +464,8 @@ resource "aws_ecs_task_definition" "edge" {
 
         REDIS_CACHE_URL = {
           name  = "REDIS_CACHE_URL"
-          value = "redis://${aws_elasticache_user.cache.user_name}@${aws_elasticache_replication_group.edge_cache.primary_endpoint_address}:${aws_elasticache_replication_group.edge_cache.port}/0"
+          value = "redis://${aws_elasticache_replication_group.edge_cache.primary_endpoint_address}:${aws_elasticache_replication_group.edge_cache.port}/0"
+          # value = "redis://${aws_elasticache_user.cache.user_name}@${aws_elasticache_replication_group.edge_cache.primary_endpoint_address}:${aws_elasticache_replication_group.edge_cache.port}/0"
         }
 
         REGION = {
