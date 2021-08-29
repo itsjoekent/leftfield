@@ -181,8 +181,11 @@ function healthCheck(request, response) {
       }
     });
 
-    redisCacheClient.on('ready', () => logger.info('Connected to Redis cache'));
-    redisEdgeClient.on('ready', () => logger.info('Connected to Redis edge db'));
+    redisCacheClient.on('connect', () => logger.info('Connected to Redis cache'));
+    redisEdgeClient.on('connect', () => logger.info('Connected to Redis edge db'));
+
+    redisCacheClient.on('ready', () => logger.info('Redis cache is ready'));
+    redisEdgeClient.on('ready', () => logger.info('Redis edge db is ready'));
 
     redisCacheClient.on('error', () => logger.info('Error connecting to Redis cache'));
     redisEdgeClient.on('error', () => logger.info('Error connecting to Redis edge db'));
