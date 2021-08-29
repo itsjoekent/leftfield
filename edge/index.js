@@ -32,10 +32,6 @@ const insecureApp = router();
 
 const redisCacheClient = new Redis(REDIS_CACHE_URL, {
   enableReadyCheck: true,
-
-  // TODO:
-  // temp:
-  retryStrategy: () => null,
 });
 
 const redisEdgeClient = new Redis(REDIS_EDGE_URL, {

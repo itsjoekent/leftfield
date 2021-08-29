@@ -249,10 +249,7 @@ resource "aws_elasticache_user" "cache" {
   user_name     = "edge-cache-${var.region}"
   access_string = "on ~* +@all"
   engine        = "REDIS"
-
-  # NOTE: This is stored in plaintext of Terraform no matter what.
-  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_user
-  passwords = ["1e22c600a28f4bf3c6365879c2c598e4"]
+  no_password_required = true
 }
 
 resource "aws_ecs_cluster" "edge" {
@@ -466,7 +463,7 @@ resource "aws_ecs_task_definition" "edge" {
 
         REDIS_CACHE_URL = {
           name  = "REDIS_CACHE_URL"
-          value = "redis://${aws_elasticache_user.cache.user_name}:${one(aws_elasticache_user.cache.passwords)}@${aws_elasticache_replication_group.edge_cache.primary_endpoint_address}:${aws_elasticache_replication_group.edge_cache.port}/0"
+          value = "redis://${aws_elasticache_user.cache.user_name}@${aws_elasticache_replication_group.edge_cache.primary_endpoint_address}:${aws_elasticache_replication_group.edge_cache.port}/0"
         }
 
         REGION = {
