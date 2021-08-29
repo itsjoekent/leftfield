@@ -39,7 +39,11 @@ const redisCacheClient = (() => {
     return new Redis.Cluster([
       { host, port },
     ], {
+      dnsLookup: (address, callback) => callback(null, address),
       enableReadyCheck: true,
+      redisOptions: {
+        tls: {},
+      },
       scaleReads: 'slave',
     });
   }
