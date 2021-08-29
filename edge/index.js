@@ -27,12 +27,22 @@ const sniLookup = require('./sniLookup');
 const secureApp = router();
 const insecureApp = router();
 
-// TODO:
-// Error: Unable to locate SSL certificate for cplb.rtb-dsp.com
+const redisCacheClient = (() => {
+  if (REDIS_CACHE_URL.startsWith('redis://')) {
+    return new Redis(REDIS_CACHE_URL, {
+      enableReadyCheck: true,
+    });
+  } else {
+    const [host, port] = REDIS_CACHE_URL.split(':');
 
-const redisCacheClient = new Redis(REDIS_CACHE_URL, {
-  enableReadyCheck: true,
-});
+    return new Redis.Cluster([
+      { host, port },
+    ], {
+      enableReadyCheck: true,
+      scaleReads: 'slave',
+    });
+  }
+})();
 
 const redisEdgeClient = new Redis(REDIS_EDGE_URL, {
   enableReadyCheck: true,
