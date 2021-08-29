@@ -10,7 +10,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
 jobs:
-  build-staging:
+  build:
     runs-on: ubuntu-latest
     env:
       GITHUB_SHA: ${{ github.sha }}
@@ -30,7 +30,7 @@ jobs:
 
       - name: Build image
         id: build-image
-        run: docker build --build-arg -t us.gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA -f dockerfiles/edge.remote.dockerfile .
+        run: docker build -f dockerfiles/edge.remote.dockerfile -t us.gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA .
 
       - name: Push to registry
         run: docker push us.gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA
