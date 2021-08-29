@@ -464,7 +464,7 @@ resource "aws_ecs_task_definition" "edge" {
 
         REDIS_CACHE_URL = {
           name  = "REDIS_CACHE_URL"
-          value = "redis://${aws_elasticache_replication_group.edge_cache.primary_endpoint_address}:${aws_elasticache_replication_group.edge_cache.port}/0"
+          value = "${aws_elasticache_replication_group.edge_cache.primary_endpoint_address}:${aws_elasticache_replication_group.edge_cache.port}"
           # value = "redis://${aws_elasticache_user.cache.user_name}@${aws_elasticache_replication_group.edge_cache.primary_endpoint_address}:${aws_elasticache_replication_group.edge_cache.port}/0"
         }
 
