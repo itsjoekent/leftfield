@@ -1,3 +1,4 @@
+# TODO:
 #  - autoscale policies
 
 variable "auto_scale_max" {
@@ -218,6 +219,44 @@ resource "aws_elasticache_user" "cache" {
   # NOTE: This is stored in plaintext of Terraform no matter what.
   # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_user
   passwords = ["1e22c600a28f4bf3c6365879c2c598e4"]
+}
+
+resource "aws_security_group" "cache" {
+  name = "edge-cache-${var.region}"
+  vpc_id = aws_vpc.edge.id
+
+  ingress = [
+    {
+      description      = "TCP from VPC"
+      from_port        = 0
+      to_port          = 0
+      protocol         = -1
+      cidr_blocks      = [aws_vpc.edge.cidr_block]
+      ipv6_cidr_blocks = null
+      prefix_list_ids  = null
+      security_groups  = null
+      self             = null
+    }
+  ]
+
+  egress = [
+    {
+      description      = "Outbound"
+      from_port        = 0
+      to_port          = 0
+      protocol         = -1
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = null
+      prefix_list_ids  = null
+      security_groups  = null
+      self             = null
+    }
+  ]
+}
+
+resource "aws_elasticache_security_group" "cache" {
+  name                 = "edge-cache-${var.region}"
+  security_group_names = [aws_security_group.cache.name]
 }
 
 resource "aws_ecs_cluster" "edge" {
