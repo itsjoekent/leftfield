@@ -41,9 +41,6 @@ const redisCacheClient = (() => {
     ], {
       dnsLookup: (address, callback) => callback(null, address),
       enableReadyCheck: true,
-      redisOptions: {
-        tls: {},
-      },
       scaleReads: 'slave',
     });
   }
