@@ -7,6 +7,11 @@ const tls = require('tls');
 const logger = require('./logger');
 const retrieveSsl = require('./retrieveSsl');
 
+const USE_WILDCARD = [
+  DNS_ZONE,
+  'cplb.rtb-dsp.com', // AWS health check
+];
+
 module.exports = function sniLookup(redisEdgeClient) {
   async function _sniLookup(domain, callback) {
     try {
@@ -15,7 +20,7 @@ module.exports = function sniLookup(redisEdgeClient) {
         return callback(null, tls.createSecureContext(ssl));
       }
 
-      const sslDomain = domain.includes(DNS_ZONE) ? `*.${DNS_ZONE}` : domain;
+      const sslDomain = USE_WILDCARD.some((compare) => domain.includes(compare)) ? `*.${DNS_ZONE}` : domain;
       const ssl = await retrieveSsl(sslDomain, redisEdgeClient);
 
       if (!ssl) {
