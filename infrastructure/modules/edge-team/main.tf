@@ -197,30 +197,6 @@ resource "aws_elasticache_parameter_group" "edge_cache" {
   }
 }
 
-resource "aws_elasticache_replication_group" "edge_cache" {
-  automatic_failover_enabled    = true
-  availability_zones            = local.availability_zones
-  replication_group_id          = "edge-${var.region}-cache"
-  replication_group_description = "Edge cache"
-  node_type                     = var.cache_node_type
-  number_cache_clusters         = var.cache_nodes
-  parameter_group_name          = aws_elasticache_parameter_group.edge_cache.id
-  port                          = 6379
-  subnet_group_name             = aws_elasticache_subnet_group.edge_cache_subnet.name
-  transit_encryption_enabled    = false
-}
-
-resource "aws_elasticache_user" "cache" {
-  user_id       = "edge-cache-${var.region}"
-  user_name     = "edge-cache-${var.region}"
-  access_string = "on ~* +@all"
-  engine        = "REDIS"
-
-  # NOTE: This is stored in plaintext of Terraform no matter what.
-  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_user
-  passwords = ["1e22c600a28f4bf3c6365879c2c598e4"]
-}
-
 resource "aws_security_group" "cache" {
   name = "edge-cache-${var.region}"
   vpc_id = aws_vpc.edge.id
@@ -254,9 +230,29 @@ resource "aws_security_group" "cache" {
   ]
 }
 
-resource "aws_elasticache_security_group" "cache" {
-  name                 = "edge-cache-${var.region}"
-  security_group_names = [aws_security_group.cache.name]
+resource "aws_elasticache_replication_group" "edge_cache" {
+  automatic_failover_enabled    = true
+  availability_zones            = local.availability_zones
+  replication_group_id          = "edge-${var.region}-cache"
+  replication_group_description = "Edge cache"
+  node_type                     = var.cache_node_type
+  number_cache_clusters         = var.cache_nodes
+  parameter_group_name          = aws_elasticache_parameter_group.edge_cache.id
+  port                          = 6379
+  subnet_group_name             = aws_elasticache_subnet_group.edge_cache_subnet.name
+  security_group_ids            = [aws_security_group.cache.id]
+  transit_encryption_enabled    = false
+}
+
+resource "aws_elasticache_user" "cache" {
+  user_id       = "edge-cache-${var.region}"
+  user_name     = "edge-cache-${var.region}"
+  access_string = "on ~* +@all"
+  engine        = "REDIS"
+
+  # NOTE: This is stored in plaintext of Terraform no matter what.
+  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_user
+  passwords = ["1e22c600a28f4bf3c6365879c2c598e4"]
 }
 
 resource "aws_ecs_cluster" "edge" {
