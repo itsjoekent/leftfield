@@ -1,4 +1,4 @@
-name: Build Edge container image
+name: Build Edge container
 on:
   workflow_dispatch:
   push:
@@ -10,27 +10,45 @@ on:
       - 'package.json'
       - 'package-lock.json'
 jobs:
-  build:
+  build-staging:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_SHA: ${{ github.sha }}
-      SERVICE_NAME: edge
-      PROJECT_ID: ${{ secrets.SHARED_GCP_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
+      - uses: aws-actions/configure-aws-credentials@v1
         with:
-          project_id: ${{ secrets.SHARED_GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.SHARED_GCP_SERVICE_ACCOUNT_KEY }}
-          export_default_credentials: true
-
-      - run: gcloud auth configure-docker -q
-
-      - name: Build image
+          aws-access-key-id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - uses: aws-actions/amazon-ecr-login@v1
+        id: login-ecr
+      - name: Build, tag, and push image to Amazon ECR
         id: build-image
-        run: docker build -f dockerfiles/edge.remote.dockerfile -t us.gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA .
-
-      - name: Push to registry
-        run: docker push us.gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: edge/staging
+          GIT_SHA: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GIT_SHA -f dockerfiles/edge.remote.dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$GIT_SHA"
+      - name: Download task definition
+        run: aws ecs describe-task-definition --task-definition team-us-east-1-task --query taskDefinition > task-definition.json
+      - name: Update Amazon ECS task definition with new ID
+        id: render-task
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: edge-container
+          image: ${{ steps.build-image.outputs.image }}
+      - name: Deploy Amazon ECS task
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task.outputs.task-definition }}
+          service: team-us-east-1-svc
+          cluster: team-us-east-1-cls
+          wait-for-service-stability: true
