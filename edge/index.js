@@ -12,8 +12,6 @@ const { URL } = require('url');
 
 if (NODE_ENV === 'development') {
   require(path.join(process.cwd(), 'environment/development.api'));
-
-  process.env['DEBUG'] = 'ioredis:*';
 }
 
 const Redis = require('ioredis');
@@ -57,7 +55,7 @@ const redisCacheClient = new Redis(REDIS_CACHE_URL, {
 
   // TODO:
   // temp:
-  retryStrategy: () => null,  
+  retryStrategy: () => null,
 });
 
 const redisEdgeClient = new Redis(REDIS_EDGE_URL, {

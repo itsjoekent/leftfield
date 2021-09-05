@@ -246,9 +246,8 @@ resource "aws_elasticache_replication_group" "edge_cache" {
 }
 
 resource "random_password" "cache_user" {
-  length           = 16
-  special          = true
-  override_special = "_%@"
+  length  = 16
+  special = false
 }
 
 resource "aws_elasticache_user" "cache" {
