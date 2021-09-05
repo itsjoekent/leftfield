@@ -82,7 +82,7 @@
     "start": "NODE_ENV=development PORT=5000 npm-run-all --parallel watch:static:development start:static",
     "start:api": "node api",
     "start:api:development": "NODE_ENV=development nodemon api",
-    "start:edge": "DEBUG=ioredis:* node edge",
+    "start:edge": "node edge",
     "start:edge:development": "NODE_ENV=development nodemon edge",
     "start:static": "node static",
     "start:task:manufacture": "NODE_ENV=production node api/tasks/manufacture",

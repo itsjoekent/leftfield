@@ -19,6 +19,11 @@ terraform {
       source  = "dnsimple/dnsimple"
       version = "~> 0.6"
     }
+
+    random = {
+      source  = "hashicorp/random"
+      version = "3.1.0"
+    }    
   }
 
   backend "remote" {
