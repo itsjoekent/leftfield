@@ -256,7 +256,7 @@ resource "aws_elasticache_user" "cache" {
   user_name     = "edge-cache-${var.region}"
   access_string = "on ~* +@all"
   engine        = "REDIS"
-  passwords     = [random_password.cache_user]
+  passwords     = [random_password.cache_user.result]
 }
 
 resource "aws_ecs_cluster" "edge" {
@@ -470,7 +470,7 @@ resource "aws_ecs_task_definition" "edge" {
 
         REDIS_CACHE_URL = {
           name  = "REDIS_CACHE_URL"
-          value = "redis://${aws_elasticache_user.cache.user_name}:${aws_elasticache_user.cache.passwords[0]}@${aws_elasticache_replication_group.edge_cache.primary_endpoint_address}:${aws_elasticache_replication_group.edge_cache.port}"
+          value = "redis://${aws_elasticache_user.cache.user_name}:${tolist(aws_elasticache_user.cache.passwords)[0]}@${aws_elasticache_replication_group.edge_cache.primary_endpoint_address}:${aws_elasticache_replication_group.edge_cache.port}"
         }
 
         REGION = {

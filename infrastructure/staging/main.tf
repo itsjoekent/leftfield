@@ -23,7 +23,7 @@ terraform {
     random = {
       source  = "hashicorp/random"
       version = "3.1.0"
-    }    
+    }
   }
 
   backend "remote" {
@@ -31,7 +31,7 @@ terraform {
     organization = "getleftfield"
 
     workspaces {
-      name = "staging"
+      name = "aws-staging"
     }
   }
 
