@@ -45,11 +45,45 @@ resource "aws_ecr_repository" "image_repository" {
   name = "edge/${var.config.variables.ENVIRONMENT}"
 }
 
+# NOTE:
+# Putting these data resources in the conditional modules causes Terrafom to panic.
+
+data "aws_ip_ranges" "all" {
+  services = ["globalaccelerator", "route53_healthchecks"]
+
+  provider = aws.primary
+}
+
+data "aws_availability_zones" "us_east_1_available" {
+  state = "available"
+
+  provider = aws.us_east_1
+}
+
+data "aws_availability_zones" "us_west_1_available" {
+  state = "available"
+
+  provider = aws.us_west_1
+}
+
+locals {
+  config = merge(var.config, {
+    edge_data = {
+      availability_zones = {
+        "us-east-1" = slice(data.aws_availability_zones.us_east_1_available.names, 0, 2)
+        "us-west-1" = slice(data.aws_availability_zones.us_west_1_available.names, 0, 2)
+      }
+
+      container_firewall_aws_ip_ranges = data.aws_ip_ranges.all.cidr_blocks
+    }
+  })
+}
+
 module "team_us_east_1" {
   count = contains(var.config.environment.edge.regions, "us-east-1") ? 1 : 0
 
   source = "./team"
-  config = var.config
+  config = local.config
   region = "us-east-1"
 
   providers = {
@@ -66,7 +100,7 @@ module "team_us_west_1" {
   count = contains(var.config.environment.edge.regions, "us-west-1") ? 1 : 0
 
   source = "./team"
-  config = var.config
+  config = local.config
   region = "us-west-1"
 
   providers = {

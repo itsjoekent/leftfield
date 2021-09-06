@@ -69,7 +69,7 @@ resource "aws_security_group" "cache" {
 
 resource "aws_elasticache_replication_group" "edge_cache" {
   automatic_failover_enabled    = true
-  availability_zones            = var.config.environment.edge.availability_zones[var.region]
+  availability_zones            = var.config.edge_data.availability_zones[var.region]
   replication_group_id          = "edge-${var.region}-cache"
   replication_group_description = "Edge cache"
   node_type                     = var.config.environment.edge.cache_node_type

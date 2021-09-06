@@ -8,10 +8,6 @@ locals {
       edge = {
         autoscale_max = 2
         autoscale_min = 1
-        availability_zones = {
-          "us-east-1": ["us-east-1a", "us-east-1f"]
-          "us-west-1": ["us-west-1a", "us-west-1b"]
-        }
         container_cpu = "256"
         container_memory = "512"
         cache_nodes = 2

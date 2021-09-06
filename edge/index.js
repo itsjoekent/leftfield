@@ -27,35 +27,8 @@ const sniLookup = require('./sniLookup');
 const secureApp = router();
 const insecureApp = router();
 
-// const redisCacheClient = (() => {
-//   if (REDIS_CACHE_URL.startsWith('redis://')) {
-//     return new Redis(REDIS_CACHE_URL, {
-//       enableReadyCheck: true,
-//     });
-//   } else {
-//     const [host, port] = REDIS_CACHE_URL.split(':');
-//     console.log({ host, port });
-//
-//     return new Redis.Cluster([
-//       { host, port },
-//     ], {
-//       dnsLookup: (address, callback) => callback(null, address),
-//       enableReadyCheck: true,
-//       scaleReads: 'slave',
-//     });
-//   }
-// })();
-
-// const redisCacheClient = new Redis(`redis://edge-us-east-1-cache.gaj36s.ng.0001.use1.cache.amazonaws.com:6379`, {
-//   enableReadyCheck: true,
-// });
-
 const redisCacheClient = new Redis(REDIS_CACHE_URL, {
   enableReadyCheck: true,
-
-  // TODO:
-  // temp:
-  retryStrategy: () => null,
 });
 
 const redisEdgeClient = new Redis(REDIS_EDGE_URL, {
@@ -198,12 +171,6 @@ function healthCheck(request, response) {
         requestErrorHandler(error, response);
       }
     });
-
-    redisCacheClient.on('connect', () => logger.info('Connected to Redis cache'));
-    redisEdgeClient.on('connect', () => logger.info('Connected to Redis edge db'));
-
-    redisCacheClient.on('ready', () => logger.info('Redis cache is ready'));
-    redisEdgeClient.on('ready', () => logger.info('Redis edge db is ready'));
 
     redisCacheClient.on('error', () => logger.info('Error connecting to Redis cache'));
     redisEdgeClient.on('error', () => logger.info('Error connecting to Redis edge db'));

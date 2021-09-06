@@ -176,11 +176,11 @@ resource "aws_ecs_task_definition" "edge" {
         },
         {
           name  = "HTTP_PORT"
-          value = var.config.global.edge.http_port.port
+          value = var.config.global.edge.http_port
         },
         {
           name  = "HTTPS_PORT"
-          value = var.config.global.edge.https_port.port
+          value = var.config.global.edge.https_port
         },
         {
           name  = "NODE_ENV"
@@ -215,11 +215,11 @@ resource "aws_ecs_task_definition" "edge" {
 
       portMappings = [
         {
-          containerPort = var.config.global.edge.http_port.port
+          containerPort = var.config.global.edge.http_port
           protocol      = "tcp"
         },
         {
-          containerPort = var.config.global.edge.https_port.port
+          containerPort = var.config.global.edge.https_port
           protocol      = "tcp"
         }
       ]
@@ -239,14 +239,10 @@ data "aws_ecs_task_definition" "edge" {
   task_definition = aws_ecs_task_definition.edge.family
 }
 
-data "aws_ip_ranges" "all" {
-  services = ["globalaccelerator", "route53_healthchecks"]
-}
-
 resource "aws_security_group" "edge_aws" {
   # AWS enforces a maxiumum amount of rules per security group,
   # this is a hacky workaround.
-  count = ceil(length(data.aws_ip_ranges.all.cidr_blocks) / 50)
+  count = ceil(length(var.config.edge_data.container_firewall_aws_ip_ranges) / 50)
 
   name   = "team-${var.region}-aws-${count.index}"
   vpc_id = var.vpc.id
@@ -257,7 +253,7 @@ resource "aws_security_group" "edge_aws" {
       from_port        = 0
       to_port          = 0
       protocol         = "-1"
-      cidr_blocks      = slice(data.aws_ip_ranges.all.cidr_blocks, count.index * 50, min((count.index * 50) + 50, length(data.aws_ip_ranges.all.cidr_blocks)))
+      cidr_blocks      = slice(var.config.edge_data.container_firewall_aws_ip_ranges, count.index * 50, min((count.index * 50) + 50, length(var.config.edge_data.container_firewall_aws_ip_ranges)))
       ipv6_cidr_blocks = null
       prefix_list_ids  = null
       security_groups  = null

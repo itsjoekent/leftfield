@@ -17,6 +17,10 @@ module "network" {
   source = "./network"
   config = var.config
   region = var.region
+
+  providers = {
+    aws = aws
+  }
 }
 
 module "cache" {
@@ -26,6 +30,10 @@ module "cache" {
 
   private_subnets    = module.network.private_subnets
   vpc                = module.network.vpc
+
+  providers = {
+    aws = aws
+  }
 }
 
 module "load_balancer" {
@@ -35,6 +43,10 @@ module "load_balancer" {
 
   public_subnets = module.network.public_subnets
   vpc            = module.network.vpc
+
+  providers = {
+    aws = aws
+  }
 }
 
 module "elastic_container" {
@@ -48,6 +60,10 @@ module "elastic_container" {
   https_target_group = module.load_balancer.https_target_group
   private_subnets    = module.network.private_subnets
   vpc                = module.network.vpc
+
+  providers = {
+    aws = aws
+  }
 
   depends_on = [
     module.load_balancer.http_load_balancer_listener,

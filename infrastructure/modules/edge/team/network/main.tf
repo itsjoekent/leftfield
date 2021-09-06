@@ -14,7 +14,7 @@ terraform {
 }
 
 locals {
-  availability_zones = var.config.environment.edge.availability_zones[var.region]
+  availability_zones = var.config.edge_data.availability_zones[var.region]
 }
 
 resource "aws_vpc" "edge" {

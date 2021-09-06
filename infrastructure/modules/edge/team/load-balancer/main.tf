@@ -30,7 +30,7 @@ resource "aws_lb" "edge" {
 
 resource "aws_lb_target_group" "edge_tcp" {
   name                 = "team-${var.region}-tcp-tg"
-  port                 = var.config.global.edge.http_port.port
+  port                 = var.config.global.edge.http_port
   protocol             = "TCP"
   vpc_id               = var.vpc.id
   target_type          = "ip"
@@ -54,7 +54,7 @@ resource "aws_lb_target_group" "edge_tcp" {
 
 resource "aws_lb_target_group" "edge_tls" {
   name                 = "team-${var.region}-tls-tg"
-  port                 = var.config.global.edge.https_port.port
+  port                 = var.config.global.edge.https_port
   protocol             = "TCP"
   vpc_id               = var.vpc.id
   target_type          = "ip"
@@ -78,7 +78,7 @@ resource "aws_lb_target_group" "edge_tls" {
 
 resource "aws_lb_listener" "edge_tcp_forward" {
   load_balancer_arn = aws_lb.edge.arn
-  port              = var.config.global.edge.http_port.port
+  port              = var.config.global.edge.http_port
   protocol          = "TCP"
 
   default_action {
@@ -89,7 +89,7 @@ resource "aws_lb_listener" "edge_tcp_forward" {
 
 resource "aws_lb_listener" "edge_tls_forward" {
   load_balancer_arn = aws_lb.edge.arn
-  port              = var.config.global.edge.https_port.port
+  port              = var.config.global.edge.https_port
   protocol          = "TCP"
 
   default_action {
@@ -108,13 +108,13 @@ resource "aws_globalaccelerator_listener" "edge" {
   protocol        = "TCP"
 
   port_range {
-    from_port = var.config.global.edge.http_port.port
-    to_port   = var.config.global.edge.http_port.port
+    from_port = var.config.global.edge.http_port
+    to_port   = var.config.global.edge.http_port
   }
 
   port_range {
-    from_port = var.config.global.edge.https_port.port
-    to_port   = var.config.global.edge.https_port.port
+    from_port = var.config.global.edge.https_port
+    to_port   = var.config.global.edge.https_port
   }
 }
 
@@ -136,9 +136,9 @@ output "https_load_balancer_listener" {
 }
 
 output "http_target_group" {
-  value = aws_lb_target_group.edge_tcp.arn
+  value = aws_lb_target_group.edge_tcp
 }
 
 output "https_target_group" {
-  value = aws_lb_target_group.edge_tls.arn
+  value = aws_lb_target_group.edge_tls
 }
