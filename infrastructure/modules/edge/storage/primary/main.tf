@@ -1,17 +1,11 @@
-variable "prefix" {
-  type    = string
-  default = "leftfield"
-}
-
-variable "environment" {
-  type = string
-}
+variable "config" {}
 
 variable "region" {
   type = string
 }
 
-variable "destination_buckets" {}
+# list(aws_s3_bucket)
+variable "secondary_buckets" {}
 
 terraform {
   required_providers {
@@ -20,6 +14,50 @@ terraform {
       version = "~> 3.27"
     }
   }
+}
+
+resource "aws_s3_bucket" "edge" {
+  bucket = "leftfield-${var.config.variables.ENVIRONMENT}-${var.region}"
+  acl    = "private"
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["HEAD", "PUT", "POST"]
+    allowed_origins = ["*"]
+    expose_headers  = ["Access-Control-Allow-Origin"]
+  }
+
+  versioning {
+    enabled = true
+  }
+
+  dynamic "replication_configuration" {
+    for_each = var.secondary_buckets
+
+    content {
+      role = aws_iam_role.cdn-replication.arn
+
+      rules {
+        id     = "Copy to ${replication_configuration.value.name}"
+        prefix = ""
+        status = "Enabled"
+
+        destination {
+          bucket        = replication_configuration.value.arn
+          storage_class = "STANDARD"
+        }
+      }
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "block_cdn_public_access" {
+  bucket = aws_s3_bucket.edge.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_iam_role" "cdn-replication" {
@@ -78,7 +116,7 @@ resource "aws_iam_policy" "cdn-replication" {
       ],
       "Effect": "Allow",
       "Resource": [
-        %{for bucket in var.destination_buckets}
+        %{for bucket in var.secondary_buckets}
         "${bucket.arn}/*"
         %{endfor}
       ]
@@ -93,58 +131,6 @@ resource "aws_iam_role_policy_attachment" "replication" {
   policy_arn = aws_iam_policy.cdn-replication.arn
 }
 
-resource "aws_s3_bucket" "edge" {
-  bucket = "${var.prefix}-${var.environment}-${var.region}"
-  acl    = "private"
-
-  cors_rule {
-    allowed_headers = ["*"]
-    allowed_methods = ["HEAD", "PUT", "POST"]
-    allowed_origins = ["*"]
-    expose_headers  = ["Access-Control-Allow-Origin"]
-  }
-
-  versioning {
-    enabled = true
-  }
-
-  dynamic "replication_configuration" {
-    for_each = var.destination_buckets
-
-    content {
-      role = aws_iam_role.cdn-replication.arn
-
-      rules {
-        id     = "Copy to ${replication_configuration.value.region}"
-        prefix = ""
-        status = "Enabled"
-
-        destination {
-          bucket        = replication_configuration.value.arn
-          storage_class = "STANDARD"
-        }
-      }
-    }
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "block_cdn_public_access" {
-  bucket = aws_s3_bucket.edge.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-output "name" {
-  value = aws_s3_bucket.edge.bucket
-}
-
-output "arn" {
-  value = aws_s3_bucket.edge.arn
-}
-
-output "region" {
-  value = var.region
+output "bucket" {
+  value = aws_s3_bucket.edge
 }

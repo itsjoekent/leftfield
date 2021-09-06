@@ -1,11 +1,4 @@
-variable "prefix" {
-  type    = string
-  default = "leftfield"
-}
-
-variable "environment" {
-  type = string
-}
+variable "config" {}
 
 variable "region" {
   type = string
@@ -21,7 +14,7 @@ terraform {
 }
 
 resource "aws_s3_bucket" "edge" {
-  bucket = "${var.prefix}-${var.environment}-${var.region}"
+  bucket = "leftfield-${var.config.variables.ENVIRONMENT}-${var.region}"
   acl    = "private"
 
   versioning {
@@ -38,14 +31,6 @@ resource "aws_s3_bucket_public_access_block" "block_cdn_public_access" {
   restrict_public_buckets = true
 }
 
-output "name" {
-  value = aws_s3_bucket.edge.bucket
-}
-
-output "arn" {
-  value = aws_s3_bucket.edge.arn
-}
-
-output "region" {
-  value = var.region
+output "bucket" {
+  value = aws_s3_bucket.edge
 }

@@ -1,18 +1,12 @@
-variable "environment" {
-  type = string
-}
-
-variable "dns_subdomain" {
-  type    = string
-  default = ""
-}
-
-variable "dns_zone" {
-  type = string
-}
+variable "config" {}
 
 terraform {
   required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.27"
+    }
+
     dnsimple = {
       source  = "dnsimple/dnsimple"
       version = "~> 0.6"
@@ -20,18 +14,14 @@ terraform {
   }
 }
 
-resource "aws_ecr_repository" "image_repository" {
-  name = "edge/${var.environment}"
-}
-
 resource "aws_globalaccelerator_accelerator" "edge" {
-  name            = "team-${var.environment}-gacl"
+  name            = "${var.config.variables.ENVIRONMENT}-accelerator"
   ip_address_type = "IPV4"
   enabled         = true
 
   attributes {
     # TODO: Removing this seems to cause a lifecycle bug...
-    flow_logs_s3_bucket = "leftfield-staging-logs"
+    flow_logs_s3_bucket = "leftfield-${var.config.variables.ENVIRONMENT}-logs"
     flow_logs_s3_prefix = "accelerator-flow-logs/"
     flow_logs_enabled   = false
   }
@@ -42,25 +32,25 @@ locals {
 }
 
 resource "dnsimple_record" "root_domain_ip_1" {
-  domain = var.dns_zone
-  name   = var.dns_subdomain
+  domain = var.config.variables.DNS_ZONE
+  name   = var.config.variables.DNS_SUBDOMAIN
   value  = local.accelerator_ip_address[0]
   type   = "A"
   ttl    = 3600
 }
 
 resource "dnsimple_record" "root_domain_ip_2" {
-  domain = var.dns_zone
-  name   = var.dns_subdomain
+  domain = var.config.variables.DNS_ZONE
+  name   = var.config.variables.DNS_SUBDOMAIN
   value  = local.accelerator_ip_address[1]
   type   = "A"
   ttl    = 3600
 }
 
 resource "dnsimple_record" "www_domain_ip_1" {
-  count = length(var.dns_subdomain) == 0 ? 1 : 0
+  count = length(var.config.variables.DNS_SUBDOMAIN) == 0 ? 1 : 0
 
-  domain = var.dns_zone
+  domain = var.config.variables.DNS_ZONE
   name   = "www"
   value  = local.accelerator_ip_address[0]
   type   = "A"
@@ -68,19 +58,15 @@ resource "dnsimple_record" "www_domain_ip_1" {
 }
 
 resource "dnsimple_record" "www_domain_ip_2" {
-  count = length(var.dns_subdomain) == 0 ? 1 : 0
+  count = length(var.config.variables.DNS_SUBDOMAIN) == 0 ? 1 : 0
 
-  domain = var.dns_zone
+  domain = var.config.variables.DNS_ZONE
   name   = "www"
   value  = local.accelerator_ip_address[1]
   type   = "A"
   ttl    = 3600
 }
 
-output "image_repository" {
-  value = aws_ecr_repository.image_repository
-}
-
-output "globalaccelerator" {
+output "accelerator" {
   value = aws_globalaccelerator_accelerator.edge
 }
