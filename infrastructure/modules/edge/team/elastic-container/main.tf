@@ -105,7 +105,7 @@ data "aws_iam_policy_document" "edge_ecs_read_ssm_secrets" {
   statement {
     effect    = "Allow"
     actions   = ["ssm:GetParameters"]
-    resources = ["arn:aws:ssm:*:${var.config.variables.AWS_ACCOUNT_ID}:parameter/*"]
+    resources = ["arn:aws:ssm:${var.region}:${var.config.variables.AWS_ACCOUNT_ID}:parameter/*"]
   }
 
   statement {
@@ -118,8 +118,8 @@ data "aws_iam_policy_document" "edge_ecs_read_ssm_secrets" {
     effect  = "Allow"
     actions = ["kms:Decrypt", "secretsmanager:GetSecretValue"]
     resources = [
-      "arn:aws:kms:*:${var.config.variables.AWS_ACCOUNT_ID}:key/*",
-      "arn:aws:secretsmanager:*:${var.config.variables.AWS_ACCOUNT_ID}:secret:*"
+      "arn:aws:kms:${var.region}:${var.config.variables.AWS_ACCOUNT_ID}:key/*",
+      "arn:aws:secretsmanager:${var.region}:${var.config.variables.AWS_ACCOUNT_ID}:secret:*"
     ]
   }
 }
