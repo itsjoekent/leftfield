@@ -146,7 +146,7 @@ resource "aws_ecs_task_definition" "edge" {
   container_definitions = jsonencode([
     {
       name      = "edge-container"
-      image     = "${image_repository.repository_url}:latest"
+      image     = "${var.image_repository.repository_url}:latest"
       essential = true
 
       secrets = [

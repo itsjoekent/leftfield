@@ -28,7 +28,7 @@ resource "aws_globalaccelerator_accelerator" "edge" {
 }
 
 resource "aws_globalaccelerator_listener" "edge" {
-  accelerator_arn = data.aws_globalaccelerator_accelerator.edge.id
+  accelerator_arn = aws_globalaccelerator_accelerator.edge.id
   client_affinity = "NONE"
   protocol        = "TCP"
 
