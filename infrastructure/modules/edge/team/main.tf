@@ -29,18 +29,18 @@ module "network" {
   }
 }
 
-module "cache" {
-  source = "./cache"
-  config = var.config
-  region = var.region
-
-  private_subnets    = module.network.private_subnets
-  vpc                = module.network.vpc
-
-  providers = {
-    aws = aws
-  }
-}
+# module "cache" {
+#   source = "./cache"
+#   config = var.config
+#   region = var.region
+#
+#   private_subnets    = module.network.private_subnets
+#   vpc                = module.network.vpc
+#
+#   providers = {
+#     aws = aws
+#   }
+# }
 
 module "load_balancer" {
   source = "./load-balancer"
@@ -61,8 +61,8 @@ module "elastic_container" {
   config = var.config
   region = var.region
 
-  cache_redis        = module.cache.redis
-  cache_user         = module.cache.user
+  # cache_redis        = module.cache.redis
+  # cache_user         = module.cache.user
   http_target_group  = module.load_balancer.http_target_group
   https_target_group = module.load_balancer.https_target_group
   image_repository   = var.image_repository

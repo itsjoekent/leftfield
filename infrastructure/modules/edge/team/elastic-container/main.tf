@@ -1,8 +1,8 @@
 # aws_elasticache_replication_group
-variable "cache_redis" {}
+# variable "cache_redis" {}
 
 # aws_elasticache_user
-variable "cache_user" {}
+# variable "cache_user" {}
 
 variable "config" {}
 
@@ -185,10 +185,10 @@ resource "aws_ecs_task_definition" "edge" {
           name  = "NODE_ENV"
           value = var.config.variables.ENVIRONMENT
         },
-        {
-          name  = "REDIS_CACHE_URL"
-          value = "redis://${var.cache_user.user_name}:${tolist(var.cache_user.passwords)[0]}@${var.cache_redis.primary_endpoint_address}:${var.cache_redis.port}"
-        },
+        # {
+        #   name  = "REDIS_CACHE_URL"
+        #   value = "redis://${var.cache_user.user_name}:${tolist(var.cache_user.passwords)[0]}@${var.cache_redis.primary_endpoint_address}:${var.cache_redis.port}"
+        # },
         {
           name  = "REGION"
           value = var.region
