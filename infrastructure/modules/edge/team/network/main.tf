@@ -49,6 +49,26 @@ resource "aws_subnet" "edge_public" {
   ]
 }
 
+# resource "aws_route_table" "edge_public" {
+#   vpc_id = aws_vpc.edge.id
+#
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.edge.id
+#   }
+#
+#   tags = {
+#     name = "team-${var.region}-public-route-table"
+#   }
+# }
+#
+# resource "aws_route_table_association" "edge_public" {
+#   count = length(local.availability_zones)
+#
+#   subnet_id      = aws_subnet.edge_public[count.index].id
+#   route_table_id = aws_route_table.edge_public.id
+# }
+
 resource "aws_subnet" "edge_private" {
   count = length(local.availability_zones)
 
@@ -60,26 +80,6 @@ resource "aws_subnet" "edge_private" {
   tags = {
     name = "team-${local.availability_zones[count.index]}-private-subnet"
   }
-}
-
-resource "aws_route_table" "edge_public" {
-  vpc_id = aws_vpc.edge.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.edge.id
-  }
-
-  tags = {
-    name = "team-${var.region}-public-route-table"
-  }
-}
-
-resource "aws_route_table_association" "edge_public" {
-  count = length(local.availability_zones)
-
-  subnet_id      = aws_subnet.edge_public[count.index].id
-  route_table_id = aws_route_table.edge_public.id
 }
 
 resource "aws_eip" "edge" {
