@@ -133,7 +133,7 @@ resource "aws_route_table_association" "edge_private" {
 resource "aws_route" "edge_private" {
   count = length(local.availability_zones)
 
-  route_table_id         = aws_route_table.edge_private.id
+  route_table_id         = aws_route_table.edge_private[count.index].id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_nat_gateway.edge_public[count.index].id
 }
