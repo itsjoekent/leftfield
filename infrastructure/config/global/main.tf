@@ -8,6 +8,8 @@ locals {
       http_port = 80
       https_port = 443
 
+      image_repository_name = "edge"
+
       vpc_cidr_block = "10.0.0.0/16"
     }
   }

@@ -42,7 +42,7 @@ module "storage" {
 }
 
 resource "aws_ecr_repository" "image_repository" {
-  name = "edge/${var.config.variables.ENVIRONMENT}"
+  name = var.config.global.edge.image_repository_name
 }
 
 # NOTE:
@@ -91,6 +91,7 @@ module "team_us_east_1" {
   }
 
   depends_on = [
+    aws_ecr_repository.image_repository,
     module.accelerator.accelerator,
     module.storage.primary_bucket,
   ]
@@ -108,6 +109,7 @@ module "team_us_west_1" {
   }
 
   depends_on = [
+    aws_ecr_repository.image_repository,
     module.accelerator.accelerator,
     module.storage.primary_bucket,
   ]

@@ -133,7 +133,7 @@ resource "aws_iam_role_policy_attachment" "edge_ecs_execution" {
 }
 
 data "aws_ecr_repository" "image_repository" {
-  name = "edge/${var.config.variables.ENVIRONMENT}"
+  name = var.config.global.edge.image_repository_name
 }
 
 resource "aws_ecs_task_definition" "edge" {
@@ -160,7 +160,7 @@ resource "aws_ecs_task_definition" "edge" {
       environment = concat(local.storage_vars, [
         {
           name  = "DEFAULT_MAX_AGE"
-          value = "86400"
+          value = tostring(86400)
         },
         {
           name  = "DNS_ZONE"
@@ -176,11 +176,11 @@ resource "aws_ecs_task_definition" "edge" {
         },
         {
           name  = "HTTP_PORT"
-          value = var.config.global.edge.http_port
+          value = tostring(var.config.global.edge.http_port)
         },
         {
           name  = "HTTPS_PORT"
-          value = var.config.global.edge.https_port
+          value = tostring(var.config.global.edge.https_port)
         },
         {
           name  = "NODE_ENV"
