@@ -95,10 +95,6 @@ resource "aws_elasticache_user" "cache" {
   passwords     = [random_password.cache_user.result]
 }
 
-resource "aws_ecs_cluster" "edge" {
-  name = "team-${var.region}-cls"
-}
-
 output "user" {
   value = aws_elasticache_user.cache
 }
