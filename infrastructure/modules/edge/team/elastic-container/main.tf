@@ -66,7 +66,7 @@ locals {
   ], [
     for region in var.config.environment.edge.regions : {
       "name" : "STORAGE_BUCKET_${upper(replace(region, "-", "_"))}",
-      "value" : "leftfield-${var.config.variables.ENVIRONMENT}-${var.region}"
+      "value" : "leftfield-${var.config.variables.ENVIRONMENT}-${region}"
     }
   ])
 }
