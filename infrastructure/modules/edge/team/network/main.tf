@@ -149,5 +149,5 @@ output "public_subnets" {
 }
 
 output "private_subnets" {
-  value = aws_subnet.edge_public.*
+  value = aws_subnet.edge_private.*
 }
