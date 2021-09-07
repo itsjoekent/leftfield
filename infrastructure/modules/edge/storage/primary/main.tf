@@ -38,7 +38,7 @@ resource "aws_s3_bucket" "edge" {
       role = aws_iam_role.cdn-replication.arn
 
       rules {
-        id     = "Copy to ${replication_configuration.value.name}"
+        id     = "Copy to ${replication_configuration.value.id}"
         prefix = ""
         status = "Enabled"
 
