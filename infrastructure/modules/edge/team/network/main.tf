@@ -75,6 +75,14 @@ resource "aws_route_table" "edge_public" {
   }
 }
 
+resource "aws_route" {
+  count = length(local.availability_zones)
+
+  route_table_id         = aws_route_table.edge_public[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.edge.id
+}
+
 resource "aws_eip" "edge" {
   count = length(local.availability_zones)
 
@@ -120,6 +128,14 @@ resource "aws_route_table_association" "edge_private" {
 
   subnet_id      = aws_subnet.edge_private[count.index].id
   route_table_id = aws_route_table.edge_private[count.index].id
+}
+
+resource "aws_route" {
+  count = length(local.availability_zones)
+
+  route_table_id         = aws_route_table.edge_private[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_nat_gateway.edge_public[count.index].id
 }
 
 resource "aws_vpc_endpoint" "s3" {
