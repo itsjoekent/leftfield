@@ -15,7 +15,7 @@ terraform {
 }
 
 resource "aws_globalaccelerator_accelerator" "edge" {
-  name            = "${var.config.variables.ENVIRONMENT}-accelerator"
+  name            = var.config.global.edge.accelerator_name
   ip_address_type = "IPV4"
   enabled         = true
 

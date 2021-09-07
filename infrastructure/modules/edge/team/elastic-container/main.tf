@@ -160,7 +160,7 @@ resource "aws_ecs_task_definition" "edge" {
       environment = concat(local.storage_vars, [
         {
           name  = "DEFAULT_MAX_AGE"
-          value = 86400
+          value = "86400"
         },
         {
           name  = "DNS_ZONE"
