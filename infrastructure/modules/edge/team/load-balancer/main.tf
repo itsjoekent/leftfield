@@ -1,3 +1,6 @@
+# aws_globalaccelerator_listener
+variable "accelerator_listener" {}
+
 variable "config" {}
 
 # list(aws_subnet)
@@ -102,24 +105,8 @@ data "aws_globalaccelerator_accelerator" "edge" {
   name = var.config.global.edge.accelerator_name
 }
 
-resource "aws_globalaccelerator_listener" "edge" {
-  accelerator_arn = data.aws_globalaccelerator_accelerator.edge.id
-  client_affinity = "NONE"
-  protocol        = "TCP"
-
-  port_range {
-    from_port = var.config.global.edge.http_port
-    to_port   = var.config.global.edge.http_port
-  }
-
-  port_range {
-    from_port = var.config.global.edge.https_port
-    to_port   = var.config.global.edge.https_port
-  }
-}
-
 resource "aws_globalaccelerator_endpoint_group" "edge" {
-  listener_arn = aws_globalaccelerator_listener.edge.id
+  listener_arn = var.accelerator_listener.id
 
   endpoint_configuration {
     endpoint_id = aws_lb.edge.arn

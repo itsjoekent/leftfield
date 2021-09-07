@@ -27,6 +27,22 @@ resource "aws_globalaccelerator_accelerator" "edge" {
   }
 }
 
+resource "aws_globalaccelerator_listener" "edge" {
+  accelerator_arn = data.aws_globalaccelerator_accelerator.edge.id
+  client_affinity = "NONE"
+  protocol        = "TCP"
+
+  port_range {
+    from_port = var.config.global.edge.http_port
+    to_port   = var.config.global.edge.http_port
+  }
+
+  port_range {
+    from_port = var.config.global.edge.https_port
+    to_port   = var.config.global.edge.https_port
+  }
+}
+
 locals {
   accelerator_ip_address = flatten(aws_globalaccelerator_accelerator.edge.ip_sets[*].ip_addresses)
 }
@@ -69,4 +85,8 @@ resource "dnsimple_record" "www_domain_ip_2" {
 
 output "accelerator" {
   value = aws_globalaccelerator_accelerator.edge
+}
+
+output "listener" {
+  value = aws_globalaccelerator_listener.edge
 }

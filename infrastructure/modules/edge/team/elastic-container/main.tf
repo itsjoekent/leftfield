@@ -12,6 +12,9 @@ variable "http_target_group" {}
 # aws_lb_target_group
 variable "https_target_group" {}
 
+# aws_ecr_repository
+variable "image_repository" {}
+
 variable "region" {
   type = string
 }
@@ -132,10 +135,6 @@ resource "aws_iam_role_policy_attachment" "edge_ecs_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-data "aws_ecr_repository" "image_repository" {
-  name = var.config.global.edge.image_repository_name
-}
-
 resource "aws_ecs_task_definition" "edge" {
   family                   = "team-${var.region}-task"
   network_mode             = "awsvpc"
@@ -147,7 +146,7 @@ resource "aws_ecs_task_definition" "edge" {
   container_definitions = jsonencode([
     {
       name      = "edge-container"
-      image     = "${data.aws_ecr_repository.image_repository.repository_url}:latest"
+      image     = "${image_repository.repository_url}:latest"
       essential = true
 
       secrets = [

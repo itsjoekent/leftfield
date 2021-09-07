@@ -1,4 +1,10 @@
+# aws_globalaccelerator_listener
+variable "accelerator_listener" {}
+
 variable "config" {}
+
+# aws_ecr_repository
+variable "image_repository" {}
 
 variable "region" {
   type = string
@@ -41,8 +47,9 @@ module "load_balancer" {
   config = var.config
   region = var.region
 
-  public_subnets = module.network.public_subnets
-  vpc            = module.network.vpc
+  accelerator_listener = var.accelerator_listener
+  public_subnets       = module.network.public_subnets
+  vpc                  = module.network.vpc
 
   providers = {
     aws = aws
@@ -58,6 +65,7 @@ module "elastic_container" {
   cache_user         = module.cache.user
   http_target_group  = module.load_balancer.http_target_group
   https_target_group = module.load_balancer.https_target_group
+  image_repository   = var.image_repository
   private_subnets    = module.network.private_subnets
   vpc                = module.network.vpc
 

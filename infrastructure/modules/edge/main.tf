@@ -86,14 +86,15 @@ module "team_us_east_1" {
   config = local.config
   region = "us-east-1"
 
+  image_repository     = aws_ecr_repository.image_repository
+  accelerator_listener = module.accelerator.listener
+
   providers = {
     aws = aws.us_east_1
   }
 
   depends_on = [
-    aws_ecr_repository.image_repository,
-    module.accelerator.accelerator,
-    module.storage.primary_bucket,
+    module.storage.primary_bucket
   ]
 }
 
@@ -104,13 +105,14 @@ module "team_us_west_1" {
   config = local.config
   region = "us-west-1"
 
+  image_repository     = aws_ecr_repository.image_repository
+  accelerator_listener = module.accelerator.listener
+
   providers = {
     aws = aws.us_west_1
   }
 
   depends_on = [
-    aws_ecr_repository.image_repository,
-    module.accelerator.accelerator,
-    module.storage.primary_bucket,
+    module.storage.primary_bucket
   ]
 }
