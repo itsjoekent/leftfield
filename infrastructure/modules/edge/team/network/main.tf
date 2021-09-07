@@ -75,7 +75,7 @@ resource "aws_route_table" "edge_public" {
   }
 }
 
-resource "aws_route" {
+resource "aws_route" "edge_public" {
   count = length(local.availability_zones)
 
   route_table_id         = aws_route_table.edge_public[count.index].id
@@ -130,7 +130,7 @@ resource "aws_route_table_association" "edge_private" {
   route_table_id = aws_route_table.edge_private[count.index].id
 }
 
-resource "aws_route" {
+resource "aws_route" "edge_private" {
   count = length(local.availability_zones)
 
   route_table_id         = aws_route_table.edge_private[count.index].id
