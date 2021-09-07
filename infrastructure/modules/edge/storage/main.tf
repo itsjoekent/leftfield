@@ -41,8 +41,8 @@ module "secondary_us_west_1" {
 
 locals {
   secondary_buckets = compact([
-    try(module.secondary_us_east_1[0].bucket, ""),
-    try(module.secondary_us_west_1[0].bucket, "")
+    try(module.secondary_us_east_1[0].bucket.arn, ""),
+    try(module.secondary_us_west_1[0].bucket.arn, "")
   ])
 }
 
