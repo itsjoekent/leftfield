@@ -38,12 +38,12 @@ resource "aws_s3_bucket" "edge" {
       role = aws_iam_role.cdn-replication.arn
 
       rules {
-        id     = "Copy files"
+        id     = "Copy to ${replication_configuration.value.name}"
         prefix = ""
         status = "Enabled"
 
         destination {
-          bucket        = replication_configuration.value
+          bucket        = replication_configuration.value.arn
           storage_class = "STANDARD"
         }
       }
@@ -117,7 +117,7 @@ resource "aws_iam_policy" "cdn-replication" {
       "Effect": "Allow",
       "Resource": [
         %{for bucket in var.secondary_buckets}
-        "${bucket}/*"
+        "${bucket.arn}/*"
         %{endfor}
       ]
     }

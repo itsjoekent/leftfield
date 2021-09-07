@@ -40,10 +40,10 @@ module "secondary_us_west_1" {
 }
 
 locals {
-  secondary_buckets = compact([
-    try(module.secondary_us_east_1[0].bucket.arn, ""),
-    try(module.secondary_us_west_1[0].bucket.arn, "")
-  ])
+  secondary_buckets = [for each in [
+    try(module.secondary_us_east_1[0].bucket, ""),
+    try(module.secondary_us_west_1[0].bucket, "")
+  ] : each if each != ""]
 }
 
 module "primary_us_east_1" {
@@ -75,10 +75,10 @@ module "primary_us_west_1" {
 }
 
 locals {
-  primary_bucket = element(compact([
+  primary_bucket = [for each in [
     try(module.primary_us_east_1[0].bucket, ""),
     try(module.primary_us_west_1[0].bucket, "")
-  ]), 0)
+  ] : each if each != ""]
 }
 
 output "primary_bucket" {
