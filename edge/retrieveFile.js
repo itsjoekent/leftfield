@@ -12,6 +12,8 @@ const { get } = require('lodash');
 
 const { regions } = require('./storage');
 
+const CACHE_SEPARATOR = '<--meta|lf|data-->';
+
 const compressionRegex = new RegExp(/\.(js|json|css|html|svg)$/);
 function isCompressible(key) {
   return compressionRegex.test(key);
@@ -88,11 +90,13 @@ async function retrieveFile(key, request, options) {
   const ifModifiedSince = request.get('If-Modified-Since');
 
   if (isRedisCacheReady()) {
-    const metaValue = await redisCacheClient.get(`file:meta:${key}`);
+    const hit = await redisCacheClient.getBuffer(`file:${key}`);
 
-    if (metaValue) {
+    if (hit) {
+      const [metaString, fileString] = hit.toString('utf8').split(CACHE_SEPARATOR);
+
       const meta = JSON.parse(metaValue);
-      const fileBuffer = await redisCacheClient.getBuffer(`file:buffer:${key}`);
+      const fileBuffer = Buffer.from(fileString);
 
       return respondWithGenerator(meta, fileBuffer);
     }
@@ -158,9 +162,10 @@ async function retrieveFile(key, request, options) {
   const { Body: fileBuffer } = await s3.getObject({ Bucket: bucket, Key: key }).promise();
 
   if (isRedisCacheReady() && isCacheable(get(meta, 'ContentLength'))) {
-    // TODO: 1 set/get call
-    redisCacheClient.set(`file:meta:${key}`, JSON.stringify(meta), 'PX', ms('1 day'));
-    redisCacheClient.set(`file:buffer:${key}`, Buffer.from(fileBuffer), 'PX', ms('1 day'));
+    const headerBuffer = Buffer.from(`${JSON.stringify(meta)}${CACHE_SEPARATOR}`);
+    const cacheBuffer = Buffer.concat(headerBuffer, fileBuffer);
+
+    await redisCacheClient.set(`file:${key}`, cacheBuffer, 'PX', ms('1 day'));
   }
 
   return respondWithGenerator(meta, fileBuffer);
