@@ -22,16 +22,13 @@ module.exports = async function createCertificate(domainName) {
     commonName: domainName,
   });
 
-  let token = null;
-  let tokenContents = null;
-
-  function createChallenge(auth, challenge, keyAuthorization) {
+  async function createChallenge(auth, challenge, keyAuthorization) {
     if (challenge.type !== 'http-01') {
       throw new Error(`Unsupported ssl challenge type, "${challenge.type}" for ${domainName}`);
     }
 
-    token = challenge.token;
-    tokenContents = keyAuthorization;
+    const challengeStorageKey = `acme-challenge/${domainName}/${challenge.token}`;
+    await upload(challengeStorageKey, keyAuthorization, 'text/plain');
   }
 
   const cert = await client.auto({
@@ -42,14 +39,12 @@ module.exports = async function createCertificate(domainName) {
   });
 
   const data = {
-    token,
-    tokenContents,
     key: key.toString(),
     cert: cert.toString(),
     createdAt: Date.now(),
     expires: ms('90 days'),
   };
 
-  const storageKey = `ssl/${domainName}`;
+  const certificateStorageKey = `ssl/${domainName}`;
   await upload(storageKey, cryptography.encrypt(SSL_AT_REST_KEY, data), 'text/plain');
 }

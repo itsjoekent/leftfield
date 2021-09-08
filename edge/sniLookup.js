@@ -12,7 +12,7 @@ const USE_WILDCARD = [
   'cplb.rtb-dsp.com', // AWS health check
 ];
 
-module.exports = function sniLookup(redisEdgeClient) {
+module.exports = function sniLookup(redisCacheClient) {
   async function _sniLookup(domain, callback) {
     try {
       if (NODE_ENV === 'development') {
@@ -21,7 +21,7 @@ module.exports = function sniLookup(redisEdgeClient) {
       }
 
       const sslDomain = USE_WILDCARD.some((compare) => domain.includes(compare)) ? `*.${DNS_ZONE}` : domain;
-      const ssl = await retrieveSsl(sslDomain, redisEdgeClient);
+      const ssl = await retrieveSsl(sslDomain, redisCacheClient);
 
       if (!ssl) {
         throw new Error(`Unable to locate SSL certificate for ${sslDomain}`);

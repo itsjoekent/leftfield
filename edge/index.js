@@ -23,20 +23,13 @@ const retrieveFile = require('./retrieveFile');
 const retrieveSsl = require('./retrieveSsl');
 const router = require('./router');
 const sniLookup = require('./sniLookup');
+const storage = require('./storage');
 
 const secureApp = router();
 const insecureApp = router();
 
 const redisCacheClient = new Redis(REDIS_CACHE_URL, {
   enableReadyCheck: true,
-});
-
-const redisEdgeClient = new Redis(REDIS_EDGE_URL, {
-  enableReadyCheck: true,
-
-  // TODO:
-  // temp:
-  retryStrategy: () => null,
 });
 
 const edgeHost = new URL(EDGE_DOMAIN).host;
@@ -62,13 +55,13 @@ function healthCheck(request, response) {
     if (NODE_ENV === 'development') {
       ssl = await require(path.join(process.cwd(), 'ssl/read'))();
     } else {
-      const { cert, key } = await retrieveSsl('*.getleftfield.com', redisEdgeClient);
+      const { cert, key } = await retrieveSsl('*.getleftfield.com', redisCacheClient);
       ssl = { cert, key };
     }
 
     const httpsOptions = {
       ...ssl,
-      SNICallback: sniLookup(redisEdgeClient),
+      SNICallback: sniLookup(redisCacheClient),
     };
 
     secureApp.get('/_lf/health-check', healthCheck);
@@ -100,7 +93,7 @@ function healthCheck(request, response) {
         if (host === edgeHost) {
           response.send('homerun!');
           // TODO:
-          // - Lookup domain in redisEdgeClient
+          // - Lookup domain in redisCacheClient
           // - Find published product version
           // - create key based on published version + product type (SPA vs SSR) + path
           // - retrieveFile()
@@ -120,7 +113,7 @@ function healthCheck(request, response) {
         response.send('grandslam!');
 
         // TODO:
-        // - Lookup domain in redisEdgeClient
+        // - Lookup domain in redisCacheClient
         // - Find published snapshot
         // - create key based on snapshot + path
         // - retrieveFile()
@@ -138,18 +131,18 @@ function healthCheck(request, response) {
           const host = request.get('host').toLowerCase();
           const { token } = request.params;
 
-          const ssl = await retrieveSsl(host);
-          if (!ssl) {
-            throw new Error(`Unable to locate acme challenge for ${host}`);
+          const challenge = await storage.getObject(`acme-challenge/${host}/${token}`);
+          if (challenge instanceof Error) {
+            throw challenge;
           }
 
-          if (ssl.token !== token) {
+          if (!challenge) {
             response.status(404).end();
             return;
           }
 
           response.set('Content-Type', 'text/plain');
-          response.status(200).send(ssl.tokenContents);
+          response.status(200).send(challenge.toString('utf8'));
         } catch (error) {
           requestErrorHandler(error, response);
         }
@@ -173,7 +166,6 @@ function healthCheck(request, response) {
     });
 
     redisCacheClient.on('error', () => logger.info('Error connecting to Redis cache'));
-    redisEdgeClient.on('error', () => logger.info('Error connecting to Redis edge db'));
 
     const httpsServer = https.createServer(httpsOptions, secureApp);
 

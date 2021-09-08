@@ -31,7 +31,7 @@ async function getObject(key, options) {
     region = REGION || STORAGE_MAIN_REGION,
     regionPool = STORAGE_REGIONS.split(','),
     attempts = 0,
-    maxAttempts = 3,
+    maxAttempts = STORAGE_REGIONS.split(',').length,
   } = options || {};
 
   async function next() {

@@ -47,15 +47,20 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
       commonName: `*.${WILDCARD_DOMAIN}`,
     });
 
-    let token = null;
-    let tokenContents = null;
-
     async function createChallenge(auth, challenge, keyAuthorization) {
       console.log(`Creating "${challenge.type}" challenge...`);
 
       if (challenge.type === 'http-01') {
-        token = challenge.token;
-        tokenContents = keyAuthorization;
+        const challengeStorageKey = `acme-challenge/${domainName}/${challenge.token}`;
+
+        await Promise.all(storage.map(({ S3, bucket }) => {
+          return S3.upload({
+            Body: keyAuthorization
+            Bucket: bucket,
+            ContentType: 'text/plain',
+            Key: challengeStorageKey,
+          }).promise();
+        }));
       } else if (challenge.type === 'dns-01') {
         const recordValue = keyAuthorization;
 
@@ -83,8 +88,6 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
     console.log(`Uploading certificate to ${ENVIRONMENTS.split(',').join(', ').toLowerCase()} storage...`);
 
     const data = {
-      token,
-      tokenContents,
       key: key.toString(),
       cert: cert.toString(),
       createdAt: Date.now(),

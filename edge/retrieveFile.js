@@ -6,6 +6,7 @@ const REGION = process.env.REGION;
 
 const path = require('path');
 
+const ms = require('ms');
 const bytes = require('bytes');
 const { get } = require('lodash');
 
@@ -157,8 +158,9 @@ async function retrieveFile(key, request, options) {
   const { Body: fileBuffer } = await s3.getObject({ Bucket: bucket, Key: key }).promise();
 
   if (isRedisCacheReady() && isCacheable(get(meta, 'ContentLength'))) {
-    redisCacheClient.set(`file:meta:${key}`, JSON.stringify(meta));
-    redisCacheClient.set(`file:buffer:${key}`, Buffer.from(fileBuffer));
+    // TODO: 1 set/get call
+    redisCacheClient.set(`file:meta:${key}`, JSON.stringify(meta), 'PX', ms('1 day'));
+    redisCacheClient.set(`file:buffer:${key}`, Buffer.from(fileBuffer), 'PX', ms('1 day'));
   }
 
   return respondWithGenerator(meta, fileBuffer);

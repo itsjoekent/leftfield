@@ -9,15 +9,15 @@ const { getObject } = require('./storage');
 
 const cryptography = require(path.join(process.cwd(), 'ssl/cryptography'));
 
-module.exports = async function retrieveSsl(domainName, redisEdgeClient) {
+module.exports = async function retrieveSsl(domainName, redisCacheClient) {
   function buildResponse(sslData) {
     const ssl = cryptography.decrypt(SSL_AT_REST_KEY, sslData)
 
     return ssl;
   }
 
-  if (redisEdgeClient && redisEdgeClient.status === 'ready') {
-    const sslData = await redisEdgeClient.get(`ssl:${domainName}`);
+  if (redisCacheClient && redisCacheClient.status === 'ready') {
+    const sslData = await redisCacheClient.get(`ssl:${domainName}`);
 
     if (sslData) {
       return buildResponse(sslData);
@@ -28,9 +28,9 @@ module.exports = async function retrieveSsl(domainName, redisEdgeClient) {
   if (sslBuffer) {
     const sslData = sslBuffer.toString();
 
-    if (redisEdgeClient && redisEdgeClient.status === 'ready') {
+    if (redisCacheClient && redisCacheClient.status === 'ready') {
       try {
-        await redisEdgeClient.set(`ssl:${domainName}`, sslData, 'PX', ms('1 day'));
+        await redisCacheClient.set(`ssl:${domainName}`, sslData, 'PX', ms('1 day'));
       } catch (error) {
         logger.error(error);
       }
