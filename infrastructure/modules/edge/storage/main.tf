@@ -7,7 +7,6 @@ terraform {
       version = "~> 3.27"
 
       configuration_aliases = [
-        aws.primary,
         aws.us_east_1,
         aws.us_west_1,
       ]

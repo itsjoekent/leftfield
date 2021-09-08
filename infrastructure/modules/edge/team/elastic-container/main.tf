@@ -73,6 +73,8 @@ locals {
 
 resource "aws_cloudwatch_log_group" "edge_task" {
   name = "team-${var.region}-container-logs"
+
+  retention_in_days = 30
 }
 
 resource "aws_ssm_parameter" "edge_container_secret" {

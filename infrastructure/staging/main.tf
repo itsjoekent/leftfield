@@ -1,10 +1,3 @@
-# TODO:
-# https://aws.amazon.com/about-aws/whats-new/2019/03/aws-privatelink-now-supports-access-over-vpc-peering/
-# Peering between Edge VPC's
-# Global Edge redis cluster
-# "team-us-east-1-logs" is currently set to "never expire"
-#  - autoscale policies
-
 # API application, Mongo
 #  - Seperate domain / infra from Edge
 

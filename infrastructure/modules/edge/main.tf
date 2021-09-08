@@ -35,7 +35,6 @@ module "storage" {
   config = var.config
 
   providers = {
-    aws.primary   = aws.primary
     aws.us_east_1 = aws.us_east_1
     aws.us_west_1 = aws.us_west_1
   }

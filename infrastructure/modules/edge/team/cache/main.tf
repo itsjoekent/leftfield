@@ -30,7 +30,7 @@ resource "aws_elasticache_parameter_group" "edge_cache" {
 
   parameter {
     name  = "maxmemory-policy"
-    value = "allkeys-lfu"
+    value = "volatile-lfu"
   }
 }
 

@@ -31,6 +31,16 @@ resource "aws_s3_bucket" "edge" {
     enabled = true
   }
 
+  lifecycle_rule {
+    id      = "Delete ACME challenge tokens"
+    prefix  = "acme-challenge/"
+    enabled = true
+
+    expiration {
+      days = 7
+    }
+  }
+
   dynamic "replication_configuration" {
     for_each = var.secondary_buckets
 
