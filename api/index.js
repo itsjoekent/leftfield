@@ -40,6 +40,7 @@ app.use(function (req, res, next) {
       ssl = await require(path.join(process.cwd(), 'ssl/read'))();
     }
 
+    // TODO: Check mongo connection status
     app.get('/_lf/health-check', (req, res) => res.send('The Yankees Win!'));
 
     app.post('/dns/:domainRecordId/verify', routeWrapper('verify-domain'));
