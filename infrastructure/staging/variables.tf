@@ -58,6 +58,11 @@ variable "ENVIRONMENT" {
   type = string
 }
 
+variable "MONGODB_CERTIFICATE" {
+  sensitive = true
+  type      = string
+}
+
 variable "SSL_AT_REST_KEY" {
   sensitive = true
   type      = string

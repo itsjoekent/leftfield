@@ -84,6 +84,7 @@ locals {
       EMAIL_API_KEY         = var.EMAIL_API_KEY
       EMAIL_DOMAIN          = var.EMAIL_DOMAIN
       ENVIRONMENT           = var.ENVIRONMENT
+      MONGODB_CERTIFICATE   = var.MONGODB_CERTIFICATE
       SSL_AT_REST_KEY       = var.SSL_AT_REST_KEY
     }
 

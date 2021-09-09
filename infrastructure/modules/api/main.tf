@@ -85,6 +85,11 @@ locals {
       type  = "GENERAL"
     },
     {
+      key   = "MONGODB_CERTIFICATE"
+      value = var.config.variables.MONGODB_CERTIFICATE
+      type  = "SECRET"
+    },
+    {
       key   = "MONGODB_URL"
       value = digitalocean_database_cluster.mongo.uri
       type  = "SECRET"
@@ -228,9 +233,9 @@ resource "digitalocean_app" "api" {
 
   lifecycle {
     ignore_changes = [
-      "spec.0.service.0.image.0.tag",
-      "spec.0.worker.0.image.0.tag",
-      "spec.0.worker.1.image.0.tag",
+      spec[0].service[0].image[0].tag,
+      spec[0].worker[0].image[0].tag,
+      spec[0].worker[1].image[0].tag,
     ]
   }
 }
