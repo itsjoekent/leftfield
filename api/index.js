@@ -66,15 +66,12 @@ app.use(function (req, res, next) {
     });
 
     logger.info('Waiting for Mongo connection...');
-    logger.info(process.env.MONGODB_URL);
 
-    db.once('open', () => {
-      if (NODE_ENV === 'development') {
-        https.createServer(ssl, app).listen(PORT, () => logger.info(`Listening on port:${PORT}`));
-      } else {
-        app.listen(PORT, () => logger.info(`Listening on port:${PORT}`));
-      }
-    });
+    if (NODE_ENV === 'development') {
+      https.createServer(ssl, app).listen(PORT, () => logger.info(`Listening on port:${PORT}`));
+    } else {
+      app.listen(PORT, () => logger.info(`Listening on port:${PORT}`));
+    }
   } catch (error) {
     logger.error('Fatal startup error, exiting...');
     logger.error(error);
