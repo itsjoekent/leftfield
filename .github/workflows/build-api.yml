@@ -21,7 +21,7 @@ jobs:
         id: build-api-image
         run: |
           docker build -t registry.digitalocean.com/leftfield/api:latest \
-            -t registry.digitalocean.com/leftfield/api:${steps.vars.outputs.sha}
+            -t registry.digitalocean.com/leftfield/api:${{ steps.vars.outputs.sha }}
             -f dockerfiles/api.remote.dockerfile .
           docker push registry.digitalocean.com/leftfield/api --all-tags
   build-task-manufacture:
@@ -36,7 +36,7 @@ jobs:
         id: build-task-manufacture-image
         run: |
           docker build -t registry.digitalocean.com/leftfield/task-manufacture:latest \
-            -t registry.digitalocean.com/leftfield/task-manufacture:${steps.vars.outputs.sha}
+            -t registry.digitalocean.com/leftfield/task-manufacture:${{ steps.vars.outputs.sha }}
             -f dockerfiles/task.manufacture.remote.dockerfile .
           docker push registry.digitalocean.com/leftfield/task-manufacture --all-tags
   build-task-ssl:
@@ -51,6 +51,6 @@ jobs:
         id: build-task-ssl-image
         run: |
           docker build -t registry.digitalocean.com/leftfield/task-ssl:latest \
-            -t registry.digitalocean.com/leftfield/task-ssl:${steps.vars.outputs.sha} \
+            -t registry.digitalocean.com/leftfield/task-ssl:${{ steps.vars.outputs.sha }} \
             -f dockerfiles/task.ssl.remote.dockerfile .
           docker push registry.digitalocean.com/leftfield/task-ssl --all-tags
