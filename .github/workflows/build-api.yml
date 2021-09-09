@@ -13,49 +13,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - id: vars
+        run: echo "::set-output name=sha::$(git rev-parse HEAD)"
       - name: Login to Digital Ocean Registry
         run: docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
       - name: Build API Image
         id: build-api-image
         run: |
-          docker build -t registry.digitalocean.com/leftfield/api:latest -f dockerfiles/api.remote.dockerfile .
+          docker build -t registry.digitalocean.com/leftfield/api:latest \
+            -t registry.digitalocean.com/leftfield/api:${steps.vars.outputs.sha}
+            -f dockerfiles/api.remote.dockerfile .
           docker push registry.digitalocean.com/leftfield/api --all-tags
-      - name: Build Manufacture Task Image
-        id: build-task-manufacture-image
-        env:
-          GITHUB_SHA: ${{ GITHUB_SHA }}
-        run: |
-          docker build -t registry.digitalocean.com/leftfield/task-manufacture:latest \
-            -t registry.digitalocean.com/leftfield/task-manufacture:${GITHUB_SHA}
-            -f dockerfiles/task.manufacture.remote.dockerfile .
-          docker push registry.digitalocean.com/leftfield/task-manufacture --all-tags
   build-task-manufacture:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - id: vars
+        run: echo "::set-output name=sha::$(git rev-parse HEAD)"
       - name: Login to Digital Ocean Registry
         run: docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
       - name: Build Manufacture Task Image
         id: build-task-manufacture-image
-        env:
-          GITHUB_SHA: ${{ GITHUB_SHA }}
         run: |
           docker build -t registry.digitalocean.com/leftfield/task-manufacture:latest \
-            -t registry.digitalocean.com/leftfield/task-manufacture:${GITHUB_SHA}
+            -t registry.digitalocean.com/leftfield/task-manufacture:${steps.vars.outputs.sha}
             -f dockerfiles/task.manufacture.remote.dockerfile .
           docker push registry.digitalocean.com/leftfield/task-manufacture --all-tags
   build-task-ssl:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - id: vars
+        run: echo "::set-output name=sha::$(git rev-parse HEAD)"
       - name: Login to Digital Ocean Registry
         run: docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
       - name: Build SSL Task Image
         id: build-task-ssl-image
-        env:
-          GITHUB_SHA: ${{ GITHUB_SHA }}
         run: |
           docker build -t registry.digitalocean.com/leftfield/task-ssl:latest \
-            -t registry.digitalocean.com/leftfield/task-ssl:$GITHUB_SHA \
+            -t registry.digitalocean.com/leftfield/task-ssl:${steps.vars.outputs.sha} \
             -f dockerfiles/task.ssl.remote.dockerfile .
           docker push registry.digitalocean.com/leftfield/task-ssl --all-tags
