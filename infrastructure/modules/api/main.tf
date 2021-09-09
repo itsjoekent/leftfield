@@ -14,6 +14,11 @@ terraform {
   }
 }
 
+resource "digitalocean_container_registry" "api" {
+  name                   = "leftfield"
+  subscription_tier_slug = "basic"
+}
+
 resource "digitalocean_database_cluster" "mongo" {
   name       = "lf-${var.config.variables.ENVIRONMENT}-mongo"
   engine     = "mongodb"
@@ -140,12 +145,10 @@ resource "digitalocean_app" "api" {
       instance_count     = var.config.environment.api.service_instance_count
       instance_size_slug = var.config.environment.api.service_instance_size
 
-      # Github must be installed on the given account:
-      # https://cloud.digitalocean.com/apps/github/install
-      github {
-        repo           = var.config.global.api.git_repository
-        branch         = var.config.global.api.git_branch
-        deploy_on_push = var.config.variables.ENVIRONMENT == "production" ? true : false
+      image {
+        registry_type = "DOCR"
+        repository = "api"
+        tag = "latest"
       }
 
       routes {
@@ -178,12 +181,10 @@ resource "digitalocean_app" "api" {
       instance_count     = var.config.environment.api.task_manufacture_instance_count
       instance_size_slug = var.config.environment.api.task_manufacture_instance_size
 
-      # Github must be installed on the given account:
-      # https://cloud.digitalocean.com/apps/github/install
-      github {
-        repo           = var.config.global.api.git_repository
-        branch         = var.config.global.api.git_branch
-        deploy_on_push = var.config.variables.ENVIRONMENT == "production" ? true : false
+      image {
+        registry_type = "DOCR"
+        repository = "task-manufacture"
+        tag = "latest"
       }
 
       dynamic "env" {
@@ -203,12 +204,10 @@ resource "digitalocean_app" "api" {
       instance_count     = var.config.environment.api.task_ssl_instance_count
       instance_size_slug = var.config.environment.api.task_ssl_instance_size
 
-      # Github must be installed on the given account:
-      # https://cloud.digitalocean.com/apps/github/install
-      github {
-        repo           = var.config.global.api.git_repository
-        branch         = var.config.global.api.git_branch
-        deploy_on_push = var.config.variables.ENVIRONMENT == "production" ? true : false
+      image {
+        registry_type = "DOCR"
+        repository = "task-ssl"
+        tag = "latest"
       }
 
       dynamic "env" {
