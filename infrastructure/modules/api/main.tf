@@ -15,7 +15,7 @@ terraform {
 }
 
 resource "digitalocean_database_cluster" "mongo" {
-  name       = "leftfield-${var.config.variables.ENVIRONMENT}-mongo-cluster"
+  name       = "lf-${var.config.variables.ENVIRONMENT}-mongo"
   engine     = "mongodb"
   version    = var.config.global.api.mongo_version
   size       = var.config.global.api.mongo_size
@@ -24,7 +24,7 @@ resource "digitalocean_database_cluster" "mongo" {
 }
 
 resource "digitalocean_database_cluster" "redis" {
-  name       = "leftfield-${var.config.variables.ENVIRONMENT}-redis-cluster"
+  name       = "lf-${var.config.variables.ENVIRONMENT}-redis"
   engine     = "redis"
   version    = var.config.global.api.redis_version
   size       = var.config.global.api.redis_size
