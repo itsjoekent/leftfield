@@ -240,24 +240,24 @@ resource "digitalocean_app" "api" {
   }
 }
 
-resource "digitalocean_database_firewall" "mongo" {
-  cluster_id = digitalocean_database_cluster.mongo.id
-
-  rule {
-    type  = "app"
-    value = digitalocean_app.api.spec[0].name
-  }
-}
-
 # TODO: Later, DO currently does not allow the "app" as a rule for Mongo
-# resource "digitalocean_database_firewall" "redis" {
-#   cluster_id = digitalocean_database_cluster.redis.id
+# resource "digitalocean_database_firewall" "mongo" {
+#   cluster_id = digitalocean_database_cluster.mongo.id
 #
 #   rule {
 #     type  = "app"
-#     value = digitalocean_app.api.app_id
+#     value = digitalocean_app.api.spec[0].name
 #   }
 # }
+
+resource "digitalocean_database_firewall" "redis" {
+  cluster_id = digitalocean_database_cluster.redis.id
+
+  rule {
+    type  = "app"
+    value = digitalocean_app.api.app_id
+  }
+}
 
 resource "digitalocean_project" "api" {
   name        = "Leftfield ${var.config.variables.ENVIRONMENT}"
