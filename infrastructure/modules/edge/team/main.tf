@@ -34,8 +34,8 @@ module "cache" {
   config = var.config
   region = var.region
 
-  private_subnets    = module.network.private_subnets
-  vpc                = module.network.vpc
+  private_subnets = module.network.private_subnets
+  vpc             = module.network.vpc
 
   providers = {
     aws = aws

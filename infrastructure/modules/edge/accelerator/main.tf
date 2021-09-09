@@ -49,38 +49,38 @@ locals {
 
 resource "dnsimple_zone_record" "root_domain_ip_1" {
   zone_name = var.config.variables.DNS_ZONE
-  name   = var.config.variables.EDGE_DNS_SUBDOMAIN
-  value  = local.accelerator_ip_address[0]
-  type   = "A"
-  ttl    = 3600
+  name      = var.config.variables.EDGE_DNS_SUBDOMAIN
+  value     = local.accelerator_ip_address[0]
+  type      = "A"
+  ttl       = 3600
 }
 
 resource "dnsimple_zone_record" "root_domain_ip_2" {
   zone_name = var.config.variables.DNS_ZONE
-  name   = var.config.variables.EDGE_DNS_SUBDOMAIN
-  value  = local.accelerator_ip_address[1]
-  type   = "A"
-  ttl    = 3600
+  name      = var.config.variables.EDGE_DNS_SUBDOMAIN
+  value     = local.accelerator_ip_address[1]
+  type      = "A"
+  ttl       = 3600
 }
 
 resource "dnsimple_zone_record" "www_domain_ip_1" {
   count = length(var.config.variables.EDGE_DNS_SUBDOMAIN) == 0 ? 1 : 0
 
   zone_name = var.config.variables.DNS_ZONE
-  name   = "www"
-  value  = local.accelerator_ip_address[0]
-  type   = "A"
-  ttl    = 3600
+  name      = "www"
+  value     = local.accelerator_ip_address[0]
+  type      = "A"
+  ttl       = 3600
 }
 
 resource "dnsimple_zone_record" "www_domain_ip_2" {
   count = length(var.config.variables.EDGE_DNS_SUBDOMAIN) == 0 ? 1 : 0
 
   zone_name = var.config.variables.DNS_ZONE
-  name   = "www"
-  value  = local.accelerator_ip_address[1]
-  type   = "A"
-  ttl    = 3600
+  name      = "www"
+  value     = local.accelerator_ip_address[1]
+  type      = "A"
+  ttl       = 3600
 }
 
 output "accelerator" {

@@ -63,7 +63,7 @@ locals {
       name  = "STORAGE_ENDPOINT_${upper(replace(region, "-", "_"))}",
       value = "https://s3.${region}.amazonaws.com"
     }
-  ], [
+    ], [
     for region in var.config.environment.edge.regions : {
       name  = "STORAGE_BUCKET_${upper(replace(region, "-", "_"))}",
       value = "leftfield-${var.config.variables.ENVIRONMENT}-${region}"

@@ -6,7 +6,7 @@ terraform {
     }
 
     digitalocean = {
-      source = "digitalocean/digitalocean"
+      source  = "digitalocean/digitalocean"
       version = "~> 2.0"
     }
 
@@ -67,28 +67,28 @@ module "global_config" {
 }
 
 module "environment_config" {
-  source = "../config/environment"
+  source      = "../config/environment"
   ENVIRONMENT = var.ENVIRONMENT
 }
 
 locals {
   config = {
     variables = {
-      API_DNS_SUBDOMAIN = var.API_DNS_SUBDOMAIN
-      AUTH_TOKEN_SECRET = var.AUTH_TOKEN_SECRET
-      AWS_ACCESS_KEY_ID = var.AWS_ACCESS_KEY_ID
-      AWS_ACCOUNT_ID = var.AWS_ACCOUNT_ID
+      API_DNS_SUBDOMAIN     = var.API_DNS_SUBDOMAIN
+      AUTH_TOKEN_SECRET     = var.AUTH_TOKEN_SECRET
+      AWS_ACCESS_KEY_ID     = var.AWS_ACCESS_KEY_ID
+      AWS_ACCOUNT_ID        = var.AWS_ACCOUNT_ID
       AWS_SECRET_ACCESS_KEY = var.AWS_SECRET_ACCESS_KEY
-      DNS_ZONE = var.DNS_ZONE
-      EDGE_DNS_SUBDOMAIN = var.EDGE_DNS_SUBDOMAIN
-      EMAIL_API_KEY = var.EMAIL_API_KEY
-      EMAIL_DOMAIN = var.EMAIL_DOMAIN
-      ENVIRONMENT = var.ENVIRONMENT
-      SSL_AT_REST_KEY = var.SSL_AT_REST_KEY
+      DNS_ZONE              = var.DNS_ZONE
+      EDGE_DNS_SUBDOMAIN    = var.EDGE_DNS_SUBDOMAIN
+      EMAIL_API_KEY         = var.EMAIL_API_KEY
+      EMAIL_DOMAIN          = var.EMAIL_DOMAIN
+      ENVIRONMENT           = var.ENVIRONMENT
+      SSL_AT_REST_KEY       = var.SSL_AT_REST_KEY
     }
 
     environment = module.environment_config.config
-    global = module.global_config.config
+    global      = module.global_config.config
   }
 }
 
