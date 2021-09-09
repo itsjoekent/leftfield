@@ -15,7 +15,7 @@ terraform {
 
     dnsimple = {
       source  = "dnsimple/dnsimple"
-      version = "~> 0.6"
+      version = "~> 0.9"
     }
   }
 }

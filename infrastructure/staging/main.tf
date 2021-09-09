@@ -1,6 +1,3 @@
-# API application, Mongo
-#  - Seperate domain / infra from Edge
-
 terraform {
   required_providers {
     aws = {
@@ -8,9 +5,14 @@ terraform {
       version = "~> 3.27"
     }
 
+    digitalocean = {
+      source = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+
     dnsimple = {
       source  = "dnsimple/dnsimple"
-      version = "~> 0.6"
+      version = "~> 0.9"
     }
 
     random = {
@@ -51,6 +53,10 @@ provider "aws" {
   secret_key = var.AWS_SECRET_ACCESS_KEY
 }
 
+provider "digitalocean" {
+  token = var.DIGITAL_OCEAN_TOKEN
+}
+
 provider "dnsimple" {
   token   = var.DNSIMPLE_API_TOKEN
   account = var.DNSIMPLE_ACCOUNT_ID
@@ -68,13 +74,13 @@ module "environment_config" {
 locals {
   config = {
     variables = {
+      API_DNS_SUBDOMAIN = var.API_DNS_SUBDOMAIN
+      AUTH_TOKEN_SECRET = var.AUTH_TOKEN_SECRET
       AWS_ACCESS_KEY_ID = var.AWS_ACCESS_KEY_ID
       AWS_ACCOUNT_ID = var.AWS_ACCOUNT_ID
       AWS_SECRET_ACCESS_KEY = var.AWS_SECRET_ACCESS_KEY
-      DNSIMPLE_ACCOUNT_ID = var.DNSIMPLE_ACCOUNT_ID
-      DNSIMPLE_API_TOKEN = var.DNSIMPLE_API_TOKEN
-      DNS_SUBDOMAIN = var.DNS_SUBDOMAIN
       DNS_ZONE = var.DNS_ZONE
+      EDGE_DNS_SUBDOMAIN = var.EDGE_DNS_SUBDOMAIN
       EMAIL_API_KEY = var.EMAIL_API_KEY
       EMAIL_DOMAIN = var.EMAIL_DOMAIN
       ENVIRONMENT = var.ENVIRONMENT
@@ -101,6 +107,8 @@ module "entrypoint" {
     aws.primary   = aws.primary
     aws.us_east_1 = aws.us_east_1
     aws.us_west_1 = aws.us_west_1
+
+    digitalocean = digitalocean
 
     dnsimple = dnsimple
   }

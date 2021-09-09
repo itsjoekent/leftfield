@@ -1,4 +1,4 @@
-node_modules/
-api/
-packages/
-static/
+/node_modules/
+/api/
+/packages/
+/static/

@@ -60,13 +60,13 @@ locals {
 
   storage_vars = concat([
     for region in var.config.environment.edge.regions : {
-      "name" : "STORAGE_ENDPOINT_${upper(replace(region, "-", "_"))}",
-      "value" : "https://s3.${region}.amazonaws.com"
+      name  = "STORAGE_ENDPOINT_${upper(replace(region, "-", "_"))}",
+      value = "https://s3.${region}.amazonaws.com"
     }
   ], [
     for region in var.config.environment.edge.regions : {
-      "name" : "STORAGE_BUCKET_${upper(replace(region, "-", "_"))}",
-      "value" : "leftfield-${var.config.variables.ENVIRONMENT}-${region}"
+      name  = "STORAGE_BUCKET_${upper(replace(region, "-", "_"))}",
+      value = "leftfield-${var.config.variables.ENVIRONMENT}-${region}"
     }
   ])
 }
@@ -173,7 +173,7 @@ resource "aws_ecs_task_definition" "edge" {
         },
         {
           name  = "EDGE_DOMAIN"
-          value = "https://${join(".", compact([var.config.variables.DNS_SUBDOMAIN, var.config.variables.DNS_ZONE]))}"
+          value = "https://${join(".", compact([var.config.variables.EDGE_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE]))}"
         },
         {
           name  = "HTTP_PORT"

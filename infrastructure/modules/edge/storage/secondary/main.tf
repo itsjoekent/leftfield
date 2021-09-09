@@ -20,6 +20,16 @@ resource "aws_s3_bucket" "edge" {
   versioning {
     enabled = true
   }
+
+  lifecycle_rule {
+    id      = "Delete ACME challenge tokens"
+    prefix  = "acme-challenge/"
+    enabled = true
+
+    expiration {
+      days = 7
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "block_cdn_public_access" {

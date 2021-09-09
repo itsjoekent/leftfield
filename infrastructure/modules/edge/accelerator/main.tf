@@ -9,7 +9,7 @@ terraform {
 
     dnsimple = {
       source  = "dnsimple/dnsimple"
-      version = "~> 0.6"
+      version = "~> 0.9"
     }
   }
 }
@@ -47,36 +47,36 @@ locals {
   accelerator_ip_address = flatten(aws_globalaccelerator_accelerator.edge.ip_sets[*].ip_addresses)
 }
 
-resource "dnsimple_record" "root_domain_ip_1" {
-  domain = var.config.variables.DNS_ZONE
-  name   = var.config.variables.DNS_SUBDOMAIN
+resource "dnsimple_zone_record" "root_domain_ip_1" {
+  zone_name = var.config.variables.DNS_ZONE
+  name   = var.config.variables.EDGE_DNS_SUBDOMAIN
   value  = local.accelerator_ip_address[0]
   type   = "A"
   ttl    = 3600
 }
 
-resource "dnsimple_record" "root_domain_ip_2" {
-  domain = var.config.variables.DNS_ZONE
-  name   = var.config.variables.DNS_SUBDOMAIN
+resource "dnsimple_zone_record" "root_domain_ip_2" {
+  zone_name = var.config.variables.DNS_ZONE
+  name   = var.config.variables.EDGE_DNS_SUBDOMAIN
   value  = local.accelerator_ip_address[1]
   type   = "A"
   ttl    = 3600
 }
 
-resource "dnsimple_record" "www_domain_ip_1" {
-  count = length(var.config.variables.DNS_SUBDOMAIN) == 0 ? 1 : 0
+resource "dnsimple_zone_record" "www_domain_ip_1" {
+  count = length(var.config.variables.EDGE_DNS_SUBDOMAIN) == 0 ? 1 : 0
 
-  domain = var.config.variables.DNS_ZONE
+  zone_name = var.config.variables.DNS_ZONE
   name   = "www"
   value  = local.accelerator_ip_address[0]
   type   = "A"
   ttl    = 3600
 }
 
-resource "dnsimple_record" "www_domain_ip_2" {
-  count = length(var.config.variables.DNS_SUBDOMAIN) == 0 ? 1 : 0
+resource "dnsimple_zone_record" "www_domain_ip_2" {
+  count = length(var.config.variables.EDGE_DNS_SUBDOMAIN) == 0 ? 1 : 0
 
-  domain = var.config.variables.DNS_ZONE
+  zone_name = var.config.variables.DNS_ZONE
   name   = "www"
   value  = local.accelerator_ip_address[1]
   type   = "A"

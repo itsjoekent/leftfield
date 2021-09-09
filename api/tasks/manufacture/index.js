@@ -180,7 +180,7 @@ consumer.process(1, async function(job) {
   }
 });
 
-if (cluster.isPrimary && NODE_ENV === 'production') {
+if (cluster.isPrimary && NODE_ENV !== 'development') {
   const totalProcessors = os.cpus().length;
   logger.info(`Spawning ${totalProcessors} manufacture worker(s)...`);
 

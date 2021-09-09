@@ -5,6 +5,17 @@ variable "ENVIRONMENT" {
 locals {
   config = {
     staging = {
+      api = {
+        service_instance_count = 1
+        service_instance_size  = "basic-xxs"
+
+        task_manufacture_instance_count = 1
+        task_manufacture_instance_size = "basic-xxs"
+
+        task_ssl_instance_count = 1
+        task_ssl_instance_size = "basic-xxs"
+      }
+
       edge = {
         autoscale_max = 2
         autoscale_min = 1

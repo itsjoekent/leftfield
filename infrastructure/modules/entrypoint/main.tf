@@ -13,9 +13,14 @@ terraform {
       ]
     }
 
+    digitalocean = {
+      source = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+
     dnsimple = {
       source  = "dnsimple/dnsimple"
-      version = "~> 0.6"
+      version = "~> 0.9"
     }
   }
 }
@@ -33,4 +38,12 @@ module "edge" {
   }
 }
 
-# TODO: API
+module "api" {
+  source = "../api"
+  config = var.config
+
+  providers = {
+    digitalocean = digitalocean
+    dnsimple     = dnsimple
+  }
+}

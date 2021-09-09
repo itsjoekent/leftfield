@@ -44,7 +44,7 @@ function requestErrorHandler(error, response) {
 }
 
 function healthCheck(request, response) {
-  response.status(200).send(`Homerun!`);
+  response.status(200).send('The Yankees Win!');
   return;
 }
 

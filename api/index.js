@@ -37,6 +37,8 @@ app.use(function (req, res, next) {
   try {
     const ssl = await require(path.join(process.cwd(), 'ssl/read'))();
 
+    app.get('/_lf/health-check', (req, res) => res.send('The Yankees Win!'));
+
     app.post('/dns/:domainRecordId/verify', routeWrapper('verify-domain'));
     app.post('/file', routeWrapper('upload-file'));
     app.post('/login', routeWrapper('login'));
