@@ -20,7 +20,7 @@ resource "digitalocean_database_cluster" "mongo" {
   version    = var.config.global.api.mongo_version
   size       = var.config.global.api.mongo_size
   region     = var.config.global.api.region
-  node_count = var.config.global.api.mongo_nodes
+  node_count = var.config.environment.api.mongo_nodes
 }
 
 resource "digitalocean_database_cluster" "redis" {
@@ -29,7 +29,7 @@ resource "digitalocean_database_cluster" "redis" {
   version    = var.config.global.api.redis_version
   size       = var.config.global.api.redis_size
   region     = var.config.global.api.region
-  node_count = var.config.global.api.redis_nodes
+  node_count = var.config.environment.api.redis_nodes
 }
 
 locals {

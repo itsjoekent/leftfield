@@ -14,6 +14,9 @@ locals {
 
         task_ssl_instance_count = 1
         task_ssl_instance_size  = "basic-xxs"
+
+        mongo_nodes = 1
+        redis_nodes = 1
       }
 
       edge = {

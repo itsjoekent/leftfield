@@ -6,15 +6,13 @@ locals {
 
       image_repository_name = "api"
 
-      mongo_nodes   = 1
       mongo_size    = "db-s-1vcpu-1gb"
-      mongo_version = "4"
+      mongo_version = "4.4"
 
-      redis_nodes   = 1
       redis_size    = "db-s-1vcpu-1gb"
       redis_version = "6"
 
-      region = "nyc2"
+      region = "nyc3"
     }
 
     edge = {
