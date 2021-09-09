@@ -221,6 +221,10 @@ resource "digitalocean_app" "api" {
       }
     }
   }
+
+  depends_on = [
+    digitalocean_container_registry.api
+  ]
 }
 
 resource "digitalocean_database_firewall" "mongo" {
@@ -249,6 +253,10 @@ resource "digitalocean_project" "api" {
     "do:dbaas:${digitalocean_database_cluster.mongo.id}",
     "do:dbaas:${digitalocean_database_cluster.redis.id}"
   ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "dnsimple_zone_record" "api" {
