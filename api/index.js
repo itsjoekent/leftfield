@@ -65,6 +65,9 @@ app.use(function (req, res, next) {
       throw error;
     });
 
+    logger.info('Waiting for Mongo connection...');
+    logger.info(process.env.MONGODB_URL);
+
     db.once('open', () => {
       if (NODE_ENV === 'development') {
         https.createServer(ssl, app).listen(PORT, () => logger.info(`Listening on port:${PORT}`));
