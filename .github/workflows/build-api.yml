@@ -22,15 +22,15 @@ jobs:
       - name: Build API Image
         id: build-api-image
         run: |
-          docker build -t registry.digitalocean.com/edge:latest -f dockerfiles/api.remote.dockerfile .
-          docker push registry.digitalocean.com/edge --all-tags
+          docker build -t registry.digitalocean.com/leftfield/edge:latest -f dockerfiles/api.remote.dockerfile .
+          docker push registry.digitalocean.com/leftfield/edge --all-tags
       - name: Build Manufacture Task Image
         id: build-task-manufacture-image
         run: |
-          docker build -t registry.digitalocean.com/task-manufacture:latest -f dockerfiles/task.manufacture.remote.dockerfile .
-          docker push registry.digitalocean.com/task-manufacture --all-tags
+          docker build -t registry.digitalocean.com/leftfield/task-manufacture:latest -f dockerfiles/task.manufacture.remote.dockerfile .
+          docker push registry.digitalocean.com/leftfield/task-manufacture --all-tags
       - name: Build SSL Task Image
         id: build-task-ssl-image
         run: |
-          docker build -t registry.digitalocean.com/task-ssl:latest -f dockerfiles/task.ssl.remote.dockerfile .
-          docker push registry.digitalocean.com/task-ssl --all-tags
+          docker build -t registry.digitalocean.com/leftfield/task-ssl:latest -f dockerfiles/task.ssl.remote.dockerfile .
+          docker push registry.digitalocean.com/leftfield/task-ssl --all-tags
