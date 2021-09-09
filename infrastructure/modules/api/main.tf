@@ -242,7 +242,7 @@ resource "digitalocean_database_firewall" "redis" {
   }
 }
 
-resource "digitalocean_project" "playground" {
+resource "digitalocean_project" "api" {
   name        = "Leftfield ${var.config.variables.ENVIRONMENT}"
   purpose     = "Host Leftfield API components"
   environment = var.config.variables.ENVIRONMENT == "production" ? "production" : "staging"
