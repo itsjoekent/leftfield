@@ -35,8 +35,6 @@ app.use(function (req, res, next) {
 
 (async function () {
   try {
-    const ssl = await require(path.join(process.cwd(), 'ssl/read'))();
-
     app.get('/_lf/health-check', (req, res) => res.send('The Yankees Win!'));
 
     app.post('/dns/:domainRecordId/verify', routeWrapper('verify-domain'));
@@ -64,6 +62,7 @@ app.use(function (req, res, next) {
 
     db.once('open', () => {
       if (NODE_ENV === 'development') {
+        const ssl = await require(path.join(process.cwd(), 'ssl/read'))();
         https.createServer(ssl, app).listen(PORT, () => logger.info(`Listening on port:${PORT}`));
       } else {
         app.listen(PORT, () => logger.info(`Listening on port:${PORT}`));
