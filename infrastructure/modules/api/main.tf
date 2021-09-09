@@ -244,7 +244,7 @@ resource "digitalocean_database_firewall" "redis" {
 
 resource "digitalocean_project" "playground" {
   name        = "Leftfield ${var.config.variables.ENVIRONMENT}"
-  purpose     = ""
+  purpose     = "Host Leftfield API components"
   environment = var.config.variables.ENVIRONMENT == "production" ? "production" : "staging"
   resources = [
     "do:dbaas:${digitalocean_database_cluster.mongo.id}",
