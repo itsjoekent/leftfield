@@ -7,7 +7,7 @@ locals {
       image_repository_name = "api"
 
       mongo_size    = "db-s-1vcpu-1gb"
-      mongo_version = "4.4"
+      mongo_version = "4"
 
       redis_size    = "db-s-1vcpu-1gb"
       redis_version = "6"
