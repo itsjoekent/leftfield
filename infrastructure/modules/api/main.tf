@@ -277,6 +277,6 @@ resource "dnsimple_zone_record" "api" {
   zone_name = var.config.variables.DNS_ZONE
   name      = var.config.variables.API_DNS_SUBDOMAIN
   value     = digitalocean_app.api.live_url
-  type      = "CNAME"
+  type      = "TXT"
   ttl       = 3600
 }

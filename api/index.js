@@ -62,11 +62,10 @@ app.use(function (req, res, next) {
 
     const db = mongoose.connection;
 
-    db.on('error', (error) => {
-      throw error;
-    });
+    db.on('error', (error) => logger.error('Mongo connection error', error));
 
-    logger.info(`Waiting for Mongo connection... (v2) ${process.env.MONGODB_URL}`);
+    logger.info('Waiting for Mongo connection...');
+    db.once('open', () => logger.info('Mongo connected'));
 
     if (NODE_ENV === 'development') {
       https.createServer(ssl, app).listen(PORT, () => logger.info(`Listening on port:${PORT}`));
