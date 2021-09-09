@@ -255,7 +255,7 @@ resource "digitalocean_database_firewall" "redis" {
 
   rule {
     type  = "app"
-    value = digitalocean_app.api.app_id
+    value = digitalocean_app.api.id
   }
 }
 
