@@ -1,4 +1,4 @@
-name: Build API container
+name: Build API containers
 on:
   workflow_dispatch:
   push:
