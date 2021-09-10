@@ -86,7 +86,7 @@ resource "aws_lb_target_group" "api" {
   }
 }
 
-resource "aws_alb_listener" "api_http" {
+resource "aws_lb_listener" "api_http" {
   load_balancer_arn = aws_lb.api.id
   port              = var.config.global.api.http_port
   protocol          = "HTTP"
