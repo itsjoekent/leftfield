@@ -79,7 +79,7 @@ locals {
 }
 
 module "team_us_east_1" {
-  count = contains(var.config.environment.edge.regions, "us-east-1") ? 1 : 0
+  count = contains(var.config.environment.regions, "us-east-1") ? 1 : 0
 
   source = "./team"
   config = local.config
@@ -98,7 +98,7 @@ module "team_us_east_1" {
 }
 
 module "team_us_west_1" {
-  count = contains(var.config.environment.edge.regions, "us-west-1") ? 1 : 0
+  count = contains(var.config.environment.regions, "us-west-1") ? 1 : 0
 
   source = "./team"
   config = local.config

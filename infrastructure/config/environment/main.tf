@@ -5,18 +5,25 @@ variable "ENVIRONMENT" {
 locals {
   config = {
     staging = {
+      primary_region    = "us-east-1"
+      regions           = ["us-east-1", "us-west-1"]
+      secondary_regions = ["us-west-1"]
+
       api = {
-        service_instance_count = 1
-        service_instance_size  = "basic-xxs"
+        redis_nodes       = 2
+        redis_node_type   = "cache.t2.small"
 
-        task_manufacture_instance_count = 1
-        task_manufacture_instance_size  = "basic-xxs"
+        http_container_cpu    = "256"
+        http_container_memory = "512"
 
-        task_ssl_instance_count = 1
-        task_ssl_instance_size  = "basic-xxs"
+        task_container_cpu    = "256"
+        task_container_memory = "512"
 
-        mongo_nodes = 1
-        redis_nodes = 1
+        product_autoscale_min = 1
+
+        manufacture_autoscale_min = 1
+
+        ssl_autoscale_min = 1
       }
 
       edge = {
@@ -27,9 +34,6 @@ locals {
         cache_nodes       = 2
         cache_node_type   = "cache.t2.small"
         instance_type     = "t2.micro"
-        primary_region    = "us-east-1"
-        regions           = ["us-east-1", "us-west-1"]
-        secondary_regions = ["us-west-1"]
       }
     }
   }

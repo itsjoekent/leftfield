@@ -58,17 +58,20 @@ locals {
     }
   ]
 
-  storage_vars = concat([
-    for region in var.config.environment.edge.regions : {
-      name  = "STORAGE_ENDPOINT_${upper(replace(region, "-", "_"))}",
-      value = "https://s3.${region}.amazonaws.com"
-    }
-    ], [
-    for region in var.config.environment.edge.regions : {
-      name  = "STORAGE_BUCKET_${upper(replace(region, "-", "_"))}",
-      value = "leftfield-${var.config.variables.ENVIRONMENT}-${region}"
-    }
-  ])
+  storage_vars = concat(
+    [
+      for region in var.config.environment.regions : {
+        name  = "STORAGE_ENDPOINT_${upper(replace(region, "-", "_"))}",
+        value = "https://s3.${region}.amazonaws.com"
+      }
+    ],
+    [
+      for region in var.config.environment.regions : {
+        name  = "STORAGE_BUCKET_${upper(replace(region, "-", "_"))}",
+        value = "leftfield-${var.config.variables.ENVIRONMENT}-${region}"
+      }
+    ]
+  )
 }
 
 resource "aws_cloudwatch_log_group" "edge_task" {
@@ -197,11 +200,11 @@ resource "aws_ecs_task_definition" "edge" {
         },
         {
           name  = "STORAGE_MAIN_REGION"
-          value = var.config.environment.edge.primary_region
+          value = var.config.environment.primary_region
         },
         {
           name  = "STORAGE_REGIONS"
-          value = replace(upper(join(",", var.config.environment.edge.regions)), "-", "_")
+          value = replace(upper(join(",", var.config.environment.regions)), "-", "_")
         }
       ])
 

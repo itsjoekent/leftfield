@@ -15,7 +15,7 @@ terraform {
 }
 
 module "secondary_us_east_1" {
-  count = contains(var.config.environment.edge.secondary_regions, "us-east-1") ? 1 : 0
+  count = contains(var.config.environment.secondary_regions, "us-east-1") ? 1 : 0
 
   source = "./secondary"
   config = var.config
@@ -27,7 +27,7 @@ module "secondary_us_east_1" {
 }
 
 module "secondary_us_west_1" {
-  count = contains(var.config.environment.edge.secondary_regions, "us-west-1") ? 1 : 0
+  count = contains(var.config.environment.secondary_regions, "us-west-1") ? 1 : 0
 
   source = "./secondary"
   config = var.config
@@ -46,7 +46,7 @@ locals {
 }
 
 module "primary_us_east_1" {
-  count = var.config.environment.edge.primary_region == "us-east-1" ? 1 : 0
+  count = var.config.environment.primary_region == "us-east-1" ? 1 : 0
 
   source = "./primary"
   config = var.config
@@ -60,7 +60,7 @@ module "primary_us_east_1" {
 }
 
 module "primary_us_west_1" {
-  count = var.config.environment.edge.primary_region == "us-west-1" ? 1 : 0
+  count = var.config.environment.primary_region == "us-west-1" ? 1 : 0
 
   source = "./primary"
   config = var.config

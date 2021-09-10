@@ -1,13 +1,12 @@
+# TODO:
+# - mongodb, vpc peering
+# - auto scale policy (edge & api)
+
 terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 3.27"
-    }
-
-    digitalocean = {
-      source  = "digitalocean/digitalocean"
-      version = "~> 2.0"
     }
 
     dnsimple = {
@@ -53,10 +52,6 @@ provider "aws" {
   secret_key = var.AWS_SECRET_ACCESS_KEY
 }
 
-provider "digitalocean" {
-  token = var.DIGITAL_OCEAN_TOKEN
-}
-
 provider "dnsimple" {
   token   = var.DNSIMPLE_API_TOKEN
   account = var.DNSIMPLE_ACCOUNT_ID
@@ -84,7 +79,6 @@ locals {
       EMAIL_API_KEY         = var.EMAIL_API_KEY
       EMAIL_DOMAIN          = var.EMAIL_DOMAIN
       ENVIRONMENT           = var.ENVIRONMENT
-      MONGODB_CERTIFICATE   = var.MONGODB_CERTIFICATE
       SSL_AT_REST_KEY       = var.SSL_AT_REST_KEY
     }
 
@@ -94,7 +88,7 @@ locals {
 }
 
 provider "aws" {
-  region     = local.config.environment.edge.primary_region
+  region     = local.config.environment.primary_region
   alias      = "primary"
   access_key = var.AWS_ACCESS_KEY_ID
   secret_key = var.AWS_SECRET_ACCESS_KEY
@@ -108,8 +102,6 @@ module "entrypoint" {
     aws.primary   = aws.primary
     aws.us_east_1 = aws.us_east_1
     aws.us_west_1 = aws.us_west_1
-
-    digitalocean = digitalocean
 
     dnsimple = dnsimple
   }

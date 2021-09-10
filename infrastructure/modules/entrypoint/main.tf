@@ -13,11 +13,6 @@ terraform {
       ]
     }
 
-    digitalocean = {
-      source  = "digitalocean/digitalocean"
-      version = "~> 2.0"
-    }
-
     dnsimple = {
       source  = "dnsimple/dnsimple"
       version = "~> 0.9"
@@ -38,12 +33,12 @@ module "edge" {
   }
 }
 
-# module "api" {
-#   source = "../api"
-#   config = var.config
-#
-#   providers = {
-#     digitalocean = digitalocean
-#     dnsimple     = dnsimple
-#   }
-# }
+module "api" {
+  source = "../api"
+  config = var.config
+
+  providers = {
+    aws      = aws.primary
+    dnsimple = dnsimple
+  }
+}

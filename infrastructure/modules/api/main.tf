@@ -2,9 +2,9 @@ variable "config" {}
 
 terraform {
   required_providers {
-    digitalocean = {
-      source  = "digitalocean/digitalocean"
-      version = "~> 2.0"
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.27"
     }
 
     dnsimple = {
@@ -14,269 +14,182 @@ terraform {
   }
 }
 
-resource "digitalocean_container_registry" "api" {
-  name                   = "leftfield"
-  subscription_tier_slug = "basic"
+data "aws_availability_zones" "api" {
+  state = "available"
 }
 
-resource "digitalocean_database_cluster" "mongo" {
-  name       = "lf-${var.config.variables.ENVIRONMENT}-mongo"
-  engine     = "mongodb"
-  version    = var.config.global.api.mongo_version
-  size       = var.config.global.api.mongo_size
-  region     = var.config.global.api.region
-  node_count = var.config.environment.api.mongo_nodes
-}
-
-resource "digitalocean_database_cluster" "redis" {
-  name       = "lf-${var.config.variables.ENVIRONMENT}-redis"
-  engine     = "redis"
-  version    = var.config.global.api.redis_version
-  size       = var.config.global.api.redis_size
-  region     = var.config.global.api.region
-  node_count = var.config.environment.api.redis_nodes
+data "aws_ip_ranges" "all" {
+  services = ["route53_healthchecks"]
 }
 
 locals {
-  container_env = concat([
-    {
-      key   = "AUTH_TOKEN_SECRET",
-      value = var.config.variables.AUTH_TOKEN_SECRET
-      type  = "SECRET"
-    },
-    {
-      key   = "AWS_ACCESS_KEY_ID"
-      value = var.config.variables.AWS_ACCESS_KEY_ID
-      type  = "SECRET"
-    },
-    {
-      key   = "AWS_SECRET_ACCESS_KEY"
-      value = var.config.variables.AWS_SECRET_ACCESS_KEY
-      type  = "SECRET"
-    },
-    {
-      key   = "DOMAIN"
-      value = join(".", compact([var.config.variables.EDGE_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE]))
-      type  = "GENERAL"
-    },
-    {
-      key   = "EDGE_DNS_CNAME"
-      value = join(".", compact([var.config.variables.EDGE_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE]))
-      type  = "GENERAL"
-    },
-    {
-      key   = "EDGE_DOMAIN"
-      value = "https://${join(".", compact([var.config.variables.EDGE_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE]))}"
-      type  = "GENERAL"
-    },
-    {
-      key   = "EMAIL_API_KEY"
-      value = var.config.variables.EMAIL_API_KEY
-      type  = "SECRET"
-    },
-    {
-      key   = "EMAIL_DOMAIN"
-      value = var.config.variables.EMAIL_DOMAIN
-      type  = "GENERAL"
-    },
-    {
-      key   = "FRONTEND_URL"
-      value = "https://${join(".", compact([var.config.variables.EDGE_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE]))}"
-      type  = "GENERAL"
-    },
-    {
-      key   = "MONGODB_CERTIFICATE"
-      value = var.config.variables.MONGODB_CERTIFICATE
-      type  = "SECRET"
-    },
-    {
-      key   = "MONGODB_URL"
-      value = digitalocean_database_cluster.mongo.uri
-      type  = "SECRET"
-    },
-    {
-      key   = "NODE_ENV"
-      value = var.config.variables.ENVIRONMENT
-      type  = "GENERAL"
-    },
-    {
-      key   = "REDIS_URL"
-      value = digitalocean_database_cluster.redis.uri
-      type  = "SECRET"
-    },
-    {
-      key   = "SSL_AT_REST_KEY"
-      value = var.config.variables.SSL_AT_REST_KEY
-      type  = "SECRET"
-    },
-    {
-      key   = "STORAGE_MAIN_REGION"
-      value = var.config.environment.edge.primary_region
-      type  = "GENERAL"
-    },
-    {
-      key   = "STORAGE_REGIONS"
-      value = replace(upper(join(",", var.config.environment.edge.regions)), "-", "_")
-      type  = "GENERAL"
-    }
-    ], [
-    for region in var.config.environment.edge.regions : {
-      key   = "STORAGE_ENDPOINT_${upper(replace(region, "-", "_"))}"
-      value = "https://s3.${region}.amazonaws.com"
-      type  = "GENERAL"
-    }
-    ], [
-    for region in var.config.environment.edge.regions : {
-      key   = "STORAGE_BUCKET_${upper(replace(region, "-", "_"))}"
-      value = "leftfield-${var.config.variables.ENVIRONMENT}-${region}"
-      type  = "GENERAL"
-    }
-  ])
+  availability_zones = slice(data.aws_availability_zones.api.names, 0, 2)
+  aws_ip_ranges      = data.aws_ip_ranges.all.cidr_blocks
 }
 
-resource "digitalocean_app" "api" {
-  spec {
-    name   = "leftfield-${var.config.variables.ENVIRONMENT}-api"
-    region = var.config.global.api.region
+module "product_repository" {
+  source = "./container-repository"
+  name   = "product"
 
-    domain {
-      name = join(".", [var.config.variables.API_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE])
-      type = "ALIAS"
-    }
-
-    service {
-      name               = "api-service"
-      dockerfile_path    = "dockerfiles/api.remote.dockerfile"
-      instance_count     = var.config.environment.api.service_instance_count
-      instance_size_slug = var.config.environment.api.service_instance_size
-
-      image {
-        registry_type = "DOCR"
-        repository = "api"
-        tag = "latest"
-      }
-
-      routes {
-        path = "/"
-      }
-
-      dynamic "env" {
-        for_each = local.container_env
-
-        content {
-          key   = env.value.key
-          value = env.value.value
-          type  = env.value.type
-        }
-      }
-
-      health_check {
-        http_path             = "/_lf/health-check"
-        initial_delay_seconds = 5
-        period_seconds        = 5
-        timeout_seconds       = 5
-        success_threshold     = 2
-        failure_threshold     = 2
-      }
-    }
-
-    worker {
-      name               = "task-manufacture"
-      dockerfile_path    = "dockerfiles/task.manufacture.remote.dockerfile"
-      instance_count     = var.config.environment.api.task_manufacture_instance_count
-      instance_size_slug = var.config.environment.api.task_manufacture_instance_size
-
-      image {
-        registry_type = "DOCR"
-        repository = "task-manufacture"
-        tag = "latest"
-      }
-
-      dynamic "env" {
-        for_each = local.container_env
-
-        content {
-          key   = env.value.key
-          value = env.value.value
-          type  = env.value.type
-        }
-      }
-    }
-
-    worker {
-      name               = "task-ssl"
-      dockerfile_path    = "dockerfiles/task.ssl.remote.dockerfile"
-      instance_count     = var.config.environment.api.task_ssl_instance_count
-      instance_size_slug = var.config.environment.api.task_ssl_instance_size
-
-      image {
-        registry_type = "DOCR"
-        repository = "task-ssl"
-        tag = "latest"
-      }
-
-      dynamic "env" {
-        for_each = local.container_env
-
-        content {
-          key   = env.value.key
-          value = env.value.value
-          type  = env.value.type
-        }
-      }
-    }
+  providers = {
+    aws = aws
   }
+}
+
+module "task_manufacture_repository" {
+  source = "./container-repository"
+  name   = "task-manufacture"
+
+  providers = {
+    aws = aws
+  }
+}
+
+module "task_ssl_repository" {
+  source = "./container-repository"
+  name   = "task-ssl"
+
+  providers = {
+    aws = aws
+  }
+}
+
+module "network" {
+  source = "./network"
+  config = var.config
+
+  availability_zones = local.availability_zones
+
+  providers = {
+    aws = aws
+  }
+}
+
+module "redis" {
+  source = "./redis"
+  config = var.config
+
+  availability_zones = local.availability_zones
+  private_subnets    = module.network.private_subnets
+  vpc                = module.network.vpc
+
+  providers = {
+    aws = aws
+  }
+}
+
+module "load_balancer" {
+  source = "./load-balancer"
+  config = var.config
+
+  public_subnets       = module.network.public_subnets
+  vpc                  = module.network.vpc
+
+  providers = {
+    aws      = aws
+    dnsimple = dnsimple
+  }
+}
+
+module "container_shared" {
+  source = "./container-shared"
+  config = var.config
+
+  redis_replication_group = module.redis.replication_group
+  redis_user              = module.redis.user
+
+  providers = {
+    aws = aws
+  }
+}
+
+module "product_api" {
+  source = "./container-http"
+  config = var.config
+  name   = "product"
+
+  autoscale_min         = var.config.environment.api.product_autoscale_min
+  aws_ip_ranges         = local.aws_ip_ranges
+  container_environment = module.container_shared.environment
+  container_secrets     = module.container_shared.secrets
+  iam_role              = module.container_shared.iam_role
+  image_repository      = module.product_repository.repository
+  lb_target_group       = module.load_balancer.target_group
+  private_subnets       = module.network.private_subnets
+  vpc                   = module.network.vpc
 
   depends_on = [
-    digitalocean_container_registry.api
+    module.container_shared.ssm_parameters,
   ]
 
-  lifecycle {
-    ignore_changes = [
-      spec[0].service[0].image[0].tag,
-      spec[0].worker[0].image[0].tag,
-      spec[0].worker[1].image[0].tag,
-    ]
+  providers = {
+    aws = aws
   }
 }
 
-# TODO: Later, DO currently does not allow the "app" as a rule for Mongo
-# resource "digitalocean_database_firewall" "mongo" {
-#   cluster_id = digitalocean_database_cluster.mongo.id
+module "task_manufacture" {
+  source = "./container-task"
+  config = var.config
+  name   = "manufacture"
+
+  autoscale_min         = var.config.environment.api.manufacture_autoscale_min
+  container_environment = module.container_shared.environment
+  container_secrets     = module.container_shared.secrets
+  iam_role              = module.container_shared.iam_role
+  image_repository      = module.task_manufacture_repository.repository
+  private_subnets       = module.network.private_subnets
+  vpc                   = module.network.vpc
+
+  depends_on = [
+    module.container_shared.ssm_parameters,
+  ]
+
+  providers = {
+    aws = aws
+  }
+}
+
+module "task_ssl" {
+  source = "./container-task"
+  config = var.config
+  name   = "ssl"
+
+  autoscale_min         = var.config.environment.api.ssl_autoscale_min
+  container_environment = module.container_shared.environment
+  container_secrets     = module.container_shared.secrets
+  iam_role              = module.container_shared.iam_role
+  image_repository      = module.task_ssl_repository.repository
+  private_subnets       = module.network.private_subnets
+  vpc                   = module.network.vpc
+
+  depends_on = [
+    module.container_shared.ssm_parameters,
+  ]
+
+  providers = {
+    aws = aws
+  }
+}
+
+# module "elastic_container" {
+#   source = "./elastic-container"
+#   config = local.config
+#   region = var.region
 #
-#   rule {
-#     type  = "app"
-#     value = digitalocean_app.api.spec[0].name
+#   cache_redis        = module.cache.redis
+#   cache_user         = module.cache.user
+#   http_target_group  = module.load_balancer.http_target_group
+#   https_target_group = module.load_balancer.https_target_group
+#   image_repository   = var.image_repository
+#   private_subnets    = module.network.private_subnets
+#   vpc                = module.network.vpc
+#
+#   providers = {
+#     aws = aws
 #   }
+#
+#   depends_on = [
+#     module.load_balancer.http_load_balancer_listener,
+#     module.load_balancer.https_load_balancer_listener,
+#   ]
 # }
-
-resource "digitalocean_database_firewall" "redis" {
-  cluster_id = digitalocean_database_cluster.redis.id
-
-  rule {
-    type  = "app"
-    value = digitalocean_app.api.id
-  }
-}
-
-resource "digitalocean_project" "api" {
-  name        = "Leftfield ${var.config.variables.ENVIRONMENT}"
-  purpose     = "Host Leftfield API components"
-  environment = var.config.variables.ENVIRONMENT == "production" ? "production" : "staging"
-  resources = [
-    "do:dbaas:${digitalocean_database_cluster.mongo.id}",
-    "do:dbaas:${digitalocean_database_cluster.redis.id}"
-  ]
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "dnsimple_zone_record" "api" {
-  zone_name = var.config.variables.DNS_ZONE
-  name      = var.config.variables.API_DNS_SUBDOMAIN
-  value     = replace(digitalocean_app.api.live_url, "https://", "")
-  type      = "CNAME"
-  ttl       = 3600
-}

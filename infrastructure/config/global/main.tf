@@ -1,18 +1,12 @@
 locals {
   config = {
     api = {
-      git_branch     = "main"
-      git_repository = "getleftfield/code"
+      health_check_path = "/_lf/health-check"
 
-      image_repository_name = "api"
+      http_port  = 80
+      https_port = 80
 
-      mongo_size    = "db-s-1vcpu-1gb"
-      mongo_version = "4"
-
-      redis_size    = "db-s-1vcpu-1gb"
-      redis_version = "6"
-
-      region = "nyc3"
+      vpc_cidr_block = "10.0.0.0/16"
     }
 
     edge = {
