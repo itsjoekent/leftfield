@@ -38,12 +38,12 @@ module "edge" {
   }
 }
 
-module "api" {
-  source = "../api"
-  config = var.config
-
-  providers = {
-    digitalocean = digitalocean
-    dnsimple     = dnsimple
-  }
-}
+# module "api" {
+#   source = "../api"
+#   config = var.config
+#
+#   providers = {
+#     digitalocean = digitalocean
+#     dnsimple     = dnsimple
+#   }
+# }
