@@ -84,10 +84,6 @@ resource "aws_lb_target_group" "api" {
     path                = var.config.global.api.health_check_path
     unhealthy_threshold = 2
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_alb_listener" "api_http" {
