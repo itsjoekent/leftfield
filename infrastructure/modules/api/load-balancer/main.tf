@@ -111,7 +111,7 @@ resource "dnsimple_zone_record" "https_validation" {
   for_each = {
     for dvo in aws_acm_certificate.api.domain_validation_options : dvo.domain_name => {
       name   = replace(dvo.resource_record_name, ".${var.config.variables.DNS_ZONE}.", "")
-      record = dvo.resource_record_value
+      record = "${dvo.resource_record_value}."
       type   = dvo.resource_record_type
     }
   }
