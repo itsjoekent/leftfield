@@ -89,13 +89,13 @@ resource "aws_alb_listener" "api_http" {
   protocol          = "HTTP"
 
   default_action {
-   type = "redirect"
+    type = "redirect"
 
-   redirect {
-     port        = 443
-     protocol    = "HTTPS"
-     status_code = "HTTP_301"
-   }
+    redirect {
+      port        = 443
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 
@@ -121,7 +121,7 @@ resource "dnsimple_zone_record" "https_validation" {
 }
 
 resource "aws_acm_certificate_validation" "api" {
-  certificate_arn         = aws_acm_certificate.api.arn
+  certificate_arn = aws_acm_certificate.api.arn
   validation_record_fqdns = [
     for record in dnsimple_zone_record.https_validation : "${record.name}.${var.config.variables.DNS_ZONE}"
   ]

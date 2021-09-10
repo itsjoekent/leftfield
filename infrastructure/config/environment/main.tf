@@ -10,8 +10,8 @@ locals {
       secondary_regions = ["us-west-1"]
 
       api = {
-        redis_nodes       = 2
-        redis_node_type   = "cache.t2.small"
+        redis_nodes     = 2
+        redis_node_type = "cache.t2.small"
 
         http_container_cpu    = "256"
         http_container_memory = "512"
@@ -27,13 +27,13 @@ locals {
       }
 
       edge = {
-        autoscale_max     = 2
-        autoscale_min     = 1
-        container_cpu     = "256"
-        container_memory  = "512"
-        cache_nodes       = 2
-        cache_node_type   = "cache.t2.small"
-        instance_type     = "t2.micro"
+        autoscale_max    = 2
+        autoscale_min    = 1
+        container_cpu    = "256"
+        container_memory = "512"
+        cache_nodes      = 2
+        cache_node_type  = "cache.t2.small"
+        instance_type    = "t2.micro"
       }
     }
   }

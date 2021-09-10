@@ -82,8 +82,8 @@ module "load_balancer" {
   source = "./load-balancer"
   config = var.config
 
-  public_subnets       = module.network.public_subnets
-  vpc                  = module.network.vpc
+  public_subnets = module.network.public_subnets
+  vpc            = module.network.vpc
 
   providers = {
     aws      = aws
