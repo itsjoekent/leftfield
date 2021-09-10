@@ -59,7 +59,7 @@ resource "aws_lb" "api" {
   enable_http2               = true
 }
 
-resource "dnsimple_zone_record" "root_domain_ip_1" {
+resource "dnsimple_zone_record" "api_domain" {
   zone_name = var.config.variables.DNS_ZONE
   name      = var.config.variables.API_DNS_SUBDOMAIN
   value     = aws_lb.api.dns_name
