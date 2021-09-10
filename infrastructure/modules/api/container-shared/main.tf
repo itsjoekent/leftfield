@@ -88,7 +88,7 @@ locals {
     },
     {
       name = "MONGODB_URL"
-      value = var.mongo_cluster.connection_strings[0].connection_strings.standard_srv
+      value = var.mongo_cluster.connection_strings[0].standard_srv
     },
     {
       name  = "NODE_ENV"
