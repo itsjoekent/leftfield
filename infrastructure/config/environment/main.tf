@@ -15,6 +15,10 @@ locals {
         redis_nodes     = 2
         redis_node_type = "cache.t2.small"
 
+        mongo_shards = 1
+        mongo_disk_size = 10
+        mongo_instance_size = "M10"
+
         http_container_cpu    = "256"
         http_container_memory = "512"
 

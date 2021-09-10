@@ -100,3 +100,24 @@ provider "registry.terraform.io/hashicorp/random" {
     "zh:f7605bd1437752114baf601bdf6931debe6dc6bfe3006eb7e9bb9080931dca8a",
   ]
 }
+
+provider "registry.terraform.io/mongodb/mongodbatlas" {
+  version     = "1.0.1"
+  constraints = "~> 1.0.1"
+  hashes = [
+    "h1:bWx+H+fjRsWWBZPBbHZkCrYFsMTe4J8fLJqoGCVSi+8=",
+    "zh:0764d8ee048986966fdcef2379161d16bde936ee64c5b5c0b391cddd572cbbff",
+    "zh:1037e6abf6025d3333e858fdff9d9a1a3f2ffb0de9f8b3e6faf5c0cdfd7941e2",
+    "zh:249959a4ce72f4ed94613e8baff00c4f571088511a7b908ab49ae42e5af5ead0",
+    "zh:3474aa536292a077753f3f18f991a95cafd087c815cf7f6c363e2ec3aff7ffc0",
+    "zh:38d157aa8cffb53c10e07cd6cc2123b9aa7a3cfcc7e02ce09f8bb13c9a4e6751",
+    "zh:40757cc16e11740005feaa107655c355c64d22baf259bd2a1d708c8d4b146546",
+    "zh:545bd8c725eb07567a514cba94478cc835bfaa18ebcbbadc9ce62ab2f9b94e8e",
+    "zh:663ac4e4e20acfc23f1f683f08839c5911a20902bc69031ded05066f6322a498",
+    "zh:86bc15da3a0fdca490fbb7055554a9dda1d634b114729b2f8adbeda226e95da8",
+    "zh:94b0d3cefd960b20115c8edc1bbffa02fd812f7ba9f9c0fb0e5c0fdf533980e9",
+    "zh:c661753915a109c3b88ea9383eb0feee961ee0161a5c6b3ecf61a69e1105dd47",
+    "zh:e003b19a32ad43bf0a11dd0c0a812b071ba56ae0b5a8adef49955d070320ef35",
+    "zh:ede3690ab3d2580b1c658b8e9d002a1e3513ae10e8f90a91e63c0e54c0b6520a",
+  ]
+}

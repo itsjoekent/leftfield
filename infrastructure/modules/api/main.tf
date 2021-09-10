@@ -11,6 +11,11 @@ terraform {
       source  = "dnsimple/dnsimple"
       version = "~> 0.9"
     }
+
+    mongodbatlas = {
+      source  = "mongodb/mongodbatlas"
+      version = "~> 1.0.1"
+    }
   }
 }
 
@@ -78,6 +83,17 @@ module "redis" {
   }
 }
 
+module "mongo" {
+  source = "./mongo"
+  config = var.config
+  vpc    = module.network.vpc
+
+  providers = {
+    aws          = aws
+    mongodbatlas = mongodbatlas
+  }
+}
+
 module "load_balancer" {
   source = "./load-balancer"
   config = var.config
@@ -95,6 +111,7 @@ module "container_shared" {
   source = "./container-shared"
   config = var.config
 
+  mongo_cluster           = module.mongo.cluster
   redis_replication_group = module.redis.replication_group
   redis_user              = module.redis.user
 

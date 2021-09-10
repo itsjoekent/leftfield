@@ -17,6 +17,11 @@ terraform {
       source  = "dnsimple/dnsimple"
       version = "~> 0.9"
     }
+
+    mongodbatlas = {
+      source  = "mongodb/mongodbatlas"
+      version = "~> 1.0.1"
+    }
   }
 }
 
@@ -38,7 +43,8 @@ module "api" {
   config = var.config
 
   providers = {
-    aws      = aws.primary
-    dnsimple = dnsimple
+    aws          = aws.primary
+    dnsimple     = dnsimple
+    mongodbatlas = mongodbatlas
   }
 }

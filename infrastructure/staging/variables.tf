@@ -53,6 +53,21 @@ variable "ENVIRONMENT" {
   type = string
 }
 
+variable "MONGO_ATLAS_ORGANIZATION_ID" {
+  sensitive = true
+  type      = string
+}
+
+variable "MONGO_ATLAS_PRIVATE_KEY" {
+  sensitive = true
+  type      = string
+}
+
+variable "MONGO_ATLAS_PUBLIC_KEY" {
+  sensitive = true
+  type      = string
+}
+
 variable "SSL_AT_REST_KEY" {
   sensitive = true
   type      = string

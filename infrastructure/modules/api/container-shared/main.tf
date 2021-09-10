@@ -1,3 +1,6 @@
+# mongodbatlas_cluster
+variable "mongo_cluster" {}
+
 # aws_elasticache_replication_group
 variable "redis_replication_group" {}
 
@@ -82,6 +85,10 @@ locals {
     {
       name  = "FRONTEND_URL"
       value = "https://${join(".", compact([var.config.variables.EDGE_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE]))}"
+    },
+    {
+      name = "MONGODB_URL"
+      value = var.mongo_cluster.connection_strings[0].private_endpoint[0].srv_connection_string
     },
     {
       name  = "NODE_ENV"
