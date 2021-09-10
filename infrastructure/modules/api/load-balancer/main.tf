@@ -73,7 +73,6 @@ resource "aws_lb_target_group" "api" {
   protocol             = "HTTP"
   vpc_id               = var.vpc.id
   target_type          = "ip"
-  preserve_client_ip   = false
   deregistration_delay = 5
 
   health_check {
