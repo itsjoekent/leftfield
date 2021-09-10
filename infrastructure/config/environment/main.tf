@@ -9,6 +9,8 @@ locals {
       regions           = ["us-east-1", "us-west-1"]
       secondary_regions = ["us-west-1"]
 
+      default_dns_ttl = 60
+
       api = {
         redis_nodes     = 2
         redis_node_type = "cache.t2.small"

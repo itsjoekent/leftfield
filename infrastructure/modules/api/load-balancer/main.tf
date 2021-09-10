@@ -59,6 +59,14 @@ resource "aws_lb" "api" {
   enable_http2               = true
 }
 
+resource "dnsimple_zone_record" "root_domain_ip_1" {
+  zone_name = var.config.variables.DNS_ZONE
+  name      = var.config.variables.API_DNS_SUBDOMAIN
+  value     = aws_lb.api.dns_name
+  type      = "CNAME"
+  ttl       = var.config.environment.default_dns_ttl
+}
+
 resource "aws_lb_target_group" "api" {
   name                 = "api-target-group"
   port                 = var.config.global.api.http_port
@@ -107,7 +115,7 @@ resource "aws_acm_certificate" "api" {
 resource "dnsimple_zone_record" "https_validation" {
   for_each = {
     for dvo in aws_acm_certificate.api.domain_validation_options : dvo.domain_name => {
-      name   = replace(dvo.resource_record_name, ".${var.config.variables.DNS_ZONE}", "")
+      name   = replace(dvo.resource_record_name, ".${var.config.variables.DNS_ZONE}.", "")
       record = dvo.resource_record_value
       type   = dvo.resource_record_type
     }
@@ -117,7 +125,7 @@ resource "dnsimple_zone_record" "https_validation" {
   name      = each.value.name
   value     = each.value.record
   type      = each.value.type
-  ttl       = 60
+  ttl       = var.config.environment.default_dns_ttl
 }
 
 resource "aws_acm_certificate_validation" "api" {

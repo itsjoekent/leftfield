@@ -52,7 +52,7 @@ resource "dnsimple_zone_record" "root_domain_ip_1" {
   name      = var.config.variables.EDGE_DNS_SUBDOMAIN
   value     = local.accelerator_ip_address[0]
   type      = "A"
-  ttl       = 3600
+  ttl       = var.config.environment.default_dns_ttl
 }
 
 resource "dnsimple_zone_record" "root_domain_ip_2" {
@@ -60,7 +60,7 @@ resource "dnsimple_zone_record" "root_domain_ip_2" {
   name      = var.config.variables.EDGE_DNS_SUBDOMAIN
   value     = local.accelerator_ip_address[1]
   type      = "A"
-  ttl       = 3600
+  ttl       = var.config.environment.default_dns_ttl
 }
 
 resource "dnsimple_zone_record" "www_domain_ip_1" {
@@ -70,7 +70,7 @@ resource "dnsimple_zone_record" "www_domain_ip_1" {
   name      = "www"
   value     = local.accelerator_ip_address[0]
   type      = "A"
-  ttl       = 3600
+  ttl       = var.config.environment.default_dns_ttl
 }
 
 resource "dnsimple_zone_record" "www_domain_ip_2" {
@@ -80,7 +80,7 @@ resource "dnsimple_zone_record" "www_domain_ip_2" {
   name      = "www"
   value     = local.accelerator_ip_address[1]
   type      = "A"
-  ttl       = 3600
+  ttl       = var.config.environment.default_dns_ttl
 }
 
 output "accelerator" {
