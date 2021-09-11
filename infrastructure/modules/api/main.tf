@@ -87,8 +87,8 @@ module "mongo" {
   source = "./mongo"
   config = var.config
 
-  vpc                 = module.network.vpc
-  private_route_table = module.network.private_route_table
+  vpc                  = module.network.vpc
+  private_route_tables = module.network.private_route_tables
 
   providers = {
     aws          = aws

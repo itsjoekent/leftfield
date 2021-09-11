@@ -1,7 +1,7 @@
 variable "config" {}
 
-# aws_route_table
-variable "private_route_table" {}
+# list(aws_route_table)
+variable "private_route_tables" {}
 
 # aws_vpc
 variable "vpc" {}
@@ -59,7 +59,7 @@ resource "random_password" "mongo" {
 
 resource "mongodbatlas_database_user" "api" {
   username           = "leftfield"
-  password           = random_password.mongo
+  password           = random_password.mongo.result
   project_id         = mongodbatlas_project.api.id
   auth_database_name = "admin"
 
@@ -107,7 +107,9 @@ data "aws_vpc_peering_connection" "atlas" {
 }
 
 resource "aws_route" "aws_peer_to_atlas" {
-  route_table_id            = var.private_route_table.id
+  count = length(var.private_route_tables)
+
+  route_table_id            = var.private_route_tables[count.index].id
   destination_cidr_block    = data.mongodbatlas_network_container.api.atlas_cidr_block
   vpc_peering_connection_id = data.aws_vpc_peering_connection.atlas.id
 }
