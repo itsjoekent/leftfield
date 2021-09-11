@@ -91,7 +91,7 @@ locals {
     },
     {
       name = "MONGODB_URL"
-      value = replace(var.mongo_cluster.connection_strings[0].standard_srv, "srv://", "srv://${mongo_user.username}:${mongo_user.password}@")
+      value = replace(var.mongo_cluster.connection_strings[0].standard_srv, "srv://", "srv://${var.mongo_user.username}:${var.mongo_user.password}@")
     },
     {
       name  = "NODE_ENV"
