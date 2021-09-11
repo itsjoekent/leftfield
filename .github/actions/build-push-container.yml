@@ -1,0 +1,55 @@
+name: Build & Deploy Containers To ECS
+
+inputs:
+  aws_access_key_id:
+    required: true
+  aws_secret_access_key:
+    required: true
+  dockerfile:
+    description: "Name of the .dockerfile in /dockerfiles"
+    required: true
+  git_ref:
+    description: "The branch, tag or SHA to checkout."
+    required: true
+  image_repository:
+    description: "AWS ECR Repository Name"
+    required: true
+  task_cluster:
+    description: "Name of the ECS Cluster"
+    required: true
+  task_name:
+    description: "Name of the ECS Task"
+    required: true
+  task_service:
+    description: "Name of the ECS Service"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.git_ref }}
+    - uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - uses: aws-actions/amazon-ecr-login@v1
+      id: login-ecr
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        docker build -t $ECR_REGISTRY/${{ inputs.image_repository }}:latest -f dockerfiles/${{ inputs.dockerfile }} .
+        docker push $ECR_REGISTRY/${{ inputs.inputs }} --all-tags
+    - name: Download task definition
+      run: aws ecs describe-task-definition --task-definition ${{ inputs.task_name }} --query taskDefinition > task-definition.json
+    - name: Deploy Amazon ECS task
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: task-definition.json
+        service: ${{ inputs.task_service }}
+        cluster: ${{ inputs.task_cluster }}
+        wait-for-service-stability: true
