@@ -24,97 +24,33 @@ jobs:
           task_cluster: api-product
           task_name: api-product
           task_service: api-product
-  # build-manufacture-task:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Manufacture Task
-  #       uses: ./.github/actions/build-push-container
-  #       with:
-  #         aws_access_key_id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
-  #         aws_secret_access_key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
-  #         dockerfile: api.remote.dockerfile
-  #         git_ref: ${{ env.GITHUB_SHA }}
-  #         image_repository: task-manufacture
-  #         task_cluster: task-manufacture
-  #         task_name: task-manufacture
-  #         task_service: task-manufacture
-
-
-      # - uses: actions/checkout@v2
-      # - uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: us-east-1
-      # - uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: us-east-1
-      # - uses: aws-actions/amazon-ecr-login@v1
-      #   id: login-ecr
-      # - name: Build, tag, and push image to Amazon ECR
-      #   id: build-image
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY: edge
-      #   run: |
-      #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest -f dockerfiles/edge.remote.dockerfile .
-      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
-      # - name: Download task definition
-      #   run: aws ecs describe-task-definition --task-definition team-us-east-1-task --query taskDefinition > task-definition.json
-      # - name: Deploy Amazon ECS task
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      #   with:
-      #     task-definition: task-definition.json
-      #     service: team-us-east-1-svc
-      #     cluster: team-us-east-1-cls
-      #     wait-for-service-stability: true
-
-
-  # build-api:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - id: vars
-  #       run: echo "::set-output name=sha::$(git rev-parse HEAD)"
-  #     - name: Login to Digital Ocean Registry
-  #       run: docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
-  #     - name: Build API Image
-  #       id: build-api-image
-  #       run: |
-  #         docker build -t registry.digitalocean.com/leftfield/api:latest \
-  #           -t registry.digitalocean.com/leftfield/api:${{ steps.vars.outputs.sha }} \
-  #           -f dockerfiles/api.remote.dockerfile .
-  #         docker push registry.digitalocean.com/leftfield/api --all-tags
-  # build-task-manufacture:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - id: vars
-  #       run: echo "::set-output name=sha::$(git rev-parse HEAD)"
-  #     - name: Login to Digital Ocean Registry
-  #       run: docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
-  #     - name: Build Manufacture Task Image
-  #       id: build-task-manufacture-image
-  #       run: |
-  #         docker build -t registry.digitalocean.com/leftfield/task-manufacture:latest \
-  #           -t registry.digitalocean.com/leftfield/task-manufacture:${{ steps.vars.outputs.sha }} \
-  #           -f dockerfiles/task.manufacture.remote.dockerfile .
-  #         docker push registry.digitalocean.com/leftfield/task-manufacture --all-tags
-  # build-task-ssl:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - id: vars
-  #       run: echo "::set-output name=sha::$(git rev-parse HEAD)"
-  #     - name: Login to Digital Ocean Registry
-  #       run: docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
-  #     - name: Build SSL Task Image
-  #       id: build-task-ssl-image
-  #       run: |
-  #         docker build -t registry.digitalocean.com/leftfield/task-ssl:latest \
-  #           -t registry.digitalocean.com/leftfield/task-ssl:${{ steps.vars.outputs.sha }} \
-  #           -f dockerfiles/task.ssl.remote.dockerfile .
-  #         docker push registry.digitalocean.com/leftfield/task-ssl --all-tags
+  build-manufacture-task:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Manufacture Task
+        uses: ./.github/actions/build-push-container
+        with:
+          aws_access_key_id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+          dockerfile: api.remote.dockerfile
+          git_ref: ${{ env.GITHUB_SHA }}
+          image_repository: task-manufacture
+          task_cluster: task-manufacture
+          task_name: task-manufacture
+          task_service: task-manufacture
+  build-ssl-task:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: SSL Task
+        uses: ./.github/actions/build-push-container
+        with:
+          aws_access_key_id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+          dockerfile: api.remote.dockerfile
+          git_ref: ${{ env.GITHUB_SHA }}
+          image_repository: task-ssl
+          task_cluster: task-ssl
+          task_name: task-ssl
+          task_service: task-ssl
