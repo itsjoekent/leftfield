@@ -1,4 +1,4 @@
-name: Build & deploy api containers on merge
+name: Deploy API on merge
 on:
   workflow_dispatch:
   push:
@@ -33,7 +33,7 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
-          dockerfile: api.remote.dockerfile
+          dockerfile: task.manufacture.remote.dockerfile
           git_ref: ${{ env.GITHUB_SHA }}
           image_repository: task-manufacture
           task_cluster: task-manufacture
@@ -48,7 +48,7 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
-          dockerfile: api.remote.dockerfile
+          dockerfile: task.ssl.remote.dockerfile
           git_ref: ${{ env.GITHUB_SHA }}
           image_repository: task-ssl
           task_cluster: task-ssl

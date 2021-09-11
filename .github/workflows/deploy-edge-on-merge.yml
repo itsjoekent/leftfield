@@ -1,0 +1,30 @@
+name: Deploy Edge On Merge
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'edge/**'
+      - 'ssl/**'
+      - 'package.json'
+      - 'package-lock.json'
+jobs:
+  build-edge:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        region: ['us-east-1', 'us-west-1']
+    steps:
+      - uses: actions/checkout@v2
+      - name: Edge
+        uses: ./.github/actions/build-push-container
+        with:
+          aws_access_key_id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+          dockerfile: edge.remote.dockerfile
+          git_ref: ${{ env.GITHUB_SHA }}
+          image_repository: edge
+          task_cluster: team-${{ matrix.region }}-cls
+          task_name: team-${{ matrix.region }}-task
+          task_service: team-${{ matrix.region }}-svc
