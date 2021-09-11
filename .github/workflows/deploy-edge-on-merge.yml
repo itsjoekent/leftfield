@@ -1,4 +1,4 @@
-name: Deploy Edge On Merge
+name: Deploy Edge on merge
 on:
   workflow_dispatch:
   push:
