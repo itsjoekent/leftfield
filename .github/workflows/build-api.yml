@@ -24,6 +24,21 @@ jobs:
           task_cluster: api-product
           task_name: api-product
           task_service: api-product
+  # build-manufacture-task:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Manufacture Task
+  #       uses: ./.github/actions/build-push-container
+  #       with:
+  #         aws_access_key_id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+  #         aws_secret_access_key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
+  #         dockerfile: api.remote.dockerfile
+  #         git_ref: ${{ env.GITHUB_SHA }}
+  #         image_repository: task-manufacture
+  #         task_cluster: task-manufacture
+  #         task_name: task-manufacture
+  #         task_service: task-manufacture
 
 
       # - uses: actions/checkout@v2
