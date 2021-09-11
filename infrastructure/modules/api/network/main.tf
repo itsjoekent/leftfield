@@ -136,3 +136,7 @@ output "public_subnets" {
 output "private_subnets" {
   value = aws_subnet.api_private.*
 }
+
+output "private_route_table" {
+  value = aws_route_table.api_private
+}

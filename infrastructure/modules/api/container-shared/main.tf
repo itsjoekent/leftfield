@@ -1,6 +1,9 @@
 # mongodbatlas_cluster
 variable "mongo_cluster" {}
 
+# mongodbatlas_database_user
+variable "mongo_user" {}
+
 # aws_elasticache_replication_group
 variable "redis_replication_group" {}
 
@@ -88,7 +91,7 @@ locals {
     },
     {
       name = "MONGODB_URL"
-      value = var.mongo_cluster.connection_strings[0].standard_srv
+      value = replace(var.mongo_cluster.connection_strings[0].standard_srv, "srv://", "srv://${mongo_user.username}:${mongo_user.password}@")
     },
     {
       name  = "NODE_ENV"

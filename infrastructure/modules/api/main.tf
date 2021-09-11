@@ -86,7 +86,9 @@ module "redis" {
 module "mongo" {
   source = "./mongo"
   config = var.config
-  vpc    = module.network.vpc
+
+  vpc                 = module.network.vpc
+  private_route_table = module.network.private_route_table
 
   providers = {
     aws          = aws
@@ -112,6 +114,7 @@ module "container_shared" {
   config = var.config
 
   mongo_cluster           = module.mongo.cluster
+  mongo_user              = module.mongo.user
   redis_replication_group = module.redis.replication_group
   redis_user              = module.redis.user
 
