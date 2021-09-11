@@ -101,7 +101,7 @@ data "mongodbatlas_network_container" "api" {
 }
 
 data "aws_vpc_peering_connection" "atlas" {
-  vpc_id           = data.mongodbatlas_network_container.vpc_id
+  vpc_id           = data.mongodbatlas_network_container.api.vpc_id
   cidr_block       = data.mongodbatlas_network_container.api.atlas_cidr_block
   peer_region      = local.region
 }
