@@ -84,7 +84,7 @@ resource "mongodbatlas_network_peering" "api" {
   aws_account_id         = var.config.variables.AWS_ACCOUNT_ID
 }
 
-resource "mongodbatlas_project_ip_whitelist" "api" {
+resource "mongodbatlas_project_ip_access_list" "api" {
   project_id = mongodbatlas_project.api.id
   cidr_block = var.vpc.cidr_block
   comment    = "CIDR block for AWS API VPC"
@@ -97,7 +97,7 @@ resource "aws_vpc_peering_connection_accepter" "peer" {
 
 data "mongodbatlas_network_container" "api" {
   project_id   = mongodbatlas_project.api.id
-  container_id = mongodbatlas_cluster.container_id
+  container_id = mongodbatlas_cluster.api.container_id
 }
 
 data "aws_vpc_peering_connection" "atlas" {
