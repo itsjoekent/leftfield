@@ -32,8 +32,8 @@ runs:
         ref: ${{ inputs.git_ref }}
     - uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ inputs.STAGING_AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ inputs.STAGING_AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
         aws-region: us-east-1
     - uses: aws-actions/amazon-ecr-login@v1
       id: login-ecr
