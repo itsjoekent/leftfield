@@ -11,7 +11,8 @@ const makeApiError = require('../utils/makeApiError');
 const { respondWithSuccess } = require('../utils/responder');
 const { transformDomainRecord } = require('../utils/transformer');
 
-const resolveCname = util.promisify(dns.resolveCname);
+const A_RECORDS = process.env.EDGE_IPV4_IPS.split(',');
+const resolve4 = util.promisify(dns.resolve4);
 
 async function verifyDomain(request, response) {
   const { params: { domainRecordId } } = request;
@@ -46,10 +47,10 @@ async function verifyDomain(request, response) {
   let verified = false;
 
   try {
-    const addresses = await resolveCname(domainRecord.name);
+    const addresses = await resolve4(domainRecord.name);
 
-    verified = addresses.includes(process.env.EDGE_DNS_CNAME)
-      && addresses.length === 1;
+    verified = addresses.every((address) => A_RECORDS.includes(address))
+      && addresses.length === A_RECORDS.length;
   } catch (error) {
     // TODO: Check if DNS specific error?
     // console.log(error);

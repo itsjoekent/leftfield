@@ -115,3 +115,7 @@ module "team_us_west_1" {
     module.storage.primary_bucket
   ]
 }
+
+output "accelerator" {
+  value = module.accelerator.accelerator
+}

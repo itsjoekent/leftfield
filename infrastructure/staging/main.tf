@@ -1,6 +1,7 @@
 # TODO:
 # - auto scale policy (edge & api)
 # - mongodbatlas_cloud_backup_schedule + alerts
+# - Fix us-west-1 edge deploy
 
 terraform {
   required_providers {
