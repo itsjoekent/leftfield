@@ -48,11 +48,6 @@ resource "aws_subnet" "api_public" {
 resource "aws_route_table" "api_public" {
   vpc_id = aws_vpc.api.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.api.id
-  }
-
   tags = {
     name = "api-public-route-table"
   }
