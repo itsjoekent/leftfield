@@ -52,11 +52,6 @@ resource "aws_subnet" "edge_public" {
 resource "aws_route_table" "edge_public" {
   vpc_id = aws_vpc.edge.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.edge.id
-  }
-
   tags = {
     name = "team-${var.region}-public-route-table"
   }
@@ -67,6 +62,12 @@ resource "aws_route_table_association" "edge_public" {
 
   subnet_id      = aws_subnet.edge_public[count.index].id
   route_table_id = aws_route_table.edge_public.id
+}
+
+resource "aws_route" "edge_public" {
+  route_table_id         = aws_route_table.edge_public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.edge.id
 }
 
 resource "aws_subnet" "edge_private" {
@@ -112,11 +113,6 @@ resource "aws_route_table" "edge_private" {
 
   vpc_id = aws_vpc.edge.id
 
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.edge_public[count.index].id
-  }
-
   tags = {
     name = "team-${local.availability_zones[count.index]}-private-route-table"
   }
@@ -127,6 +123,14 @@ resource "aws_route_table_association" "edge_private" {
 
   subnet_id      = aws_subnet.edge_private[count.index].id
   route_table_id = aws_route_table.edge_private[count.index].id
+}
+
+resource "aws_route" "edge_private" {
+  count = length(local.availability_zones)
+
+  route_table_id         = aws_route_table.edge_private[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.edge_public[count.index].id
 }
 
 resource "aws_vpc_endpoint" "s3" {
