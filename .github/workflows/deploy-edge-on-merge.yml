@@ -21,6 +21,7 @@ jobs:
         uses: ./.github/actions/build-push-container
         with:
           aws_access_key_id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+          aws_region: ${{ matrix.region }}
           aws_secret_access_key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
           dockerfile: edge.remote.dockerfile
           git_ref: ${{ env.GITHUB_SHA }}

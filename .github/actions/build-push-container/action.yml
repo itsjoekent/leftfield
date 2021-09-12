@@ -3,6 +3,8 @@ name: Build & Deploy Containers To ECS
 inputs:
   aws_access_key_id:
     required: true
+  aws_region:
+    required: true
   aws_secret_access_key:
     required: true
   dockerfile:
@@ -34,7 +36,7 @@ runs:
       with:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
-        aws-region: us-east-1
+        aws-region: ${{ inputs.aws_region }}
     - uses: aws-actions/amazon-ecr-login@v1
       id: login-ecr
     - name: Build, tag, and push image to Amazon ECR
