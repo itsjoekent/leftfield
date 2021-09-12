@@ -65,6 +65,12 @@ resource "aws_route_table_association" "api_public" {
   route_table_id = aws_route_table.api_public.id
 }
 
+resource "aws_route" "api_public" {
+  route_table_id         = aws_route_table.api_public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.api.id
+}
+
 resource "aws_subnet" "api_private" {
   count = length(var.availability_zones)
 
@@ -108,11 +114,6 @@ resource "aws_route_table" "api_private" {
 
   vpc_id = aws_vpc.api.id
 
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.api_public[count.index].id
-  }
-
   tags = {
     name = "api-${var.availability_zones[count.index]}-private-route-table"
   }
@@ -123,6 +124,14 @@ resource "aws_route_table_association" "api_private" {
 
   subnet_id      = aws_subnet.api_private[count.index].id
   route_table_id = aws_route_table.api_private[count.index].id
+}
+
+resource "aws_route" "api_private" {
+  count = length(var.availability_zones)
+
+  route_table_id         = aws_route_table.api_private[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.api_public[count.index].id
 }
 
 output "vpc" {
