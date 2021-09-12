@@ -11,7 +11,9 @@ const makeApiError = require('../utils/makeApiError');
 const { respondWithSuccess } = require('../utils/responder');
 const { transformDomainRecord } = require('../utils/transformer');
 
-const A_RECORDS = process.env.EDGE_IPV4_IPS.split(',');
+const A_RECORDS = process.env.EDGE_IP_ADDRESSES.split(',')
+  .filter((ip) => ip.split('.').length === 3);
+
 const resolve4 = util.promisify(dns.resolve4);
 
 async function verifyDomain(request, response) {

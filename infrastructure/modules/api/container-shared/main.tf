@@ -1,5 +1,5 @@
 # aws_globalaccelerator_accelerator
-variable "aws_globalaccelerator_accelerator" {}
+variable "edge_accelerator" {}
 
 # mongodbatlas_cluster
 variable "mongo_cluster" {}
@@ -85,8 +85,8 @@ locals {
       value = join(".", compact([var.config.variables.EDGE_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE]))
     },
     {
-      name  = "EDGE_IPV4_IPS"
-      value = join(",", var.aws_globalaccelerator_accelerator.accelerator_ip_address)
+      name  = "EDGE_IP_ADDRESSES"
+      value = join(",", flatten(var.edge_accelerator.ip_sets.*.ip_addresses))
     },
     {
       name  = "EMAIL_DOMAIN"

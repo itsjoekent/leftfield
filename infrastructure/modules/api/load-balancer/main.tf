@@ -118,7 +118,7 @@ resource "dnsimple_zone_record" "https_validation" {
 
   zone_name = var.config.variables.DNS_ZONE
   name      = each.value.name
-  value     = each.value.record
+  value     = trimsuffix(each.value.record, ".")
   type      = each.value.type
   ttl       = var.config.environment.default_dns_ttl
 }

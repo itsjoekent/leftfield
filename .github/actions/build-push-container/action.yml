@@ -36,7 +36,7 @@ runs:
       with:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
-        aws-region: ${{ inputs.aws_region }}
+        aws-region: us-east-1
     - uses: aws-actions/amazon-ecr-login@v1
       id: login-ecr
     - name: Build, tag, and push image to Amazon ECR
@@ -47,6 +47,11 @@ runs:
       run: |
         docker build -t $ECR_REGISTRY/${{ inputs.image_repository }}:latest -f dockerfiles/${{ inputs.dockerfile }} .
         docker push $ECR_REGISTRY/${{ inputs.image_repository }} --all-tags
+    - uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        aws-region: ${{ inputs.aws_region }}
     - name: Download task definition
       shell: bash
       run: aws ecs describe-task-definition --task-definition ${{ inputs.task_name }} --query taskDefinition > task-definition.json

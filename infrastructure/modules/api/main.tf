@@ -1,3 +1,6 @@
+# aws_globalaccelerator_accelerator
+variable "edge_accelerator" {}
+
 variable "config" {}
 
 terraform {
@@ -113,6 +116,7 @@ module "container_shared" {
   source = "./container-shared"
   config = var.config
 
+  edge_accelerator        = var.edge_accelerator
   mongo_cluster           = module.mongo.cluster
   mongo_user              = module.mongo.user
   redis_replication_group = module.redis.replication_group

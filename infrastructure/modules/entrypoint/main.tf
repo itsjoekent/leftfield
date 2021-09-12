@@ -42,6 +42,8 @@ module "api" {
   source = "../api"
   config = var.config
 
+  edge_accelerator = module.edge.accelerator
+
   providers = {
     aws          = aws.primary
     dnsimple     = dnsimple
