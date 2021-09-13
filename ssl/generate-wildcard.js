@@ -52,7 +52,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
       console.log(`Creating "${challenge.type}" challenge...`);
 
       if (challenge.type === 'http-01') {
-        const challengeStorageKey = `acme-challenge/${domainName}/${challenge.token}`;
+        const challengeStorageKey = `acme-challenge/${WILDCARD_DOMAIN}/${challenge.token}`;
 
         await Promise.all(storage.map(({ S3, bucket }) => {
           return S3.upload({
