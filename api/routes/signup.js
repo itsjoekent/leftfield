@@ -52,7 +52,7 @@ async function signup(request, response) {
     lastLoggedIn: Date.now(),
   });
 
-  const isLocalHost = process.env.DOMAIN.includes('localhost');
+  const isLocalHost = process.env.API_DOMAIN.includes('localhost');
 
   const jwt = await signToken({
     subject: email,
@@ -64,7 +64,7 @@ async function signup(request, response) {
     secure: true,
     sameSite: 'lax',
     maxAge: ms('7 days') / 1000,
-    domain: isLocalHost ? '' : process.env.DOMAIN,
+    domain: isLocalHost ? '' : process.env.API_DOMAIN,
   });
 
   return respondWithSuccess(

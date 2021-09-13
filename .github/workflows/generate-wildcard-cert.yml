@@ -16,10 +16,15 @@ jobs:
         env:
           DNSIMPLE_ACCOUNT_ID: ${{ secrets.DNSIMPLE_ACCOUNT_ID }}
           DNSIMPLE_API_TOKEN: ${{ secrets.DNSIMPLE_API_TOKEN }}
-          ENVIRONMENTS: STAGING
+          ENVIRONMENTS: STAGING,PRODUCTION
           STAGING_AWS_ACCESS_KEY_ID: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
           STAGING_AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
           STAGING_SSL_AT_REST_KEY: ${{ secrets.STAGING_SSL_AT_REST_KEY }}
           STAGING_STORAGE_PRIMARY_BUCKET: leftfield-staging-us-east-1
           STAGING_STORAGE_PRIMARY_ENDPOINT: https://s3.us-east-1.amazonaws.com
+          PRODUCTION_AWS_ACCESS_KEY_ID: ${{ secrets.PRODUCTION_AWS_ACCESS_KEY_ID }}
+          PRODUCTION_AWS_SECRET_ACCESS_KEY: ${{ secrets.PRODUCTION_AWS_SECRET_ACCESS_KEY }}
+          PRODUCTION_SSL_AT_REST_KEY: ${{ secrets.PRODUCTION_SSL_AT_REST_KEY }}
+          PRODUCTION_STORAGE_PRIMARY_BUCKET: leftfield-production-us-east-1
+          PRODUCTION_STORAGE_PRIMARY_ENDPOINT: https://s3.us-east-1.amazonaws.com
           WILDCARD_DOMAIN: getleftfield.com

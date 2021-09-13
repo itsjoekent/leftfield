@@ -36,14 +36,14 @@ async function requestPasswordReset(request, response) {
     subjectType: 'email',
   });
 
-  const isLocalHost = process.env.DOMAIN.includes('localhost');
+  const isLocalHost = process.env.API_DOMAIN.includes('localhost');
 
   const jwtCookie = cookie.serialize(AUTH_TOKEN_COOKIE, jwt, {
     path: '/',
     secure: true,
     sameSite: 'lax',
     maxAge: ms('7 days') / 1000,
-    domain: isLocalHost ? '' : process.env.DOMAIN,
+    domain: isLocalHost ? '' : process.env.API_DOMAIN,
   });
 
   await Account.updateOne(
