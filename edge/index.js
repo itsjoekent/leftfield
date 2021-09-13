@@ -120,12 +120,13 @@ function removeTrailingSlash(input) {
         const host = (request.get('host') || '').toLowerCase();
 
         if (host === edgeHost) {
-          const version = await storage.getObject(`published-version/${edgeHost}`);
-          if (!version) {
+          const versionBuffer = await storage.getObject(`published-version/${edgeHost}`);
+          if (!versionBuffer) {
             response.status(404).send('Looks like we made a bad error on the field, but don\'t worry we\'re looking into it!');
             return;
           }
 
+          const version = versionBuffer.toString('utf8').replace('\n', '');
           let key = null;
 
           if ([
@@ -143,7 +144,7 @@ function removeTrailingSlash(input) {
             const path = removeTrailingSlash(request.path);
             // if (!path.split('/').pop().includes('.')) => append .html
 
-            key = `static/${version}/${path}`;
+            key = `static/${version}${path}`;
           }
 
           const respondWith = await retrieveFile(key, request, { redisCacheClient });

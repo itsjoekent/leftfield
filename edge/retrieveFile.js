@@ -95,7 +95,7 @@ async function retrieveFile(key, request, options) {
     if (hit) {
       const [metaString, fileString] = hit.toString('utf8').split(CACHE_SEPARATOR);
 
-      const meta = JSON.parse(metaValue);
+      const meta = JSON.parse(metaString);
       const fileBuffer = Buffer.from(fileString);
 
       return respondWithGenerator(meta, fileBuffer);
@@ -163,7 +163,7 @@ async function retrieveFile(key, request, options) {
 
   if (isRedisCacheReady() && isCacheable(get(meta, 'ContentLength'))) {
     const headerBuffer = Buffer.from(`${JSON.stringify(meta)}${CACHE_SEPARATOR}`);
-    const cacheBuffer = Buffer.concat(headerBuffer, fileBuffer);
+    const cacheBuffer = Buffer.concat([headerBuffer, fileBuffer]);
 
     await redisCacheClient.set(`file:${key}`, cacheBuffer, 'PX', ms('1 day'));
   }
