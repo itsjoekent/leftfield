@@ -85,6 +85,7 @@ locals {
       AWS_ACCOUNT_ID              = var.AWS_ACCOUNT_ID
       AWS_SECRET_ACCESS_KEY       = var.AWS_SECRET_ACCESS_KEY
       DNS_ZONE                    = var.DNS_ZONE
+      EDGE_CACHE_KEY              = var.EDGE_CACHE_KEY
       EDGE_DNS_SUBDOMAIN          = var.EDGE_DNS_SUBDOMAIN
       EMAIL_API_KEY               = var.EMAIL_API_KEY
       EMAIL_DOMAIN                = var.EMAIL_DOMAIN

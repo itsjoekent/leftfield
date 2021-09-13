@@ -36,6 +36,11 @@ variable "DNS_ZONE" {
   type = string
 }
 
+variable "EDGE_CACHE_KEY" {
+  sensitive = true
+  type      = "string"
+}
+
 variable "EDGE_DNS_SUBDOMAIN" {
   type = string
 }

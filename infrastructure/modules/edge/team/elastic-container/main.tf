@@ -47,6 +47,11 @@ locals {
       value = var.config.variables.AWS_SECRET_ACCESS_KEY
     },
     {
+      name  = "EDGE_CACHE_KEY"
+      path  = "/edge/EDGE_CACHE_KEY"
+      value = var.config.variables.EDGE_CACHE_KEY
+    },
+    {
       name  = "SSL_AT_REST_KEY"
       path  = "/edge/SSL_AT_REST_KEY"
       value = var.config.variables.SSL_AT_REST_KEY

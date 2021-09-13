@@ -79,6 +79,23 @@ function removeTrailingSlash(input) {
     secureApp.get('/_lf/health-check', healthCheck);
     insecureApp.get('/_lf/health-check', healthCheck);
 
+    secureApp.post('/_lf/clear', async function handler(request, response) => {
+      try {
+        const host = (request.get('host') || '').toLowerCase();
+        const key = req.headers['x-leftfield-key'];
+
+        if (key !== process.env.EDGE_CACHE_KEY) {
+          response.status(401).json({ error: 'not authorized' });
+          return;
+        }
+
+        await redisCacheClient.del(`file:published-version/${host}`);
+        res.status(200).json({ cleared: true });
+      } catch (error) {
+        requestErrorHandler(error, response);
+      }
+    });
+
     secureApp.get('/_lf/file/', async function handler(request, response) {
       try {
         const path = request.path.toLowerCase();
