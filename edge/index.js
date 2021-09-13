@@ -79,7 +79,7 @@ function removeTrailingSlash(input) {
     secureApp.get('/_lf/health-check', healthCheck);
     insecureApp.get('/_lf/health-check', healthCheck);
 
-    secureApp.post('/_lf/clear', async function handler(request, response) => {
+    secureApp.post('/_lf/clear', async function handler(request, response) {
       try {
         const host = (request.get('host') || '').toLowerCase();
         const key = req.headers['x-leftfield-key'];
