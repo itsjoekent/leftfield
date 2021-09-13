@@ -61,4 +61,4 @@ runs:
         task-definition: task-definition.json
         service: ${{ inputs.task_service }}
         cluster: ${{ inputs.task_cluster }}
-        wait-for-service-stability: true
+        wait-for-service-stability: false
