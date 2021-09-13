@@ -10,6 +10,6 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build:baseball:presentation && npm run build:task:manufacture:production
+RUN npm run build:baseball:presentation && npm run build:task:manufacture:remote
 
 CMD ["npm", "run", "start:task:manufacture"]

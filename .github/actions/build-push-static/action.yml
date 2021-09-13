@@ -13,6 +13,9 @@ inputs:
   git_ref:
     description: "The branch, tag or SHA to checkout."
     required: true
+  node_env:
+    description: "The environment to build"
+    required: true
   s3_bucket:
     description: "AWS S3 Buckeet Name"
     required: true
@@ -33,7 +36,7 @@ runs:
         node-version: '16'
     - run: npm install
       shell: bash
-    - run: npm run build:static:production
+    - run: NODE_ENV=${{ inputs.node_env }} npm run build:static:remote
       shell: bash
     - id: generate-uuid
       uses: getleftfield/uuid-action@v1

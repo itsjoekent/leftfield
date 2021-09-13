@@ -6,7 +6,7 @@ const NODE_ENV = process.env.NODE_ENV;
 
 module.exports = {
   entry: path.join(process.cwd(), '/static/product/index.js'),
-  mode: NODE_ENV,
+  mode: NODE_ENV === 'development' ? 'development' : 'production',
   module: {
     rules: [
       {

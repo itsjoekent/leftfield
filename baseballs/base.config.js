@@ -5,7 +5,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (prefix) => ({
-  mode: NODE_ENV,
+  mode: NODE_ENV === 'development' ? 'development' : 'production',
   module: {
     rules: [
       {

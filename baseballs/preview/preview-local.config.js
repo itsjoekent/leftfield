@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { merge } = require('webpack-merge');
 const base = require('../base.config.js');
 const preview = require('./preview.config.js');
-const environment = require(path.join(process.cwd(), 'environment/development.web'));
+const environment = require(path.join(process.cwd(), 'environment/web'));
 
 module.exports = merge(
   base('preview-local'),
