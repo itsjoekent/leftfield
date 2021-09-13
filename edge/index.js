@@ -48,6 +48,18 @@ function healthCheck(request, response) {
   return;
 }
 
+function removeTrailingSlash(input) {
+  if (input === '/') {
+    return input;
+  }
+
+  if (input.endsWith('/')) {
+    return input.substring(0, input.length - 1);
+  }
+
+  return input;
+}
+
 (async function () {
   try {
     let ssl = null;
@@ -91,12 +103,42 @@ function healthCheck(request, response) {
         const host = (request.get('host') || '').toLowerCase();
 
         if (host === edgeHost) {
-          response.send('homerun!');
-          // TODO:
-          // - Lookup domain in redisCacheClient
-          // - Find published product version
-          // - create key based on published version + product type (SPA vs SSR) + path
-          // - retrieveFile()
+          const version = await storage.getObject(`published-version/${edgeHost}`);
+          if (!version) {
+            response.status(404).send('Looks like we made a bad error on the field, but don\'t worry we\'re looking into it!');
+            return;
+          }
+
+          let key = null;
+
+          if ([
+            '/dashboard',
+            '/editor',
+            '/login',
+            '/logout',
+            '/reset-password',
+            '/signup',
+          ].some((compare) => request.path.startsWith(compare))) {
+            key = `static/${version}/product/index.html`;
+          }
+
+          if (!key) {
+            const path = removeTrailingSlash(request.path);
+            // if (!path.split('/').pop().includes('.')) => append .html
+
+            key = `static/${version}/${path}`;
+          }
+
+          const respondWith = await retrieveFile(key, request, { redisCacheClient });
+
+          if (respondWith) {
+            respondWith(response);
+            return;
+          }
+
+          // TODO: return custom 404
+          response.status(404).send('Page not found!');
+          return;
         } else {
           next();
         }
@@ -132,9 +174,6 @@ function healthCheck(request, response) {
           const { token } = request.params;
 
           const challenge = await storage.getObject(`acme-challenge/${host}/${token}`);
-          if (challenge instanceof Error) {
-            throw challenge;
-          }
 
           if (!challenge) {
             response.status(404).end();
