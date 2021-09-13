@@ -1,0 +1,57 @@
+name: Deploy API to production
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy'
+        required: false
+
+jobs:
+  build-product-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Product API
+        uses: ./.github/actions/build-push-container
+        with:
+          aws_access_key_id: ${{ secrets.PRODUCTION_AWS_ACCESS_KEY_ID }}
+          aws_region: us-east-1
+          aws_secret_access_key: ${{ secrets.PRODUCTION_AWS_SECRET_ACCESS_KEY }}
+          dockerfile: api.remote.dockerfile
+          git_ref: ${{ inputs.tag || env.GITHUB_SHA }}
+          image_repository: product
+          task_cluster: api-product
+          task_name: api-product
+          task_service: api-product
+  build-manufacture-task:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Manufacture Task
+        uses: ./.github/actions/build-push-container
+        with:
+          aws_access_key_id: ${{ secrets.PRODUCTION_AWS_ACCESS_KEY_ID }}
+          aws_region: us-east-1
+          aws_secret_access_key: ${{ secrets.PRODUCTION_AWS_SECRET_ACCESS_KEY }}
+          dockerfile: task.manufacture.remote.dockerfile
+          git_ref: ${{ inputs.tag || env.GITHUB_SHA }}
+          image_repository: task-manufacture
+          task_cluster: task-manufacture
+          task_name: task-manufacture
+          task_service: task-manufacture
+  build-ssl-task:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: SSL Task
+        uses: ./.github/actions/build-push-container
+        with:
+          aws_access_key_id: ${{ secrets.PRODUCTION_AWS_ACCESS_KEY_ID }}
+          aws_region: us-east-1
+          aws_secret_access_key: ${{ secrets.PRODUCTION_AWS_SECRET_ACCESS_KEY }}
+          dockerfile: task.ssl.remote.dockerfile
+          git_ref: ${{ inputs.tag || env.GITHUB_SHA }}
+          image_repository: task-ssl
+          task_cluster: task-ssl
+          task_name: task-ssl
+          task_service: task-ssl
