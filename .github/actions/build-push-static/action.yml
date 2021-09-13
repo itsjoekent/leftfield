@@ -1,0 +1,42 @@
+name: Build & Deploy Static Sites to S3
+
+inputs:
+  aws_access_key_id:
+    required: true
+  aws_region:
+    required: true
+  aws_secret_access_key:
+    required: true
+  edge_host:
+    description: "Hostname of the edge being updated"
+    required: true
+  git_ref:
+    description: "The branch, tag or SHA to checkout."
+    required: true
+  s3_bucket:
+    description: "AWS S3 Buckeet Name"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.git_ref }}
+    - uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        aws-region: us-east-1
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+    - run: npm install
+    - run: npm run build:static:production
+    - id: generate-uuid
+      uses: getleftfield/uuid-action@v1
+    - name: Deploy www/ to S3 bucket
+      run: aws s3 sync ./www/ s3://${{ inputs.s3_bucket }}/${{ steps.generate-uuid.outputs.uuid }}
+    - name: Update Deploy Version Number
+      run: aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key published-version/${{ inputs.edge_host }} --body ${{ steps.generate-uuid.outputs.uuid }}
+    # TODO: Bust edge cache w/ POST request to edge host
