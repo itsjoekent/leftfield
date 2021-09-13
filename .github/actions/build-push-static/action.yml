@@ -56,4 +56,4 @@ runs:
       with:
         url: https://${{ inputs.edge_host }}/_lf/clear
         method: 'POST'
-        customHeaders: '{ "x-leftfield-key": "${{ edge_cache_key }}" }'
+        customHeaders: '{ "x-leftfield-key": "${{ inputs.edge_cache_key }}" }'
