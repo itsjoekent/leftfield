@@ -55,7 +55,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
 
         await Promise.all(storage.map(({ S3, bucket }) => {
           return S3.upload({
-            Body: keyAuthorization
+            Body: keyAuthorization,
             Bucket: bucket,
             ContentType: 'text/plain',
             Key: challengeStorageKey,
