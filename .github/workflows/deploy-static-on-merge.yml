@@ -21,4 +21,5 @@ jobs:
           aws_secret_access_key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
           edge_host: staging.getleftfield.com
           git_ref: ${{ env.GITHUB_SHA }}
+          node_env: staging
           s3_bucket: leftfield-staging-us-east-1
