@@ -45,6 +45,7 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
 
     const [key, csr] = await acme.forge.createCsr({
       commonName: `*.${WILDCARD_DOMAIN}`,
+      altNames: [WILDCARD_DOMAIN],
     });
 
     async function createChallenge(auth, challenge, keyAuthorization) {

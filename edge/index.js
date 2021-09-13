@@ -60,6 +60,16 @@ function removeTrailingSlash(input) {
   return input;
 }
 
+function getHost(request) {
+  const host = (request.get('host') || '').toLowerCase();
+
+  if (host.startsWith('www.')) {
+    return host.replace('www.', '');
+  }
+
+  return host;
+}
+
 (async function () {
   try {
     let ssl = null;
@@ -81,7 +91,7 @@ function removeTrailingSlash(input) {
 
     secureApp.post('/_lf/clear', async function handler(request, response) {
       try {
-        const host = (request.get('host') || '').toLowerCase();
+        const host = getHost(request);
         const key = request.headers['x-leftfield-key'];
 
         if (key !== process.env.EDGE_CACHE_KEY) {
@@ -117,7 +127,7 @@ function removeTrailingSlash(input) {
 
     secureApp.get('*', async function handler(request, response, next) {
       try {
-        const host = (request.get('host') || '').toLowerCase();
+        const host = getHost(request);
 
         if (host === edgeHost) {
           const versionBuffer = await storage.getObject(`published-version/${edgeHost}`);
@@ -167,7 +177,7 @@ function removeTrailingSlash(input) {
 
     secureApp.get('*', async function handler(request, response) {
       try {
-        const host = (request.get('host') || '').toLowerCase();
+        const host = getHost(request);
         const path = request.path.toLowerCase();
 
         response.send('grandslam!');
@@ -208,7 +218,7 @@ function removeTrailingSlash(input) {
 
     insecureApp.get('*', async function (request, response) {
       try {
-        const host = request.get('host').toLowerCase();
+        const host = getHost(request);
         const path = request.path.toLowerCase();
 
         if (NODE_ENV === 'development' && host.includes('localhost')) {
