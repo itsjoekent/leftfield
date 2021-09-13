@@ -44,6 +44,8 @@ runs:
       run: aws s3 sync ./static/www/ s3://${{ inputs.s3_bucket }}/${{ steps.generate-uuid.outputs.uuid }} --acl 'private'
       shell: bash
     - name: Update Deploy Version Number
-      run: aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key published-version/${{ inputs.edge_host }} --body ${{ steps.generate-uuid.outputs.uuid }}
+      run: |
+        echo "${{ steps.generate-uuid.outputs.uuid }}" >> deploy.txt
+        aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key published-version/${{ inputs.edge_host }} --body deploy.txt
       shell: bash
     # TODO: Bust edge cache w/ POST request to edge host
