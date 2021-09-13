@@ -14,6 +14,11 @@ const dnsClient = dnsimple({
   accessToken: DNSIMPLE_API_TOKEN,
 });
 
+async function sleep(time = ms('30 seconds')) {
+  console.log(`Sleeping for ${time / 1000} seconds...`);
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
 const storage = ENVIRONMENTS.split(',').map((environment) => {
   function getEnv(key) {
     return process.env[`${environment}_${key}`];
@@ -62,6 +67,8 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
             Key: challengeStorageKey,
           }).promise();
         }));
+
+        await sleep();
       } else if (challenge.type === 'dns-01') {
         const recordValue = keyAuthorization;
 
@@ -75,6 +82,8 @@ const storage = ENVIRONMENTS.split(',').map((environment) => {
             ttl: 3600
           },
         );
+
+        await sleep();
       } else {
         throw new Error(`Unsupported challenge type "${challenge.type}"`);
       }
