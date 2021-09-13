@@ -100,7 +100,9 @@ function getHost(request) {
           return;
         }
 
-        const sslDomain = host.includes(DNS_ZONE) ? `*.${DNS_ZONE}` : domain;
+        console.log(host);
+
+        const sslDomain = host.includes(DNS_ZONE) ? `*.${DNS_ZONE}` : host;
         await redisCacheClient.del(`ssl:${sslDomain}`);
 
         await redisCacheClient.del(`file:published-version/${host}`);
