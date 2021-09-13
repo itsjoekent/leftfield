@@ -43,7 +43,7 @@ async function login(request, response) {
   const jwtCookie = cookie.serialize(AUTH_TOKEN_COOKIE, jwt, {
     path: '/',
     secure: true,
-    sameSite: 'lax',
+    sameSite: 'None',
     maxAge: ms('7 days') / 1000,
     domain: isLocalHost ? '' : process.env.DOMAIN,
   });
