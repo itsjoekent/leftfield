@@ -203,7 +203,8 @@ function getHost(request) {
       '/.well-known/acme-challenge/:token',
       async function (request, response) {
         try {
-          const host = request.get('host').toLowerCase();
+          const host = getHost(request);
+          console.log(host);
           const { token } = request.params;
 
           const challenge = await storage.getObject(`acme-challenge/${host}/${token}`);
