@@ -7,6 +7,9 @@ inputs:
     required: true
   aws_secret_access_key:
     required: true
+  edge_cache_key:
+    description: "Edge Cache API key"
+    required: true
   edge_host:
     description: "Hostname of the edge being updated"
     required: true
@@ -48,4 +51,9 @@ runs:
         echo "${{ steps.generate-uuid.outputs.uuid }}" >> deploy.txt
         aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key published-version/${{ inputs.edge_host }} --body deploy.txt
       shell: bash
-    # TODO: Bust edge cache w/ POST request to edge host
+    - name: Clear cache
+      uses: getleftfield/http-request-action@v1.8.1
+      with:
+        url: https://${{ inputs.edge_host }}/_lf/clear
+        method: 'POST'
+        customHeaders: '{ "x-leftfield-key": "${{ edge_cache_key }}" }'
