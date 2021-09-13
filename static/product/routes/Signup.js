@@ -36,10 +36,10 @@ export default function Signup() {
       route: '/signup',
       payload: values,
       options: { credentials: 'include' },
-      onResponse: ({ status, json }) => {
+      onResponse: ({ ok, json }) => {
         setIsLoading(false);
 
-        if (get(json, 'error')) {
+        if (!ok || get(json, 'error')) {
           setFormError(get(json, 'error.message', 'Encountered error signing up, try again?'));
           return;
         }
