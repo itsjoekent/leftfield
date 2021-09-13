@@ -10,7 +10,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
 jobs:
-  build-product-api:
+  build-static:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
