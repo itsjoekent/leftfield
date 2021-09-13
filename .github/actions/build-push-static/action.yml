@@ -32,11 +32,15 @@ runs:
       with:
         node-version: '16'
     - run: npm install
+      shell: bash
     - run: npm run build:static:production
+      shell: bash
     - id: generate-uuid
       uses: getleftfield/uuid-action@v1
     - name: Deploy www/ to S3 bucket
       run: aws s3 sync ./www/ s3://${{ inputs.s3_bucket }}/${{ steps.generate-uuid.outputs.uuid }} --acl 'private'
+      shell: bash
     - name: Update Deploy Version Number
       run: aws s3api put-object --bucket ${{ inputs.s3_bucket }} --key published-version/${{ inputs.edge_host }} --body ${{ steps.generate-uuid.outputs.uuid }}
+      shell: bash
     # TODO: Bust edge cache w/ POST request to edge host
