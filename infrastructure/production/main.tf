@@ -1,8 +1,3 @@
-# TODO:
-# - auto scale policy (edge & api)
-# - mongodbatlas_cloud_backup_schedule + alerts
-# - https://docs.atlas.mongodb.com/cluster-autoscaling/#std-label-cluster-autoscaling
-
 terraform {
   required_providers {
     aws = {
@@ -31,7 +26,7 @@ terraform {
     organization = "getleftfield"
 
     workspaces {
-      name = "aws-staging"
+      name = "production"
     }
   }
 
