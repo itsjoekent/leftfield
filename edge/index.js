@@ -1,3 +1,4 @@
+const DNS_ZONE = process.env.DNS_ZONE;
 const EDGE_DOMAIN = process.env.EDGE_DOMAIN;
 const HTTP_PORT = process.env.HTTP_PORT;
 const HTTPS_PORT = process.env.HTTPS_PORT;
@@ -99,7 +100,11 @@ function getHost(request) {
           return;
         }
 
+        const sslDomain = host.includes(DNS_ZONE) ? `*.${DNS_ZONE}` : domain;
+        await redisCacheClient.del(`ssl:${sslDomain}`);
+
         await redisCacheClient.del(`file:published-version/${host}`);
+
         response.status(200).json({ cleared: true });
       } catch (error) {
         requestErrorHandler(error, response);
