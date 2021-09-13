@@ -41,7 +41,7 @@ runs:
     - id: generate-uuid
       uses: getleftfield/uuid-action@v1
     - name: Deploy www/ to S3 bucket
-      run: aws s3 sync ./static/www/ s3://${{ inputs.s3_bucket }}/${{ steps.generate-uuid.outputs.uuid }} --acl 'private'
+      run: aws s3 sync ./static/www/ s3://${{ inputs.s3_bucket }}/static/${{ steps.generate-uuid.outputs.uuid }} --acl 'private'
       shell: bash
     - name: Update Deploy Version Number
       run: |
