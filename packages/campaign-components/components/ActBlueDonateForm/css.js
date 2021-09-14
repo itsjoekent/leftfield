@@ -29,7 +29,8 @@ export default function ActBlueFormCSS({
   styles,
   language,
 }) {
-  const applyStyleIfChanged = applyStyleIfChangedGenerator();
+  const applyStyleIfChangedGrid = applyStyleIfChangedGenerator();
+  const applyStyleIfChangedDisclaimer = applyStyleIfChangedGenerator();
 
   const gridStyles = get(styles, GRID_STYLE, {});
   const textDisclaimerStyles = get(styles, DISCLAIMER_TEXT_STYLE, {});
@@ -39,13 +40,13 @@ export default function ActBlueFormCSS({
       width: 100%;
 
       ${BoxStyle.styling({
-        applyStyleIfChanged,
+        applyStyleIfChanged: applyStyleIfChangedGrid,
         styles: gridStyles,
         theme,
       })}
 
       ${GridStyle.styling({
-        applyStyleIfChanged,
+        applyStyleIfChanged: applyStyleIfChangedGrid,
         styles: gridStyles,
         theme,
       })}
@@ -55,7 +56,7 @@ export default function ActBlueFormCSS({
         `
           .${DISCLAIMER_CLASS_NAME} {
             ${TextStyle.styling({
-              applyStyleIfChanged,
+              applyStyleIfChanged: applyStyleIfChangedDisclaimer,
               theme,
               styles: textDisclaimerStyles,
             })}
@@ -63,7 +64,7 @@ export default function ActBlueFormCSS({
             text-align: center;
 
             ${responsiveStyleGenerator(
-              applyStyleIfChanged,
+              applyStyleIfChangedDisclaimer,
               theme,
               {
                 styles: gridStyles,
@@ -73,7 +74,7 @@ export default function ActBlueFormCSS({
             )}
 
             ${responsiveStyleGenerator(
-              applyStyleIfChanged,
+              applyStyleIfChangedDisclaimer,
               theme,
               {
                 styles: gridStyles,
