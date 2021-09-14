@@ -7,7 +7,6 @@ import {
 } from 'pkg.campaign-components/constants/responsive';
 import useLanguage from 'pkg.campaign-components/hooks/useLanguage';
 import getPropertyValue from 'pkg.campaign-components/utils/getPropertyValue';
-import CfImageUrl from 'pkg.cf-image-url';
 
 export const TAG = 'Splash';
 
@@ -42,19 +41,12 @@ export default function Splash(props) {
     PHOTO_SOURCE_PROPERTY,
   );
 
-  const srcset = [
-    `${CfImageUrl(fileUrl, { width: '720px' })} 410w`,
-    `${CfImageUrl(fileUrl, { width: '1024px' })} 720w`,
-    `${CfImageUrl(fileUrl, { width: '1440px' })} 1024w`,
-  ].join(',\n');
-
   return (
     <div className={componentClassName}>
       <div className={PHOTO_COLUMN_CLASS_NAME}>
         {!!fileUrl && (
           <img
-            src={CfImageUrl(fileUrl, { width: '410px' })}
-            srcSet={srcset}
+            src={fileUrl}
             alt={getPropertyValue(properties, PHOTO_ALT_PROPERTY, language)}
           />
         )}
