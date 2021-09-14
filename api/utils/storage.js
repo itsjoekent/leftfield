@@ -21,6 +21,7 @@ STORAGE_REGIONS.split(',').map((region) => {
 regions.main = regions[STORAGE_MAIN_REGION];
 
 function getSignedUploadUrl(fileKey, mimeType) {
+  console.log(STORAGE_MAIN_REGION, JSON.stringify(regions));
   const signedUrl = regions.main.s3.getSignedUrl('putObject', {
     Bucket: regions.main.bucket,
     Key: fileKey,
