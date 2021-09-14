@@ -81,6 +81,10 @@ locals {
       value = join(".", [var.config.variables.API_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE])
     },
     {
+      name  = "DNS_ZONE"
+      value = var.config.variables.DNS_ZONE
+    },
+    {
       name  = "DOMAIN"
       value = join(".", compact([var.config.variables.EDGE_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE]))
     },

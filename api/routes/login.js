@@ -45,7 +45,7 @@ async function login(request, response) {
     secure: true,
     sameSite: 'None',
     maxAge: ms('7 days') / 1000,
-    domain: isLocalHost ? '' : process.env.API_DOMAIN,
+    domain: isLocalHost ? '' : process.env.DNS_ZONE,
   });
 
   return respondWithSuccess(
