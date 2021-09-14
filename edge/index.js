@@ -1,4 +1,5 @@
 const DNS_ZONE = process.env.DNS_ZONE;
+const EDGE_CACHE_KEY = process.env.EDGE_CACHE_KEY;
 const EDGE_DOMAIN = process.env.EDGE_DOMAIN;
 const HTTP_PORT = process.env.HTTP_PORT;
 const HTTPS_PORT = process.env.HTTPS_PORT;
@@ -95,7 +96,7 @@ function getHost(request) {
         const host = getHost(request);
         const key = request.headers['x-leftfield-key'];
 
-        if (key !== process.env.EDGE_CACHE_KEY) {
+        if (key !== EDGE_CACHE_KEY) {
           response.status(401).json({ error: 'not authorized' });
           return;
         }
@@ -104,6 +105,26 @@ function getHost(request) {
         await redisCacheClient.del(`ssl:${sslDomain}`);
 
         await redisCacheClient.del(`file:published-version/${host}`);
+
+        response.status(200).json({ cleared: true });
+      } catch (error) {
+        requestErrorHandler(error, response);
+      }
+    });
+
+    secureApp.post('/_lf/nuke', async function handler(request, response) {
+      try {
+        const host = getHost(request);
+        const key = request.headers['x-leftfield-key'];
+
+        if (key !== EDGE_CACHE_KEY) {
+          response.status(401).json({ error: 'not authorized' });
+          return;
+        }
+
+        await redisCacheClient.sendCommand(
+          new Redis.Command('FLUSHALL', ['ASYNC']),
+        );
 
         response.status(200).json({ cleared: true });
       } catch (error) {

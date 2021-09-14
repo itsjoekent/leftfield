@@ -13,6 +13,7 @@ services:
     environment:
       - AUTH_TOKEN_SECRET=270336f7f365e82bc9fd4b6f3a0ddeda80e4e576637b81432698ae9e4c3100d2
       - DOMAIN=localhost:5000
+      - EDGE_CACHE_KEY=252216bd27cfaecf0109a9cdc75bf5fc
       - EDGE_DOMAIN=https://localhost:5004
       - EDGE_IP_ADDRESSES=52.223.50.25,35.71.169.90
       - MONGODB_URL=mongodb://admin:secret@mongo:27017

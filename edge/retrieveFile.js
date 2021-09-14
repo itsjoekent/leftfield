@@ -96,7 +96,7 @@ async function retrieveFile(key, request, options) {
       const [metaString, fileString] = hit.toString('utf8').split(CACHE_SEPARATOR);
 
       const meta = JSON.parse(metaString);
-      const fileBuffer = Buffer.from(fileString);
+      const fileBuffer = Buffer.from(fileString, 'hex');
 
       return respondWithGenerator(meta, fileBuffer);
     }
@@ -162,9 +162,7 @@ async function retrieveFile(key, request, options) {
   const { Body: fileBuffer } = await s3.getObject({ Bucket: bucket, Key: key }).promise();
 
   if (isRedisCacheReady() && isCacheable(get(meta, 'ContentLength'))) {
-    const headerBuffer = Buffer.from(`${JSON.stringify(meta)}${CACHE_SEPARATOR}`);
-    const cacheBuffer = Buffer.concat([headerBuffer, fileBuffer]);
-
+    const cacheBuffer = Buffer.from(`${JSON.stringify(meta)}${CACHE_SEPARATOR}${fileBuffer.toString('hex')}`);
     await redisCacheClient.set(`file:${key}`, cacheBuffer, 'PX', ms('1 day'));
   }
 
