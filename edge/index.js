@@ -113,12 +113,12 @@ function getHost(request) {
       }
     });
 
-    secureApp.get('/_lf/file/', async function handler(request, response) {
+    secureApp.get('/_lf/file/:key', async function handler(request, response) {
       try {
         const path = request.path.toLowerCase();
-        const key = path.replace('/_lf/file/', '');
+        const { key } = request.params;
 
-        const respondWith = await retrieveFile(key, request, { redisCacheClient });
+        const respondWith = await retrieveFile(key.toLowerCase(), request, { redisCacheClient });
 
         if (respondWith) {
           respondWith(response);

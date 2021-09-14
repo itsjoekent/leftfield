@@ -45,7 +45,9 @@ async function uploadFile(request, response) {
   }
 
   const key = `${targetBucket}/${folder}/${fileName}`;
-  const url = `${process.env.EDGE_DOMAIN}/file/${key}`;
+
+  const isLocalHost = process.env.API_DOMAIN.includes('localhost');
+  const url = isLocalHost ? `https://${process.env.EDGE_DOMAIN}/file/${key}` : `/_lf/file/${key}`;
 
   const now = `${Date.now()}`;
 
