@@ -70,6 +70,7 @@ export default function SplashCSS({
       .${PHOTO_COLUMN_CLASS_NAME} {
         display: flex;
         width: 100%;
+        flex-shrink: 0;
 
         /* Because of the change in layout direction, we need to make sure the value is always applied */
 
