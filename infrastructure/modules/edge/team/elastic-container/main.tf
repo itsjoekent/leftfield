@@ -205,7 +205,7 @@ resource "aws_ecs_task_definition" "edge" {
         },
         {
           name  = "STORAGE_MAIN_REGION"
-          value = var.config.environment.primary_region
+          value = replace(upper(var.config.environment.primary_region, "-", "_"))
         },
         {
           name  = "STORAGE_REGIONS"
