@@ -100,8 +100,6 @@ function getHost(request) {
           return;
         }
 
-        console.log(host);
-
         const sslDomain = host.includes(DNS_ZONE) ? `*.${DNS_ZONE}` : host;
         await redisCacheClient.del(`ssl:${sslDomain}`);
 
@@ -113,12 +111,10 @@ function getHost(request) {
       }
     });
 
-    secureApp.get('/_lf/file/:key', async function handler(request, response) {
+    secureApp.get('/_lf/file/*', async function handler(request, response) {
       try {
-        const path = request.path.toLowerCase();
-        const { key } = request.params;
-
-        const respondWith = await retrieveFile(key.toLowerCase(), request, { redisCacheClient });
+        const key = request.path.toLowerCase().replace('/_lf/file/', '');
+        const respondWith = await retrieveFile(key, request, { redisCacheClient });
 
         if (respondWith) {
           respondWith(response);
