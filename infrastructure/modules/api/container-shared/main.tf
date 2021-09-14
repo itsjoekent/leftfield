@@ -114,7 +114,7 @@ locals {
     },
     {
       name  = "STORAGE_MAIN_REGION"
-      value = replace(upper(var.config.environment.primary_region, "-", "_"))
+      value = replace(upper(var.config.environment.primary_region), "-", "_")
     },
     {
       name  = "STORAGE_REGIONS"
