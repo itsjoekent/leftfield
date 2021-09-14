@@ -85,7 +85,7 @@ export default function Uploader(props) {
     const fileKey = get(file, 'fileKey');
 
     if (fileKey) {
-      setImageSource(`${process.env.EDGE_DOMAIN}/file/${fileKey}`);
+      setImageSource(`/_lf/file/${fileKey}`);
     }
   }
 
