@@ -25,6 +25,14 @@ module.exports = async function createCertificate(domainName, logger) {
       accountKey,
     });
 
+    const csrParams = {
+      commonName: domainName,
+    };
+
+    if (domainName.split('.').length === 2) {
+      csrParams.altNames = [`www.${domainName}`];
+    }
+
     const [key, csr] = await acme.forge.createCsr({
       commonName: domainName,
     });
