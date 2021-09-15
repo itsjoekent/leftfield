@@ -182,14 +182,14 @@ if (cluster.isPrimary && NODE_ENV !== 'development') {
   require(path.join(process.cwd(), 'baseballs/presentation/upload'));
 
   const totalProcessors = os.cpus().length;
-  logger.info(`Spawning ${totalProcessors} manufacture worker(s)...`);
+  taskLogger.info(`Spawning ${totalProcessors} manufacture worker(s)...`);
 
   for (let index = 0; index < totalProcessors; index++) {
     cluster.fork();
   }
 
   cluster.on('exit', (worker, code, signal) => {
-    logger.warn(`Build Worker [PID=${worker.process.pid}] died with code=${code} signal=${signal}`);
+    taskLogger.warn(`Build Worker [PID=${worker.process.pid}] died with code=${code} signal=${signal}`);
     cluster.fork();
   });
 }
