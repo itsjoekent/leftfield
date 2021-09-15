@@ -52,16 +52,17 @@ runs:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
         aws-region: ${{ inputs.aws_region }}
-    - name: Download task definition
-      shell: bash
-      run: aws ecs describe-task-definition --task-definition ${{ inputs.task_name }} --query taskDefinition > task-definition.json
-    - name: Update Amazon ECS task
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: task-definition.json
-        service: ${{ inputs.task_service }}
-        cluster: ${{ inputs.task_cluster }}
-        wait-for-service-stability: false
     - name: Deploy ECS Task
       shell: bash
       run: aws ecs update-service --cluster ${{ inputs.task_cluster }} --service ${{ inputs.task_service }} --force-new-deployment
+
+    # - name: Download task definition
+    #   shell: bash
+    #   run: aws ecs describe-task-definition --task-definition ${{ inputs.task_name }} --query taskDefinition > task-definition.json
+    # - name: Update Amazon ECS task
+    #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+    #   with:
+    #     task-definition: task-definition.json
+    #     service: ${{ inputs.task_service }}
+    #     cluster: ${{ inputs.task_cluster }}
+    #     wait-for-service-stability: false

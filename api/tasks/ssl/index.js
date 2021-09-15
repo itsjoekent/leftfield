@@ -21,7 +21,7 @@ logger.child({ task: 'ssl' });
 
 consumer.process(1, async function(job) {
   const jobId = get(job, 'id');
-  jobLogger.child({ jobId });
+  const jobLogger = logger.child({ jobId });
 
   const domainRecordId = get(job, 'data.domainRecordId');
 
