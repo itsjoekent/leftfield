@@ -14,7 +14,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const distributionId = uuid();
-const publicPath = `${process.env.EDGE_DOMAIN}/file/baseball/${distributionId}/`;
 
 module.exports = merge(
   base('presentation-remote'),
@@ -48,7 +47,7 @@ module.exports = merge(
 
         return '[id].js';
       },
-      publicPath,
+      publicPath: `/_lf/file/baseball/${distributionId}/`,
     },
     plugins: [
       new CssMinimizerPlugin(),

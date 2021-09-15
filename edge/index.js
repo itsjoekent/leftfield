@@ -222,8 +222,6 @@ function getHostAndPath(request) {
         const version = versionBuffer.toString('utf8').replace('\n', '');
         const key = `snapshot/${version}${path}`;
 
-        console.log({ host, path, version, key });
-
         const respondWith = await retrieveFile(key, request, { redisCacheClient });
 
         if (respondWith) {
