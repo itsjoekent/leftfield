@@ -20,7 +20,7 @@ export function setValidation(fieldId, validation) {
 
 export function setHasSubmittedOnce(hasSubmittedOnce) {
   return function _setHasSubmittedOnce(state) {
-    set(state, 'hasSubmittedOnce', false);
+    set(state, 'hasSubmittedOnce', hasSubmittedOnce);
   }
 }
 
