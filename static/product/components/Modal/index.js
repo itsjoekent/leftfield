@@ -49,6 +49,8 @@ export default function Modal() {
   const ModalComponent = modalComponents[modalType];
   const hasModalComponent = !!ModalComponent;
 
+  // TODO: Loader placeholder..
+
   return (
     <FadeWrapper hasModalComponent={hasModalComponent}>
       {!!ModalComponent ? <ModalComponent {...(modalProps || {})} /> : null}

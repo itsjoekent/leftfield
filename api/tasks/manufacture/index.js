@@ -167,6 +167,8 @@ consumer.process(1, async function(job) {
       await upload(`published-version/${domainRecord.name}`, snapshotId, 'text/plain');
     }
 
+    // CLEAR CACHE
+
     logger.info(`Completed snapshotId:${snapshotId}`);
 
     return true;

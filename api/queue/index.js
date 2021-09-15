@@ -7,21 +7,15 @@ const { v4: uuid } = require('uuid');
 const logger = require('../utils/logger');
 
 module.exports = (name) => {
-  let redisClientParams = [REDIS_URL];
-
-  if (REDIS_URL.startsWith('rediss')) {
-    redisClientParams = [REDIS_URL.replace('rediss', 'redis'), { tls: {} }];
-  }
-
   const publisher = new Queue(name, {
-    redis: redis.createClient(...redisClientParams),
+    redis: redis.createClient(REDIS_URL),
     getEvents: false,
     isWorker: false,
     sendEvents: false,
   });
 
   const consumer = new Queue(name, {
-    redis: redis.createClient(...redisClientParams),
+    redis: redis.createClient(REDIS_URL),
     getEvents: false,
     isWorker: true,
     sendEvents: false,

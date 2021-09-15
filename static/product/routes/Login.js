@@ -37,9 +37,8 @@ export default function Login() {
       payload: { email, password },
       options: { credentials: 'include' },
       onResponse: ({ status, json }) => {
-        setIsLoading(false);
-
         if (get(json, 'error')) {
+          setIsLoading(false);
           setFormError(get(json, 'error.message', 'Encountered error logging in, try again?'));
           return;
         }
@@ -49,7 +48,7 @@ export default function Login() {
           dispatch(setToken(get(json, 'token')));
         });
 
-        setLocation(DASHBOARD_ROUTE);
+        setTimeout(() => setLocation(DASHBOARD_ROUTE), 500);
       },
       onFatalError: () => setIsLoading(false),
     });
