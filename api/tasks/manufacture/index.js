@@ -36,7 +36,8 @@ consumer.process(1, async function(job) {
     const { data: { snapshotId } } = job;
 
     const now = Date.now();
-    const keyPrefix = `snapshot/${snapshotId}/${now}`;
+    const versionNumber = `${snapshotId}/${now}`;
+    const keyPrefix = `snapshot/${versionNumber}`;
 
     logger.info(`Building snapshotId:${snapshotId}, uploading to ${keyPrefix}`);
 
@@ -164,7 +165,7 @@ consumer.process(1, async function(job) {
 
     const website = await Website.findById(snapshot.website).exec();
     for (const domainRecord of website.domains) {
-      await upload(`published-version/${domainRecord.name}`, snapshotId, 'text/plain');
+      await upload(`published-version/${domainRecord.name}`, versionNumber, 'text/plain');
     }
 
     // CLEAR CACHE
