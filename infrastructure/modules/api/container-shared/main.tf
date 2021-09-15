@@ -114,7 +114,7 @@ locals {
     },
     {
       name  = "REDIS_URL"
-      value = "redis://${var.redis_user.user_name}:${tolist(var.redis_user.passwords)[0]}@${var.redis_replication_group.primary_endpoint_address}:${var.redis_replication_group.port}"
+      value = "redis://${var.redis_replication_group.primary_endpoint_address}:${var.redis_replication_group.port}"
     },
     {
       name  = "STORAGE_MAIN_REGION"
