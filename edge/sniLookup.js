@@ -23,6 +23,10 @@ module.exports = function sniLookup(redisCacheClient) {
       const sslDomain = USE_WILDCARD.some((compare) => domain.includes(compare)) ? `*.${DNS_ZONE}` : domain;
       const ssl = await retrieveSsl(sslDomain, redisCacheClient);
 
+      if (ssl instanceof Error) {
+        throw ssl;
+      }
+
       if (!ssl) {
         throw new Error(`Unable to locate SSL certificate for ${sslDomain}`);
       }
@@ -30,7 +34,7 @@ module.exports = function sniLookup(redisCacheClient) {
       const { cert, key } = ssl;
       return callback(null, tls.createSecureContext({ cert, key }));
     } catch (error) {
-      logger.error(error, `Unable to locate SSL certificates for "${domain}"`);
+      logger.error(`Unable to locate SSL certificates for "${domain}", "${error.message}"`);
       callback(error, null);
     }
   }

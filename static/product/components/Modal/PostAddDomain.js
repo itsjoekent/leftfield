@@ -14,6 +14,8 @@ import ModalDefaultLayout from '@product/components/Modal/DefaultLayout';
 import { closeModal } from '@product/features/modal';
 import useProductApi from '@product/hooks/useProductApi';
 
+// TODO: Push snack on verify
+
 export default function PostAddDomain(props) {
   const { domainName, domainRecordId, updateDomain } = props;
 

@@ -10,34 +10,38 @@ const { getObject } = require('./storage');
 const cryptography = require(path.join(process.cwd(), 'ssl/cryptography'));
 
 module.exports = async function retrieveSsl(domainName, redisCacheClient) {
-  function buildResponse(sslData) {
-    const ssl = cryptography.decrypt(SSL_AT_REST_KEY, sslData)
+  try {
+    function buildResponse(sslData) {
+      const ssl = cryptography.decrypt(SSL_AT_REST_KEY, sslData);
 
-    return ssl;
-  }
-
-  if (redisCacheClient && redisCacheClient.status === 'ready') {
-    const sslData = await redisCacheClient.get(`ssl:${domainName}`);
-
-    if (sslData) {
-      return buildResponse(sslData);
+      return ssl;
     }
-  }
-
-  const sslBuffer = await getObject(`ssl/${domainName}`);
-  if (sslBuffer) {
-    const sslData = sslBuffer.toString();
 
     if (redisCacheClient && redisCacheClient.status === 'ready') {
-      try {
-        await redisCacheClient.set(`ssl:${domainName}`, sslData, 'PX', ms('1 day'));
-      } catch (error) {
-        logger.error(error);
+      const sslData = await redisCacheClient.get(`ssl:${domainName}`);
+
+      if (sslData) {
+        return buildResponse(sslData);
       }
     }
 
-    return buildResponse(sslData);
-  }
+    const sslBuffer = await getObject(`ssl/${domainName}`);
+    if (sslBuffer) {
+      const sslData = sslBuffer.toString();
 
-  return null;
+      if (redisCacheClient && redisCacheClient.status === 'ready') {
+        try {
+          await redisCacheClient.set(`ssl:${domainName}`, sslData, 'PX', ms('1 day'));
+        } catch (error) {
+          logger.error(error);
+        }
+      }
+
+      return buildResponse(sslData);
+    }
+
+    return null;
+  } catch (error) {
+    return error;
+  }
 }
