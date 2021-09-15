@@ -164,12 +164,7 @@ consumer.process(1, async function(job) {
 
     const website = await Website.findById(snapshot.website).exec();
     for (const domainRecord of website.domains) {
-      // TODO: Replace with redis set()
-      // await put(
-      //   process.env.CF_DOMAINS_NAMESPACE_ID,
-      //   domainRecord.name,
-      //   keyPrefix,
-      // );
+      await upload(`published-version/${domainRecord.name}`, snapshotId, 'text/plain');
     }
 
     logger.info(`Completed snapshotId:${snapshotId}`);
