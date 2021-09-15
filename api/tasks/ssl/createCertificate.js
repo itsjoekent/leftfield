@@ -15,11 +15,13 @@ async function sleep(time = ms('30 seconds')) {
 
 module.exports = async function createCertificate(domainName) {
   try {
+    logger.info(`Creating certificate for ${domainName}`);
+
     const accountKey = await acme.forge.createPrivateKey();
 
     const client = new acme.Client({
       directoryUrl: acme.directory.letsencrypt[
-        NODE_ENV === 'development' ? 'staging' : 'production'
+        NODE_ENV === 'production' ? 'production' : 'staging'
       ],
       accountKey,
     });
@@ -30,6 +32,7 @@ module.exports = async function createCertificate(domainName) {
 
     async function createChallenge(auth, challenge, keyAuthorization) {
       if (challenge.type !== 'http-01') {
+        console.log(`Unsupported ssl challenge type, "${challenge.type}" for ${domainName}`);
         throw new Error(`Unsupported ssl challenge type, "${challenge.type}" for ${domainName}`);
       }
 
@@ -39,6 +42,8 @@ module.exports = async function createCertificate(domainName) {
       await sleep();
     }
 
+    console.log('Calling client.auto')
+
     const cert = await client.auto({
       csr,
       termsOfServiceAgreed: true,
@@ -46,12 +51,16 @@ module.exports = async function createCertificate(domainName) {
       challengePriority: ['http-01'],
     });
 
+    console.log('Created cert');
+
     const data = {
       key: key.toString(),
       cert: cert.toString(),
       createdAt: Date.now(),
       expires: ms('90 days'),
     };
+
+    console.log('Created data object')
 
     const certificateStorageKey = `ssl/${domainName}`;
     await upload(storageKey, cryptography.encrypt(SSL_AT_REST_KEY, data), 'text/plain');
