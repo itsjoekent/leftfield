@@ -220,10 +220,9 @@ function getHost(request) {
 
     insecureApp.get('/.well-known/acme-challenge/:token', async function (request, response) {
       try {
-        const host = getHost(request);
         const { token } = request.params;
 
-        const challenge = await storage.getObject(`acme-challenge/${host}/${token}`);
+        const challenge = await storage.getObject(`acme-challenge/${token}`);
 
         if (!challenge) {
           response.status(404).end();

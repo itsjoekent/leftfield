@@ -36,7 +36,7 @@ module.exports = async function createCertificate(domainName, logger) {
         throw new Error(`Unsupported ssl challenge type, "${challenge.type}" for ${domainName}`);
       }
 
-      const challengeStorageKey = `acme-challenge/${domainName}/${challenge.token}`;
+      const challengeStorageKey = `acme-challenge/${challenge.token}`;
       await upload(challengeStorageKey, keyAuthorization, 'text/plain');
 
       await sleep();
