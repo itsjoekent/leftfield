@@ -17,17 +17,17 @@ const Snapshot = require('../../db/Snapshot');
 const Website = require('../../db/Website');
 const { consumer } = require('../../queue/manufacture');
 const getFileType = require('../../utils/getFileType');
-const logger = require('../../utils/logger');
+const baseLogger = require('../../utils/logger');
 const { upload } = require('../../utils/storage');
 
-logger.child({ task: 'manufacture' });
+const taskLogger = baseLogger.child({ task: 'manufacture' });
 
 function removeTrailingSlash(input) {
   return input.replace(/\/$/, '');
 }
 
 consumer.process(1, async function(job) {
-  logger.child({ jobId: get(job, 'id') });
+  const logger = taskLogger.child({ jobId: get(job, 'id') });
 
   try {
     delete require.cache[require.resolve('./ssr.build.js')];
@@ -80,7 +80,7 @@ consumer.process(1, async function(job) {
       const vendorChunk = get(assetsByChunkName, 'vendor', []);
 
       const stylesheets = [
-        `${process.env.EDGE_DOMAIN}/file/${keyPrefix}/components.css`,
+        `/_lf/file/${keyPrefix}/components.css`,
         ...mainChunk.filter((file) => file.endsWith('.css'))
           .map((file) => `${publicPath}${file}`.toLowerCase()),
       ];
@@ -102,7 +102,7 @@ consumer.process(1, async function(job) {
         ...vendorChunk.filter((file) => file.endsWith('.js'))
       ].map((file) => `${publicPath}${file}`.toLowerCase());
 
-      const dataUrl = `${process.env.EDGE_DOMAIN}/file/${keyPrefix}/page-data.json`;
+      const dataUrl = `/_lf/file/${keyPrefix}/page-data.json`;
 
       const HTML_REPLACER = `%%%_HTML_${now}_%%%`;
       const rawIndex = `
@@ -174,11 +174,13 @@ consumer.process(1, async function(job) {
 
     return true;
   } catch (error) {
-    logger.error(error);
+    logger.error(error.message);
   }
 });
 
 if (cluster.isPrimary && NODE_ENV !== 'development') {
+  require(path.join(process.cwd(), 'baseballs/presentation/upload'));
+
   const totalProcessors = os.cpus().length;
   logger.info(`Spawning ${totalProcessors} manufacture worker(s)...`);
 
