@@ -74,7 +74,7 @@
     "build:task:manufacture:local": "NODE_ENV=development webpack --config ./api/tasks/manufacture/ssr.config.js",
     "build:task:manufacture:remote": "NODE_ENV=production webpack --config ./api/tasks/manufacture/ssr.config.js",
     "watch:baseball:preview-local": "NODE_ENV=development webpack --config ./baseballs/preview/preview-local.config.js --watch",
-    "watch:product": "NODE_ENV=development webpack --config ./static/product/webpack/development.config.js --watch",
+    "watch:product": "NODE_ENV=development webpack --config ./static/product/webpack/local.config.js --watch",
     "watch:task:manufacture": "NODE_ENV=development webpack --config ./api/tasks/manufacture/ssr.config.js --watch",
     "ssl:key": "node ssl/generate-encryption-key",
     "ssl:localhost": "node ssl/generate-localhost",

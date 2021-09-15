@@ -20,12 +20,15 @@ export function setValidation(fieldId, validation) {
 
 export function setHasSubmittedOnce(hasSubmittedOnce) {
   return function _setHasSubmittedOnce(state) {
-    set(state, 'hasSubmittedOnce', hasSubmittedOnce);
+    set(state, 'hasSubmittedOnce', false);
   }
 }
 
 export function clearForm() {
   return function _clearForm(state) {
+    set(state, 'hasSubmittedOnce', false);
+    set(state, 'isFocused', {});
     set(state, 'values', {});
+    set(state, 'validations', {});
   }
 }

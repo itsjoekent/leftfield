@@ -11,6 +11,7 @@ services:
     ports:
       - "5001:5001"
     environment:
+      - API_DOMAIN=localhost:5001
       - AUTH_TOKEN_SECRET=270336f7f365e82bc9fd4b6f3a0ddeda80e4e576637b81432698ae9e4c3100d2
       - DOMAIN=localhost:5000
       - EDGE_CACHE_KEY=252216bd27cfaecf0109a9cdc75bf5fc

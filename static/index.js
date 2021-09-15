@@ -4,6 +4,7 @@ const PORT = process.env.PORT;
 const https = require('https');
 const path = require('path');
 
+const handler = require('serve-handler');
 const pino = require('pino');
 const pinoHttp = require('pino-http');
 

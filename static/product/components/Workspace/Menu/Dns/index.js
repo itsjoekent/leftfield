@@ -34,7 +34,6 @@ export default function Dns(props) {
   const [domains, setDomains] = React.useState(null);
   const [isAddingDomain, setIsAddingDomain] = React.useState(false);
   const [isRemovingDomain, setIsRemovingDomain] = React.useState({});
-  const [isVerifyingDomain, setIsVeryifyingDomain] = React.useState({});
 
   const dispatch = useDispatch();
   const hitApi = useProductApi();
@@ -99,11 +98,13 @@ export default function Dns(props) {
           setDomains(get(json, 'website.domains', []));
           formApiRef.current.dispatch(formActions.clearForm());
 
+          const domainName = get(json, 'domainRecord.name');
           const domainRecordId = get(json, 'domainRecord.id');
 
           dispatch(setModal({
             type: POST_ADD_DOMAIN_MODAL,
             props: {
+              domainName,
               domainRecordId,
               updateDomain,
             },
@@ -140,39 +141,6 @@ export default function Dns(props) {
     });
   }
 
-  function verifyDomain(id) {
-    setIsVeryifyingDomain((copy) => ({
-      ...copy,
-      [id]: true,
-    }));
-
-    hitApi({
-      method: 'post',
-      route: `/dns/${id}/verify`,
-      onResponse: ({ ok, json }) => {
-        setIsVeryifyingDomain((copy) => ({
-          ...copy,
-          [id]: false,
-        }));
-
-        if (ok) {
-          updateDomain(get(json, 'domainRecord'));
-
-          if (!get(json, 'verified', false)) {
-            dispatch(pushSnack({
-              message: 'Failed to verify DNS record, try again in a few seconds',
-              type: SPICY_SNACK,
-            }));
-          }
-        }
-      },
-      onFatalError: () => setIsVeryifyingDomain((copy) => ({
-        ...copy,
-        [id]: false,
-      })),
-    });
-  }
-
   return (
     <WorkspaceMenuAccordion
       title="DNS"
@@ -182,6 +150,7 @@ export default function Dns(props) {
       <Flex.Column gridGap="24px">
         <FormWizardProvider
           name="dns"
+          apiRef={formApiRef}
           fields={[
             {
               id: 'name',
@@ -307,18 +276,22 @@ export default function Dns(props) {
                     </Typography>
                   </Flex.Row>
                   <Flex.Row gridGap="6px">
-                    {!get(domain, 'verified', false) && (
-                      <Tooltip copy="Verify domain" point={Tooltip.UP_RIGHT_ALIGNED}>
-                        <Buttons.IconButton
-                          IconComponent={Icons.Refresh2}
-                          color={(colors) => colors.mono[600]}
-                          hoverColor={(colors) => colors.mono[900]}
-                          aria-label="Verify domain"
-                          disabled={get(isVerifyingDomain, domain.id, false)}
-                          onClick={() => verifyDomain(domain.id)}
-                        />
-                      </Tooltip>
-                    )}
+                    <Tooltip copy="DNS Information" point={Tooltip.UP_RIGHT_ALIGNED}>
+                      <Buttons.IconButton
+                        IconComponent={Icons.InfoFill}
+                        color={(colors) => colors.mono[600]}
+                        hoverColor={(colors) => colors.mono[900]}
+                        aria-label="DNS Information"
+                        onClick={() => dispatch(setModal({
+                          type: POST_ADD_DOMAIN_MODAL,
+                          props: {
+                            domainName: domain.name,
+                            domainRecordId: domain.id,
+                            updateDomain,
+                          },
+                        }))}
+                      />
+                    </Tooltip>
                     <Tooltip copy="Remove domain" point={Tooltip.UP_RIGHT_ALIGNED}>
                       <Buttons.IconButton
                         IconComponent={Icons.RemoveFill}

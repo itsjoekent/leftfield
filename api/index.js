@@ -43,7 +43,8 @@ app.use(function (req, res, next) {
     // TODO: Check mongo connection status
     app.get('/_lf/health-check', (req, res) => res.send('The Yankees Win!'));
 
-    app.post('/dns/:domainRecordId/verify', routeWrapper('verify-domain'));
+    app.post('/dns/:domainRecordId/verify', routeWrapper('verify-dns'));
+    app.get('/dns/records', routeWrapper('get-dns-records'));
     app.post('/file', routeWrapper('upload-file'));
     app.post('/login', routeWrapper('login'));
     app.post('/request-password-reset', routeWrapper('request-password-reset'));

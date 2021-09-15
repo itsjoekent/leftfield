@@ -12,11 +12,25 @@ const { respondWithSuccess } = require('../utils/responder');
 const { transformDomainRecord } = require('../utils/transformer');
 
 const A_RECORDS = process.env.EDGE_IP_ADDRESSES.split(',')
-  .filter((ip) => ip.split('.').length === 3);
+  .filter((ip) => ip.split('.').length === 4);
 
 const resolve4 = util.promisify(dns.resolve4);
 
-async function verifyDomain(request, response) {
+async function verify(name) {
+  try {
+    const addresses = await resolve4(name);
+
+    return addresses.every((address) => A_RECORDS.includes(address))
+      && addresses.length === A_RECORDS.length;
+  } catch (error) {
+    console.log(error);
+    return false;
+    // TODO: Check if DNS specific error?
+    // console.log(error);
+  }
+}
+
+async function verifyDNS(request, response) {
   const { params: { domainRecordId } } = request;
 
   const account = await validateAuthorizationHeader(request);
@@ -46,17 +60,17 @@ async function verifyDomain(request, response) {
     }
   }
 
-  let verified = false;
+  const verificationsToRun = [
+    verify(domainRecord.name),
+  ];
 
-  try {
-    const addresses = await resolve4(domainRecord.name);
-
-    verified = addresses.every((address) => A_RECORDS.includes(address))
-      && addresses.length === A_RECORDS.length;
-  } catch (error) {
-    // TODO: Check if DNS specific error?
-    // console.log(error);
+  if (domainRecord.name.split('.').length === 2) {
+    verificationsToRun.push(verify(`www.${domainRecord.name}`));
   }
+
+  const verifications = await Promise.all(verificationsToRun);
+
+  const verified = verifications.every((verification) => !!verification);
 
   const updatedDomainRecord = await DomainRecord.findOneAndUpdate(
     { _id: domainRecord._id },
@@ -78,4 +92,4 @@ async function verifyDomain(request, response) {
   });
 }
 
-module.exports = verifyDomain;
+module.exports = verifyDNS;
