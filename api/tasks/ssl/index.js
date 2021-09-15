@@ -20,12 +20,17 @@ const createCertificate = require('./createCertificate');
 logger.child({ task: 'ssl' });
 
 consumer.process(1, async function(job) {
-  logger.child({ jobId: get(job, 'id') });
+  const jobId = get(job, 'id');
+  jobLogger.child({ jobId });
+
+  const domainRecordId = get(job, 'data.domainRecordId');
 
   try {
-    const { data: { domainRecordId } } = job;
+    if (!domainRecordId) {
+      throw new Error(`No domainRecordId supplied for jobId:${jobId}`);
+    }
 
-    logger.info(`Creating ssl certificate for domainRecordId:${domainRecordId}`);
+    jobLogger.info(`Creating ssl certificate for domainRecordId:${domainRecordId}`);
 
     const domainRecord = await DomainRecord
       .findById(mongoose.Types.ObjectId(domainRecordId))
@@ -35,7 +40,7 @@ consumer.process(1, async function(job) {
       throw new Error(`Failed to load domainRecord for domainRecordId:${domainRecordId}`);
     }
 
-    const result = await createCertificate(domainRecord.name);
+    const result = await createCertificate(domainRecord.name, jobLogger);
     if (result instanceof Error) {
       throw result;
     }
@@ -45,9 +50,9 @@ consumer.process(1, async function(job) {
       { lastObtainedSslOn: Date.now() },
     ).exec();
 
-    logger.info(`Successfully created ssl certificate for domainRecordId:${domainRecordId}`);
+    jobLogger.info(`Successfully created ssl certificate for domainRecordId:${domainRecordId}`);
   } catch (error) {
-    logger.error(`Encountered error creating ssl certificate for domainRecordId:${domainRecordId}`, error);
+    jobLogger.error(`Encountered error creating ssl certificate for domainRecordId:${domainRecordId}`, error);
   }
 });
 

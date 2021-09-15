@@ -13,7 +13,7 @@ async function sleep(time = ms('30 seconds')) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-module.exports = async function createCertificate(domainName) {
+module.exports = async function createCertificate(domainName, logger) {
   try {
     logger.info(`Creating certificate for ${domainName}`);
 
