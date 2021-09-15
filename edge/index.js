@@ -67,7 +67,7 @@ function addIndexFile(path) {
     return path;
   }
 
-  return `${path}/index.html`;
+  return `${path}${path.endsWith('/') ? '' : '/'}index.html`;
 }
 
 function getHost(request) {
@@ -221,6 +221,8 @@ function getHostAndPath(request) {
 
         const version = versionBuffer.toString('utf8').replace('\n', '');
         const key = `snapshot/${version}${path}`;
+
+        console.log({ host, path, version, key });
 
         const respondWith = await retrieveFile(key, request, { redisCacheClient });
 
