@@ -14,7 +14,7 @@ const { upload } = require(path.join(process.cwd(), '/api/utils/storage'));
     const stats = require(path.join(process.cwd(), '/static/www/baseballs/presentation-remote/stats.json'));
 
     const { publicPath, outputPath } = stats;
-    const keyPrefix = publicPath.replace(`${process.env.EDGE_DOMAIN}/file/`, '');
+    const keyPrefix = publicPath.replace(`/_lf/file/`, '');
 
     console.log(`Public path: "${publicPath}"`);
 
