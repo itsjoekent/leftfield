@@ -52,7 +52,7 @@ consumer.process(1, async function(job) {
 
     jobLogger.info(`Successfully created ssl certificate for domainRecordId:${domainRecordId}`);
   } catch (error) {
-    jobLogger.error(`Encountered error creating ssl certificate for domainRecordId:${domainRecordId}`, error);
+    jobLogger.error(`Encountered error creating ssl certificate for domainRecordId:${domainRecordId}, "${error.message}"`);
   }
 });
 

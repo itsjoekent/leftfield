@@ -9,7 +9,6 @@ const { upload } = require('../../utils/storage');
 const cryptography = require(path.join(process.cwd(), 'ssl/cryptography'));
 
 async function sleep(time = ms('30 seconds')) {
-  console.log(`Sleeping for ${time / 1000} seconds...`);
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
@@ -32,7 +31,6 @@ module.exports = async function createCertificate(domainName, logger) {
 
     async function createChallenge(auth, challenge, keyAuthorization) {
       if (challenge.type !== 'http-01') {
-        console.log(`Unsupported ssl challenge type, "${challenge.type}" for ${domainName}`);
         throw new Error(`Unsupported ssl challenge type, "${challenge.type}" for ${domainName}`);
       }
 
@@ -42,8 +40,6 @@ module.exports = async function createCertificate(domainName, logger) {
       await sleep();
     }
 
-    console.log('Calling client.auto')
-
     const cert = await client.auto({
       csr,
       termsOfServiceAgreed: true,
@@ -51,16 +47,12 @@ module.exports = async function createCertificate(domainName, logger) {
       challengePriority: ['http-01'],
     });
 
-    console.log('Created cert');
-
     const data = {
       key: key.toString(),
       cert: cert.toString(),
       createdAt: Date.now(),
       expires: ms('90 days'),
     };
-
-    console.log('Created data object')
 
     const certificateStorageKey = `ssl/${domainName}`;
     await upload(storageKey, cryptography.encrypt(SSL_AT_REST_KEY, data), 'text/plain');
