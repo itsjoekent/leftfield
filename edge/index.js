@@ -218,27 +218,24 @@ function getHost(request) {
       }
     });
 
-    insecureApp.get(
-      '/.well-known/acme-challenge/:token',
-      async function (request, response) {
-        try {
-          const host = getHost(request);
-          const { token } = request.params;
+    insecureApp.get('/.well-known/acme-challenge/:token', async function (request, response) {
+      try {
+        const host = getHost(request);
+        const { token } = request.params;
 
-          const challenge = await storage.getObject(`acme-challenge/${host}/${token}`);
+        const challenge = await storage.getObject(`acme-challenge/${host}/${token}`);
 
-          if (!challenge) {
-            response.status(404).end();
-            return;
-          }
-
-          response.set('Content-Type', 'text/plain');
-          response.status(200).send(challenge.toString('utf8'));
-        } catch (error) {
-          requestErrorHandler(error, response);
+        if (!challenge) {
+          response.status(404).end();
+          return;
         }
-      },
-    );
+
+        response.set('Content-Type', 'text/plain');
+        response.status(200).send(challenge.toString('utf8'));
+      } catch (error) {
+        requestErrorHandler(error, response);
+      }
+    });
 
     insecureApp.get('*', async function (request, response) {
       try {

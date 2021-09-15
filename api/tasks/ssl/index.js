@@ -35,7 +35,10 @@ consumer.process(1, async function(job) {
       throw new Error(`Failed to load domainRecord for domainRecordId:${domainRecordId}`);
     }
 
-    await createCertificate(domainRecord.name);
+    const result = await createCertificate(domainRecord.name);
+    if (result instanceof Error) {
+      throw result;
+    }
 
     await DomainRecord.findOneAndUpdate(
       { _id: domainRecord._id },
