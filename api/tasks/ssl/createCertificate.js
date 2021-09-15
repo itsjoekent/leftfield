@@ -55,7 +55,7 @@ module.exports = async function createCertificate(domainName, logger) {
     };
 
     const certificateStorageKey = `ssl/${domainName}`;
-    await upload(storageKey, cryptography.encrypt(SSL_AT_REST_KEY, data), 'text/plain');
+    await upload(certificateStorageKey, cryptography.encrypt(SSL_AT_REST_KEY, data), 'text/plain');
   } catch (error) {
     return error;
   }
