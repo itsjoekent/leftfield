@@ -62,6 +62,14 @@ function removeTrailingSlash(input) {
   return input;
 }
 
+function addIndexFile(path) {
+  if (path.split('/').pop().includes('.')) {
+    return path;
+  }
+
+  return `${path}/index.html`;
+}
+
 function getHost(request) {
   const host = (request.get('host') || '').toLowerCase();
 
@@ -70,6 +78,11 @@ function getHost(request) {
   }
 
   return host;
+}
+
+function getHostAndPath(request) {
+  const path = request.path.toLowerCase();
+  return [getHost(request), addIndexFile(removeTrailingSlash(path))];
 }
 
 (async function () {
@@ -151,7 +164,7 @@ function getHost(request) {
 
     secureApp.get('*', async function handler(request, response, next) {
       try {
-        const host = getHost(request);
+        const [host, path] = getHostAndPath(request);
 
         if (host === edgeHost) {
           const versionBuffer = await storage.getObject(`published-version/${edgeHost}`);
@@ -175,9 +188,6 @@ function getHost(request) {
           }
 
           if (!key) {
-            const path = removeTrailingSlash(request.path);
-            // if (!path.split('/').pop().includes('.')) => append .html
-
             key = `static/${version}${path}`;
           }
 
@@ -201,18 +211,26 @@ function getHost(request) {
 
     secureApp.get('*', async function handler(request, response) {
       try {
-        const host = getHost(request);
-        const path = request.path.toLowerCase();
+        const [host, path] = getHostAndPath(request);
 
-        response.send('grandslam!');
+        const versionBuffer = await storage.getObject(`published-version/${host}`);
+        if (!versionBuffer) {
+          response.status(404).send('This website is not published yet!');
+          return;
+        }
 
-        // TODO:
-        // - Lookup domain in redisCacheClient
-        // - Find published snapshot
-        // - create key based on snapshot + path
-        // - retrieveFile()
+        const version = versionBuffer.toString('utf8').replace('\n', '');
+        const key = `snapshot/${version}${path}`;
 
-        // response.status(404).end();
+        const respondWith = await retrieveFile(key, request, { redisCacheClient });
+
+        if (respondWith) {
+          respondWith(response);
+          return;
+        }
+
+        // TODO: return custom 404
+        response.status(404).send('Page not found!');
       } catch (error) {
         requestErrorHandler(error, response);
       }
