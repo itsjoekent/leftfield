@@ -29,6 +29,17 @@ terraform {
   }
 }
 
+# TODO: Delete
+module "network" {
+  source = "./network"
+  config = var.config
+  region = var.region
+
+  providers = {
+    aws = aws
+  }
+}
+
 module "cache" {
   source = "./cache"
   config = var.config

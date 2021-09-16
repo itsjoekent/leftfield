@@ -101,10 +101,6 @@ resource "aws_lb_listener" "edge_tls_forward" {
   }
 }
 
-data "aws_globalaccelerator_accelerator" "edge" {
-  name = var.config.global.edge.accelerator_name
-}
-
 resource "aws_globalaccelerator_endpoint_group" "edge" {
   listener_arn = var.accelerator_listener.id
 
