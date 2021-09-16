@@ -62,7 +62,6 @@ module "elastic_container" {
   region = var.region
 
   cache_redis        = module.cache.redis
-  cache_user         = module.cache.user
   http_target_group  = module.load_balancer.http_target_group
   https_target_group = module.load_balancer.https_target_group
   image_repository   = var.image_repository

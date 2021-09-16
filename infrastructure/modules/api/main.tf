@@ -120,7 +120,6 @@ module "container_shared" {
   mongo_cluster           = module.mongo.cluster
   mongo_user              = module.mongo.user
   redis_replication_group = module.redis.replication_group
-  redis_user              = module.redis.user
 
   providers = {
     aws = aws

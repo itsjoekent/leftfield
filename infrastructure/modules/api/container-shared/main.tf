@@ -10,9 +10,6 @@ variable "mongo_user" {}
 # aws_elasticache_replication_group
 variable "redis_replication_group" {}
 
-# aws_elasticache_user
-variable "redis_user" {}
-
 variable "config" {}
 
 terraform {

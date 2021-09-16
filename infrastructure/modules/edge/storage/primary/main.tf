@@ -32,6 +32,15 @@ resource "aws_s3_bucket" "edge" {
   }
 
   lifecycle_rule {
+    id      = "Move to Intelligent-Tiering"
+    enabled = true
+
+    transition {
+      storage_class = "INTELLIGENT_TIERING"
+    }
+  }
+
+  lifecycle_rule {
     id      = "Delete ACME challenge tokens"
     prefix  = "acme-challenge/"
     enabled = true
