@@ -27,7 +27,7 @@ resource "aws_security_group" "broker" {
     from_port = 8883
     to_port = 8883
     protocol = -1
-    cidr_blocks = var.vpc.cidr_block
+    cidr_blocks = [var.vpc.cidr_block]
   }
 
   egress {
