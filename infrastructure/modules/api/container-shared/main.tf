@@ -1,3 +1,10 @@
+variable "broker_env" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+}
+
 # aws_globalaccelerator_accelerator
 variable "edge_accelerator" {}
 
@@ -72,7 +79,7 @@ locals {
     }
   ]
 
-  container_environment = concat(local.storage_vars, [
+  container_environment = concat(local.storage_vars, var.broker_env, [
     {
       name  = "API_DOMAIN"
       value = join(".", [var.config.variables.API_DNS_SUBDOMAIN, var.config.variables.DNS_ZONE])

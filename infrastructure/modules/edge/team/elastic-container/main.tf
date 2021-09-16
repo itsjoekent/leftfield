@@ -1,3 +1,10 @@
+variable "broker_env" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+}
+
 # aws_elasticache_replication_group
 variable "cache_redis" {}
 
@@ -163,7 +170,7 @@ resource "aws_ecs_task_definition" "edge" {
         }
       ]
 
-      environment = concat(local.storage_vars, [
+      environment = concat(local.storage_vars, var.broker_env, [
         {
           name  = "DEFAULT_MAX_AGE"
           value = tostring(86400)
@@ -316,7 +323,9 @@ resource "aws_ecs_service" "edge" {
   name                 = "team-${var.region}-svc"
   cluster              = aws_ecs_cluster.edge.id
   task_definition      = "${aws_ecs_task_definition.edge.family}:${max(aws_ecs_task_definition.edge.revision, data.aws_ecs_task_definition.edge.revision)}"
-  desired_count        = var.config.environment.edge.autoscale_min
+  desired_count        = var.config.environment.edge.autoscaling.min
+  deployment_minimum_healthy_percent = 50
+  deployment_maximum_percent         = 200
   launch_type          = "FARGATE"
   force_new_deployment = true
 
@@ -337,7 +346,51 @@ resource "aws_ecs_service" "edge" {
     container_port   = var.config.global.edge.https_port
   }
 
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
+
   depends_on = [
     aws_iam_role.edge_ecs_execution,
   ]
+}
+
+resource "aws_appautoscaling_target" "edge" {
+  max_capacity       = var.config.environment.edge.autoscaling.max
+  min_capacity       = var.config.environment.edge.autoscaling.min
+  resource_id        = "service/${aws_ecs_cluster.edge.name}/${aws_ecs_service.edge.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "memory" {
+  name               = "team-${var.region}-memory"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.edge.resource_id
+  scalable_dimension = aws_appautoscaling_target.edge.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.edge.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
+
+    target_value = var.config.environment.edge.autoscaling.mem_threshold
+  }
+}
+
+resource "aws_appautoscaling_policy" "cpu" {
+  name               = "team-${var.region}-cpu"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.edge.resource_id
+  scalable_dimension = aws_appautoscaling_target.edge.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.edge.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+
+    target_value = var.config.environment.edge.autoscaling.cpu_threshold
+  }
 }

@@ -1,7 +1,7 @@
 # TODO:
-# - auto scale policy (edge & api)
-# - mongodbatlas_cloud_backup_schedule + alerts
-# - https://docs.atlas.mongodb.com/cluster-autoscaling/#std-label-cluster-autoscaling
+# - create aws_broker in primary region (mqtt)
+#   - allow all edge team vpc's to access over vpc peer
+#   - allow api to access over vpc peer
 
 terraform {
   required_providers {

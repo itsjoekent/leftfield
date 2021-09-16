@@ -78,6 +78,70 @@ locals {
   })
 }
 
+module "team_network_us_east_1" {
+  count = contains(var.config.environment.regions, "us-east-1") ? 1 : 0
+
+  source = "./team/network"
+  config = local.config
+  region = "us-east-1"
+
+  providers = {
+    aws = aws.us_east_1
+  }
+}
+
+module "team_network_us_west_1" {
+  count = contains(var.config.environment.regions, "us-west-1") ? 1 : 0
+
+  source = "./team/network"
+  config = local.config
+  region = "us-west-1"
+
+  providers = {
+    aws = aws.us_west_1
+  }
+}
+
+locals {
+  networks = {
+    "us-east-1" = try(module.team_network_us_east_1.0, null)
+    "us-west-1" = try(module.team_network_us_west_1.0, null)
+  }
+
+  primary_network = local.networks[var.config.environment.primary_region]
+}
+
+resource "aws_vpc_peering_connection" "team_network_peer" {
+  for_each = toset(var.config.environment.secondary_regions)
+
+  peer_vpc_id   = local.primary_network.vpc.id
+  vpc_id        = local.networks[each.key].vpc.id
+
+  accepter {
+    allow_remote_vpc_dns_resolution = true
+  }
+
+  requester {
+    allow_remote_vpc_dns_resolution = true
+  }
+
+  tags = {
+    Name = "edge-${each.key} peer to edge-${var.config.environment.primary_region}"
+  }
+}
+
+module "broker" {
+  source = "./broker"
+  config = local.config
+
+  private_subnets = local.primary_network.private_subnets
+  vpc             = local.primary_network.vpc
+
+  providers = {
+    aws = aws.primary
+  }
+}
+
 module "team_us_east_1" {
   count = contains(var.config.environment.regions, "us-east-1") ? 1 : 0
 
@@ -85,8 +149,10 @@ module "team_us_east_1" {
   config = local.config
   region = "us-east-1"
 
+  broker_env           = module.broker.environment_vars
   image_repository     = aws_ecr_repository.image_repository
   accelerator_listener = module.accelerator.listener
+  network              = local.networks["us-east-1"]
 
   providers = {
     aws = aws.us_east_1
@@ -104,8 +170,10 @@ module "team_us_west_1" {
   config = local.config
   region = "us-west-1"
 
+  broker_env           = module.broker.environment_vars
   image_repository     = aws_ecr_repository.image_repository
   accelerator_listener = module.accelerator.listener
+  network              = local.networks["us-west-1"]
 
   providers = {
     aws = aws.us_west_1
@@ -118,4 +186,12 @@ module "team_us_west_1" {
 
 output "accelerator" {
   value = module.accelerator.accelerator
+}
+
+output "broker_env" {
+  value = module.broker.environment_vars
+}
+
+output "primary_network" {
+  value = local.primary_network
 }

@@ -1,3 +1,10 @@
+variable "broker_env" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+}
+
 # aws_globalaccelerator_accelerator
 variable "edge_accelerator" {}
 
@@ -116,6 +123,7 @@ module "container_shared" {
   source = "./container-shared"
   config = var.config
 
+  broker_env              = var.broker_env
   edge_accelerator        = var.edge_accelerator
   mongo_cluster           = module.mongo.cluster
   mongo_user              = module.mongo.user
@@ -132,6 +140,7 @@ module "product_api" {
   name   = "product"
 
   autoscale_min         = var.config.environment.api.product_autoscale_min
+  autoscale_max         = var.config.environment.api.product_autoscale_max
   aws_ip_ranges         = local.aws_ip_ranges
   container_environment = module.container_shared.environment
   container_secrets     = module.container_shared.secrets
@@ -156,6 +165,7 @@ module "task_manufacture" {
   name   = "manufacture"
 
   autoscale_min         = var.config.environment.api.manufacture_autoscale_min
+  autoscale_max         = var.config.environment.api.manufacture_autoscale_max
   container_environment = module.container_shared.environment
   container_secrets     = module.container_shared.secrets
   iam_role              = module.container_shared.iam_role
@@ -178,6 +188,7 @@ module "task_ssl" {
   name   = "ssl"
 
   autoscale_min         = var.config.environment.api.ssl_autoscale_min
+  autoscale_max         = var.config.environment.api.ssl_autoscale_max
   container_environment = module.container_shared.environment
   container_secrets     = module.container_shared.secrets
   iam_role              = module.container_shared.iam_role
@@ -192,4 +203,8 @@ module "task_ssl" {
   providers = {
     aws = aws
   }
+}
+
+output "network" {
+  value = module.network
 }

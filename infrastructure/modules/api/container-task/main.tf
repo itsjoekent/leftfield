@@ -1,3 +1,7 @@
+variable "autoscale_max" {
+  type = number
+}
+
 variable "autoscale_min" {
   type = number
 }
@@ -118,11 +122,57 @@ resource "aws_ecs_service" "task" {
   cluster              = aws_ecs_cluster.task.id
   task_definition      = "${aws_ecs_task_definition.task.family}:${max(aws_ecs_task_definition.task.revision, data.aws_ecs_task_definition.task.revision)}"
   desired_count        = var.autoscale_min
+  deployment_minimum_healthy_percent = 50
+  deployment_maximum_percent         = 200
   launch_type          = "FARGATE"
   force_new_deployment = true
 
   network_configuration {
     subnets         = var.private_subnets.*.id
     security_groups = [aws_security_group.task.id]
+  }
+
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
+}
+
+resource "aws_appautoscaling_target" "task" {
+  max_capacity       = var.autoscale_max
+  min_capacity       = var.autoscale_min
+  resource_id        = "service/${aws_ecs_cluster.task.name}/${aws_ecs_service.task.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "memory" {
+  name               = "task-${var.name}-memory"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.task.resource_id
+  scalable_dimension = aws_appautoscaling_target.task.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.task.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
+
+    target_value = var.config.environment.api.autoscaling.task.mem_threshold
+  }
+}
+
+resource "aws_appautoscaling_policy" "cpu" {
+  name               = "task-${var.name}-cpu"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.task.resource_id
+  scalable_dimension = aws_appautoscaling_target.task.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.task.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+
+    target_value = var.config.environment.api.autoscaling.task.cpu_threshold
   }
 }
