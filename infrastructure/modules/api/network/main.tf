@@ -22,6 +22,10 @@ resource "aws_vpc" "api" {
   tags = {
     name = "api-vpc"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_internet_gateway" "api" {

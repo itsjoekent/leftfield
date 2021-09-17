@@ -31,6 +31,10 @@ resource "aws_vpc" "edge" {
   tags = {
     name = "team-${var.region}-vpc"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_internet_gateway" "edge" {
