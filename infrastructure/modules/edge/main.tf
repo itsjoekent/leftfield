@@ -114,8 +114,9 @@ locals {
 resource "aws_vpc_peering_connection" "team_network_peer" {
   for_each = toset(var.config.environment.secondary_regions)
 
-  peer_vpc_id   = local.primary_network.vpc.id
-  vpc_id        = local.networks[each.key].vpc.id
+  peer_vpc_id   = local.networks[each.key].vpc.id
+  vpc_id        = local.primary_network.vpc.id
+  auto_accept   = true
 
   accepter {
     allow_remote_vpc_dns_resolution = true
@@ -128,6 +129,13 @@ resource "aws_vpc_peering_connection" "team_network_peer" {
   tags = {
     Name = "edge-${each.key} peer to edge-${var.config.environment.primary_region}"
   }
+}
+
+resource "aws_vpc_peering_connection_accepter" "peer" {
+  for_each = toset(var.config.environment.secondary_regions)
+
+  vpc_peering_connection_id = aws_vpc_peering_connection.team_network_peer[each.key].id
+  auto_accept = true
 }
 
 module "broker" {
