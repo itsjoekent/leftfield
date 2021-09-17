@@ -29,11 +29,13 @@ terraform {
   }
 }
 
-# TODO: Delete
+# TODO: Delete after prod apply
 module "network" {
   source = "./network"
   config = var.config
   region = var.region
+
+  __skip_ip = true
 
   providers = {
     aws = aws

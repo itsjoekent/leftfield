@@ -1,7 +1,7 @@
 # TODO:
-# - create aws_broker in primary region (mqtt)
-#   - allow all edge team vpc's to access over vpc peer
-#   - allow api to access over vpc peer
+# - figure out how to not make IP's for the unused team network
+# - fix other terraform apply errors (I think are all related)
+# - remove EDGE_CACHE_KEY
 
 terraform {
   required_providers {
