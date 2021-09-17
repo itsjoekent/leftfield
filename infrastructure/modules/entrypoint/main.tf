@@ -53,8 +53,9 @@ module "api" {
 }
 
 resource "aws_vpc_peering_connection" "api_network_peer" {
-  peer_vpc_id   = module.edge.primary_network.vpc.id
-  vpc_id        = module.api.network.vpc.id
+  peer_vpc_id   = module.api.network.vpc.id
+  vpc_id        = module.edge.primary_network.vpc.id
+  auto_accept   = true
 
   accepter {
     allow_remote_vpc_dns_resolution = true
@@ -67,4 +68,9 @@ resource "aws_vpc_peering_connection" "api_network_peer" {
   tags = {
     Name = "api peer to edge-${var.config.environment.primary_region}"
   }
+}
+
+resource "aws_vpc_peering_connection_accepter" "peer" {
+  vpc_peering_connection_id = module.api.network.vpc.id
+  auto_accept = true
 }
