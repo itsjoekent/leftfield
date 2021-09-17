@@ -53,8 +53,8 @@ module "api" {
 }
 
 resource "aws_vpc_peering_connection" "api_network_peer" {
-  peer_vpc_id   = module.api.network.vpc.id
   vpc_id        = module.edge.primary_network.vpc.id
+  peer_vpc_id   = module.api.network.vpc.id
   auto_accept   = true
 
   accepter {

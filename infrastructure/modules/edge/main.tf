@@ -115,7 +115,7 @@ resource "aws_vpc_peering_connection" "team_network_peer" {
   for_each = toset(var.config.environment.secondary_regions)
 
   peer_vpc_id   = local.networks[each.key].vpc.id
-  peer_owner_id = var.config.variables.AWS_ACCOUNT_ID
+  peer_region   = each.key
   vpc_id        = local.primary_network.vpc.id
   auto_accept   = true
 
