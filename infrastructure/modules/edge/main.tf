@@ -117,7 +117,6 @@ resource "aws_vpc_peering_connection" "team_network_peer" {
   peer_vpc_id   = local.networks[each.key].vpc.id
   peer_region   = each.key
   vpc_id        = local.primary_network.vpc.id
-  auto_accept   = true
 
   accepter {
     allow_remote_vpc_dns_resolution = true

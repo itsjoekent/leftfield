@@ -50,7 +50,6 @@ resource "aws_mq_broker" "leftfield" {
   engine_version     = "5.15.9"
   host_instance_type = var.config.environment.edge.broker_instance_type
   apply_immediately  = true
-  auto_minor_version_upgrade = true
   publicly_accessible = false
   deployment_mode = "ACTIVE_STANDBY_MULTI_AZ"
 
