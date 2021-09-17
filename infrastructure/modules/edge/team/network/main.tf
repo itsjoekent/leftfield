@@ -23,7 +23,7 @@ locals {
 }
 
 resource "aws_vpc" "edge" {
-  cidr_block = var.config.global.edge.vpc_cidr_block
+  cidr_block = var.config.global.edge.vpc_cidr_block[var.region]
 
   enable_dns_support   = true
   enable_dns_hostnames = true

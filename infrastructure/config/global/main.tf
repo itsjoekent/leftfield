@@ -19,7 +19,10 @@ locals {
 
       image_repository_name = "edge"
 
-      vpc_cidr_block = "10.0.0.0/16"
+      vpc_cidr_block = {
+        "us-east-1" = "10.1.0.0/16"
+        "us-west-1" = "10.2.0.0/16"
+      }
     }
   }
 }
