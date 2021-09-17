@@ -71,6 +71,6 @@ resource "aws_vpc_peering_connection" "api_network_peer" {
 }
 
 resource "aws_vpc_peering_connection_accepter" "peer" {
-  vpc_peering_connection_id = module.api.network.vpc.id
+  vpc_peering_connection_id = aws_vpc_peering_connection.api_network_peer
   auto_accept = true
 }
