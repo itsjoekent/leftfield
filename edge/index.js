@@ -2,6 +2,7 @@ const BROADCAST_URL = process.env.BROADCAST_URL;
 const BROADCAST_USERNAME = process.env.BROADCAST_USERNAME;
 const BROADCAST_PASSWORD = process.env.BROADCAST_PASSWORD;
 const DNS_ZONE = process.env.DNS_ZONE;
+const EDGE_CACHE_KEY = process.env.EDGE_CACHE_KEY;
 const EDGE_DOMAIN = process.env.EDGE_DOMAIN;
 const HTTP_PORT = process.env.HTTP_PORT;
 const HTTPS_PORT = process.env.HTTPS_PORT;
@@ -127,6 +128,31 @@ function getHostAndPath(request) {
 
     secureApp.get('/_lf/health-check', healthCheck);
     insecureApp.get('/_lf/health-check', healthCheck);
+
+    secureApp.post('/_lf/clear', async function handler(request, response) {
+      try {
+        const host = getHost(request);
+        const authorization = request.headers['x-leftfield-key'];
+
+        if (authorization !== EDGE_CACHE_KEY) {
+          response.status(401).json({ error: 'not authorized' });
+          return;
+        }
+
+        const key = `file:published-version/${host}`;
+        await redisCacheClient.del(key);
+
+        brokerClient.publish(BROADCAST_TOPIC, JSON.stringify({
+          type: BROADCAST_EVENT_DELETE,
+          exclude: [REGION],
+          data: { key },
+        }));
+
+        response.status(200).json({ cleared: true });
+      } catch (error) {
+        requestErrorHandler(error, response);
+      }
+    });
 
     secureApp.get('/_lf/file/*', async function handler(request, response) {
       try {
