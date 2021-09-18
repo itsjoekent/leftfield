@@ -10,6 +10,7 @@ const ms = require('ms');
 const bytes = require('bytes');
 const { get } = require('lodash');
 
+const logger = require('./logger');
 const { regions } = require('./storage');
 
 const CACHE_SEPARATOR = '<--meta|lf|data-->';
@@ -35,7 +36,7 @@ async function retrieveFile(key, request, options) {
   const acceptEncoding = request.get('Accept-Encoding');
   const isCompressed = key.endsWith('.br');
 
-  const isRedisCacheReady = () => redisCacheClient && redisCacheClient.status === 'ready';
+  const isRedisCacheReady = () => !!redisCacheClient && redisCacheClient.status === 'ready';
 
   if (
     !isCompressed
@@ -90,15 +91,19 @@ async function retrieveFile(key, request, options) {
   const ifModifiedSince = request.get('If-Modified-Since');
 
   if (isRedisCacheReady()) {
-    const hit = await redisCacheClient.getBuffer(`file:${key}`);
+    try {
+      const hit = await redisCacheClient.getBuffer(`file:${key}`);
 
-    if (hit) {
-      const [metaString, fileString] = hit.toString('utf8').split(CACHE_SEPARATOR);
+      if (hit) {
+        const [metaString, fileString] = hit.toString('utf8').split(CACHE_SEPARATOR);
 
-      const meta = JSON.parse(metaString);
-      const fileBuffer = Buffer.from(fileString, 'hex');
+        const meta = JSON.parse(metaString);
+        const fileBuffer = Buffer.from(fileString, 'hex');
 
-      return respondWithGenerator(meta, fileBuffer);
+        return respondWithGenerator(meta, fileBuffer);
+      }
+    } catch (error) {
+      logger.error(error);
     }
   }
 
@@ -162,8 +167,12 @@ async function retrieveFile(key, request, options) {
   const { Body: fileBuffer } = await s3.getObject({ Bucket: bucket, Key: key }).promise();
 
   if (isRedisCacheReady() && isCacheable(get(meta, 'ContentLength'))) {
-    const cacheBuffer = Buffer.from(`${JSON.stringify(meta)}${CACHE_SEPARATOR}${fileBuffer.toString('hex')}`);
-    await redisCacheClient.set(`file:${key}`, cacheBuffer, 'PX', ms('1 day'));
+    try {
+      const cacheBuffer = Buffer.from(`${JSON.stringify(meta)}${CACHE_SEPARATOR}${fileBuffer.toString('hex')}`);
+      await redisCacheClient.set(`file:${key}`, cacheBuffer, 'PX', ms('1 day'));
+    } catch (error) {
+      logger.error(error);
+    }
   }
 
   return respondWithGenerator(meta, fileBuffer);

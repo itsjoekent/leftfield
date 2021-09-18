@@ -9,6 +9,8 @@ const REGION = process.env.REGION;
 const AWS = require('aws-sdk');
 const { get } = require('lodash');
 
+const logger = require('./logger');
+
 const regions = {};
 
 STORAGE_REGIONS.split(',').map((region) => {
@@ -32,7 +34,22 @@ async function getObject(key, options) {
     regionPool = STORAGE_REGIONS.split(','),
     attempts = 0,
     maxAttempts = STORAGE_REGIONS.split(',').length,
+    redisCacheClient = null,
   } = options || {};
+
+  const isRedisCacheReady = () => !!redisCacheClient && redisCacheClient.status === 'ready';
+
+  if (isRedisCacheReady()) {
+    try {
+      const hit = await redisCacheClient.getBuffer(`file:${key}`);
+
+      if (hit) {
+        return hit;
+      }
+    } catch (error) {
+      logger.error(error);
+    }
+  }
 
   async function next() {
     const nextAttempts = attempts + 1;
@@ -76,6 +93,14 @@ async function getObject(key, options) {
 
   if (!buffer) {
     return next();
+  }
+
+  if (isRedisCacheReady) {
+    try {
+      await redisCacheClient.set(`file:${key}`, buffer, 'PX', ms('1 day'));
+    } catch (error) {
+      logger.error(error);
+    }
   }
 
   return buffer;

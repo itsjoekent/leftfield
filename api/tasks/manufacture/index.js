@@ -12,6 +12,7 @@ if (NODE_ENV === 'development') {
 const { get, uniq } = require('lodash');
 
 const mongoose = require('../../db');
+const broker = require('../../broker');
 const DataContainer = require('../../db/DataContainer');
 const Snapshot = require('../../db/Snapshot');
 const Website = require('../../db/Website');
@@ -166,15 +167,14 @@ consumer.process(1, async function(job) {
     const website = await Website.findById(snapshot.website).exec();
     for (const domainRecord of website.domains) {
       await upload(`published-version/${domainRecord.name}`, versionNumber, 'text/plain');
+      broker.updatePublishedVersion(domainRecord.name, versionNumber);
     }
-
-    // CLEAR CACHE
 
     logger.info(`Completed snapshotId:${snapshotId}`);
 
     return true;
   } catch (error) {
-    logger.error(error.message);
+    logger.error(error.stack);
   }
 });
 

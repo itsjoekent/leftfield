@@ -17,25 +17,9 @@ module.exports = async function retrieveSsl(domainName, redisCacheClient) {
       return ssl;
     }
 
-    if (redisCacheClient && redisCacheClient.status === 'ready') {
-      const sslData = await redisCacheClient.get(`ssl:${domainName}`);
-
-      if (sslData) {
-        return buildResponse(sslData);
-      }
-    }
-
-    const sslBuffer = await getObject(`ssl/${domainName}`);
+    const sslBuffer = await getObject(`ssl/${domainName}`, { redisCacheClient });
     if (sslBuffer) {
       const sslData = sslBuffer.toString();
-
-      if (redisCacheClient && redisCacheClient.status === 'ready') {
-        try {
-          await redisCacheClient.set(`ssl:${domainName}`, sslData, 'PX', ms('1 day'));
-        } catch (error) {
-          logger.error(error);
-        }
-      }
 
       return buildResponse(sslData);
     }

@@ -1,11 +1,14 @@
+const BROADCAST_URL = process.env.BROADCAST_URL;
+const BROADCAST_USERNAME = process.env.BROADCAST_USERNAME;
+const BROADCAST_PASSWORD = process.env.BROADCAST_PASSWORD;
 const DNS_ZONE = process.env.DNS_ZONE;
-const EDGE_CACHE_KEY = process.env.EDGE_CACHE_KEY;
 const EDGE_DOMAIN = process.env.EDGE_DOMAIN;
 const HTTP_PORT = process.env.HTTP_PORT;
 const HTTPS_PORT = process.env.HTTPS_PORT;
 const NODE_ENV = process.env.NODE_ENV;
 const REDIS_CACHE_URL = process.env.REDIS_CACHE_URL;
 const REDIS_EDGE_URL = process.env.REDIS_EDGE_URL;
+const REGION = process.env.REGION;
 
 const fs = require('fs');
 const https = require('https');
@@ -17,7 +20,8 @@ if (NODE_ENV === 'development') {
 }
 
 const Redis = require('ioredis');
-const devcert = require('devcert');
+const mqtt = require('mqtt');
+const ms = require('ms');
 const { v4: uuid } = require('uuid');
 
 const logger = require('./logger');
@@ -34,7 +38,23 @@ const redisCacheClient = new Redis(REDIS_CACHE_URL, {
   enableReadyCheck: true,
 });
 
+const brokerConfig = {};
+if (BROADCAST_USERNAME && BROADCAST_PASSWORD) {
+  brokerAuth.username = BROADCAST_USERNAME;
+  brokerAuth.password = BROADCAST_PASSWORD;
+}
+
 const edgeHost = new URL(EDGE_DOMAIN).host;
+
+const {
+  BROADCAST_TOPIC,
+  BROADCAST_EVENT_DELETE,
+  BROADCAST_EVENT_NUKE,
+  BROADCAST_EVENT_UPDATE_PUBLISHED_VERSION,
+} = require(path.join(process.cwd(), 'api/broker/events'));
+
+const brokerClient = mqtt.connect(BROADCAST_URL, brokerConfig);
+brokerClient.subscribe(BROADCAST_TOPIC);
 
 function requestErrorHandler(error, response) {
   const errorId = uuid();
@@ -70,14 +90,18 @@ function addIndexFile(path) {
   return `${path}${path.endsWith('/') ? '' : '/'}index.html`;
 }
 
-function getHost(request) {
-  const host = (request.get('host') || '').toLowerCase();
+function formatHost(input) {
+  const host = (input || '').toLowerCase();
 
   if (host.startsWith('www.')) {
     return host.replace('www.', '');
   }
 
   return host;
+}
+
+function getHost(request) {
+  return formatHost(request.get('host'));
 }
 
 function getHostAndPath(request) {
@@ -104,50 +128,15 @@ function getHostAndPath(request) {
     secureApp.get('/_lf/health-check', healthCheck);
     insecureApp.get('/_lf/health-check', healthCheck);
 
-    secureApp.post('/_lf/clear', async function handler(request, response) {
-      try {
-        const host = getHost(request);
-        const key = request.headers['x-leftfield-key'];
-
-        if (key !== EDGE_CACHE_KEY) {
-          response.status(401).json({ error: 'not authorized' });
-          return;
-        }
-
-        const sslDomain = host.includes(DNS_ZONE) ? `*.${DNS_ZONE}` : host;
-        await redisCacheClient.del(`ssl:${sslDomain}`);
-
-        await redisCacheClient.del(`file:published-version/${host}`);
-
-        response.status(200).json({ cleared: true });
-      } catch (error) {
-        requestErrorHandler(error, response);
-      }
-    });
-
-    secureApp.post('/_lf/nuke', async function handler(request, response) {
-      try {
-        const host = getHost(request);
-        const key = request.headers['x-leftfield-key'];
-
-        if (key !== EDGE_CACHE_KEY) {
-          response.status(401).json({ error: 'not authorized' });
-          return;
-        }
-
-        await redisCacheClient.sendCommand(
-          new Redis.Command('FLUSHALL', ['ASYNC']),
-        );
-
-        response.status(200).json({ cleared: true });
-      } catch (error) {
-        requestErrorHandler(error, response);
-      }
-    });
-
     secureApp.get('/_lf/file/*', async function handler(request, response) {
       try {
         const key = request.path.toLowerCase().replace('/_lf/file/', '');
+
+        if (key.startsWith('ssl')) {
+          response.status(404).end();
+          return;
+        }
+
         const respondWith = await retrieveFile(key, request, { redisCacheClient });
 
         if (respondWith) {
@@ -269,6 +258,54 @@ function getHostAndPath(request) {
         requestErrorHandler(error, response);
       }
     });
+
+    brokerClient.on('message', async (topic, message) => {
+      try {
+        if (topic !== BROADCAST_TOPIC) return;
+
+        const {
+          exclude = [],
+          include = ['*'],
+          type = '',
+          data = {},
+        } = JSON.parse(message.toString());
+
+        if (exclude && exclude.includes(REGION)) {
+          return;
+        }
+
+        if (include && (!include.includes(REGION) && !include.includes('*'))) {
+          return;
+        }
+
+        logger.info(`Recieved broadcast instruction: ${type}`);
+
+        switch (type) {
+          case BROADCAST_EVENT_DELETE: {
+            await redisCacheClient.del(data.key);
+          }
+
+          case BROADCAST_EVENT_NUKE: {
+            await redisCacheClient.sendCommand(
+              new Redis.Command('FLUSHALL', ['ASYNC']),
+            );
+          }
+
+          case BROADCAST_EVENT_UPDATE_PUBLISHED_VERSION: {
+            const host = formatHost(data.host);
+            const fileCacheKey = `file:published-version/${host}`;
+
+            logger.info(`Updating host:${host} to version:${data.versionNumber}`);
+
+            await redisCacheClient.set(fileCacheKey, data.versionNumber, 'PX', ms('1 day'));
+          };
+        }
+      } catch (error) {
+        logger.error(error);
+      }
+    });
+
+    brokerClient.on('error', () => logger.info('Error connecting to broker'));
 
     redisCacheClient.on('error', () => logger.info('Error connecting to Redis cache'));
 
