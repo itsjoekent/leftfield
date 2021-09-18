@@ -30,7 +30,6 @@ terraform {
 resource "aws_vpc_peering_connection" "team" {
   auto_accept   = true
   peer_vpc_id   = var.primary_vpc.id
-  peer_region   = var.config.environment.primary_region
   peer_owner_id = var.config.variables.AWS_ACCOUNT_ID
   vpc_id        = var.team_vpc.id
 
