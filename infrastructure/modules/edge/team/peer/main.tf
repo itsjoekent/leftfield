@@ -43,6 +43,8 @@ resource "aws_vpc_peering_connection" "team" {
 resource "aws_vpc_peering_connection_accepter" "peer" {
   vpc_peering_connection_id = aws_vpc_peering_connection.team.id
   auto_accept = true
+
+  provider = aws.team
 }
 
 resource "aws_vpc_peering_connection_options" "requester" {
