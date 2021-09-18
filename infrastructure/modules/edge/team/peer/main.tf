@@ -28,10 +28,9 @@ terraform {
 }
 
 resource "aws_vpc_peering_connection" "team" {
-  peer_vpc_id   = var.primary_vpc.id
-  peer_region   = var.config.environment.primary_region
-  peer_owner_id = var.config.variables.AWS_ACCOUNT_ID
-  vpc_id        = var.team_vpc.id
+  vpc_id      = var.primary_vpc.id
+  peer_vpc_id = var.team_vpc.id
+  peer_region = var.region
 
   accepter {
     allow_remote_vpc_dns_resolution = true
@@ -51,9 +50,35 @@ resource "aws_vpc_peering_connection" "team" {
 resource "aws_vpc_peering_connection_accepter" "peer" {
   vpc_peering_connection_id = aws_vpc_peering_connection.team.id
   auto_accept = true
-
-  provider = aws.primary
 }
+
+# resource "aws_vpc_peering_connection" "team" {
+#   peer_vpc_id   = var.primary_vpc.id
+#   peer_region   = var.config.environment.primary_region
+#   peer_owner_id = var.config.variables.AWS_ACCOUNT_ID
+#   vpc_id        = var.team_vpc.id
+#
+#   accepter {
+#     allow_remote_vpc_dns_resolution = true
+#   }
+#
+#   requester {
+#     allow_remote_vpc_dns_resolution = true
+#   }
+#
+#   tags = {
+#     Name = "edge-${var.region} to edge-${var.config.environment.primary_region}"
+#   }
+#
+#   provider = aws.team
+# }
+#
+# resource "aws_vpc_peering_connection_accepter" "peer" {
+#   vpc_peering_connection_id = aws_vpc_peering_connection.team.id
+#   auto_accept = true
+#
+#   provider = aws.primary
+# }
 
 resource "aws_route" "peer" {
   count = length(var.private_route_tables)
