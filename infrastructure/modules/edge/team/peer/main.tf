@@ -28,7 +28,7 @@ terraform {
 }
 
 resource "aws_vpc_peering_connection" "team" {
-  auto_accept   = false
+  auto_accept   = true
   peer_vpc_id   = var.primary_vpc.id
   peer_region   = var.config.environment.primary_region
   peer_owner_id = var.config.variables.AWS_ACCOUNT_ID
@@ -49,14 +49,14 @@ resource "aws_vpc_peering_connection" "team" {
   provider = aws.team
 }
 
-resource "aws_vpc_peering_connection_accepter" "peer" {
-  vpc_peering_connection_id = aws_vpc_peering_connection.team.id
-  auto_accept = true
+# resource "aws_vpc_peering_connection_accepter" "peer" {
+#   vpc_peering_connection_id = aws_vpc_peering_connection.team.id
+#   auto_accept = true
+#
+#   provider = aws.primary
+# }
 
-  provider = aws.primary
-}
-
-resource "aws_route" "aws_peer_to_atlas" {
+resource "aws_route" "peer" {
   count = length(var.private_route_tables)
 
   route_table_id            = var.private_route_tables[count.index].id
