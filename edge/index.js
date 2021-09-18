@@ -331,7 +331,7 @@ function getHostAndPath(request) {
       }
     });
 
-    // brokerClient.on('error', () => logger.info('Error connecting to broker'));
+    brokerClient.on('error', () => logger.info('Error connecting to broker'));
 
     redisCacheClient.on('error', () => logger.info('Error connecting to Redis cache'));
 
