@@ -164,3 +164,7 @@ output "public_subnets" {
 output "private_subnets" {
   value = aws_subnet.edge_private.*
 }
+
+output "private_route_tables" {
+  value = aws_route_table.edge_private
+}

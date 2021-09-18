@@ -111,31 +111,38 @@ locals {
   primary_network = local.networks[var.config.environment.primary_region]
 }
 
-resource "aws_vpc_peering_connection" "team_network_peer" {
-  for_each = toset(var.config.environment.secondary_regions)
+module "us_east_1_peer" {
+  count = contains(var.config.environment.secondary_regions, "us-east-1") ? 1 : 0
 
-  peer_vpc_id   = local.networks[each.key].vpc.id
-  peer_region   = each.key
-  vpc_id        = local.primary_network.vpc.id
+  source = "./team/peer"
+  config = local.config
+  region = "us-east-1"
 
-  accepter {
-    allow_remote_vpc_dns_resolution = true
-  }
+  primary_vpc          = local.primary_network.vpc
+  private_route_tables = local.networks["us-east-1"].private_route_tables
+  team_vpc             = local.networks["us-east-1"].vpc
 
-  requester {
-    allow_remote_vpc_dns_resolution = true
-  }
-
-  tags = {
-    Name = "edge-${each.key} peer to edge-${var.config.environment.primary_region}"
+  providers = {
+    aws.primary = aws.primary
+    aws.team    = aws.us_east_1
   }
 }
 
-resource "aws_vpc_peering_connection_accepter" "peer" {
-  for_each = toset(var.config.environment.secondary_regions)
+module "us_west_1_peer" {
+  count = contains(var.config.environment.secondary_regions, "us-west-1") ? 1 : 0
 
-  vpc_peering_connection_id = aws_vpc_peering_connection.team_network_peer[each.key].id
-  auto_accept = true
+  source = "./team/peer"
+  config = local.config
+  region = "us-west-1"
+
+  primary_vpc          = local.primary_network.vpc
+  private_route_tables = local.networks["us-west-1"].private_route_tables
+  team_vpc             = local.networks["us-west-1"].vpc
+
+  providers = {
+    aws.primary = aws.primary
+    aws.team    = aws.us_west_1
+  }
 }
 
 module "broker" {
