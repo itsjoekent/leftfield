@@ -1,5 +1,5 @@
 const BROADCAST_URL = process.env.BROADCAST_URL;
-const BROADCAST_USERNAME = process.env.BROADCAST_USERNAME;
+const BROADCAST_USER = process.env.BROADCAST_USER;
 const BROADCAST_PASSWORD = process.env.BROADCAST_PASSWORD;
 const DNS_ZONE = process.env.DNS_ZONE;
 const EDGE_CACHE_KEY = process.env.EDGE_CACHE_KEY;
@@ -45,9 +45,9 @@ const brokerConfig = {
   reconnectPeriod: ms('10 seconds'),
 };
 
-if (BROADCAST_USERNAME && BROADCAST_PASSWORD) {
-  brokerAuth.username = BROADCAST_USERNAME;
-  brokerAuth.password = BROADCAST_PASSWORD;
+if (BROADCAST_USER && BROADCAST_PASSWORD) {
+  brokerConfig.username = BROADCAST_USER;
+  brokerConfig.password = BROADCAST_PASSWORD;
 }
 
 const edgeHost = new URL(EDGE_DOMAIN).host;
@@ -59,7 +59,7 @@ const {
   BROADCAST_EVENT_UPDATE_PUBLISHED_VERSION,
 } = require(path.join(process.cwd(), 'api/broker/events'));
 
-console.log('Broker enabled');
+console.log(BROADCAST_URL, brokerConfig);
 const brokerClient = mqtt.connect(BROADCAST_URL, brokerConfig);
 brokerClient.subscribe(BROADCAST_TOPIC);
 

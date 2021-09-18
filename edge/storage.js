@@ -8,6 +8,7 @@ const REGION = process.env.REGION;
 
 const AWS = require('aws-sdk');
 const { get } = require('lodash');
+const ms = require('ms');
 
 const logger = require('./logger');
 
