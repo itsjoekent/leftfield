@@ -33,10 +33,6 @@ resource "aws_vpc_peering_connection" "team" {
   peer_region   = var.region
   peer_owner_id = var.config.variables.AWS_ACCOUNT_ID
 
-  accepter {
-    allow_remote_vpc_dns_resolution = true
-  }
-
   requester {
     allow_remote_vpc_dns_resolution = true
   }
@@ -51,6 +47,10 @@ resource "aws_vpc_peering_connection" "team" {
 resource "aws_vpc_peering_connection_accepter" "peer" {
   vpc_peering_connection_id = aws_vpc_peering_connection.team.id
   auto_accept = true
+
+  accepter {
+    allow_remote_vpc_dns_resolution = true
+  }
 }
 
 # resource "aws_vpc_peering_connection" "team" {
