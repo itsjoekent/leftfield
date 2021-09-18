@@ -28,9 +28,10 @@ terraform {
 }
 
 resource "aws_vpc_peering_connection" "team" {
-  vpc_id      = var.primary_vpc.id
-  peer_vpc_id = var.team_vpc.id
-  peer_region = var.region
+  vpc_id        = var.primary_vpc.id
+  peer_vpc_id   = var.team_vpc.id
+  peer_region   = var.region
+  peer_owner_id = var.config.variables.AWS_ACCOUNT_ID
 
   accepter {
     allow_remote_vpc_dns_resolution = true
