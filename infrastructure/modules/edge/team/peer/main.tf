@@ -45,7 +45,7 @@ resource "aws_vpc_peering_connection" "team" {
     Name = "edge-${var.region} to edge-${var.config.environment.primary_region}"
   }
 
-  provider = aws.team
+  provider = aws.primary
 }
 
 resource "aws_vpc_peering_connection_accepter" "peer" {
