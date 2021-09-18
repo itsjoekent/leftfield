@@ -20,6 +20,8 @@ if (NODE_ENV === 'development') {
   require(path.join(process.cwd(), 'environment/development.api'));
 }
 
+process.env.DEBUG = 'mqttjs*';
+
 const Redis = require('ioredis');
 const mqtt = require('mqtt');
 const ms = require('ms');
@@ -39,7 +41,10 @@ const redisCacheClient = new Redis(REDIS_CACHE_URL, {
   enableReadyCheck: true,
 });
 
-const brokerConfig = {};
+const brokerConfig = {
+  reconnectPeriod: ms('10 seconds'),
+};
+
 if (BROADCAST_USERNAME && BROADCAST_PASSWORD) {
   brokerAuth.username = BROADCAST_USERNAME;
   brokerAuth.password = BROADCAST_PASSWORD;
@@ -54,6 +59,7 @@ const {
   BROADCAST_EVENT_UPDATE_PUBLISHED_VERSION,
 } = require(path.join(process.cwd(), 'api/broker/events'));
 
+console.log('Broker enabled');
 const brokerClient = mqtt.connect(BROADCAST_URL, brokerConfig);
 brokerClient.subscribe(BROADCAST_TOPIC);
 
