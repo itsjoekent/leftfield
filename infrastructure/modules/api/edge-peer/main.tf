@@ -45,6 +45,6 @@ resource "aws_route" "peer" {
   count = length(var.private_route_tables)
 
   route_table_id            = var.private_route_tables[count.index].id
-  destination_cidr_block    = var.edge_vpc.id
+  destination_cidr_block    = var.edge_vpc.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.api_network_peer.id
 }
