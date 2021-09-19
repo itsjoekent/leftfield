@@ -14,7 +14,7 @@ if (NODE_ENV === 'development') {
 
 const { get, uniq } = require('lodash');
 
-const broadcast = require('pkg.broadcast');
+const broadcast = require(path.join(process.cwd(), 'packages/broadcast'));
 
 const mongoose = require('../../db');
 const DataContainer = require('../../db/DataContainer');
