@@ -20,9 +20,9 @@ function connect(logger, url, username, password) {
       reconnectPeriod: ms('10 seconds'),
     };
 
-    console.log(url.replace('mqtt+ssl://', ''), brokerConfig);
+    console.log(url.replace('mqtt+ssl://', 'mqtt://'), brokerConfig);
 
-    brokerClient = mqtt.connect(url.replace('mqtt+ssl://', ''), brokerConfig);
+    brokerClient = mqtt.connect(url.replace('mqtt+ssl://', 'mqtt://'), brokerConfig);
   } else {
     brokerClient = mqtt.connect(url);
   }
