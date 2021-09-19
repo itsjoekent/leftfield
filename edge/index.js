@@ -23,9 +23,10 @@ if (NODE_ENV === 'development') {
 process.env.DEBUG = 'mqttjs*';
 
 const Redis = require('ioredis');
-const mqtt = require('mqtt');
 const ms = require('ms');
 const { v4: uuid } = require('uuid');
+
+const broadcast = require('pkg.broadcast');
 
 const logger = require('./logger');
 const retrieveFile = require('./retrieveFile');
@@ -41,27 +42,16 @@ const redisCacheClient = new Redis(REDIS_CACHE_URL, {
   enableReadyCheck: true,
 });
 
-const brokerConfig = {
-  reconnectPeriod: ms('10 seconds'),
-};
-
-if (BROADCAST_USER && BROADCAST_PASSWORD) {
-  brokerConfig.username = BROADCAST_USER;
-  brokerConfig.password = BROADCAST_PASSWORD;
-}
-
 const edgeHost = new URL(EDGE_DOMAIN).host;
 
-const {
-  BROADCAST_TOPIC,
-  BROADCAST_EVENT_DELETE,
-  BROADCAST_EVENT_NUKE,
-  BROADCAST_EVENT_UPDATE_PUBLISHED_VERSION,
-} = require(path.join(process.cwd(), 'api/broker/events'));
+const broadcastClient = broadcast.connect(
+  logger,
+  BROADCAST_URL,
+  BROADCAST_USER,
+  BROADCAST_PASSWORD,
+);
 
-console.log(BROADCAST_URL, brokerConfig);
-const brokerClient = mqtt.connect(BROADCAST_URL, brokerConfig);
-brokerClient.subscribe(BROADCAST_TOPIC);
+broadcastClient.subscribe(broadcast.BROADCAST_TOPIC);
 
 function requestErrorHandler(error, response) {
   const errorId = uuid();
@@ -291,9 +281,9 @@ function getHostAndPath(request) {
       }
     });
 
-    brokerClient.on('message', async (topic, message) => {
+    broadcastClient.on('message', async (topic, message) => {
       try {
-        if (topic !== BROADCAST_TOPIC) return;
+        if (topic !== broadcast.BROADCAST_TOPIC) return;
 
         const {
           exclude = [],
@@ -313,17 +303,17 @@ function getHostAndPath(request) {
         logger.info(`Recieved broadcast instruction: ${type}`);
 
         switch (type) {
-          case BROADCAST_EVENT_DELETE: {
+          case broadcast.BROADCAST_EVENT_DELETE: {
             await redisCacheClient.del(data.key);
           }
 
-          case BROADCAST_EVENT_NUKE: {
+          case broadcast.BROADCAST_EVENT_NUKE: {
             await redisCacheClient.sendCommand(
               new Redis.Command('FLUSHALL', ['ASYNC']),
             );
           }
 
-          case BROADCAST_EVENT_UPDATE_PUBLISHED_VERSION: {
+          case broadcast.BROADCAST_EVENT_UPDATE_PUBLISHED_VERSION: {
             const host = formatHost(data.host);
             const fileCacheKey = `file:published-version/${host}`;
 
@@ -336,8 +326,6 @@ function getHostAndPath(request) {
         logger.error(error);
       }
     });
-
-    brokerClient.on('error', (error) => logger.info(`Error connecting to broker: ${error.message}`));
 
     redisCacheClient.on('error', () => logger.info('Error connecting to Redis cache'));
 

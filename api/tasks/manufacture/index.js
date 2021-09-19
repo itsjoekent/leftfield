@@ -1,3 +1,6 @@
+const BROADCAST_URL = process.env.BROADCAST_URL;
+const BROADCAST_USER = process.env.BROADCAST_USER;
+const BROADCAST_PASSWORD = process.env.BROADCAST_PASSWORD;
 const NODE_ENV = process.env.NODE_ENV;
 
 const cluster = require('cluster');
@@ -11,8 +14,9 @@ if (NODE_ENV === 'development') {
 
 const { get, uniq } = require('lodash');
 
+const broadcast = require('pkg.broadcast');
+
 const mongoose = require('../../db');
-const broker = require('../../broker');
 const DataContainer = require('../../db/DataContainer');
 const Snapshot = require('../../db/Snapshot');
 const Website = require('../../db/Website');
@@ -22,6 +26,20 @@ const baseLogger = require('../../utils/logger');
 const { upload } = require('../../utils/storage');
 
 const taskLogger = baseLogger.child({ task: 'manufacture' });
+
+const broadcastClient = broadcast.connect(
+  taskLogger,
+  BROADCAST_URL,
+  BROADCAST_USER,
+  BROADCAST_PASSWORD,
+);
+
+function broadcastPublishedVersion(host, versionNumber) {
+  broadcastClient.publish(broadcast.BROADCAST_TOPIC, JSON.stringify({
+    type: broadcast.BROADCAST_EVENT_UPDATE_PUBLISHED_VERSION,
+    data: { host, versionNumber },
+  }));
+}
 
 function removeTrailingSlash(input) {
   return input.replace(/\/$/, '');
@@ -167,7 +185,7 @@ consumer.process(1, async function(job) {
     const website = await Website.findById(snapshot.website).exec();
     for (const domainRecord of website.domains) {
       await upload(`published-version/${domainRecord.name}`, versionNumber, 'text/plain');
-      broker.updatePublishedVersion(domainRecord.name, versionNumber);
+      broadcastPublishedVersion(domainRecord.name, versionNumber);
     }
 
     logger.info(`Completed snapshotId:${snapshotId}`);
