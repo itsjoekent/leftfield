@@ -26,7 +26,7 @@ const Redis = require('ioredis');
 const ms = require('ms');
 const { v4: uuid } = require('uuid');
 
-const broadcast = require('pkg.broadcast');
+const broadcast = require(path.join(process.cwd(), 'packages/broadcast'));
 
 const logger = require('./logger');
 const retrieveFile = require('./retrieveFile');
