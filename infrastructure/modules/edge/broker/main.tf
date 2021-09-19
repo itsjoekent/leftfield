@@ -19,15 +19,29 @@ locals {
   username = "leftfield"
 }
 
+locals {
+  cidr_blocks = {
+    api         = var.config.global.api.vpc_cidr_block
+    "us-east-1" = var.config.global.edge.vpc_cidr_block["us-east-1"]
+    "us-west-1" = var.config.global.edge.vpc_cidr_block["us-west-1"]
+  }
+
+  environment_cidr_blocks = concat(["api"], var.config.environment.regions)
+}
+
 resource "aws_security_group" "broker" {
   name = "edge-broker"
   vpc_id = var.vpc.id
 
-  ingress {
-    from_port = 0
-    to_port = 0
-    protocol = -1
-    cidr_blocks = [var.vpc.cidr_block]
+  dynamic "ingress" {
+    for_each = local.environment_cidr_blocks
+
+    content {
+      from_port   = 0
+      to_port     = 0
+      protocol    = -1
+      cidr_blocks = [local.cidr_blocks[ingress.value]]
+    }
   }
 
   egress {
