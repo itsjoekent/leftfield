@@ -12,11 +12,7 @@ function connect(logger, url, username, password) {
   logger.info('Connecting to broadcast broker...');
 
   if (url.startsWith('mqtt+ssl://')) {
-    const [domain, port] = url.replace('mqtt+ssl://', '').split(':');
-
     const brokerConfig = {
-      domain,
-      port,
       username,
       password,
       protocol: 'mqtts',
@@ -24,9 +20,9 @@ function connect(logger, url, username, password) {
       reconnectPeriod: ms('10 seconds'),
     };
 
-    console.log(brokerConfig);
+    console.log(url.replace('mqtt+ssl://', ''), brokerConfig);
 
-    brokerClient = mqtt.connect(brokerConfig);
+    brokerClient = mqtt.connect(url.replace('mqtt+ssl://', ''), brokerConfig);
   } else {
     brokerClient = mqtt.connect(url);
   }
