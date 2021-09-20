@@ -56,7 +56,9 @@ module "api_edge_peer" {
   source = "../api/edge-peer"
   config = var.config
 
-  api_vpc              = module.api.network.vpc
-  edge_vpc             = module.edge.primary_network.vpc
-  private_route_tables = module.api.network.private_route_tables
+  api_vpc                  = module.api.network.vpc
+  api_private_route_tables = module.api.network.private_route_tables
+
+  edge_vpc                  = module.edge.primary_network.vpc
+  edge_private_route_tables = module.edge.network.private_route_tables
 }
