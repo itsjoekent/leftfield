@@ -5,4 +5,5 @@ export { default as DonateButton } from 'pkg.campaign-components/components/Dona
 export { default as Header } from 'pkg.campaign-components/components/Header/meta';
 export { default as Paragraph } from 'pkg.campaign-components/components/Paragraph/meta';
 export { default as Root } from 'pkg.campaign-components/components/Root/meta';
+export { default as SingleColumnSection } from 'pkg.campaign-components/components/SingleColumnSection/meta';
 export { default as Splash } from 'pkg.campaign-components/components/Splash/meta';

@@ -4,8 +4,6 @@ import {
   PHOTO_STYLE,
   PHOTO_COLUMN_CLASS_NAME,
   CONTENT_COLUMN_CLASS_NAME,
-  PHOTO_HORIZONTAL_POSITION_ATTRIBUTE,
-  PHOTO_VERTICAL_POSITION_ATTRIBUTE,
   PHOTO_SIZE_ATTRIBUTE,
 } from 'pkg.campaign-components/components/Splash';
 import {
@@ -15,9 +13,9 @@ import {
 } from 'pkg.campaign-components/constants/responsive';
 import BoxStyle from 'pkg.campaign-components/styles/box';
 import FlexStyle from 'pkg.campaign-components/styles/flex';
+import ImagePositionStyle from 'pkg.campaign-components/styles/imagePosition';
 import getCascadingStyleValue from 'pkg.campaign-components/utils/getCascadingStyleValue';
 import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
-import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 
 export default function SplashCSS({
   componentClassName,
@@ -47,7 +45,7 @@ export default function SplashCSS({
         max-height: 100vh;
       }
 
-      .${CONTENT_COLUMN_CLASS_NAME} {
+      > .${CONTENT_COLUMN_CLASS_NAME} {
         flex-grow: 1;
 
         ${BoxStyle.styling({
@@ -67,7 +65,7 @@ export default function SplashCSS({
         }
       }
 
-      .${PHOTO_COLUMN_CLASS_NAME} {
+      > .${PHOTO_COLUMN_CLASS_NAME} {
         display: flex;
         width: 100%;
         flex-shrink: 0;
@@ -105,17 +103,12 @@ export default function SplashCSS({
         img {
           width: 100%;
           height: 100%;
-          object-fit: cover;
 
-          ${responsiveStyleGenerator(
+          ${ImagePositionStyle.styling({
             applyStyleIfChanged,
+            styles: photoStyles,
             theme,
-            [
-              { styles: photoStyles, attribute: PHOTO_VERTICAL_POSITION_ATTRIBUTE },
-              { styles: photoStyles, attribute: PHOTO_HORIZONTAL_POSITION_ATTRIBUTE },
-            ],
-            (styleValue) => `object-position: ${styleValue[0]} ${styleValue[1]};`,
-          )}
+          })}
         }
       }
     }

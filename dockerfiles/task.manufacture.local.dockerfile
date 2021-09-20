@@ -1,8 +1,5 @@
 FROM node:16-alpine
 
-ARG EDGE_DOMAIN
-ENV EDGE_DOMAIN $EDGE_DOMAIN
-
 WORKDIR /usr/src/code
 
 COPY package*.json ./

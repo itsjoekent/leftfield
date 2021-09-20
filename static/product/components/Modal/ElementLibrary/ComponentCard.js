@@ -63,4 +63,5 @@ const ComponentDescription = styled.p`
   ${(props) => props.theme.fonts.main.light};
   font-size: 12px;
   color: ${(props) => props.theme.colors.mono[600]};
+  text-align: left;
 `;

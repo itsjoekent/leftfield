@@ -20,8 +20,6 @@ if (NODE_ENV === 'development') {
   require(path.join(process.cwd(), 'environment/development.api'));
 }
 
-process.env.DEBUG = 'mqttjs*';
-
 const Redis = require('ioredis');
 const ms = require('ms');
 const { v4: uuid } = require('uuid');

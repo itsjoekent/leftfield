@@ -18,23 +18,13 @@ import {
 import {
   NUMBER_RANGE_TYPE,
   SHORT_TEXT_TYPE,
-  SELECT_TYPE,
   UPLOAD_TYPE,
 } from 'pkg.campaign-components/constants/property-types';
-import {
-  DESKTOP_DEVICE,
-  MOBILE_DEVICE,
-  TABLET_DEVICE,
-} from 'pkg.campaign-components/constants/responsive';
+import { MOBILE_DEVICE } from 'pkg.campaign-components/constants/responsive';
 import { TAG as RootTag } from 'pkg.campaign-components/components/Root';
 import BoxStyle from 'pkg.campaign-components/styles/box';
 import FlexStyle from 'pkg.campaign-components/styles/flex';
-
-export const POSITION_TOP = 'top';
-export const POSITION_BOTTOM = 'bottom';
-export const POSITION_LEFT = 'left';
-export const POSITION_RIGHT = 'right';
-export const POSITION_CENTER = 'center';
+import ImagePositionStyle from 'pkg.campaign-components/styles/imagePosition';
 
 const SplashMeta = {
   tag: TAG,
@@ -100,36 +90,7 @@ const SplashMeta = {
             },
           },
         },
-        {
-          id: PHOTO_VERTICAL_POSITION_ATTRIBUTE,
-          label: 'Vertical Position',
-          type: SELECT_TYPE,
-          options: [
-            { label: 'Top', value: POSITION_TOP },
-            { label: 'Center', value: POSITION_CENTER },
-            { label: 'Bottom', value: POSITION_BOTTOM },
-          ],
-          defaultValue: {
-            [MOBILE_DEVICE]: {
-              custom: POSITION_CENTER,
-            },
-          },
-        },
-        {
-          id: PHOTO_HORIZONTAL_POSITION_ATTRIBUTE,
-          label: 'Horizontal Position',
-          type: SELECT_TYPE,
-          options: [
-            { label: 'Left', value: POSITION_LEFT },
-            { label: 'Center', value: POSITION_CENTER },
-            { label: 'Right', value: POSITION_RIGHT },
-          ],
-          defaultValue: {
-            [MOBILE_DEVICE]: {
-              custom: POSITION_RIGHT,
-            },
-          },
-        },
+        ...ImagePositionStyle.attributes(),
       ],
     },
     {

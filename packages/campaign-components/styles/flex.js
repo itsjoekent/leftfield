@@ -112,7 +112,7 @@ const FlexStyle = {
           custom: FLEX_NO_WRAP,
         },
       },
-      ...(get(overrides, JUSTIFY_ATTRIBUTE, {})),
+      ...(get(overrides, WRAP_ATTRIBUTE, {})),
     },
   ]),
   styling: ({ applyStyleIfChanged, styles, theme }) => `

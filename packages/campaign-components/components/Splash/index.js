@@ -1,10 +1,5 @@
 import React from 'react';
 import get from 'lodash/get';
-import {
-  DESKTOP_DEVICE,
-  MOBILE_DEVICE,
-  TABLET_DEVICE,
-} from 'pkg.campaign-components/constants/responsive';
 import useLanguage from 'pkg.campaign-components/hooks/useLanguage';
 import getPropertyValue from 'pkg.campaign-components/utils/getPropertyValue';
 
@@ -22,15 +17,12 @@ export const PHOTO_COLUMN_CLASS_NAME = 'photo-column';
 export const CONTENT_COLUMN_CLASS_NAME = 'content-column';
 
 export const PHOTO_SIZE_ATTRIBUTE = 'PHOTO_SIZE_ATTRIBUTE';
-export const PHOTO_HORIZONTAL_POSITION_ATTRIBUTE = 'PHOTO_HORIZONTAL_POSITION_ATTRIBUTE';
-export const PHOTO_VERTICAL_POSITION_ATTRIBUTE = 'PHOTO_VERTICAL_POSITION_ATTRIBUTE';
 
 export default function Splash(props) {
   const {
     componentClassName,
     properties,
     slots,
-    styles,
   } = props;
 
   const language = useLanguage();

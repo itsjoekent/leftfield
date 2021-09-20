@@ -33,7 +33,7 @@ export default function CommitteeDisclaimerCSS({
         theme,
       })}
 
-      span {
+      > span {
         ${TextStyle.styling({
           applyStyleIfChanged,
           theme,

@@ -54,7 +54,7 @@ export default function ActBlueFormCSS({
       ${applyStyleIf(
         getPropertyValue(properties, ENABLE_EXPRESS_DONATE_PROPERTY, language),
         `
-          .${DISCLAIMER_CLASS_NAME} {
+          > .${DISCLAIMER_CLASS_NAME} {
             ${TextStyle.styling({
               applyStyleIfChanged: applyStyleIfChangedDisclaimer,
               theme,
