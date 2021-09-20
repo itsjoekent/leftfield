@@ -29,19 +29,6 @@ terraform {
   }
 }
 
-# TODO: Delete after prod apply
-module "network" {
-  source = "./network"
-  config = var.config
-  region = var.region
-
-  __skip_ip = true
-
-  providers = {
-    aws = aws
-  }
-}
-
 module "cache" {
   source = "./cache"
   config = var.config

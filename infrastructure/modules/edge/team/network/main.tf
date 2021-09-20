@@ -4,11 +4,6 @@ variable "region" {
   type = string
 }
 
-# TODO: Delete after prod apply
-variable "__skip_ip" {
-  default = false
-}
-
 terraform {
   required_providers {
     aws = {
@@ -93,7 +88,7 @@ resource "aws_subnet" "edge_private" {
 }
 
 resource "aws_eip" "edge" {
-  count = var.__skip_ip == true ? 0 : length(local.availability_zones)
+  count = length(local.availability_zones)
 
   vpc = true
 
@@ -105,7 +100,7 @@ resource "aws_eip" "edge" {
 }
 
 resource "aws_nat_gateway" "edge_public" {
-  count = var.__skip_ip == true ? 0 : length(local.availability_zones)
+  count = length(local.availability_zones)
 
   allocation_id = aws_eip.edge[count.index].id
   subnet_id     = aws_subnet.edge_public[count.index].id
@@ -135,7 +130,7 @@ resource "aws_route_table_association" "edge_private" {
 }
 
 resource "aws_route" "edge_private" {
-  count = var.__skip_ip == true ? 0 : length(local.availability_zones)
+  count = length(local.availability_zones)
 
   route_table_id         = aws_route_table.edge_private[count.index].id
   destination_cidr_block = "0.0.0.0/0"
