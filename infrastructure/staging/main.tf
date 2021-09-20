@@ -1,8 +1,3 @@
-# TODO:
-# - figure out how to not make IP's for the unused team network
-# - fix other terraform apply errors (I think are all related)
-# - remove EDGE_CACHE_KEY
-
 terraform {
   required_providers {
     aws = {

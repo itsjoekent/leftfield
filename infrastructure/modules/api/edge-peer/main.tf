@@ -39,18 +39,18 @@ resource "aws_vpc_peering_connection" "api_network_peer" {
   }
 }
 
-resource "aws_route" "api" {
-  count = length(var.api_private_route_tables)
-
-  route_table_id            = var.api_private_route_tables[count.index].id
-  destination_cidr_block    = var.edge_vpc.cidr_block
-  vpc_peering_connection_id = aws_vpc_peering_connection.api_network_peer.id
-}
-
-resource "aws_route" "edge" {
-  count = length(var.edge_private_route_tables)
-
-  route_table_id            = var.edge_private_route_tables[count.index].id
-  destination_cidr_block    = var.api_vpc.cidr_block
-  vpc_peering_connection_id = aws_vpc_peering_connection.api_network_peer.id
-}
+# resource "aws_route" "api" {
+#   count = length(var.api_private_route_tables)
+#
+#   route_table_id            = var.api_private_route_tables[count.index].id
+#   destination_cidr_block    = var.edge_vpc.cidr_block
+#   vpc_peering_connection_id = aws_vpc_peering_connection.api_network_peer.id
+# }
+#
+# resource "aws_route" "edge" {
+#   count = length(var.edge_private_route_tables)
+#
+#   route_table_id            = var.edge_private_route_tables[count.index].id
+#   destination_cidr_block    = var.api_vpc.cidr_block
+#   vpc_peering_connection_id = aws_vpc_peering_connection.api_network_peer.id
+# }
