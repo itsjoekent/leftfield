@@ -121,7 +121,7 @@ module "us_east_1_peer" {
   primary_vpc                  = local.primary_network.vpc
   primary_private_route_tables = local.primary_network.private_route_tables
 
-  tean_private_route_tables = local.networks["us-east-1"].private_route_tables
+  team_private_route_tables = local.networks["us-east-1"].private_route_tables
   team_vpc                  = local.networks["us-east-1"].vpc
 
   providers = {
