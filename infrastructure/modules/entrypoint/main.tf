@@ -60,5 +60,5 @@ module "api_edge_peer" {
   api_private_route_tables = module.api.network.private_route_tables
 
   edge_vpc                  = module.edge.primary_network.vpc
-  edge_private_route_tables = module.edge.network.private_route_tables
+  edge_private_route_tables = module.edge.primary_network.private_route_tables
 }
