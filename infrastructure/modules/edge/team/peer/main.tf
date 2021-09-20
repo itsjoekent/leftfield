@@ -4,11 +4,14 @@ variable "region" {
   type = string
 }
 
+# list(aws_route_table)
+variable "primary_private_route_tables" {}
+
 # aws_vpc
 variable "primary_vpc" {}
 
 # list(aws_route_table)
-variable "private_route_tables" {}
+variable "team_private_route_tables" {}
 
 # aws_vpc
 variable "team_vpc" {}
@@ -68,11 +71,21 @@ resource "aws_vpc_peering_connection_options" "accepter" {
 }
 
 resource "aws_route" "peer" {
-  count = length(var.private_route_tables)
+  count = length(var.team_private_route_tables)
 
-  route_table_id            = var.private_route_tables[count.index].id
+  route_table_id            = var.team_private_route_tables[count.index].id
   destination_cidr_block    = var.primary_vpc.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.team.id
 
   provider = aws.team
+}
+
+resource "aws_route" "primary" {
+  count = length(var.primary_private_route_tables)
+
+  route_table_id            = var.primary_private_route_tables[count.index].id
+  destination_cidr_block    = var.team_vpc.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.team.id
+
+  provider = aws.primary
 }

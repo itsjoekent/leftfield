@@ -52,26 +52,6 @@ module "api" {
   }
 }
 
-# team-us-east-1
-# subnet-0294ebb4255b5e309
-# vpc-03ceffff242feeeff
-#
-# team-us-west-1
-# subnet-0c581d1b17e60aeae
-# vpc-0903e689ce5d2f2a8
-# Destination Target
-# 10.1.0.0/16	pcx-09951edae905bb12c
-#   pcx-09951edae905bb12c
-#     vpc-0903e689ce5d2f2a8
-#
-# Amazon MQ Brokers leftfield
-#   subnet-0294ebb4255b5e309
-#   subnet-0bc508179ad64b09f
-#     vpc-03ceffff242feeeff
-#
-# Why is the destination target for -west- ... west... and not the primary
-
-
 module "api_edge_peer" {
   source = "../api/edge-peer"
   config = var.config

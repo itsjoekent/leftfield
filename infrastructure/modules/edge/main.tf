@@ -118,9 +118,11 @@ module "us_east_1_peer" {
   config = local.config
   region = "us-east-1"
 
-  primary_vpc          = local.primary_network.vpc
-  private_route_tables = local.networks["us-east-1"].private_route_tables
-  team_vpc             = local.networks["us-east-1"].vpc
+  primary_vpc                  = local.primary_network.vpc
+  primary_private_route_tables = local.primary_network.private_route_tables
+
+  tean_private_route_tables = local.networks["us-east-1"].private_route_tables
+  team_vpc                  = local.networks["us-east-1"].vpc
 
   providers = {
     aws.primary = aws.primary
@@ -135,9 +137,11 @@ module "us_west_1_peer" {
   config = local.config
   region = "us-west-1"
 
-  primary_vpc          = local.primary_network.vpc
-  private_route_tables = local.networks["us-west-1"].private_route_tables
-  team_vpc             = local.networks["us-west-1"].vpc
+  primary_vpc                  = local.primary_network.vpc
+  primary_private_route_tables = local.primary_network.private_route_tables
+
+  team_private_route_tables = local.networks["us-west-1"].private_route_tables
+  team_vpc                  = local.networks["us-west-1"].vpc
 
   providers = {
     aws.primary = aws.primary
