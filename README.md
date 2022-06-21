@@ -39,15 +39,3 @@ $ terraform login
 ```sh
 $ docker system prune --all --force
 ```
-
----
-
-- [ ] ssl/generate-remote (accept domain argument)
-  - [ ] generate wildcard
-  - [ ] run every 30 days as github action
-- [ ] tasks/ssl/cron
-
-- [ ] Refactor/clean up dns menu into sub components
- - [ ] Show DNS cert status
-
-- [ ] image resizing options?
