@@ -1,6 +1,7 @@
 import get from 'lodash/get';
 import { SELECT_TYPE } from 'pkg.campaign-components/constants/property-types';
 import { MOBILE_DEVICE } from 'pkg.campaign-components/constants/responsive';
+import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 
 export const POSITION_TOP = 'top';
 export const POSITION_BOTTOM = 'bottom';

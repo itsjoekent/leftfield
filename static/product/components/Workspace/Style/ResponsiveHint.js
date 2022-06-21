@@ -16,6 +16,7 @@ import {
 } from '@product/features/assembly';
 import { selectPreviewDeviceSize } from '@product/features/previewMode';
 import useActiveWorkspaceComponent from '@product/hooks/useActiveWorkspaceComponent';
+import isDefined from '@product/utils/isDefined';
 
 const iconMap = {
   [Responsive.DESKTOP_DEVICE]: Icons.Desktop,
@@ -48,8 +49,8 @@ export default function ResponsiveHint(props) {
     targetDevice,
   ));
 
-  const hasValue = !!get(attributeValue, 'inheritFromTheme', null)
-    || !!get(attributeValue, 'custom', null);
+  const hasValue = isDefined(get(attributeValue, 'inheritFromTheme', null))
+    || isDefined(get(attributeValue, 'custom', null));
 
   const cascadedFrom = get(attributeValue, 'cascadedFrom', null);
   const isCascading = !!cascadedFrom

@@ -10,6 +10,7 @@ import {
 } from 'pkg.campaign-components/components/SingleColumnSection';
 import BoxStyle from 'pkg.campaign-components/styles/box';
 import FlexStyle from 'pkg.campaign-components/styles/flex';
+import ImagePositionStyle from 'pkg.campaign-components/styles/imagePosition';
 import responsiveStyleGenerator from 'pkg.campaign-components/utils/responsiveStyleGenerator';
 import applyStyleIfChangedGenerator from 'pkg.campaign-components/utils/applyStyleIfChangedGenerator';
 
@@ -54,23 +55,12 @@ export default function SingleColumnSectionCSS({
         left: 0;
         width: 100%;
         height: 100%;
-        object-fit: cover;
 
-        ${responsiveStyleGenerator(
-          applyStyleIfChangedBackgroundImage,
+        ${ImagePositionStyle.styling({
+          applyStyleIfChanged,
+          styles: backgroundImageStyles,
           theme,
-          [
-            {
-              styles: backgroundImageStyles,
-              attribute: BACKGROUND_IMAGE_VERTICAL_POSITION_ATTRIBUTE,
-            },
-            {
-              styles: backgroundImageStyles,
-              attribute: BACKGROUND_IMAGE_HORIZONTAL_POSITION_ATTRIBUTE,
-            },
-          ],
-          (styleValue) => `object-position: ${styleValue[0]} ${styleValue[1]};`,
-        )}
+        })}
       }
 
       > .${CONTENT_COLUMN_CLASS_NAME} {
@@ -78,6 +68,8 @@ export default function SingleColumnSectionCSS({
         flex-direction: column;
         width: 100%;
         height: fit-content;
+        max-height: 100%;
+        overflow: scroll;
         z-index: 1;
 
         ${BoxStyle.styling({
